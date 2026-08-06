@@ -76,11 +76,11 @@ func setCopyTestEnv(t *testing.T, serverURL string) {
 	// ancestry: the CLI then treats this as a normal (non-agent) context and
 	// accepts the plain test token instead of demanding a task-scoped mat_ one.
 	t.Chdir(t.TempDir())
-	t.Setenv("MULTICA_SERVER_URL", serverURL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_AGENT_ID", "")
-	t.Setenv("MULTICA_TASK_ID", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", serverURL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_AGENT_ID", "")
+	t.Setenv("ORCHESTRA_TASK_ID", "")
 }
 
 func TestAgentCopySameRuntimeCopiesPortableFields(t *testing.T) {

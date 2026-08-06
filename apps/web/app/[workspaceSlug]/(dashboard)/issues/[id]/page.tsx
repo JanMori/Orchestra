@@ -1,8 +1,8 @@
 "use client";
 
 import { use } from "react";
-import { IssueDetailRoute } from "@multica/views/issues/components";
-import { ErrorBoundary } from "@multica/ui/components/common/error-boundary";
+import { IssueDetailRoute } from "@orchestra/views/issues/components";
+import { ErrorBoundary } from "@orchestra/ui/components/common/error-boundary";
 
 export default function IssueDetailPage({
   params,

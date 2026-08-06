@@ -7,7 +7,7 @@ import {
   Filter,
   X,
 } from "lucide-react";
-import type { Autopilot } from "@multica/core/types";
+import type { Autopilot } from "@orchestra/core/types";
 import {
   AUTOPILOT_SCOPES,
   type AutopilotColumnKey,
@@ -15,9 +15,9 @@ import {
   type AutopilotScope,
   type AutopilotSortDirection,
   type AutopilotSortField,
-} from "@multica/core/autopilots/stores";
-import { useActorName } from "@multica/core/workspace/hooks";
-import { Button } from "@multica/ui/components/ui/button";
+} from "@orchestra/core/autopilots/stores";
+import { useActorName } from "@orchestra/core/workspace/hooks";
+import { Button } from "@orchestra/ui/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -28,18 +28,18 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@multica/ui/components/ui/dropdown-menu";
+} from "@orchestra/ui/components/ui/dropdown-menu";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@multica/ui/components/ui/popover";
-import { Switch } from "@multica/ui/components/ui/switch";
+} from "@orchestra/ui/components/ui/popover";
+import { Switch } from "@orchestra/ui/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@multica/ui/components/ui/tooltip";
+} from "@orchestra/ui/components/ui/tooltip";
 import { ActorAvatar } from "../../common/actor-avatar";
 import { FILTER_ITEM_CLASS, HoverCheck } from "../../common/hover-check";
 import { useT } from "../../i18n";

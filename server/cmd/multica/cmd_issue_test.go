@@ -390,7 +390,7 @@ func TestRunIssueCommentAddRejectsExternalAttachmentWithZeroUploads(t *testing.T
 	setCLITestServerEnv(t, srv.URL)
 	// mat_ prefix clears the daemon-managed execution-context guard both in CI
 	// and when the suite runs inside an agent task (leftover daemon marker).
-	t.Setenv("MULTICA_TOKEN", "mat_test-token")
+	t.Setenv("ORCHESTRA_TOKEN", "mat_test-token")
 
 	// A valid attachment inside the workdir, FOLLOWED BY an external one.
 	t.Chdir(t.TempDir())
@@ -466,9 +466,9 @@ func TestRunIssueCreateSendsAllowDuplicate(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newIssueCreateTestCmd()
 	_ = cmd.Flags().Set("title", "Duplicate allowed")
@@ -501,10 +501,10 @@ func TestRunIssueCreateSendsExistingAttachmentIDs(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_QUICK_CREATE_ATTACHMENT_IDS", `["att-env","att-shared"]`)
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_QUICK_CREATE_ATTACHMENT_IDS", `["att-env","att-shared"]`)
 
 	cmd := newIssueCreateTestCmd()
 	_ = cmd.Flags().Set("title", "With attachments")
@@ -549,9 +549,9 @@ func TestRunIssueCreateShowsDuplicateMessage(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newIssueCreateTestCmd()
 	_ = cmd.Flags().Set("title", "SH-PM-SYNTH-01 Synthesize recommendation-to-shortlist planning outputs")
@@ -598,9 +598,9 @@ func TestRunIssuePullRequestsListsLinkedPRsAsJSON(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newIssuePullRequestsTestCmd()
 	_ = cmd.Flags().Set("output", "json")
@@ -663,9 +663,9 @@ func TestRunIssueUsageReturnsTokenSummaryAsJSON(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newIssueUsageTestCmd()
 	_ = cmd.Flags().Set("output", "json")
@@ -1146,9 +1146,9 @@ func TestRunIssueRunMessagesResolvesShortTaskPrefix(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := &cobra.Command{Use: "run-messages"}
 	cmd.Flags().String("output", "json", "")
@@ -2195,9 +2195,9 @@ func TestRunIssueCommentResolution(t *testing.T) {
 			}))
 			defer srv.Close()
 
-			t.Setenv("MULTICA_SERVER_URL", srv.URL)
-			t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-			t.Setenv("MULTICA_TOKEN", "test-token")
+			t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+			t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+			t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 			cmd := newIssueCommentResolutionTestCmd(tt.cmdUse)
 			out, err := captureStdout(t, func() error {
@@ -2253,9 +2253,9 @@ func TestRunIssueCommentListFlagGuards(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cases := []struct {
 		name    string
@@ -2397,9 +2397,9 @@ func TestRunIssueCommentList_RootsOnlyPassesThroughWithSince(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newIssueCommentListTestCmd()
 	if err := cmd.Flags().Set("roots-only", "true"); err != nil {
@@ -2444,9 +2444,9 @@ func TestRunIssueCommentList_SummaryPassesThrough(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newIssueCommentListTestCmd()
 	if err := cmd.Flags().Set("summary", "true"); err != nil {
@@ -2496,9 +2496,9 @@ func TestRunIssueCommentList_FoldDefaultAndFullEscape(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cases := []struct {
 		name     string
@@ -2572,9 +2572,9 @@ func TestRunIssueCommentList_ThreadTailPassesThroughAndPrintsReplyCursor(t *test
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	// Redirect stderr so we can assert on the "Next reply cursor" line —
 	// that's the user-visible signal that the CLI knew it was paging
@@ -2624,9 +2624,9 @@ func TestRunIssueCommentList_RecentStillLabelsCursorAsThread(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	stderr := captureStderr(t)
 	defer stderr.restore()
@@ -2663,9 +2663,9 @@ func TestRunIssueCommentList_DoesNotPrintShowingPreamble(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	stderr := captureStderr(t)
 	defer stderr.restore()
@@ -2864,9 +2864,9 @@ func TestRunIssueUpdateSendsPosition(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newIssueUpdateTestCmd()
 	_ = cmd.Flags().Set("position", "7.5")
@@ -2890,9 +2890,9 @@ func TestRunIssueListSendsSortAndDirection(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newIssueListTestCmd()
 	_ = cmd.Flags().Set("output", "json")
@@ -2910,9 +2910,9 @@ func TestRunIssueListSendsSortAndDirection(t *testing.T) {
 }
 
 func TestRunIssueListRejectsInvalidSortAndDirection(t *testing.T) {
-	t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:0")
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:0")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newIssueListTestCmd()
 	_ = cmd.Flags().Set("sort", "nonsense")
@@ -2936,9 +2936,9 @@ func TestRunIssueListRejectsInvalidSortAndDirection(t *testing.T) {
 // always sorts ascending) is rejected up front, rather than silently dropping
 // the flag — a passed-but-ignored flag is a footgun, especially in scripts.
 func TestRunIssueListRejectsDirectionWithoutDirectionalSort(t *testing.T) {
-	t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:0")
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:0")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cases := []struct {
 		name string
@@ -3155,9 +3155,9 @@ func TestRunIssueReorderComputesPosition(t *testing.T) {
 			srv := reorderTestServer(t, &gotPosition)
 			defer srv.Close()
 
-			t.Setenv("MULTICA_SERVER_URL", srv.URL)
-			t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-			t.Setenv("MULTICA_TOKEN", "test-token")
+			t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+			t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+			t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 			cmd := newIssueReorderTestCmd()
 			_ = cmd.Flags().Set(tc.flag, tc.val)
@@ -3175,9 +3175,9 @@ func TestRunIssueReorderRejectsCrossColumnTarget(t *testing.T) {
 	srv := reorderTestServer(t, nil)
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newIssueReorderTestCmd()
 	_ = cmd.Flags().Set("before", "MUL-3") // MUL-3 lives in the in_progress column
@@ -3220,9 +3220,9 @@ func TestFetchIssueColumnPaginates(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	client, err := newAPIClient(&cobra.Command{Use: "x"})
 	if err != nil {
@@ -3280,9 +3280,9 @@ func TestRunIssueReorderNoOpSkipsPut(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newIssueReorderTestCmd()
 	_ = cmd.Flags().Set("before", "MUL-2")
@@ -3319,9 +3319,9 @@ func TestRunIssueReorderSingleItemColumnValidatesTarget(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	t.Run("cross-column target errors", func(t *testing.T) {
 		cmd := newIssueReorderTestCmd()
@@ -3372,9 +3372,9 @@ func TestRunIssueReorderOnlyIssueInColumnIsNoOp(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newIssueReorderTestCmd()
 	_ = cmd.Flags().Set("top", "true")
@@ -3405,9 +3405,9 @@ func TestRunIssueUpdateOmitsPositionWhenUnset(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newIssueUpdateTestCmd()
 	_ = cmd.Flags().Set("title", "Renamed")

@@ -19,6 +19,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgx/v5/pgtype"
+	"golang.org/x/crypto/bcrypt"
 	"github.com/multica-ai/multica/server/internal/analytics"
 	"github.com/multica-ai/multica/server/internal/auth"
 	"github.com/multica-ai/multica/server/internal/logger"
@@ -38,7 +39,7 @@ func (e SignupError) Error() string {
 var ErrSignupProhibited = SignupError{Message: "user registration is disabled on this self-hosted instance"}
 var ErrEmailNotAllowed = SignupError{Message: "email address or domain not allowed on this instance"}
 
-const devVerificationCodeEnv = "MULTICA_DEV_VERIFICATION_CODE"
+const devVerificationCodeEnv = "ORCHESTRA_DEV_VERIFICATION_CODE"
 
 // supportedLanguages mirrors `SUPPORTED_LOCALES` in packages/core/i18n/types.ts.
 // Keep both lists in sync when adding a locale — the user-controlled `language`
@@ -100,6 +101,18 @@ func (h *Handler) userToResponse(u db.User) UserResponse {
 type LoginResponse struct {
 	Token string       `json:"token"`
 	User  UserResponse `json:"user"`
+}
+
+type LoginRequest struct {
+	Account  string `json:"account"` // Email or Username
+	Password string `json:"password"`
+}
+
+type RegisterRequest struct {
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 type SendCodeRequest struct {
@@ -263,6 +276,158 @@ func contains(slice []string, s string) bool {
 		}
 	}
 	return false
+}
+
+func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
+	var req RegisterRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+
+	email := strings.ToLower(strings.TrimSpace(req.Email))
+	username := strings.TrimSpace(req.Username)
+	name := strings.TrimSpace(req.Name)
+	password := req.Password
+
+	if email == "" {
+		writeError(w, http.StatusBadRequest, "email is required")
+		return
+	}
+	if len(password) < 6 {
+		writeError(w, http.StatusBadRequest, "password must be at least 6 characters")
+		return
+	}
+	if name == "" {
+		if at := strings.Index(email, "@"); at > 0 {
+			name = email[:at]
+		} else {
+			name = email
+		}
+	}
+
+	// Check if signup is allowed
+	if err := h.checkSignupAllowed(email, true); err != nil {
+		var signupErr SignupError
+		if errors.As(err, &signupErr) {
+			writeError(w, http.StatusForbidden, signupErr.Error())
+		} else {
+			writeError(w, http.StatusForbidden, "user registration is disabled")
+		}
+		return
+	}
+
+	// Check if user with email or username already exists
+	existing, err := h.Queries.GetUserByUsernameOrEmail(r.Context(), email)
+	if err == nil && existing.ID.Valid {
+		writeError(w, http.StatusConflict, "user with this email or username already exists")
+		return
+	} else if err != nil && !isNotFound(err) {
+		writeError(w, http.StatusInternalServerError, "failed to check user existence")
+		return
+	}
+
+	if username != "" {
+		existingUser, err := h.Queries.GetUserByUsernameOrEmail(r.Context(), username)
+		if err == nil && existingUser.ID.Valid {
+			writeError(w, http.StatusConflict, "username is already taken")
+			return
+		}
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to hash password")
+		return
+	}
+
+	var usernameText pgtype.Text
+	if username != "" {
+		usernameText = pgtype.Text{String: username, Valid: true}
+	}
+
+	user, err := h.Queries.CreateUserWithPassword(r.Context(), db.CreateUserWithPasswordParams{
+		Name:         name,
+		Email:        email,
+		Username:     usernameText,
+		PasswordHash: pgtype.Text{String: string(hash), Valid: true},
+	})
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to create user")
+		return
+	}
+
+	token, err := h.issueJWT(user)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to issue token")
+		return
+	}
+
+	if err := auth.SetAuthCookies(w, token); err != nil {
+		slog.Warn("failed to set auth cookies", "error", err)
+	}
+
+	obsmetrics.RecordEvent(h.Analytics, h.Metrics, analytics.Signup(uuidToString(user.ID), user.Email, signupSourceFromRequest(r)))
+
+	writeJSON(w, http.StatusOK, LoginResponse{
+		Token: token,
+		User:  h.userToResponse(user),
+	})
+}
+
+func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
+	var req LoginRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+
+	account := strings.TrimSpace(req.Account)
+	password := req.Password
+
+	if account == "" {
+		writeError(w, http.StatusBadRequest, "username or email is required")
+		return
+	}
+	if password == "" {
+		writeError(w, http.StatusBadRequest, "password is required")
+		return
+	}
+
+	user, err := h.Queries.GetUserByUsernameOrEmail(r.Context(), account)
+	if err != nil {
+		if isNotFound(err) {
+			writeError(w, http.StatusUnauthorized, "invalid account or password")
+			return
+		}
+		writeError(w, http.StatusInternalServerError, "failed to lookup user")
+		return
+	}
+
+	if !user.PasswordHash.Valid || user.PasswordHash.String == "" {
+		writeError(w, http.StatusUnauthorized, "password login is not set up for this account")
+		return
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash.String), []byte(password)); err != nil {
+		writeError(w, http.StatusUnauthorized, "invalid account or password")
+		return
+	}
+
+	token, err := h.issueJWT(user)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to issue token")
+		return
+	}
+
+	if err := auth.SetAuthCookies(w, token); err != nil {
+		slog.Warn("failed to set auth cookies", "error", err)
+	}
+
+	writeJSON(w, http.StatusOK, LoginResponse{
+		Token: token,
+		User:  h.userToResponse(user),
+	})
 }
 
 func (h *Handler) SendCode(w http.ResponseWriter, r *http.Request) {

@@ -67,7 +67,7 @@ var errSkillBundleUnavailable = errors.New("skill bundle unavailable")
 const (
 	taskSlotWaitTimeout      = 2 * time.Second
 	taskSlotCapacityBackoff  = 5 * time.Second
-	repoCheckoutModeEnv      = "MULTICA_REPO_CHECKOUT_MODE"
+	repoCheckoutModeEnv      = "ORCHESTRA_REPO_CHECKOUT_MODE"
 	repoCheckoutModeIsolated = "isolated"
 	// defaultTaskPrepareTimeout is a hard liveness bound for everything after
 	// claim and before StartTask succeeds: runtime resolution, skill bundles,
@@ -1640,7 +1640,7 @@ func (d *Daemon) Run(ctx context.Context) error {
 	)
 
 	// Mark the daemon-owned workspaces tree before any task runs. A sandbox
-	// fault can strip every MULTICA_* env var from an agent subprocess; the
+	// fault can strip every ORCHESTRA_* env var from an agent subprocess; the
 	// per-workdir marker then only protects cwds inside the workdir, and a
 	// subprocess that escaped to the workdir's parent would fall back to the
 	// user's config PAT. The root marker makes the CLI fail closed anywhere
@@ -4450,7 +4450,7 @@ func waitForTaskSlot(ctx context.Context, sem chan int, wakeup <-chan struct{}, 
 
 // newTaskSlotSemaphore returns a buffered channel pre-populated with stable
 // slot indices [0, n). Receive to acquire a slot, send the same slot back to
-// release. Used by pollLoop to expose MULTICA_TASK_SLOT to spawned tasks.
+// release. Used by pollLoop to expose ORCHESTRA_TASK_SLOT to spawned tasks.
 func newTaskSlotSemaphore(maxConcurrentTasks int) chan int {
 	sem := make(chan int, maxConcurrentTasks)
 	for i := 0; i < maxConcurrentTasks; i++ {
@@ -5519,7 +5519,7 @@ func skillRefFromBundle(bundle SkillData) SkillRefData {
 
 func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot int, taskLog *slog.Logger) (taskResult TaskResult, returnErr error) {
 	// Refuse to spawn an agent without a workspace. An empty workspace_id
-	// here would make MULTICA_WORKSPACE_ID empty in the agent env, and the
+	// here would make ORCHESTRA_WORKSPACE_ID empty in the agent env, and the
 	// CLI would otherwise silently fall back to the user-global config — a
 	// path that can leak operations into an unrelated workspace when
 	// multiple workspaces share a host.
@@ -5913,10 +5913,10 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot i
 
 	// Pass task-scoped auth credentials and context so the spawned agent CLI
 	// can call the Multica API and the local daemon (e.g. `multica repo checkout`).
-	// MULTICA_TASK_SLOT is allocated from the daemon-wide concurrency pool, not
+	// ORCHESTRA_TASK_SLOT is allocated from the daemon-wide concurrency pool, not
 	// per-agent. When one daemon hosts multiple agents, slots index shared
 	// daemon-level resources such as GPUs.
-	// MULTICA_TOKEN is bound to (agent, task) by the server. Never fall back
+	// ORCHESTRA_TOKEN is bound to (agent, task) by the server. Never fall back
 	// to the daemon's own credential here: doing so lets agent CLI writes land
 	// as the runtime owner's member actor and can retrigger the same agent.
 	agentToken, err := taskScopedAuthToken(task)
@@ -5925,14 +5925,14 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot i
 		return TaskResult{}, err
 	}
 	agentEnv := map[string]string{
-		"MULTICA_TOKEN":        agentToken,
-		"MULTICA_SERVER_URL":   d.cfg.ServerBaseURL,
-		"MULTICA_DAEMON_PORT":  fmt.Sprintf("%d", d.cfg.HealthPort),
-		"MULTICA_WORKSPACE_ID": task.WorkspaceID,
-		"MULTICA_AGENT_NAME":   agentName,
-		"MULTICA_AGENT_ID":     task.AgentID,
-		"MULTICA_TASK_ID":      task.ID,
-		"MULTICA_TASK_SLOT":    strconv.Itoa(slot),
+		"ORCHESTRA_TOKEN":        agentToken,
+		"ORCHESTRA_SERVER_URL":   d.cfg.ServerBaseURL,
+		"ORCHESTRA_DAEMON_PORT":  fmt.Sprintf("%d", d.cfg.HealthPort),
+		"ORCHESTRA_WORKSPACE_ID": task.WorkspaceID,
+		"ORCHESTRA_AGENT_NAME":   agentName,
+		"ORCHESTRA_AGENT_ID":     task.AgentID,
+		"ORCHESTRA_TASK_ID":      task.ID,
+		"ORCHESTRA_TASK_SLOT":    strconv.Itoa(slot),
 		"TMPDIR":               taskTempDir,
 		"TMP":                  taskTempDir,
 		"TEMP":                 taskTempDir,
@@ -5941,20 +5941,20 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot i
 		agentEnv[repoCheckoutModeEnv] = checkoutMode
 	}
 	if task.AutopilotRunID != "" {
-		agentEnv["MULTICA_AUTOPILOT_RUN_ID"] = task.AutopilotRunID
+		agentEnv["ORCHESTRA_AUTOPILOT_RUN_ID"] = task.AutopilotRunID
 	}
 	if task.AutopilotID != "" {
-		agentEnv["MULTICA_AUTOPILOT_ID"] = task.AutopilotID
+		agentEnv["ORCHESTRA_AUTOPILOT_ID"] = task.AutopilotID
 	}
 	// Quick-create marker — when set, the multica CLI's `issue create`
 	// command stamps the new issue with origin_type=quick_create +
 	// origin_id=<task_id> so the completion handler can find it
 	// deterministically (see GetIssueByOrigin).
 	if task.QuickCreatePrompt != "" {
-		agentEnv["MULTICA_QUICK_CREATE_TASK_ID"] = task.ID
+		agentEnv["ORCHESTRA_QUICK_CREATE_TASK_ID"] = task.ID
 		if len(task.QuickCreateAttachmentIDs) > 0 {
 			if raw, err := json.Marshal(task.QuickCreateAttachmentIDs); err == nil {
-				agentEnv["MULTICA_QUICK_CREATE_ATTACHMENT_IDS"] = string(raw)
+				agentEnv["ORCHESTRA_QUICK_CREATE_ATTACHMENT_IDS"] = string(raw)
 			} else {
 				taskLog.Warn("quick-create attachment ids: marshal failed; skipping env injection", "error", err)
 			}
@@ -6063,7 +6063,7 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot i
 		customArgs = hermesLaunchArgs(customArgs, env != nil && env.HermesHome != "")
 	}
 	// Two-tier model resolution: an explicit agent.model wins,
-	// then the daemon-wide MULTICA_<PROVIDER>_MODEL env var. If
+	// then the daemon-wide ORCHESTRA_<PROVIDER>_MODEL env var. If
 	// both are empty we deliberately pass "" through — each
 	// backend omits `--model` from the CLI invocation, so the
 	// provider picks its own default (Claude Code's shipped
@@ -6749,7 +6749,7 @@ func (d *Daemon) executeAndDrain(ctx context.Context, backend agent.Backend, pro
 	// window — so the failure message reports the real duration.
 	idleWindow := d.cfg.AgentIdleWatchdog
 	// A provider may opt into a shorter per-run no-message budget. The global
-	// zero remains authoritative so MULTICA_AGENT_IDLE_WATCHDOG=0 still disables
+	// zero remains authoritative so ORCHESTRA_AGENT_IDLE_WATCHDOG=0 still disables
 	// the entire watchdog suite. Tool calls continue to use AgentToolWatchdog.
 	if idleWindow > 0 && opts.IdleWatchdogTimeout > 0 && opts.IdleWatchdogTimeout < idleWindow {
 		idleWindow = opts.IdleWatchdogTimeout
@@ -7439,7 +7439,7 @@ func socketSafeTempBaseDir() string {
 // daemon-internal variables and critical system paths.
 func isBlockedEnvKey(key string) bool {
 	upper := strings.ToUpper(key)
-	if strings.HasPrefix(upper, "MULTICA_") {
+	if strings.HasPrefix(upper, "ORCHESTRA_") {
 		return true
 	}
 	switch upper {

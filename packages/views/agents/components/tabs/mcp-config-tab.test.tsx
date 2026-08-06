@@ -4,9 +4,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { Agent, AgentRuntime } from "@multica/core/types";
-import { ApiError } from "@multica/core/api";
-import { I18nProvider } from "@multica/core/i18n/react";
+import type { Agent, AgentRuntime } from "@orchestra/core/types";
+import { ApiError } from "@orchestra/core/api";
+import { I18nProvider } from "@orchestra/core/i18n/react";
 import enCommon from "../../../locales/en/common.json";
 import enAgents from "../../../locales/en/agents.json";
 import { McpConfigTab } from "./mcp-config-tab";
@@ -17,10 +17,10 @@ const mockRuntimeCapabilities = vi.hoisted(() => vi.fn());
 
 // The tab reads discovery through runtimeCapabilitiesOptions; existing tests
 // render with runtime={null} so the query stays disabled and never fires.
-vi.mock("@multica/core/runtimes", async () => {
+vi.mock("@orchestra/core/runtimes", async () => {
   const actual =
-    await vi.importActual<typeof import("@multica/core/runtimes")>(
-      "@multica/core/runtimes",
+    await vi.importActual<typeof import("@orchestra/core/runtimes")>(
+      "@orchestra/core/runtimes",
     );
   return {
     ...actual,

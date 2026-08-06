@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { LOCALE_COOKIE } from "@multica/core/i18n";
+import { LOCALE_COOKIE } from "@orchestra/core/i18n";
 import {
   MULTICA_LOCALE_HEADER,
   resolveLocaleFromSignals,
@@ -83,24 +83,22 @@ export function proxy(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // --- Root path: redirect logged-in users to their last workspace ---
-  // The official cloud host also serves the public marketing site. Visiting
-  // https://multica.ai/ must remain a public-site navigation even when a local
-  // desktop/runtime session has fresh auth cookies; explicit app routes such
-  // as /acme/issues and legacy /issues still route to the workspace app.
-  if (
-    pathname === "/" &&
-    hasSession &&
-    lastSlug &&
-    !isOfficialMarketingHost(req.nextUrl.hostname)
-  ) {
+  // --- Root path: redirect logged-in users to workspace, logged-out to /login ---
+  if (pathname === "/") {
     const url = req.nextUrl.clone();
-    url.pathname = `/${lastSlug}/issues`;
+    if (!hasSession) {
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
+    }
+    if (lastSlug) {
+      url.pathname = `/${lastSlug}/issues`;
+      return NextResponse.redirect(url);
+    }
+    url.pathname = "/workspaces";
     return NextResponse.redirect(url);
   }
 
   // --- Default: forward locale header to RSC, no redirect/rewrite ---
-  // Covers logged-out root path, /login, /:slug/*, and everything else.
   return nextWithLocale(req);
 }
 

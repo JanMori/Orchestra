@@ -139,7 +139,7 @@ func TestApplyConfigSetSupportsDaemonKeys(t *testing.T) {
 }
 
 func TestApplyConfigSetPositiveDurationRoundTripsToDaemonResolver(t *testing.T) {
-	const envName = "TEST_MULTICA_PERSISTED_DURATION"
+	const envName = "TEST_ORCHESTRA_PERSISTED_DURATION"
 	t.Setenv(envName, "")
 
 	cases := []struct {

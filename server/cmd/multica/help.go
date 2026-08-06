@@ -124,8 +124,8 @@ EXAMPLES
   $ multica agent list --output json
 
 ENVIRONMENT VARIABLES
-  MULTICA_SERVER_URL    Override the default server URL
-  MULTICA_WORKSPACE_ID  Set the active workspace
+  ORCHESTRA_SERVER_URL    Override the default server URL
+  ORCHESTRA_WORKSPACE_ID  Set the active workspace
 
 LEARN MORE
   Use ` + "`multica <command> <subcommand> --help`" + ` for more information about a command.

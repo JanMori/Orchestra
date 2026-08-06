@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { isRouteErrorResponse, useLocation, useRouteError } from "react-router-dom";
 import { AlertTriangle, Compass, RotateCw, Send, X } from "lucide-react";
-import { Button } from "@multica/ui/components/ui/button";
-import { useModalStore } from "@multica/core/modals";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { useModalStore } from "@orchestra/core/modals";
 import { useTabStore } from "@/stores/tab-store";
 
 type DesktopAppInfo = {

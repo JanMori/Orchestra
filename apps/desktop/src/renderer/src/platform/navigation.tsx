@@ -2,9 +2,9 @@ import { useMemo } from "react";
 import {
   NavigationProvider,
   type NavigationAdapter,
-} from "@multica/views/navigation";
-import { useAuthStore } from "@multica/core/auth";
-import { isReservedSlug } from "@multica/core/paths";
+} from "@orchestra/views/navigation";
+import { useAuthStore } from "@orchestra/core/auth";
+import { isReservedSlug } from "@orchestra/core/paths";
 import {
   useTabStore,
   getActiveTab,

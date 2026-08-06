@@ -1,8 +1,8 @@
 "use client";
 
 import { ChevronRight, FileText, MessageSquare } from "lucide-react";
-import { useWorkspacePaths } from "@multica/core/paths";
-import { cn } from "@multica/ui/lib/utils";
+import { useWorkspacePaths } from "@orchestra/core/paths";
+import { cn } from "@orchestra/ui/lib/utils";
 import { useNavigation } from "../../navigation";
 import { useT } from "../../i18n";
 import { AgentCreateShell } from "./create-shell";

@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ActorAvatar as ActorAvatarBase } from "@multica/ui/components/common/actor-avatar";
-import { useActorName } from "@multica/core/workspace/hooks";
-import { useWorkspaceId } from "@multica/core/hooks";
-import { runtimeListOptions } from "@multica/core/runtimes/queries";
-import { agentListOptions } from "@multica/core/workspace/queries";
-import { deriveAgentAvailability } from "@multica/core/agents";
-import type { AgentTask, Issue } from "@multica/core/types";
+import { ActorAvatar as ActorAvatarBase } from "@orchestra/ui/components/common/actor-avatar";
+import { useActorName } from "@orchestra/core/workspace/hooks";
+import { useWorkspaceId } from "@orchestra/core/hooks";
+import { runtimeListOptions } from "@orchestra/core/runtimes/queries";
+import { agentListOptions } from "@orchestra/core/workspace/queries";
+import { deriveAgentAvailability } from "@orchestra/core/agents";
+import type { AgentTask, Issue } from "@orchestra/core/types";
 import { workloadConfig } from "../presence";
 import { useT } from "../../i18n";
 

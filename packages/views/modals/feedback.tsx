@@ -7,9 +7,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@multica/ui/components/ui/dialog";
-import { Button } from "@multica/ui/components/ui/button";
-import { FileUploadButton } from "@multica/ui/components/common/file-upload-button";
+} from "@orchestra/ui/components/ui/dialog";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { FileUploadButton } from "@orchestra/ui/components/common/file-upload-button";
 import {
   ContentEditor,
   type ContentEditorRef,
@@ -23,10 +23,10 @@ import {
   useFeedbackDraftStore,
   FEEDBACK_KINDS,
   type FeedbackKind,
-} from "@multica/core/feedback";
-import { useCurrentWorkspace } from "@multica/core/paths";
+} from "@orchestra/core/feedback";
+import { useCurrentWorkspace } from "@orchestra/core/paths";
 import { useT } from "../i18n";
-import { useShortcut } from "@multica/core/shortcuts";
+import { useShortcut } from "@orchestra/core/shortcuts";
 import { ShortcutKeycaps } from "../common/shortcut-keycaps";
 
 const MAX_MESSAGE_LEN = 10000;
@@ -130,17 +130,6 @@ export function FeedbackModal({
       <DialogContent className="sm:max-w-2xl !h-[28rem] p-0 gap-0 flex flex-col overflow-hidden">
         <DialogHeader className="px-5 pt-4 pb-2 shrink-0">
           <DialogTitle>{t(($) => $.feedback.title)}</DialogTitle>
-          <p className="mt-1 text-caption text-muted-foreground">
-            {t(($) => $.feedback.github_hint_prefix)}
-            <a
-              href="https://github.com/multica-ai/multica/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
-            >
-              {t(($) => $.feedback.github_hint_link)}
-            </a>
-          </p>
         </DialogHeader>
 
         <div className="flex-1 min-h-0 px-5 pb-3">

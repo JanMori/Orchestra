@@ -1,6 +1,6 @@
-import type { IssueScope } from "@multica/core/issues/surface/scope";
-import type { CreateIssueRequest } from "@multica/core/types";
-import type { ViewMode } from "@multica/core/issues/stores/view-store";
+import type { IssueScope } from "@orchestra/core/issues/surface/scope";
+import type { CreateIssueRequest } from "@orchestra/core/types";
+import type { ViewMode } from "@orchestra/core/issues/stores/view-store";
 
 export type IssueCreateDefaults = Partial<
   Omit<

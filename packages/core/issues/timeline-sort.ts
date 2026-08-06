@@ -1,4 +1,4 @@
-import type { TimelineEntry } from "@multica/core/types";
+import type { TimelineEntry } from "@orchestra/core/types";
 
 /**
  * Stable-ascending sort for flat TimelineEntry[] caches.

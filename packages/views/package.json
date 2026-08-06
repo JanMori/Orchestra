@@ -1,5 +1,5 @@
 {
-  "name": "@multica/views",
+  "name": "@orchestra/views",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -62,8 +62,8 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@floating-ui/dom": "^1.7.6",
-    "@multica/core": "workspace:*",
-    "@multica/ui": "workspace:*",
+    "@orchestra/core": "workspace:*",
+    "@orchestra/ui": "workspace:*",
     "@tanstack/react-virtual": "catalog:",
     "@tiptap/core": "3.27.1",
     "@tiptap/extension-code-block-lowlight": "3.27.1",
@@ -119,8 +119,8 @@
     "zustand": "catalog:"
   },
   "devDependencies": {
-    "@multica/eslint-config": "workspace:*",
-    "@multica/tsconfig": "workspace:*",
+    "@orchestra/eslint-config": "workspace:*",
+    "@orchestra/tsconfig": "workspace:*",
     "@testing-library/jest-dom": "catalog:",
     "@testing-library/react": "catalog:",
     "@testing-library/user-event": "catalog:",

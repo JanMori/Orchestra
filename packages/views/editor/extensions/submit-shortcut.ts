@@ -5,8 +5,8 @@ import {
   isPlainShortcut,
   shortcutMatchesEvent,
   type ShortcutChord,
-} from "@multica/core/shortcuts";
-import { isImeComposing } from "@multica/core/utils";
+} from "@orchestra/core/shortcuts";
+import { isImeComposing } from "@orchestra/core/utils";
 
 export function shouldHandleSubmitShortcut(
   event: KeyboardEvent,

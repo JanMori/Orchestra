@@ -4,26 +4,26 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useInfiniteQuery, useQuery, useQueryClient, type InfiniteData } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import { Minus, Maximize2, Minimize2, ChevronDown, Plus, Check, Archive, Pencil, Loader2, Square } from "lucide-react";
-import { Button } from "@multica/ui/components/ui/button";
-import { cn } from "@multica/ui/lib/utils";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@multica/ui/components/ui/tooltip";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { cn } from "@orchestra/ui/lib/utils";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@orchestra/ui/components/ui/tooltip";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@multica/ui/components/ui/popover";
+} from "@orchestra/ui/components/ui/popover";
 import { toast } from "sonner";
-import { useWorkspaceId } from "@multica/core/hooks";
-import { useAuthStore } from "@multica/core/auth";
-import { agentListOptions, memberListOptions } from "@multica/core/workspace/queries";
-import { projectListOptions } from "@multica/core/projects/queries";
-import { canAssignAgent } from "@multica/views/issues/components";
-import { api, dispatchReasonCode } from "@multica/core/api";
+import { useWorkspaceId } from "@orchestra/core/hooks";
+import { useAuthStore } from "@orchestra/core/auth";
+import { agentListOptions, memberListOptions } from "@orchestra/core/workspace/queries";
+import { projectListOptions } from "@orchestra/core/projects/queries";
+import { canAssignAgent } from "@orchestra/views/issues/components";
+import { api, dispatchReasonCode } from "@orchestra/core/api";
 import {
   isAgentRuntimeBound,
   useAgentPresenceDetail,
   useWorkspaceAgentAvailability,
-} from "@multica/core/agents";
+} from "@orchestra/core/agents";
 import { ActorAvatar } from "../../common/actor-avatar";
 import { useAppForeground } from "../../common/use-app-foreground";
 import {
@@ -44,7 +44,7 @@ import {
   pendingChatTasksOptions,
   chatKeys,
   isTaskMessageTaskId,
-} from "@multica/core/chat/queries";
+} from "@orchestra/core/chat/queries";
 import {
   useCreateChatSession,
   useMarkChatSessionRead,
@@ -52,13 +52,13 @@ import {
   useSetChatSessionArchived,
   useSetChatSessionProject,
   useUpdateChatSession,
-} from "@multica/core/chat/mutations";
-import { useChatStore } from "@multica/core/chat";
-import { chatQuickActionsPendingOptions } from "@multica/core/chat/queries";
-import { useQuickActionsPendingTimeout } from "@multica/core/chat/use-quick-actions-pending-timeout";
+} from "@orchestra/core/chat/mutations";
+import { useChatStore } from "@orchestra/core/chat";
+import { chatQuickActionsPendingOptions } from "@orchestra/core/chat/queries";
+import { useQuickActionsPendingTimeout } from "@orchestra/core/chat/use-quick-actions-pending-timeout";
 import { useQuickActionsFailureToast } from "./use-quick-actions-failure-toast";
-import { hideQueuedChatMessages } from "@multica/core/chat/pending";
-import { removeChatMessageFromCaches } from "@multica/core/realtime";
+import { hideQueuedChatMessages } from "@orchestra/core/chat/pending";
+import { removeChatMessageFromCaches } from "@orchestra/core/realtime";
 import { useChatDraftRestore } from "./use-chat-draft-restore";
 import { useChatTaskActions } from "./use-chat-task-actions";
 import { useChatInputFocus } from "./use-chat-input-focus";
@@ -75,8 +75,8 @@ import {
   seedAcceptedPendingTask,
 } from "./use-chat-controller";
 import { useChatProjectContextSupport } from "./use-chat-project-context-support";
-import { createLogger } from "@multica/core/logger";
-import type { Agent, Attachment, ChatMessage, ChatMessagesPage, ChatSession, PendingChatTasksResponse } from "@multica/core/types";
+import { createLogger } from "@orchestra/core/logger";
+import type { Agent, Attachment, ChatMessage, ChatMessagesPage, ChatSession, PendingChatTasksResponse } from "@orchestra/core/types";
 import { useT } from "../../i18n";
 
 const uiLogger = createLogger("chat.ui");

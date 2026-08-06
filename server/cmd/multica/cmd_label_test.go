@@ -36,9 +36,9 @@ func newLabelDeleteTestCmd() *cobra.Command {
 
 func setCLITestServerEnv(t *testing.T, serverURL string) {
 	t.Helper()
-	t.Setenv("MULTICA_SERVER_URL", serverURL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", serverURL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 }
 
 func TestRunLabelCreateSendsExpectedRequest(t *testing.T) {

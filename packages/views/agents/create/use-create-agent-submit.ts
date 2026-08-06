@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { buildCreateAgentRequest, type AgentDraft } from "@multica/core/agents";
-import { api, ApiError } from "@multica/core/api";
-import { useWorkspaceId } from "@multica/core/hooks";
-import { useWorkspacePaths } from "@multica/core/paths";
-import type { Agent } from "@multica/core/types";
-import { workspaceKeys } from "@multica/core/workspace/queries";
+import { buildCreateAgentRequest, type AgentDraft } from "@orchestra/core/agents";
+import { api, ApiError } from "@orchestra/core/api";
+import { useWorkspaceId } from "@orchestra/core/hooks";
+import { useWorkspacePaths } from "@orchestra/core/paths";
+import type { Agent } from "@orchestra/core/types";
+import { workspaceKeys } from "@orchestra/core/workspace/queries";
 import { useNavigation } from "../../navigation";
 import { useT } from "../../i18n";
 

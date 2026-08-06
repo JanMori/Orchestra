@@ -12,8 +12,8 @@ import {
 } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Clock, Pencil } from "lucide-react";
-import { cn } from "@multica/ui/lib/utils";
-import { Input } from "@multica/ui/components/ui/input";
+import { cn } from "@orchestra/ui/lib/utils";
+import { Input } from "@orchestra/ui/components/ui/input";
 import {
   InputGroup,
   InputGroupAddon,
@@ -21,17 +21,17 @@ import {
   InputGroupSelectTrigger,
   InputGroupText,
   InputGroupTimeInput,
-} from "@multica/ui/components/ui/input-group";
+} from "@orchestra/ui/components/ui/input-group";
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@multica/ui/components/ui/select";
-import { TimeInput } from "@multica/ui/components/ui/time-input";
-import { cronPreviewOptions } from "@multica/core/autopilots/queries";
-import { ApiError } from "@multica/core/api";
+} from "@orchestra/ui/components/ui/select";
+import { TimeInput } from "@orchestra/ui/components/ui/time-input";
+import { cronPreviewOptions } from "@orchestra/core/autopilots/queries";
+import { ApiError } from "@orchestra/core/api";
 import { timezoneOptions } from "../../../common/timezone-select";
 import { useDebouncedValue } from "../../../common/use-debounced-value";
 import { SegmentedToggle } from "../../../common/segmented-toggle";

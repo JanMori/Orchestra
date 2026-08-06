@@ -3,11 +3,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   bucketDiagnosticPath,
   setDiagnosticRoute,
-} from "@multica/core/diagnostics";
+} from "@orchestra/core/diagnostics";
 import {
   NavigationProvider,
   type NavigationAdapter,
-} from "@multica/views/navigation";
+} from "@orchestra/views/navigation";
 import { parseIssueWindowPath } from "../../../shared/issue-window";
 
 /**

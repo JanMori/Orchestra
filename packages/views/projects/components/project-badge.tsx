@@ -6,15 +6,15 @@ import {
   PROJECT_STATUS_ORDER,
   PROJECT_PRIORITY_CONFIG,
   PROJECT_PRIORITY_ORDER
-} from "@multica/core/projects/config";
-import { cn } from "@multica/ui/lib/utils";
+} from "@orchestra/core/projects/config";
+import { cn } from "@orchestra/ui/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@multica/ui/components/ui/dropdown-menu";
-import type { Project, ProjectStatus, ProjectPriority, UpdateProjectRequest } from "@multica/core/types";
+} from "@orchestra/ui/components/ui/dropdown-menu";
+import type { Project, ProjectStatus, ProjectPriority, UpdateProjectRequest } from "@orchestra/core/types";
 import { PriorityIcon } from "../../issues/components/priority-icon";
 import { useProjectStatusLabels, useProjectPriorityLabels } from "./labels";
 

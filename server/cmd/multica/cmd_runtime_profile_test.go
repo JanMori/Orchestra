@@ -91,8 +91,8 @@ func TestRuntimeProfileCommandsRegistered(t *testing.T) {
 
 func TestRunRuntimeProfileList(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-123")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-123")
 
 	var gotMethod, gotPath string
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -106,7 +106,7 @@ func TestRunRuntimeProfileList(t *testing.T) {
 		})
 	}))
 	defer srv.Close()
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
 
 	cmd := newProfileListTestCmd()
 	_ = cmd.Flags().Set("output", "json")
@@ -123,8 +123,8 @@ func TestRunRuntimeProfileList(t *testing.T) {
 
 func TestRunRuntimeProfileCreate(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-123")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-123")
 
 	var gotMethod, gotPath string
 	var gotBody map[string]any
@@ -136,7 +136,7 @@ func TestRunRuntimeProfileCreate(t *testing.T) {
 		_ = json.NewEncoder(w).Encode(map[string]any{"id": "prof-1", "display_name": "Company Codex"})
 	}))
 	defer srv.Close()
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
 
 	cmd := newProfileCreateTestCmd()
 	_ = cmd.Flags().Set("protocol-family", "codex")
@@ -187,8 +187,8 @@ func TestRunRuntimeProfileCreateRequiresFlags(t *testing.T) {
 
 func TestRunRuntimeProfileUpdateOnlySendsChangedFlags(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-123")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-123")
 
 	var gotMethod, gotPath string
 	var gotBody map[string]any
@@ -200,7 +200,7 @@ func TestRunRuntimeProfileUpdateOnlySendsChangedFlags(t *testing.T) {
 		_ = json.NewEncoder(w).Encode(map[string]any{"id": "prof-1"})
 	}))
 	defer srv.Close()
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
 
 	cmd := newProfileUpdateTestCmd()
 	_ = cmd.Flags().Set("command-name", "new-codex")
@@ -232,9 +232,9 @@ func TestRunRuntimeProfileUpdateOnlySendsChangedFlags(t *testing.T) {
 
 func TestRunRuntimeProfileUpdateNoFieldsErrors(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-123")
-	t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:0")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-123")
+	t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:0")
 
 	cmd := newProfileUpdateTestCmd()
 	if err := runRuntimeProfileUpdate(cmd, []string{"prof-1"}); err == nil {
@@ -244,8 +244,8 @@ func TestRunRuntimeProfileUpdateNoFieldsErrors(t *testing.T) {
 
 func TestRunRuntimeProfileDeleteSuccess(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-123")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-123")
 
 	var gotMethod, gotPath string
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -254,7 +254,7 @@ func TestRunRuntimeProfileDeleteSuccess(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	}))
 	defer srv.Close()
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
 
 	cmd := newProfileDeleteTestCmd()
 	if err := runRuntimeProfileDelete(cmd, []string{"prof-1"}); err != nil {
@@ -270,15 +270,15 @@ func TestRunRuntimeProfileDeleteSuccess(t *testing.T) {
 
 func TestRunRuntimeProfileDeleteConflictSurfacesServerMessage(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-123")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-123")
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusConflict)
 		_, _ = w.Write([]byte("2 active agents are bound to this profile"))
 	}))
 	defer srv.Close()
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
 
 	cmd := newProfileDeleteTestCmd()
 	err := runRuntimeProfileDelete(cmd, []string{"prof-1"})

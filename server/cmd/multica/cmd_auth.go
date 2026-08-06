@@ -71,13 +71,13 @@ func init() {
 }
 
 func resolveToken(cmd *cobra.Command) string {
-	if v := strings.TrimSpace(os.Getenv("MULTICA_TOKEN")); v != "" {
+	if v := strings.TrimSpace(os.Getenv("ORCHESTRA_TOKEN")); v != "" {
 		return v
 	}
 	// Inside a daemon-managed task, never fall back to the user-global config
 	// token: that silent fallback is how agent writes land as the wrong actor.
-	// inDaemonManagedExecutionContext already covers the MULTICA_DAEMON_PORT
-	// signal for subprocesses that lost MULTICA_AGENT_ID / MULTICA_TASK_ID.
+	// inDaemonManagedExecutionContext already covers the ORCHESTRA_DAEMON_PORT
+	// signal for subprocesses that lost ORCHESTRA_AGENT_ID / ORCHESTRA_TASK_ID.
 	if inDaemonManagedExecutionContext() {
 		return ""
 	}
@@ -87,7 +87,7 @@ func resolveToken(cmd *cobra.Command) string {
 }
 
 func resolveAppURL(cmd *cobra.Command) string {
-	for _, key := range []string{"MULTICA_APP_URL", "FRONTEND_ORIGIN"} {
+	for _, key := range []string{"ORCHESTRA_APP_URL", "FRONTEND_ORIGIN"} {
 		if val := strings.TrimSpace(os.Getenv(key)); val != "" {
 			return strings.TrimRight(val, "/")
 		}

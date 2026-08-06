@@ -11,7 +11,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { I18nProvider } from "@multica/core/i18n/react";
+import { I18nProvider } from "@orchestra/core/i18n/react";
 import enIssues from "../../../locales/en/issues.json";
 import { AssigneePicker } from "./assignee-picker";
 
@@ -27,16 +27,16 @@ vi.mock("@tanstack/react-query", () => ({
   },
 }));
 
-vi.mock("@multica/core/hooks", () => ({ useWorkspaceId: () => "workspace-1" }));
-vi.mock("@multica/core/auth", () => ({ useAuthStore: () => ({ id: "user-1" }) }));
-vi.mock("@multica/core/agents", () => ({ isAgentRuntimeBound: () => true }));
-vi.mock("@multica/core/permissions", () => ({
+vi.mock("@orchestra/core/hooks", () => ({ useWorkspaceId: () => "workspace-1" }));
+vi.mock("@orchestra/core/auth", () => ({ useAuthStore: () => ({ id: "user-1" }) }));
+vi.mock("@orchestra/core/agents", () => ({ isAgentRuntimeBound: () => true }));
+vi.mock("@orchestra/core/permissions", () => ({
   canAssignAgentToIssue: () => ({ allowed: true }),
 }));
-vi.mock("@multica/core/workspace/hooks", () => ({
+vi.mock("@orchestra/core/workspace/hooks", () => ({
   useActorName: () => ({ getActorName: () => "Ada Lovelace" }),
 }));
-vi.mock("@multica/core/workspace/queries", () => ({
+vi.mock("@orchestra/core/workspace/queries", () => ({
   memberListOptions: () => ({ queryKey: ["members"] }),
   agentListOptions: () => ({ queryKey: ["agents"] }),
   squadListOptions: () => ({ queryKey: ["squads"] }),

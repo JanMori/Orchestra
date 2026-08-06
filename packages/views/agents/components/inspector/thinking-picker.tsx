@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Brain, ChevronDown } from "lucide-react";
-import type { RuntimeModelThinkingLevel } from "@multica/core/types";
-import { Label } from "@multica/ui/components/ui/label";
+import type { RuntimeModelThinkingLevel } from "@orchestra/core/types";
+import { Label } from "@orchestra/ui/components/ui/label";
 import {
   PickerItem,
   PropertyPicker,

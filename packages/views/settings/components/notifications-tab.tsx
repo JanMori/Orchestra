@@ -1,11 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useWorkspaceId } from "@multica/core/hooks";
-import { notificationPreferenceOptions } from "@multica/core/notification-preferences/queries";
-import { useUpdateNotificationPreferences } from "@multica/core/notification-preferences/mutations";
-import type { NotificationGroupKey, NotificationPreferences } from "@multica/core/types";
-import { Switch } from "@multica/ui/components/ui/switch";
+import { useWorkspaceId } from "@orchestra/core/hooks";
+import { notificationPreferenceOptions } from "@orchestra/core/notification-preferences/queries";
+import { useUpdateNotificationPreferences } from "@orchestra/core/notification-preferences/mutations";
+import type { NotificationGroupKey, NotificationPreferences } from "@orchestra/core/types";
+import { Switch } from "@orchestra/ui/components/ui/switch";
 import { toast } from "sonner";
 import { useT } from "../../i18n";
 import { BrowserNotificationSetting } from "./browser-notification-setting";

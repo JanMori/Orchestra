@@ -15,7 +15,7 @@ import (
 // tryResolveAppURL returns the app URL if configured, or "" if not available.
 // Unlike resolveAppURL, it never calls os.Exit.
 func tryResolveAppURL(cmd *cobra.Command) string {
-	for _, key := range []string{"MULTICA_APP_URL", "FRONTEND_ORIGIN"} {
+	for _, key := range []string{"ORCHESTRA_APP_URL", "FRONTEND_ORIGIN"} {
 		if val := strings.TrimSpace(os.Getenv(key)); val != "" {
 			return strings.TrimRight(val, "/")
 		}
@@ -172,7 +172,7 @@ func waitForWorkspaceCreation(cmd *cobra.Command, client *cli.APIClient) ([]stru
 
 	// Per-poll request budget. We keep a short 10s floor so the loop stays
 	// responsive (a hung request shouldn't block a single iteration for long),
-	// but it still honors MULTICA_HTTP_TIMEOUT via AtLeastAPITimeout so a user
+	// but it still honors ORCHESTRA_HTTP_TIMEOUT via AtLeastAPITimeout so a user
 	// who raised the timeout for a slow network isn't capped below it. The
 	// overall wait is bounded by pollTimeout regardless.
 	pollRequestTimeout := cli.AtLeastAPITimeout(10 * time.Second)

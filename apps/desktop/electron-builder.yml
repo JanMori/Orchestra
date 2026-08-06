@@ -1,5 +1,5 @@
 appId: ai.multica.desktop
-productName: Multica
+productName: Orchestra
 directories:
   buildResources: build
 files:

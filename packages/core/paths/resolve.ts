@@ -29,11 +29,8 @@ import { paths } from "./paths";
  */
 export function resolvePostAuthDestination(
   workspaces: Workspace[],
-  hasOnboarded: boolean,
+  _hasOnboarded: boolean,
 ): string {
-  if (!hasOnboarded) {
-    return paths.onboarding();
-  }
   const first = workspaces[0];
   if (first) {
     return paths.workspace(first.slug).issues();

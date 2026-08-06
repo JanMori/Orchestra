@@ -60,7 +60,7 @@ type TaskService struct {
 	// QuickActions generates chat follow-up suggestions through the
 	// server-internal LLM layer. Optional: nil (or a disabled client) turns the
 	// whole feature off — no pending marker, no pills — which is the expected
-	// state for a self-hosted deployment with no MULTICA_LLM_* configuration.
+	// state for a self-hosted deployment with no ORCHESTRA_LLM_* configuration.
 	// Wired in router.go from the same *llm.Client that backs chat auto-titling.
 	QuickActions ChatQuickActionsLLM
 	// quickActionsInFlight (chat session id -> struct{}{}) and
@@ -1540,7 +1540,7 @@ var ErrChatTaskAgentNoRuntime = errors.New("chat task: agent has no runtime")
 var ErrChatQuickActionsNoTurn = errors.New("chat quick actions: no assistant turn to regenerate")
 
 // ErrChatQuickActionsUnavailable signals that the deployment has no LLM layer
-// configured (no MULTICA_LLM_API_KEY / MULTICA_LLM_BASE_URL), so suggestions
+// configured (no ORCHESTRA_LLM_API_KEY / ORCHESTRA_LLM_BASE_URL), so suggestions
 // cannot be generated at all. Automatic generation degrades silently in that
 // case; an explicit refresh gets this error so the client can say why nothing
 // happened.
@@ -5135,7 +5135,7 @@ func quickCreateFailureDetail(result []byte) string {
 // notifyQuickCreateCompleted writes a success inbox notification to the
 // requester pointing at the issue the agent just created. The issue is
 // stamped with origin_type=quick_create + origin_id=<task_id> by the
-// daemon-injected MULTICA_QUICK_CREATE_TASK_ID env var, so this lookup is
+// daemon-injected ORCHESTRA_QUICK_CREATE_TASK_ID env var, so this lookup is
 // deterministic — robust against the same agent creating other issues in
 // parallel (e.g. assignment task running while max_concurrent_tasks > 1
 // permits another quick-create alongside it).

@@ -2,23 +2,23 @@
 
 import { useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { api } from "@multica/core/api";
-import { useAuthStore } from "@multica/core/auth";
+import { api } from "@orchestra/core/api";
+import { useAuthStore } from "@orchestra/core/auth";
 import {
   myInvitationListOptions,
   workspaceKeys,
   workspaceListOptions,
-} from "@multica/core/workspace/queries";
-import { paths } from "@multica/core/paths";
-import type { Invitation } from "@multica/core/types";
+} from "@orchestra/core/workspace/queries";
+import { paths } from "@orchestra/core/paths";
+import type { Invitation } from "@orchestra/core/types";
 import { useNavigation } from "../navigation";
 import { useLogout } from "../auth";
 import { DragStrip } from "../platform";
 import { useT } from "../i18n";
-import { Button } from "@multica/ui/components/ui/button";
-import { Card, CardContent } from "@multica/ui/components/ui/card";
-import { Checkbox } from "@multica/ui/components/ui/checkbox";
-import { Skeleton } from "@multica/ui/components/ui/skeleton";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { Card, CardContent } from "@orchestra/ui/components/ui/card";
+import { Checkbox } from "@orchestra/ui/components/ui/checkbox";
+import { Skeleton } from "@orchestra/ui/components/ui/skeleton";
 import { LogOut, Mail, Users } from "lucide-react";
 
 /**

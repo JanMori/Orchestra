@@ -22,15 +22,15 @@ import type {
   IssueStatus,
   Project,
   IssueProperty,
-} from "@multica/core/types";
-import { useLoadMoreByAssigneeGroup, useLoadMoreByStatus } from "@multica/core/issues/mutations";
-import type { AssigneeGroupedIssuesFilter, IssueSortParam, MyIssuesFilter } from "@multica/core/issues/queries";
-import { useViewStore } from "@multica/core/issues/stores/view-store-context";
-import { propertyIdFromViewKey } from "@multica/core/issues/stores/view-store";
-import { propertyListOptions, useSetIssueProperty, useUnsetIssueProperty } from "@multica/core/properties";
-import { useWorkspaceId } from "@multica/core/hooks";
-import type { IssueGrouping } from "@multica/core/issues/stores/view-store";
-import { useActorName } from "@multica/core/workspace/hooks";
+} from "@orchestra/core/types";
+import { useLoadMoreByAssigneeGroup, useLoadMoreByStatus } from "@orchestra/core/issues/mutations";
+import type { AssigneeGroupedIssuesFilter, IssueSortParam, MyIssuesFilter } from "@orchestra/core/issues/queries";
+import { useViewStore } from "@orchestra/core/issues/stores/view-store-context";
+import { propertyIdFromViewKey } from "@orchestra/core/issues/stores/view-store";
+import { propertyListOptions, useSetIssueProperty, useUnsetIssueProperty } from "@orchestra/core/properties";
+import { useWorkspaceId } from "@orchestra/core/hooks";
+import type { IssueGrouping } from "@orchestra/core/issues/stores/view-store";
+import { useActorName } from "@orchestra/core/workspace/hooks";
 import { BoardColumn, BOARD_CARD_WIDTH, type BoardColumnGroup } from "./board-column";
 import { BoardCardContent } from "./board-card";
 import { HiddenColumnsPanel, HiddenColumnRow } from "./hidden-columns-panel";

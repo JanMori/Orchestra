@@ -37,11 +37,11 @@ type AppConfig struct {
 	DaemonServerURL string `json:"daemon_server_url,omitempty"`
 	DaemonAppURL    string `json:"daemon_app_url,omitempty"`
 
-	// VCSIntegrationAvailable mirrors the MULTICA_VCS_INTEGRATION_ENABLED
+	// VCSIntegrationAvailable mirrors the ORCHESTRA_VCS_INTEGRATION_ENABLED
 	// deployment switch so the Settings UI can hide the whole self-hosted Git
 	// provider section on deployments where it is off (the managed cloud),
 	// instead of rendering it and surfacing an operator-only "missing
-	// MULTICA_VCS_SECRET_KEY" hint a cloud user cannot resolve. Omitted when
+	// ORCHESTRA_VCS_SECRET_KEY" hint a cloud user cannot resolve. Omitted when
 	// false so the managed-cloud response keeps its previous shape; the UI
 	// defaults absent to false (hidden).
 	VCSIntegrationAvailable bool `json:"vcs_integration_available,omitempty"`
@@ -106,7 +106,7 @@ func (h *Handler) GetConfig(w http.ResponseWriter, r *http.Request) {
 }
 
 func daemonSetupURLsFromEnv() (string, string) {
-	serverURL := normalizePublicURL(os.Getenv("MULTICA_PUBLIC_URL"))
+	serverURL := normalizePublicURL(os.Getenv("ORCHESTRA_PUBLIC_URL"))
 	appURL := resolveFrontendAppURL()
 	if appURL == "" {
 		return "", ""
@@ -122,11 +122,11 @@ func daemonSetupURLsFromEnv() (string, string) {
 }
 
 // resolveFrontendAppURL returns the operator-configured frontend origin
-// (MULTICA_APP_URL, falling back to FRONTEND_ORIGIN), normalized. Shared by
+// (ORCHESTRA_APP_URL, falling back to FRONTEND_ORIGIN), normalized. Shared by
 // the daemon-setup URLs and the managed-cloud detection so both read the same
 // signal.
 func resolveFrontendAppURL() string {
-	appURL := normalizePublicURL(os.Getenv("MULTICA_APP_URL"))
+	appURL := normalizePublicURL(os.Getenv("ORCHESTRA_APP_URL"))
 	if appURL == "" {
 		appURL = normalizePublicURL(os.Getenv("FRONTEND_ORIGIN"))
 	}
@@ -141,9 +141,9 @@ func normalizePublicURL(raw string) string {
 // Multica Cloud, identified by its frontend host alone (multica.ai). The
 // daemon setup for the managed cloud is always
 // `multica setup` (which hardcodes api.multica.ai), so the per-deployment URLs
-// must be omitted from /api/config even when MULTICA_PUBLIC_URL is unset or
+// must be omitted from /api/config even when ORCHESTRA_PUBLIC_URL is unset or
 // misconfigured. Previously this also required serverURL==api.multica.ai, so a
-// cloud deployment that forgot MULTICA_PUBLIC_URL fell through and emitted a
+// cloud deployment that forgot ORCHESTRA_PUBLIC_URL fell through and emitted a
 // `setup self-host --server-url https://multica.ai` command — pointing the
 // daemon's backend at the frontend (no /health, no WebSocket proxy).
 func isOfficialCloudDaemonConfig(appURL string) bool {

@@ -58,9 +58,9 @@ type OutboundReplierConfig struct {
 	Binding bindingMinter
 	Decrypt Decrypter
 	// AppURL is the Multica web app host the user clicks into to redeem the
-	// binding token (e.g. https://multica.example). It comes from MULTICA_APP_URL
+	// binding token (e.g. https://multica.example). It comes from ORCHESTRA_APP_URL
 	// (falling back to FRONTEND_ORIGIN) and is intentionally separate from
-	// MULTICA_PUBLIC_URL, which is the backend/API public URL used for webhook and
+	// ORCHESTRA_PUBLIC_URL, which is the backend/API public URL used for webhook and
 	// daemon-facing endpoints — the bind page (/slack/bind) is served by the web
 	// app, so the link must point at the app host, not the API host. Mirrors the
 	// Lark replier's AppURL.

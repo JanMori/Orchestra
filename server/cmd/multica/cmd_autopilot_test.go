@@ -157,9 +157,9 @@ func TestRunAutopilotCreateSendsProjectID(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newAutopilotCreateTestCmd()
 	_ = cmd.Flags().Set("title", "Daily planner")
@@ -206,9 +206,9 @@ func TestRunAutopilotCreateSendsSubscribers(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newAutopilotCreateTestCmd()
 	_ = cmd.Flags().Set("title", "Daily planner")
@@ -250,9 +250,9 @@ func TestRunAutopilotUpdateSendsProjectIDChanges(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	t.Run("set project", func(t *testing.T) {
 		cmd := newAutopilotUpdateTestCmd()
@@ -314,9 +314,9 @@ func TestRunAutopilotUpdateAgentSwitchesAssigneeType(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "mat_test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "mat_test-token")
 
 	cmd := newAutopilotUpdateTestCmd()
 	_ = cmd.Flags().Set("agent", "Codex Agent")
@@ -362,9 +362,9 @@ func TestRunAutopilotUpdateSendsSubscriberReplacement(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newAutopilotUpdateTestCmd()
 	_ = cmd.Flags().Set("subscriber", "Alice")
@@ -397,9 +397,9 @@ func TestRunAutopilotUpdateCanClearSubscribers(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newAutopilotUpdateTestCmd()
 	_ = cmd.Flags().Set("clear-subscribers", "true")
@@ -416,9 +416,9 @@ func TestRunAutopilotUpdateCanClearSubscribers(t *testing.T) {
 }
 
 func TestRunAutopilotUpdateRejectsSubscriberAndClear(t *testing.T) {
-	t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1")
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newAutopilotUpdateTestCmd()
 	_ = cmd.Flags().Set("subscriber", "Alice")

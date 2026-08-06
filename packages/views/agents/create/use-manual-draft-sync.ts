@@ -13,7 +13,7 @@ import {
   toStoredAgentDraft,
   useManualAgentDraftStore,
   type AgentDraft,
-} from "@multica/core/agents";
+} from "@orchestra/core/agents";
 
 /**
  * Keeps the manual creation form across navigation (#6287).

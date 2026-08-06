@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@multica/ui/lib/utils";
+import { cn } from "@orchestra/ui/lib/utils";
 
 export function PillButton({
   children,

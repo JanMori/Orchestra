@@ -10,18 +10,18 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@multica/ui/components/ui/dialog";
-import { Button } from "@multica/ui/components/ui/button";
-import { Textarea } from "@multica/ui/components/ui/textarea";
-import { Spinner } from "@multica/ui/components/ui/spinner";
-import type { IssueAssigneeType, UpdateIssueRequest } from "@multica/core/types";
-import { useUpdateIssue, useBatchUpdateIssues } from "@multica/core/issues/mutations";
-import { useActorName } from "@multica/core/workspace/hooks";
-import { useWorkspaceId } from "@multica/core/hooks";
-import { agentListOptions, squadListOptions } from "@multica/core/workspace/queries";
-import { runtimeListOptions, readRuntimeCliVersion, handoffSupported } from "@multica/core/runtimes";
-import { useShortcut, shortcutMatchesEvent, isPlainShortcut } from "@multica/core/shortcuts";
-import { isImeComposing } from "@multica/core/utils";
+} from "@orchestra/ui/components/ui/dialog";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { Textarea } from "@orchestra/ui/components/ui/textarea";
+import { Spinner } from "@orchestra/ui/components/ui/spinner";
+import type { IssueAssigneeType, UpdateIssueRequest } from "@orchestra/core/types";
+import { useUpdateIssue, useBatchUpdateIssues } from "@orchestra/core/issues/mutations";
+import { useActorName } from "@orchestra/core/workspace/hooks";
+import { useWorkspaceId } from "@orchestra/core/hooks";
+import { agentListOptions, squadListOptions } from "@orchestra/core/workspace/queries";
+import { runtimeListOptions, readRuntimeCliVersion, handoffSupported } from "@orchestra/core/runtimes";
+import { useShortcut, shortcutMatchesEvent, isPlainShortcut } from "@orchestra/core/shortcuts";
+import { isImeComposing } from "@orchestra/core/utils";
 import { ShortcutKeycaps } from "../common/shortcut-keycaps";
 import { useT } from "../i18n";
 

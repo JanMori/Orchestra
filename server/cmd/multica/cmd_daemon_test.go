@@ -487,7 +487,7 @@ func newRestartTestCmd(t *testing.T, profile string) *cobra.Command {
 // the replacement child dies in preflight, leaving no daemon at all (#5165).
 func TestDaemonRestartRejectedTokenFailsBeforeStopping(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_SERVER_URL", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", "")
 
 	const profile = "restart-401test"
 
@@ -522,7 +522,7 @@ func TestDaemonRestartRejectedTokenFailsBeforeStopping(t *testing.T) {
 // replacement child would die in preflight against the same dead server.
 func TestDaemonRestartUnreachableServerFailsBeforeStopping(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_SERVER_URL", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", "")
 
 	const profile = "restart-unreachable-test"
 
@@ -589,7 +589,7 @@ func TestPrintDaemonStatusAlignsValuesWithProfileLabel(t *testing.T) {
 func TestPrintDiskUsageOtherRootsHintSuggestsProfilesWithTasks(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
-	t.Setenv("MULTICA_WORKSPACES_ROOT", "")
+	t.Setenv("ORCHESTRA_WORKSPACES_ROOT", "")
 
 	mkdirProfile(t, home, "empty")
 	mkdirProfile(t, home, "one-task")
@@ -637,7 +637,7 @@ func TestPrintDiskUsageOtherRootsHintSuggestsProfilesWithTasks(t *testing.T) {
 func TestPrintDiskUsageOtherRootsHintFiresWhenCurrentRootNonEmpty(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
-	t.Setenv("MULTICA_WORKSPACES_ROOT", "")
+	t.Setenv("ORCHESTRA_WORKSPACES_ROOT", "")
 
 	mkdirProfile(t, home, "desktop-host")
 	writeDiskUsageTaskFile(t, home, "desktop-host", "ws1", "task1", "workdir/main.go")
@@ -657,7 +657,7 @@ func TestPrintDiskUsageOtherRootsHintFiresWhenCurrentRootNonEmpty(t *testing.T) 
 func TestPrintDiskUsageOtherRootsHintSuggestsDefaultFromNamedProfile(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
-	t.Setenv("MULTICA_WORKSPACES_ROOT", "")
+	t.Setenv("ORCHESTRA_WORKSPACES_ROOT", "")
 
 	writeDefaultDiskUsageTaskFile(t, home, "ws0", "task0", "workdir/main.go")
 
@@ -675,7 +675,7 @@ func TestPrintDiskUsageOtherRootsHintSuggestsDefaultFromNamedProfile(t *testing.
 func TestPrintDiskUsageOtherRootsHintSkipsExplicitRootOverride(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
-	t.Setenv("MULTICA_WORKSPACES_ROOT", "")
+	t.Setenv("ORCHESTRA_WORKSPACES_ROOT", "")
 
 	mkdirProfile(t, home, "has-task")
 	writeDiskUsageTaskFile(t, home, "has-task", "ws1", "task1", "workdir/main.go")
@@ -693,7 +693,7 @@ func TestPrintDiskUsageOtherRootsHintSkipsExplicitRootOverride(t *testing.T) {
 func TestEnumerateDiskUsageRoots(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
-	t.Setenv("MULTICA_WORKSPACES_ROOT", "")
+	t.Setenv("ORCHESTRA_WORKSPACES_ROOT", "")
 
 	// Two profiles configured under ~/.multica/profiles, but only one has its
 	// workspaces root created on disk; the other (never-run) profile is skipped.

@@ -2,7 +2,7 @@
 
 import type { ComponentProps, ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
-import { Button } from "@multica/ui/components/ui/button";
+import { Button } from "@orchestra/ui/components/ui/button";
 import {
   Empty,
   EmptyContent,
@@ -10,8 +10,8 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@multica/ui/components/ui/empty";
-import { cn } from "@multica/ui/lib/utils";
+} from "@orchestra/ui/components/ui/empty";
+import { cn } from "@orchestra/ui/lib/utils";
 import { PageHeader } from "./page-header";
 
 interface CollectionPageHeaderProps {

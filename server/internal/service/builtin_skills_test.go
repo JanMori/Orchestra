@@ -523,7 +523,7 @@ func TestRuntimesAndReposSkillCoversClaimAndCheckoutChain(t *testing.T) {
 		"daemon polls/claims the task",
 		"multica runtime list --output json",
 		"multica repo checkout <url>",
-		"MULTICA_DAEMON_PORT",
+		"ORCHESTRA_DAEMON_PORT",
 		"resource_ref.ref",
 		"github_repo",
 		"local_directory",

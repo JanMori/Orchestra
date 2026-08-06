@@ -257,28 +257,28 @@ func newAPIClient(cmd *cobra.Command) (*cli.APIClient, error) {
 	token := resolveToken(cmd)
 
 	if serverURL == "" {
-		return nil, fmt.Errorf("server URL not set: use --server-url flag, MULTICA_SERVER_URL env, or 'multica config set server_url <url>'")
+		return nil, fmt.Errorf("server URL not set: use --server-url flag, ORCHESTRA_SERVER_URL env, or 'multica config set server_url <url>'")
 	}
 	if inDaemonManagedExecutionContext() && !strings.HasPrefix(token, "mat_") {
-		// When the ONLY daemon signal is a workdir marker (no MULTICA_AGENT_ID /
-		// MULTICA_TASK_ID / MULTICA_DAEMON_PORT), the likeliest cause outside a
+		// When the ONLY daemon signal is a workdir marker (no ORCHESTRA_AGENT_ID /
+		// ORCHESTRA_TASK_ID / ORCHESTRA_DAEMON_PORT), the likeliest cause outside a
 		// real task is a leftover marker from a crashed daemon task in a
 		// local_directory. Name the exact file so a normal user can recover
 		// instead of hitting an opaque "requires mat_ token" error.
-		if !inAgentExecutionContext() && os.Getenv("MULTICA_DAEMON_PORT") == "" {
+		if !inAgentExecutionContext() && os.Getenv("ORCHESTRA_DAEMON_PORT") == "" {
 			if markerPath := daemonTaskContextMarkerPath(); markerPath != "" {
-				return nil, fmt.Errorf("agent execution context requires MULTICA_TOKEN to be a task-scoped mat_ token; detected a daemon task marker at %s — if you are not running inside an agent task this is likely a leftover, remove it and retry", markerPath)
+				return nil, fmt.Errorf("agent execution context requires ORCHESTRA_TOKEN to be a task-scoped mat_ token; detected a daemon task marker at %s — if you are not running inside an agent task this is likely a leftover, remove it and retry", markerPath)
 			}
 		}
-		return nil, fmt.Errorf("agent execution context requires MULTICA_TOKEN to be a task-scoped mat_ token")
+		return nil, fmt.Errorf("agent execution context requires ORCHESTRA_TOKEN to be a task-scoped mat_ token")
 	}
 
 	client := cli.NewAPIClient(serverURL, workspaceID, token)
 	// When running inside a daemon task, attribute actions to the agent.
-	if agentID := os.Getenv("MULTICA_AGENT_ID"); agentID != "" {
+	if agentID := os.Getenv("ORCHESTRA_AGENT_ID"); agentID != "" {
 		client.AgentID = agentID
 	}
-	if taskID := os.Getenv("MULTICA_TASK_ID"); taskID != "" {
+	if taskID := os.Getenv("ORCHESTRA_TASK_ID"); taskID != "" {
 		client.TaskID = taskID
 	}
 	return client, nil
@@ -290,7 +290,7 @@ const (
 )
 
 func tryResolveServerURL(cmd *cobra.Command) string {
-	val := cli.FlagOrEnv(cmd, "server-url", "MULTICA_SERVER_URL", "")
+	val := cli.FlagOrEnv(cmd, "server-url", "ORCHESTRA_SERVER_URL", "")
 	if val != "" {
 		return normalizeAPIBaseURL(val)
 	}
@@ -329,17 +329,17 @@ func normalizeAPIBaseURL(raw string) string {
 // inAgentExecutionContext reports whether the CLI has explicit task identity
 // markers from a daemon-managed agent task.
 func inAgentExecutionContext() bool {
-	return os.Getenv("MULTICA_AGENT_ID") != "" || os.Getenv("MULTICA_TASK_ID") != ""
+	return os.Getenv("ORCHESTRA_AGENT_ID") != "" || os.Getenv("ORCHESTRA_TASK_ID") != ""
 }
 
 // inDaemonManagedExecutionContext reports whether the CLI is being invoked
-// from inside a daemon-managed agent task. MULTICA_DAEMON_PORT is included as
-// a defense-in-depth marker for subprocesses that lose MULTICA_AGENT_ID or
-// MULTICA_TASK_ID but still run under the daemon environment. In this context
+// from inside a daemon-managed agent task. ORCHESTRA_DAEMON_PORT is included as
+// a defense-in-depth marker for subprocesses that lose ORCHESTRA_AGENT_ID or
+// ORCHESTRA_TASK_ID but still run under the daemon environment. In this context
 // workspace and token must come from daemon-provided env; falling back to
 // user-global ~/.multica/config.json can make agent writes land as a member.
 func inDaemonManagedExecutionContext() bool {
-	return inAgentExecutionContext() || os.Getenv("MULTICA_DAEMON_PORT") != "" || hasDaemonTaskContextMarker()
+	return inAgentExecutionContext() || os.Getenv("ORCHESTRA_DAEMON_PORT") != "" || hasDaemonTaskContextMarker()
 }
 
 func hasDaemonTaskContextMarker() bool {
@@ -382,7 +382,7 @@ func daemonTaskContextMarkerPath() string {
 }
 
 func resolveWorkspaceID(cmd *cobra.Command) string {
-	val := cli.FlagOrEnv(cmd, "workspace-id", "MULTICA_WORKSPACE_ID", "")
+	val := cli.FlagOrEnv(cmd, "workspace-id", "ORCHESTRA_WORKSPACE_ID", "")
 	if val != "" {
 		return val
 	}
@@ -403,9 +403,9 @@ func requireWorkspaceID(cmd *cobra.Command) (string, error) {
 	id := resolveWorkspaceID(cmd)
 	if id == "" {
 		if inDaemonManagedExecutionContext() {
-			return "", fmt.Errorf("workspace_id is required: MULTICA_WORKSPACE_ID must be set by the daemon in agent execution context (no fallback to user config)")
+			return "", fmt.Errorf("workspace_id is required: ORCHESTRA_WORKSPACE_ID must be set by the daemon in agent execution context (no fallback to user config)")
 		}
-		return "", fmt.Errorf("workspace_id is required: use --workspace-id flag, set MULTICA_WORKSPACE_ID env, or run 'multica config set workspace_id <id>'")
+		return "", fmt.Errorf("workspace_id is required: use --workspace-id flag, set ORCHESTRA_WORKSPACE_ID env, or run 'multica config set workspace_id <id>'")
 	}
 	return id, nil
 }

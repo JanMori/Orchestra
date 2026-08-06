@@ -2,12 +2,12 @@
 
 import { useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAuthStore } from "@multica/core/auth";
-import { workspaceKeys } from "@multica/core/workspace/queries";
-import { clearWorkspaceStorage, defaultStorage } from "@multica/core/platform";
-import { resetAllRegisteredDrafts } from "@multica/core/drafts/cleanup-registry";
-import { paths } from "@multica/core/paths";
-import type { Workspace } from "@multica/core/types";
+import { useAuthStore } from "@orchestra/core/auth";
+import { workspaceKeys } from "@orchestra/core/workspace/queries";
+import { clearWorkspaceStorage, defaultStorage } from "@orchestra/core/platform";
+import { resetAllRegisteredDrafts } from "@orchestra/core/drafts/cleanup-registry";
+import { paths } from "@orchestra/core/paths";
+import type { Workspace } from "@orchestra/core/types";
 import { useNavigation } from "../navigation";
 
 /**

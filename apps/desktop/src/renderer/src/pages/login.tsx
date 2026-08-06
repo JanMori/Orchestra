@@ -1,6 +1,6 @@
-import { LoginPage } from "@multica/views/auth";
-import { DragStrip } from "@multica/views/platform";
-import { MulticaIcon } from "@multica/ui/components/common/multica-icon";
+import { LoginPage } from "@orchestra/views/auth";
+import { DragStrip } from "@orchestra/views/platform";
+import { MulticaIcon } from "@orchestra/ui/components/common/multica-icon";
 
 function requireRuntimeAppUrl(): string {
   const runtimeConfig = window.desktopAPI.runtimeConfig;

@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getShortcut, shortcutMatchesEvent } from "@multica/core/shortcuts";
-import { isImeComposing } from "@multica/core/utils";
+import { getShortcut, shortcutMatchesEvent } from "@orchestra/core/shortcuts";
+import { isImeComposing } from "@orchestra/core/utils";
 
 // ---------------------------------------------------------------------------
 // In-page find (Cmd/Ctrl+F) for the issue detail page.

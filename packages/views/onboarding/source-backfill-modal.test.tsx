@@ -2,7 +2,7 @@ import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { I18nProvider } from "@multica/core/i18n/react";
+import { I18nProvider } from "@orchestra/core/i18n/react";
 import enCommon from "../locales/en/common.json";
 import enOnboarding from "../locales/en/onboarding.json";
 
@@ -19,10 +19,10 @@ const { mockUser, mockSaveQuestionnaire, mockWorkspace, mockAgentDoneTotal, mock
     mockListIssues: vi.fn(),
   }));
 
-vi.mock("@multica/core/auth", async () => {
+vi.mock("@orchestra/core/auth", async () => {
   const actual =
-    await vi.importActual<typeof import("@multica/core/auth")>(
-      "@multica/core/auth",
+    await vi.importActual<typeof import("@orchestra/core/auth")>(
+      "@orchestra/core/auth",
     );
   const useAuthStore = Object.assign(
     (selector: (s: { user: unknown }) => unknown) =>
@@ -32,26 +32,26 @@ vi.mock("@multica/core/auth", async () => {
   return { ...actual, useAuthStore };
 });
 
-vi.mock("@multica/core/onboarding", async () => {
+vi.mock("@orchestra/core/onboarding", async () => {
   const actual =
-    await vi.importActual<typeof import("@multica/core/onboarding")>(
-      "@multica/core/onboarding",
+    await vi.importActual<typeof import("@orchestra/core/onboarding")>(
+      "@orchestra/core/onboarding",
     );
   return { ...actual, saveQuestionnaire: mockSaveQuestionnaire };
 });
 
-vi.mock("@multica/core/paths", async () => {
+vi.mock("@orchestra/core/paths", async () => {
   const actual =
-    await vi.importActual<typeof import("@multica/core/paths")>(
-      "@multica/core/paths",
+    await vi.importActual<typeof import("@orchestra/core/paths")>(
+      "@orchestra/core/paths",
     );
   return { ...actual, useCurrentWorkspace: () => mockWorkspace.value };
 });
 
-vi.mock("@multica/core/api", async () => {
+vi.mock("@orchestra/core/api", async () => {
   const actual =
-    await vi.importActual<typeof import("@multica/core/api")>(
-      "@multica/core/api",
+    await vi.importActual<typeof import("@orchestra/core/api")>(
+      "@orchestra/core/api",
     );
   return {
     ...actual,

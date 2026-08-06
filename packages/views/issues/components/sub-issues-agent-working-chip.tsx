@@ -6,9 +6,9 @@ import {
   HoverCard,
   HoverCardTrigger,
   HoverCardContent,
-} from "@multica/ui/components/ui/hover-card";
-import { useWorkspaceId } from "@multica/core/hooks";
-import { workspaceWorkingAgentsOptions } from "@multica/core/agents";
+} from "@orchestra/ui/components/ui/hover-card";
+import { useWorkspaceId } from "@orchestra/core/hooks";
+import { workspaceWorkingAgentsOptions } from "@orchestra/core/agents";
 import { AgentAvatarStack } from "../../agents/components/agent-avatar-stack";
 import { WorkingAgentsHoverContent } from "./workspace-agent-working-chip";
 import { useT } from "../../i18n";

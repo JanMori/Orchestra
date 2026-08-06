@@ -12,7 +12,7 @@ import (
 // (not through to lumberjack, where 0 means 100MB / keep-everything), so the
 // retention footguns can't be tripped from the environment.
 func TestEnvPositiveIntOrDefault(t *testing.T) {
-	const key = "MULTICA_TEST_ENV_INT"
+	const key = "ORCHESTRA_TEST_ENV_INT"
 	cases := []struct {
 		name string
 		set  bool
@@ -100,9 +100,9 @@ func TestOpenBoundedErrLogKeepsSmall(t *testing.T) {
 // policy when no env overrides are set: the configured path, the default
 // size/backups/age, and gzip compression so rotated files stay small.
 func TestNewDaemonLogRotatorDefaults(t *testing.T) {
-	os.Unsetenv("MULTICA_DAEMON_LOG_MAX_SIZE_MB")
-	os.Unsetenv("MULTICA_DAEMON_LOG_MAX_BACKUPS")
-	os.Unsetenv("MULTICA_DAEMON_LOG_MAX_AGE_DAYS")
+	os.Unsetenv("ORCHESTRA_DAEMON_LOG_MAX_SIZE_MB")
+	os.Unsetenv("ORCHESTRA_DAEMON_LOG_MAX_BACKUPS")
+	os.Unsetenv("ORCHESTRA_DAEMON_LOG_MAX_AGE_DAYS")
 
 	path := filepath.Join(t.TempDir(), "daemon.log")
 	r := newDaemonLogRotator(path)
@@ -126,9 +126,9 @@ func TestNewDaemonLogRotatorDefaults(t *testing.T) {
 // TestNewDaemonLogRotatorEnvOverride confirms operators can tune retention via
 // env without a rebuild.
 func TestNewDaemonLogRotatorEnvOverride(t *testing.T) {
-	t.Setenv("MULTICA_DAEMON_LOG_MAX_SIZE_MB", "5")
-	t.Setenv("MULTICA_DAEMON_LOG_MAX_BACKUPS", "2")
-	t.Setenv("MULTICA_DAEMON_LOG_MAX_AGE_DAYS", "7")
+	t.Setenv("ORCHESTRA_DAEMON_LOG_MAX_SIZE_MB", "5")
+	t.Setenv("ORCHESTRA_DAEMON_LOG_MAX_BACKUPS", "2")
+	t.Setenv("ORCHESTRA_DAEMON_LOG_MAX_AGE_DAYS", "7")
 
 	r := newDaemonLogRotator(filepath.Join(t.TempDir(), "daemon.log"))
 	if r.MaxSize != 5 || r.MaxBackups != 2 || r.MaxAge != 7 {
@@ -140,8 +140,8 @@ func TestNewDaemonLogRotatorEnvOverride(t *testing.T) {
 // crosses MaxSize the writer rotates instead of appending forever, so daemon.log
 // stays bounded (the core of MUL-4330). Uses the 1 MB floor lumberjack enforces.
 func TestDaemonLogRotatorRotates(t *testing.T) {
-	t.Setenv("MULTICA_DAEMON_LOG_MAX_SIZE_MB", "1")
-	t.Setenv("MULTICA_DAEMON_LOG_MAX_BACKUPS", "3")
+	t.Setenv("ORCHESTRA_DAEMON_LOG_MAX_SIZE_MB", "1")
+	t.Setenv("ORCHESTRA_DAEMON_LOG_MAX_BACKUPS", "3")
 	// Disable compression here so the assertion on the active file size is not
 	// racing lumberjack's async gzip of the rotated file.
 	dir := t.TempDir()

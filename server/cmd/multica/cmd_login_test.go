@@ -21,7 +21,7 @@ func newLoginTestCmd() *cobra.Command {
 
 func TestResolveLoginTokenServerURLDefaultsToCloud(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_SERVER_URL", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", "")
 
 	if got := resolveLoginTokenServerURL(newLoginTestCmd()); got != defaultCloudServerURL {
 		t.Fatalf("resolveLoginTokenServerURL() = %q, want %q", got, defaultCloudServerURL)
@@ -30,7 +30,7 @@ func TestResolveLoginTokenServerURLDefaultsToCloud(t *testing.T) {
 
 func TestResolveLoginTokenServerURLPrefersConfiguredServer(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_SERVER_URL", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", "")
 	if err := cli.SaveCLIConfig(cli.CLIConfig{ServerURL: "https://api.example.test/"}); err != nil {
 		t.Fatalf("SaveCLIConfig: %v", err)
 	}
@@ -42,8 +42,8 @@ func TestResolveLoginTokenServerURLPrefersConfiguredServer(t *testing.T) {
 
 func TestRunLoginTokenAutoWatchesDiscoveredWorkspaces(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_TOKEN", "")
-	t.Setenv("MULTICA_WORKSPACE_ID", "")
+	t.Setenv("ORCHESTRA_TOKEN", "")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "")
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Authorization") != "Bearer mul_test_token" {
@@ -65,7 +65,7 @@ func TestRunLoginTokenAutoWatchesDiscoveredWorkspaces(t *testing.T) {
 		}
 	}))
 	defer srv.Close()
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
 
 	cmd := newLoginTestCmd()
 	_ = cmd.Flags().Set("token", "mul_test_token")

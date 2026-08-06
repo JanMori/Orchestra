@@ -3,18 +3,18 @@
 import { useEffect, useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
-import type { RuntimeProfile } from "@multica/core/types";
+import type { RuntimeProfile } from "@orchestra/core/types";
 import {
   parseRuntimeProfileBoundConflict,
   useDeleteRuntimeProfile,
-} from "@multica/core/runtimes";
+} from "@orchestra/core/runtimes";
 import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogTitle,
-} from "@multica/ui/components/ui/alert-dialog";
-import { Button } from "@multica/ui/components/ui/button";
+} from "@orchestra/ui/components/ui/alert-dialog";
+import { Button } from "@orchestra/ui/components/ui/button";
 import { useT } from "../../i18n";
 
 // Confirmation dialog for deleting a custom runtime profile. The server

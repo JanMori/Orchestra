@@ -21,12 +21,12 @@ import {
   Info,
   Coins,
 } from "lucide-react";
-import { cn } from "@multica/ui/lib/utils";
-import { copyText } from "@multica/ui/lib/clipboard";
-import { Button } from "@multica/ui/components/ui/button";
-import { Dialog, DialogContent, DialogTitle } from "@multica/ui/components/ui/dialog";
-import { Popover, PopoverContent, PopoverTrigger } from "@multica/ui/components/ui/popover";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@multica/ui/components/ui/collapsible";
+import { cn } from "@orchestra/ui/lib/utils";
+import { copyText } from "@orchestra/ui/lib/clipboard";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { Dialog, DialogContent, DialogTitle } from "@orchestra/ui/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@orchestra/ui/components/ui/popover";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@orchestra/ui/components/ui/collapsible";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -36,20 +36,20 @@ import {
   DropdownMenuItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-} from "@multica/ui/components/ui/dropdown-menu";
+} from "@orchestra/ui/components/ui/dropdown-menu";
 import { ActorAvatar } from "../actor-avatar";
 import { AttributionBadge } from "../../issues/components/attribution-badge";
 import { RichContent } from "../../rich-content";
-import { api } from "@multica/core/api";
+import { api } from "@orchestra/core/api";
 import {
   useTranscriptViewStore,
   type TranscriptDetailDensity,
   type TranscriptFilterKey,
   type TranscriptSortDirection,
-} from "@multica/core/agents/stores";
-import type { AgentTask, Agent, AgentRuntime } from "@multica/core/types/agent";
-import { runtimeDisplayName } from "@multica/core/runtimes";
-import { useCustomPricingStore } from "@multica/core/runtimes/custom-pricing-store";
+} from "@orchestra/core/agents/stores";
+import type { AgentTask, Agent, AgentRuntime } from "@orchestra/core/types/agent";
+import { runtimeDisplayName } from "@orchestra/core/runtimes";
+import { useCustomPricingStore } from "@orchestra/core/runtimes/custom-pricing-store";
 import { redactSecrets } from "./redact";
 import {
   createNewestFirstFollow,

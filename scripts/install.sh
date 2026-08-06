@@ -2,10 +2,10 @@
 # Multica installer — installs the CLI and optionally provisions a self-host server.
 #
 # Install / upgrade CLI only:
-#   curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/orchestra-ai/multica/main/scripts/install.sh | bash
 #
 # Install CLI + provision self-host server:
-#   curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash -s -- --with-server
+#   curl -fsSL https://raw.githubusercontent.com/orchestra-ai/multica/main/scripts/install.sh | bash -s -- --with-server
 #
 # After installation, run `multica setup` to configure your environment.
 #
@@ -14,10 +14,10 @@ set -euo pipefail
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-REPO_URL="https://github.com/multica-ai/multica.git"
-REPO_WEB_URL="https://github.com/multica-ai/multica"  # without .git, for GitHub web APIs
-INSTALL_DIR="${MULTICA_INSTALL_DIR:-$HOME/.multica/server}"
-BREW_PACKAGE="multica-ai/tap/multica"
+REPO_URL="https://github.com/orchestra-ai/multica.git"
+REPO_WEB_URL="https://github.com/orchestra-ai/multica"  # without .git, for GitHub web APIs
+INSTALL_DIR="${ORCHESTRA_INSTALL_DIR:-$HOME/.multica/server}"
+BREW_PACKAGE="orchestra-ai/tap/multica"
 
 # Host ports Compose reported after `up -d`; set by setup_server and reused by
 # the summary so the health check and the printed URLs cannot diverge.
@@ -76,7 +76,7 @@ print_remote_server_token_hint() {
 compose_published_port() {
   local service=$1 container_port=$2 published
 
-  published="$(docker compose -f docker-compose.selfhost.yml port "$service" "$container_port" 2>/dev/null | tail -n 1)"
+  published="$(docker compose -f docker-compose.selfhost.build.yml port "$service" "$container_port" 2>/dev/null | tail -n 1)"
   published="${published##*:}"
   published="${published%$'\r'}"
 
@@ -93,7 +93,7 @@ detect_os() {
     Linux)  OS="linux" ;;
     MINGW*|MSYS*|CYGWIN*)
             fail "This script does not support Windows. Use the PowerShell installer instead:
-  irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex" ;;
+  irm https://raw.githubusercontent.com/orchestra-ai/multica/main/scripts/install.ps1 | iex" ;;
     *)      fail "Unsupported operating system: $(uname -s). Multica supports macOS, Linux, and Windows." ;;
   esac
 
@@ -121,7 +121,7 @@ install_cli_brew() {
   info "Installing Multica CLI via Homebrew..."
   local brew_log
   brew_log=$(mktemp)
-  if ! brew tap multica-ai/tap >"$brew_log" 2>&1; then
+  if ! brew tap orchestra-ai/tap >"$brew_log" 2>&1; then
     warn "Failed to add Homebrew tap. Falling back to GitHub Releases binary install."
     _dump_brew_log "$brew_log"
     rm -f "$brew_log"
@@ -155,7 +155,7 @@ install_cli_binary() {
   fi
 
   local version="${latest#v}"
-  local url="https://github.com/multica-ai/multica/releases/download/${latest}/multica-cli-${version}-${OS}-${ARCH}.tar.gz"
+  local url="https://github.com/orchestra-ai/multica/releases/download/${latest}/multica-cli-${version}-${OS}-${ARCH}.tar.gz"
   local tmp_dir
   tmp_dir=$(mktemp -d)
 
@@ -168,8 +168,8 @@ install_cli_binary() {
   tar -xzf "$tmp_dir/multica.tar.gz" -C "$tmp_dir" multica
 
   # Try /usr/local/bin first, fall back to ~/.local/bin. Tests and scripted
-  # installs can override the first choice with MULTICA_BIN_DIR.
-  local bin_dir="${MULTICA_BIN_DIR:-/usr/local/bin}"
+  # installs can override the first choice with ORCHESTRA_BIN_DIR.
+  local bin_dir="${ORCHESTRA_BIN_DIR:-/usr/local/bin}"
   if [ -w "$bin_dir" ]; then
     mv "$tmp_dir/multica" "$bin_dir/multica"
   elif command_exists sudo; then
@@ -206,8 +206,8 @@ get_latest_version() {
 }
 
 get_selfhost_ref() {
-  if [ -n "${MULTICA_SELFHOST_REF:-}" ]; then
-    printf '%s' "$MULTICA_SELFHOST_REF"
+  if [ -n "${ORCHESTRA_SELFHOST_REF:-}" ]; then
+    printf '%s' "$ORCHESTRA_SELFHOST_REF"
     return
   fi
 
@@ -242,7 +242,7 @@ checkout_server_ref() {
 }
 
 pull_official_selfhost_images() {
-  if docker compose -f docker-compose.selfhost.yml pull; then
+  if docker compose -f docker-compose.selfhost.build.yml pull; then
     return
   fi
 
@@ -250,7 +250,7 @@ pull_official_selfhost_images() {
   warn "Official images for the selected self-host channel are not published yet."
   echo "This can happen before the first GHCR release is available."
   echo "From $INSTALL_DIR, build from source instead:"
-  echo "  docker compose -f docker-compose.selfhost.yml -f docker-compose.selfhost.build.yml up -d --build"
+  echo "  docker compose -f docker-compose.selfhost.build.yml up -d --build"
   exit 1
 }
 
@@ -386,17 +386,17 @@ setup_server() {
   info "Pulling official Multica images..."
   pull_official_selfhost_images
   info "Starting Multica services (this may take a few minutes on first run)..."
-  docker compose -f docker-compose.selfhost.yml up -d
+  docker compose -f docker-compose.selfhost.build.yml up -d
 
   # Read the ports Compose actually published, once, and reuse them for both the
   # health check and the summary so the two can never disagree.
   if ! SELFHOST_BACKEND_PORT="$(compose_published_port backend 8080)"; then
     fail "Started the stack but could not read the backend host port from Docker Compose.
-  Check it with: cd $INSTALL_DIR && docker compose -f docker-compose.selfhost.yml ps"
+  Check it with: cd $INSTALL_DIR && docker compose -f docker-compose.selfhost.build.yml ps"
   fi
   if ! SELFHOST_FRONTEND_PORT="$(compose_published_port frontend 3000)"; then
     fail "Started the stack but could not read the frontend host port from Docker Compose.
-  Check it with: cd $INSTALL_DIR && docker compose -f docker-compose.selfhost.yml ps"
+  Check it with: cd $INSTALL_DIR && docker compose -f docker-compose.selfhost.build.yml ps"
   fi
 
   # Wait for health check
@@ -414,7 +414,7 @@ setup_server() {
     ok "Multica server is running"
   else
     warn "Server is still starting. You can check logs with:"
-    echo "  cd $INSTALL_DIR && docker compose -f docker-compose.selfhost.yml logs"
+    echo "  cd $INSTALL_DIR && docker compose -f docker-compose.selfhost.build.yml logs"
     echo ""
   fi
 }
@@ -443,7 +443,7 @@ run_default() {
   printf "\n"
   print_remote_server_token_hint
   printf "  ${BOLD}Self-hosting?${RESET} Install the server first:\n"
-  printf "     curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash -s -- --with-server\n"
+  printf "     curl -fsSL https://raw.githubusercontent.com/orchestra-ai/multica/main/scripts/install.sh | bash -s -- --with-server\n"
   printf "\n"
 }
 
@@ -478,7 +478,7 @@ run_with_server() {
   printf "  or read the generated code from backend logs when Resend is unset.\n"
   printf "\n"
   printf "  ${BOLD}To stop all services:${RESET}\n"
-  printf "     curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash -s -- --stop\n"
+  printf "     curl -fsSL https://raw.githubusercontent.com/orchestra-ai/multica/main/scripts/install.sh | bash -s -- --stop\n"
   printf "\n"
 }
 
@@ -491,11 +491,11 @@ run_stop() {
 
   if [ -d "$INSTALL_DIR" ]; then
     cd "$INSTALL_DIR"
-    if [ -f docker-compose.selfhost.yml ]; then
-      docker compose -f docker-compose.selfhost.yml down
+    if [ -f docker-compose.selfhost.build.yml ]; then
+      docker compose -f docker-compose.selfhost.build.yml down
       ok "Docker services stopped"
     else
-      warn "No docker-compose.selfhost.yml found at $INSTALL_DIR"
+      warn "No docker-compose.selfhost.build.yml found at $INSTALL_DIR"
     fi
   else
     warn "No Multica installation found at $INSTALL_DIR"
@@ -527,12 +527,12 @@ main() {
         echo "  --stop          Stop a self-hosted installation"
         echo ""
         echo "Environment variables:"
-        echo "  MULTICA_INSTALL_DIR   Self-host server install directory"
+        echo "  ORCHESTRA_INSTALL_DIR   Self-host server install directory"
         echo "                        (default: \$HOME/.multica/server)"
-        echo "  MULTICA_BIN_DIR       Target directory for the CLI binary when"
+        echo "  ORCHESTRA_BIN_DIR       Target directory for the CLI binary when"
         echo "                        installing from GitHub Releases"
         echo "                        (default: /usr/local/bin, then \$HOME/.local/bin)"
-        echo "  MULTICA_SELFHOST_REF  Git ref to check out for self-host assets"
+        echo "  ORCHESTRA_SELFHOST_REF  Git ref to check out for self-host assets"
         echo "                        (default: latest release tag, falling back to main)"
         echo ""
         echo "After installation, run 'multica setup' to configure your environment."

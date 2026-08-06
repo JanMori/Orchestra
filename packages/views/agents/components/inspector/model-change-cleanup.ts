@@ -1,4 +1,4 @@
-import type { RuntimeModel } from "@multica/core/types";
+import type { RuntimeModel } from "@orchestra/core/types";
 
 /**
  * The exact per-model catalog for the agent's runtime, or `null` when it is not

@@ -11,45 +11,45 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
-import { CurrencyNumberFlow } from "@multica/ui/components/ui/number-flow";
+import { CurrencyNumberFlow } from "@orchestra/ui/components/ui/number-flow";
 import type {
   Agent,
   AgentRuntime,
   AgentTask,
   MemberWithUser,
   RuntimeProfile,
-} from "@multica/core/types";
-import { useAuthStore } from "@multica/core/auth";
-import { useWorkspaceId } from "@multica/core/hooks";
+} from "@orchestra/core/types";
+import { useAuthStore } from "@orchestra/core/auth";
+import { useWorkspaceId } from "@orchestra/core/hooks";
 import {
   agentListOptions,
   memberListOptions,
-} from "@multica/core/workspace/queries";
-import { agentTaskSnapshotOptions } from "@multica/core/agents";
+} from "@orchestra/core/workspace/queries";
+import { agentTaskSnapshotOptions } from "@orchestra/core/agents";
 import {
   deriveRuntimeHealth,
   runtimeProfileListOptions,
   runtimeUsageOptions,
-} from "@multica/core/runtimes";
-import { useWorkspacePaths } from "@multica/core/paths";
+} from "@orchestra/core/runtimes";
+import { useWorkspacePaths } from "@orchestra/core/paths";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@multica/ui/components/ui/dropdown-menu";
+} from "@orchestra/ui/components/ui/dropdown-menu";
 import {
   ListGrid,
   ListGridCell,
   ListGridHeader,
   ListGridHeaderCell,
   ListGridRow,
-} from "@multica/ui/components/ui/list-grid";
+} from "@orchestra/ui/components/ui/list-grid";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@multica/ui/components/ui/tooltip";
+} from "@orchestra/ui/components/ui/tooltip";
 import { useRowLink } from "../../navigation";
 import { ActorAvatar } from "../../common/actor-avatar";
 import { useViewingTimezone } from "../../common/use-viewing-timezone";

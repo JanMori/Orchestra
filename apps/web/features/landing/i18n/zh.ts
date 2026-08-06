@@ -19,12 +19,12 @@ export function createZhDict(allowSignup: boolean): LandingDict {
     headlineLine1: "\u4f60\u7684\u4e0b\u4e00\u6279\u5458\u5de5",
     headlineLine2: "\u4e0d\u662f\u4eba\u7c7b\u3002",
     subheading:
-      "Multica \u662f\u4e00\u4e2a\u5f00\u6e90\u5e73\u53f0\uff0c\u5c06\u7f16\u7801 智能体 \u53d8\u6210\u771f\u6b63\u7684\u961f\u53cb\u3002\u5206\u914d\u4efb\u52a1\u3001\u8ddf\u8e2a\u8fdb\u5ea6\u3001\u79ef\u7d2f\u6280\u80fd\u2014\u2014\u5728\u4e00\u4e2a\u5730\u65b9\u7ba1\u7406\u4f60\u7684\u4eba\u7c7b + 智能体 \u56e2\u961f\u3002",
+      "Orchestra \u662f\u4e00\u4e2a\u5f00\u6e90\u5e73\u53f0\uff0c\u5c06\u7f16\u7801 智能体 \u53d8\u6210\u771f\u6b63\u7684\u961f\u53cb\u3002\u5206\u914d\u4efb\u52a1\u3001\u8ddf\u8e2a\u8fdb\u5ea6\u3001\u79ef\u7d2f\u6280\u80fd\u2014\u2014\u5728\u4e00\u4e2a\u5730\u65b9\u7ba1\u7406\u4f60\u7684\u4eba\u7c7b + 智能体 \u56e2\u961f\u3002",
     cta: "免费开始",
     downloadDesktop: "下载桌面端",
     talkToSales: "联系商务",
     worksWith: "支持",
-    imageAlt: "Multica \u770b\u677f\u89c6\u56fe\u2014\u2014\u4eba\u7c7b\u548c 智能体 \u534f\u540c\u7ba1\u7406\u4efb\u52a1",
+    imageAlt: "Orchestra \u770b\u677f\u89c6\u56fe\u2014\u2014\u4eba\u7c7b\u548c 智能体 \u534f\u540c\u7ba1\u7406\u4efb\u52a1",
   },
 
   features: {
@@ -116,7 +116,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         {
           title: "\u9996\u6b21\u542f\u52a8\u81ea\u52a8\u6ce8\u518c",
           description:
-            "Multica \u626b\u63cf\u672c\u673a\u7684 15 \u6b3e\u652f\u6301\u7684 AI \u7f16\u7a0b\u5de5\u5177\u2014\u2014Antigravity\u3001Claude Code\u3001CodeBuddy\u3001Codex\u3001Cursor\u3001Copilot\u3001Hermes\u3001Kimi\u3001Reasonix\u3001Kiro CLI\u3001OpenCode\u3001OpenClaw\u3001Pi\u3001Qoder\u3001Trae CLI\u2014\u2014\u5e76\u4e3a\u6bcf\u6b3e\u5df2\u5b89\u88c5\u7684\u5de5\u5177\u6ce8\u518c\u4e00\u4e2a\u8fd0\u884c\u65f6\u3002",
+            "Orchestra \u626b\u63cf\u672c\u673a\u7684 15 \u6b3e\u652f\u6301\u7684 AI \u7f16\u7a0b\u5de5\u5177\u2014\u2014Antigravity\u3001Claude Code\u3001CodeBuddy\u3001Codex\u3001Cursor\u3001Copilot\u3001Hermes\u3001Kimi\u3001Reasonix\u3001Kiro CLI\u3001OpenCode\u3001OpenClaw\u3001Pi\u3001Qoder\u3001Trae CLI\u2014\u2014\u5e76\u4e3a\u6bcf\u6b3e\u5df2\u5b89\u88c5\u7684\u5de5\u5177\u6ce8\u518c\u4e00\u4e2a\u8fd0\u884c\u65f6\u3002",
         },
       ],
     },
@@ -159,13 +159,13 @@ export function createZhDict(allowSignup: boolean): LandingDict {
     headlineLine1: "\u5f00\u6e90",
     headlineLine2: "\u4e3a\u6240\u6709\u4eba\u3002",
     description:
-      "Multica \u5b8c\u5168\u5f00\u6e90\u3002\u5ba1\u67e5\u6bcf\u4e00\u884c\u4ee3\u7801\uff0c\u6309\u4f60\u7684\u65b9\u5f0f\u81ea\u6258\u7ba1\uff0c\u5851\u9020\u4eba\u7c7b + 智能体 \u534f\u4f5c\u7684\u672a\u6765\u3002",
+      "Orchestra \u5b8c\u5168\u5f00\u6e90\u3002\u5ba1\u67e5\u6bcf\u4e00\u884c\u4ee3\u7801\uff0c\u6309\u4f60\u7684\u65b9\u5f0f\u81ea\u6258\u7ba1\uff0c\u5851\u9020\u4eba\u7c7b + 智能体 \u534f\u4f5c\u7684\u672a\u6765\u3002",
     cta: "\u5728 GitHub \u4e0a Star",
     highlights: [
       {
         title: "\u968f\u5904\u81ea\u6258\u7ba1",
         description:
-          "\u5728\u4f60\u81ea\u5df1\u7684\u57fa\u7840\u8bbe\u65bd\u4e0a\u8fd0\u884c Multica\u3002Docker Compose\u3001\u5355\u4e2a\u4e8c\u8fdb\u5236\u6216 Kubernetes\u2014\u2014\u4f60\u7684\u6570\u636e\u6c38\u8fdc\u4e0d\u4f1a\u79bb\u5f00\u4f60\u7684\u7f51\u7edc\u3002",
+          "\u5728\u4f60\u81ea\u5df1\u7684\u57fa\u7840\u8bbe\u65bd\u4e0a\u8fd0\u884c Orchestra\u3002Docker Compose\u3001\u5355\u4e2a\u4e8c\u8fdb\u5236\u6216 Kubernetes\u2014\u2014\u4f60\u7684\u6570\u636e\u6c38\u8fdc\u4e0d\u4f1a\u79bb\u5f00\u4f60\u7684\u7f51\u7edc\u3002",
       },
       {
         title: "\u65e0\u4f9b\u5e94\u5546\u9501\u5b9a",
@@ -190,30 +190,30 @@ export function createZhDict(allowSignup: boolean): LandingDict {
     headline: "\u95ee\u4e0e\u7b54\u3002",
     items: [
       {
-        question: "Multica \u652f\u6301\u54ea\u4e9b\u7f16\u7801 智能体\uff1f",
+        question: "Orchestra \u652f\u6301\u54ea\u4e9b\u7f16\u7801 智能体\uff1f",
         answer:
-          "Multica \u5f00\u7bb1\u5373\u7528\u652f\u6301 15 \u6b3e AI \u7f16\u7a0b\u5de5\u5177\uff1aAntigravity\u3001Claude Code\u3001CodeBuddy\u3001Codex\u3001Cursor\u3001Copilot\u3001Hermes\u3001Kimi\u3001Reasonix\u3001Kiro CLI\u3001OpenCode\u3001OpenClaw\u3001Pi\u3001Qoder\u3001Trae CLI\u3002\u5b88\u62a4\u8fdb\u7a0b\u4f1a\u81ea\u52a8\u68c0\u6d4b\u672c\u673a\u5df2\u5b89\u88c5\u7684 CLI \u5e76\u4e3a\u6bcf\u6b3e\u6ce8\u518c\u4e00\u4e2a\u8fd0\u884c\u65f6\u3002\u56e0\u4e3a\u5f00\u6e90\uff0c\u4f60\u4e5f\u53ef\u4ee5\u81ea\u5df1\u6dfb\u52a0\u540e\u7aef\u3002",
+          "Orchestra \u5f00\u7bb1\u5373\u7528\u652f\u6301 15 \u6b3e AI \u7f16\u7a0b\u5de5\u5177\uff1aAntigravity\u3001Claude Code\u3001CodeBuddy\u3001Codex\u3001Cursor\u3001Copilot\u3001Hermes\u3001Kimi\u3001Reasonix\u3001Kiro CLI\u3001OpenCode\u3001OpenClaw\u3001Pi\u3001Qoder\u3001Trae CLI\u3002\u5b88\u62a4\u8fdb\u7a0b\u4f1a\u81ea\u52a8\u68c0\u6d4b\u672c\u673a\u5df2\u5b89\u88c5\u7684 CLI \u5e76\u4e3a\u6bcf\u6b3e\u6ce8\u518c\u4e00\u4e2a\u8fd0\u884c\u65f6\u3002\u56e0\u4e3a\u5f00\u6e90\uff0c\u4f60\u4e5f\u53ef\u4ee5\u81ea\u5df1\u6dfb\u52a0\u540e\u7aef\u3002",
       },
       {
         question: "\u9700\u8981\u81ea\u6258\u7ba1\u5417\uff0c\u8fd8\u662f\u6709\u4e91\u7248\u672c\uff1f",
         answer:
-          "\u4e24\u8005\u90fd\u6709\u3002\u4f60\u53ef\u4ee5\u7528 Docker Compose \u6216 Kubernetes \u5728\u81ea\u5df1\u7684\u57fa\u7840\u8bbe\u65bd\u4e0a\u81ea\u6258\u7ba1 Multica\uff0c\u4e5f\u53ef\u4ee5\u4f7f\u7528\u6211\u4eec\u7684\u6258\u7ba1\u4e91\u7248\u672c\u3002\u4f60\u7684\u6570\u636e\uff0c\u4f60\u9009\u62e9\u3002",
+          "\u4e24\u8005\u90fd\u6709\u3002\u4f60\u53ef\u4ee5\u7528 Docker Compose \u6216 Kubernetes \u5728\u81ea\u5df1\u7684\u57fa\u7840\u8bbe\u65bd\u4e0a\u81ea\u6258\u7ba1 Orchestra\uff0c\u4e5f\u53ef\u4ee5\u4f7f\u7528\u6211\u4eec\u7684\u6258\u7ba1\u4e91\u7248\u672c\u3002\u4f60\u7684\u6570\u636e\uff0c\u4f60\u9009\u62e9\u3002",
       },
       {
         question:
           "\u8fd9\u548c\u76f4\u63a5\u7528\u7f16\u7801 智能体 \u6709\u4ec0\u4e48\u533a\u522b\uff1f",
         answer:
-          "\u7f16\u7801 智能体 \u64c5\u957f\u6267\u884c\u3002Multica \u6dfb\u52a0\u7684\u662f\u7ba1\u7406\u5c42\uff1a\u4efb\u52a1\u961f\u5217\u3001\u56e2\u961f\u534f\u4f5c\u3001\u6280\u80fd\u590d\u7528\u3001\u8fd0\u884c\u65f6\u76d1\u63a7\uff0c\u4ee5\u53ca\u6bcf\u4e2a 智能体 \u5728\u505a\u4ec0\u4e48\u7684\u7edf\u4e00\u89c6\u56fe\u3002\u628a\u5b83\u60f3\u8c61\u6210\u4f60\u7684 智能体 \u7684\u9879\u76ee\u7ecf\u7406\u3002",
+          "\u7f16\u7801 智能体 \u64c5\u957f\u6267\u884c\u3002Orchestra \u6dfb\u52a0\u7684\u662f\u7ba1\u7406\u5c42\uff1a\u4efb\u52a1\u961f\u5217\u3001\u56e2\u961f\u534f\u4f5c\u3001\u6280\u80fd\u590d\u7528\u3001\u8fd0\u884c\u65f6\u76d1\u63a7\uff0c\u4ee5\u53ca\u6bcf\u4e2a 智能体 \u5728\u505a\u4ec0\u4e48\u7684\u7edf\u4e00\u89c6\u56fe\u3002\u628a\u5b83\u60f3\u8c61\u6210\u4f60\u7684 智能体 \u7684\u9879\u76ee\u7ecf\u7406\u3002",
       },
       {
         question: "智能体 \u80fd\u81ea\u4e3b\u5904\u7406\u957f\u65f6\u95f4\u4efb\u52a1\u5417\uff1f",
         answer:
-          "\u53ef\u4ee5\u3002Multica \u7ba1\u7406\u5b8c\u6574\u7684\u4efb\u52a1\u751f\u547d\u5468\u671f\u2014\u2014\u5165\u961f\u3001\u9886\u53d6\u3001\u6267\u884c\u3001\u5b8c\u6210\u6216\u5931\u8d25\u3002智能体 \u4e3b\u52a8\u62a5\u544a\u963b\u585e\u5e76\u5b9e\u65f6\u63a8\u9001\u8fdb\u5ea6\u3002\u4f60\u53ef\u4ee5\u968f\u65f6\u67e5\u770b\uff0c\u4e5f\u53ef\u4ee5\u8ba9\u5b83\u4eec\u8fd0\u884c\u6574\u665a\u3002",
+          "\u53ef\u4ee5\u3002Orchestra \u7ba1\u7406\u5b8c\u6574\u7684\u4efb\u52a1\u751f\u547d\u5468\u671f\u2014\u2014\u5165\u961f\u3001\u9886\u53d6\u3001\u6267\u884c\u3001\u5b8c\u6210\u6216\u5931\u8d25\u3002智能体 \u4e3b\u52a8\u62a5\u544a\u963b\u585e\u5e76\u5b9e\u65f6\u63a8\u9001\u8fdb\u5ea6\u3002\u4f60\u53ef\u4ee5\u968f\u65f6\u67e5\u770b\uff0c\u4e5f\u53ef\u4ee5\u8ba9\u5b83\u4eec\u8fd0\u884c\u6574\u665a\u3002",
       },
       {
         question: "\u6211\u7684\u4ee3\u7801\u5b89\u5168\u5417\uff1f智能体 \u5728\u54ea\u91cc\u6267\u884c\uff1f",
         answer:
-          "智能体 \u5728\u4f60\u7684\u673a\u5668\uff08\u672c\u5730\u5b88\u62a4\u8fdb\u7a0b\uff09\u6216\u4f60\u81ea\u5df1\u7684\u4e91\u57fa\u7840\u8bbe\u65bd\u4e0a\u6267\u884c\u3002\u4ee3\u7801\u6c38\u8fdc\u4e0d\u4f1a\u7ecf\u8fc7 Multica \u670d\u52a1\u5668\u3002\u5e73\u53f0\u53ea\u534f\u8c03\u4efb\u52a1\u72b6\u6001\u548c\u5e7f\u64ad\u4e8b\u4ef6\u3002",
+          "智能体 \u5728\u4f60\u7684\u673a\u5668\uff08\u672c\u5730\u5b88\u62a4\u8fdb\u7a0b\uff09\u6216\u4f60\u81ea\u5df1\u7684\u4e91\u57fa\u7840\u8bbe\u65bd\u4e0a\u6267\u884c\u3002\u4ee3\u7801\u6c38\u8fdc\u4e0d\u4f1a\u7ecf\u8fc7 Orchestra \u670d\u52a1\u5668\u3002\u5e73\u53f0\u53ea\u534f\u8c03\u4efb\u52a1\u72b6\u6001\u548c\u5e7f\u64ad\u4e8b\u4ef6\u3002",
       },
       {
         question: "\u6211\u53ef\u4ee5\u8fd0\u884c\u591a\u5c11\u4e2a 智能体\uff1f",
@@ -243,7 +243,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         links: [
           { label: "\u6587\u6863", href: "/docs/zh" },
           { label: "API", href: githubUrl },
-          { label: "X (Twitter)", href: "https://x.com/MulticaAI" },
+          { label: "X (Twitter)", href: "https://x.com/OrchestraAI" },
           { label: "Discord", href: discordUrl },
         ],
       },
@@ -257,13 +257,13 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         ],
       },
     },
-    copyright: "\u00a9 {year} Multica. \u4fdd\u7559\u6240\u6709\u6743\u5229\u3002",
+    copyright: "\u00a9 {year} Orchestra. \u4fdd\u7559\u6240\u6709\u6743\u5229\u3002",
   },
 
   about: {
-    title: "\u5173\u4e8e Multica",
+    title: "\u5173\u4e8e Orchestra",
     nameLine: {
-      prefix: "Multica\u2014\u2014",
+      prefix: "Orchestra\u2014\u2014",
       mul: "Mul",
       tiplexed: "tiplexed ",
       i: "I",
@@ -275,8 +275,8 @@ export function createZhDict(allowSignup: boolean): LandingDict {
     },
     paragraphs: [
       "\u8fd9\u4e2a\u540d\u5b57\u662f\u5728\u5411 20 \u4e16\u7eaa 60 \u5e74\u4ee3\u5177\u6709\u5f00\u521b\u610f\u4e49\u7684\u64cd\u4f5c\u7cfb\u7edf Multics \u81f4\u610f\u3002Multics \u9996\u521b\u4e86\u5206\u65f6\u7cfb\u7edf\uff0c\u8ba9\u591a\u4e2a\u7528\u6237\u80fd\u591f\u5171\u4eab\u540c\u4e00\u53f0\u673a\u5668\uff0c\u540c\u65f6\u53c8\u50cf\u5404\u81ea\u72ec\u5360\u5b83\u4e00\u6837\u4f7f\u7528\u3002Unix \u5219\u662f\u5728\u6709\u610f\u7b80\u5316 Multics \u7684\u57fa\u7840\u4e0a\u8bde\u751f\u7684\uff0c\u5f3a\u8c03\u4e00\u4e2a\u7528\u6237\u3001\u4e00\u4e2a\u4efb\u52a1\u3001\u4e00\u79cd\u4f18\u96c5\u7684\u54f2\u5b66\u3002",
-      "\u6211\u4eec\u8ba4\u4e3a\uff0c\u7c7b\u4f3c\u7684\u8f6c\u6298\u70b9\u6b63\u5728\u518d\u6b21\u51fa\u73b0\u3002\u51e0\u5341\u5e74\u6765\uff0c\u8f6f\u4ef6\u56e2\u961f\u4e00\u76f4\u5904\u4e8e\u4e00\u79cd\u5355\u7ebf\u7a0b\u7684\u5de5\u4f5c\u6a21\u5f0f\uff0c\u4e00\u4e2a\u5de5\u7a0b\u5e08\u5904\u7406\u4e00\u4e2a\u4efb\u52a1\uff0c\u4e00\u6b21\u53ea\u4e13\u6ce8\u4e8e\u4e00\u4e2a\u4e0a\u4e0b\u6587\u3002AI agents \u6539\u53d8\u4e86\u8fd9\u4e2a\u7b49\u5f0f\u3002Multica \u5c06\u201c\u5206\u65f6\u201d\u91cd\u65b0\u5e26\u56de\u8fd9\u4e2a\u65f6\u4ee3\uff0c\u53ea\u4e0d\u8fc7\u4eca\u5929\u5728\u7cfb\u7edf\u4e2d\u8fdb\u884c\u591a\u8def\u590d\u7528\u7684\u201c\u7528\u6237\u201d\uff0c\u65e2\u5305\u62ec\u4eba\u7c7b\uff0c\u4e5f\u5305\u62ec\u81ea\u4e3b\u4ee3\u7406\u3002",
-      "在 Multica 中，agents 是一级团队成员。它们会被分配任务，汇报进展，提出阻塞，并交付代码，就像人类同事一样。任务分配、活动时间线、task 生命周期，以及运行时基础设施，Multica 从第一天起就是围绕这一理念构建的。",
+      "\u6211\u4eec\u8ba4\u4e3a\uff0c\u7c7b\u4f3c\u7684\u8f6c\u6298\u70b9\u6b63\u5728\u518d\u6b21\u51fa\u73b0\u3002\u51e0\u5341\u5e74\u6765\uff0c\u8f6f\u4ef6\u56e2\u961f\u4e00\u76f4\u5904\u4e8e\u4e00\u79cd\u5355\u7ebf\u7a0b\u7684\u5de5\u4f5c\u6a21\u5f0f\uff0c\u4e00\u4e2a\u5de5\u7a0b\u5e08\u5904\u7406\u4e00\u4e2a\u4efb\u52a1\uff0c\u4e00\u6b21\u53ea\u4e13\u6ce8\u4e8e\u4e00\u4e2a\u4e0a\u4e0b\u6587\u3002AI agents \u6539\u53d8\u4e86\u8fd9\u4e2a\u7b49\u5f0f\u3002Orchestra \u5c06\u201c\u5206\u65f6\u201d\u91cd\u65b0\u5e26\u56de\u8fd9\u4e2a\u65f6\u4ee3\uff0c\u53ea\u4e0d\u8fc7\u4eca\u5929\u5728\u7cfb\u7edf\u4e2d\u8fdb\u884c\u591a\u8def\u590d\u7528\u7684\u201c\u7528\u6237\u201d\uff0c\u65e2\u5305\u62ec\u4eba\u7c7b\uff0c\u4e5f\u5305\u62ec\u81ea\u4e3b\u4ee3\u7406\u3002",
+      "在 Orchestra 中，agents 是一级团队成员。它们会被分配任务，汇报进展，提出阻塞，并交付代码，就像人类同事一样。任务分配、活动时间线、task 生命周期，以及运行时基础设施，Orchestra 从第一天起就是围绕这一理念构建的。",
       "\u548c\u5f53\u5e74\u7684 Multics \u4e00\u6837\uff0c\u8fd9\u4e00\u5224\u65ad\u5efa\u7acb\u5728\u201c\u591a\u8def\u590d\u7528\u201d\u4e4b\u4e0a\u3002\u4e00\u4e2a\u5c0f\u56e2\u961f\u4e0d\u8be5\u56e0\u4e3a\u4eba\u6570\u5c11\u5c31\u663e\u5f97\u80fd\u529b\u6709\u9650\u3002\u6709\u4e86\u5408\u9002\u7684\u7cfb\u7edf\uff0c\u4e24\u540d\u5de5\u7a0b\u5e08\u52a0\u4e0a\u4e00\u7ec4 agents\uff0c\u5c31\u80fd\u53d1\u6325\u51fa\u4e8c\u5341\u4eba\u56e2\u961f\u7684\u63a8\u8fdb\u901f\u5ea6\u3002",
       "\u8fd9\u4e2a\u5e73\u53f0\u662f\u5b8c\u5168\u5f00\u6e90\u5e76\u652f\u6301\u81ea\u6258\u7ba1\u7684\u3002\u4f60\u7684\u6570\u636e\u59cb\u7ec8\u4fdd\u7559\u5728\u81ea\u5df1\u7684\u57fa\u7840\u8bbe\u65bd\u4e2d\u3002\u4f60\u53ef\u4ee5\u5ba1\u67e5\u6bcf\u4e00\u884c\u4ee3\u7801\uff0c\u6269\u5c55 API\uff0c\u63a5\u5165\u81ea\u5df1\u7684 LLM providers\uff0c\u4e5f\u53ef\u4ee5\u5411\u793e\u533a\u8d21\u732e\u4ee3\u7801\u3002",
     ],
@@ -285,7 +285,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
 
   changelog: {
     title: "\u66f4\u65b0\u65e5\u5fd7",
-    subtitle: "Multica \u7684\u6700\u65b0\u66f4\u65b0\u548c\u6539\u8fdb\u3002",
+    subtitle: "Orchestra \u7684\u6700\u65b0\u66f4\u65b0\u548c\u6539\u8fdb\u3002",
     toc: "\u5386\u53f2\u7248\u672c",
     categories: {
       features: "新功能",
@@ -499,7 +499,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
           "粘贴超长文本时，现在会自动变成文本附件。",
           "每个上传只显示一次，完成后才会写入草稿。",
           "Webhook URL 现在默认隐藏，可按需显示。",
-          "工作区很多时，Multica 启动不再反复检查智能体工具。",
+          "工作区很多时，Orchestra 启动不再反复检查智能体工具。",
           "用量排名现在先聚焦前十名，失败排序也更清楚。",
           "发送后，光标现在会停在各编辑器预期的位置。",
         ],
@@ -674,7 +674,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
           "重新打开设置面板后，你的设置现在能可靠保存。",
           "恢复的 Codex task 现在会准确报告用量。",
           "评论不再把不该变成链接的文字变成链接。",
-          "私聊的回复现在会留在 Multica 里。",
+          "私聊的回复现在会留在 Orchestra 里。",
           "AI 辅助创建现在始终可用。",
           "任务页面首次打开时不再卡顿。",
           "Linux 上的 Codex 智能体现在能正确保存 Git 信息。",
@@ -978,7 +978,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         changes: [],
         features: [
           "task 日志（Transcript）会记住你的过滤条件与展开状态，下次打开同一次运行时自动恢复。",
-          "自托管（Helm）：新增 `postgres.external.enabled` 开关，可将 Multica 指向外部托管的 PostgreSQL（RDS、CNPG、Cloud SQL、Neon 等），跳过内置数据库。",
+          "自托管（Helm）：新增 `postgres.external.enabled` 开关，可将 Orchestra 指向外部托管的 PostgreSQL（RDS、CNPG、Cloud SQL、Neon 等），跳过内置数据库。",
         ],
         fixes: [
           "评论草稿里有空的 `1. ` 列表项时，重新加载后光标不再卡在下方块。",
@@ -1032,8 +1032,8 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         title: "Slack /issue 斜杠命令、字节跳动 TRAE CLI 智能体运行时、接入 Claude Sonnet 5",
         changes: [],
         features: [
-          "Slack 里可以直接用原生 /issue 斜杠命令创建 Multica 任务，机器人只会向你私发一条包含任务链接的确认消息。",
-          "同一 Slack 工作区里已经和某个 Multica 机器人绑定过的用户，遇到新加入的第二个机器人时无需再走一次绑定流程。",
+          "Slack 里可以直接用原生 /issue 斜杠命令创建 Orchestra 任务，机器人只会向你私发一条包含任务链接的确认消息。",
+          "同一 Slack 工作区里已经和某个 Orchestra 机器人绑定过的用户，遇到新加入的第二个机器人时无需再走一次绑定流程。",
           "Slack 频道场景的上下文阅读拆成两条命令：一条查看频道概览，一条精读单个线程。",
           "字节跳动 TRAE CLI（traecli）通过标准 ACP 协议接入为内置智能体运行时之一。",
           "Anthropic 模型清单接入 Claude Sonnet 5，并已挂上介绍期价格。",
@@ -1049,7 +1049,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
           "修复了 Cursor 与 Kiro 运行时结束时 task 结果不入库的问题，最终回复不再丢失。",
           "自托管的 docker-compose.selfhost.yml 现在会把 MULTICA_SLACK_SECRET_KEY 透传到后端容器。（社区反馈）",
           "任务面板顶部「N 个任务正在处理中」的胶囊改为按任务数去重。",
-          "自托管匿名来源统计的上报地址恢复到正式的 Multica API。",
+          "自托管匿名来源统计的上报地址恢复到正式的 Orchestra API。",
           "评论的定位高亮改为纯背景色，根评论和回复的行为保持一致。",
         ],
       },
@@ -1060,7 +1060,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         changes: [],
         features: [
           "Autopilot 新增清晰的写权限分层，详情页提供「管理协作者」入口，可把单个 Autopilot 的写权限授予指定成员。",
-          "Slack 频道可以把过往对话回灌到 Multica，智能体一进入频道即拥有完整上下文。",
+          "Slack 频道可以把过往对话回灌到 Orchestra，智能体一进入频道即拥有完整上下文。",
           "Slack 智能体处理消息期间会在用户消息上加 👀 反应表情，处理结束后稳定清除，不再出现卡死。",
           "技能包支持从本地 .skill / .zip 归档导入。",
           "multica issue 命令不再接受短 UUID 前缀，请使用任务 Key（MUL-123）或完整 UUID。",
@@ -1303,7 +1303,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         features: [
           "智能体、自动任务、项目、运行环境、技能和小队的列表体验更快也更一致，行内容、筛选、选择和操作都更清楚",
           "命令行现在可以管理工作区仓库，本地智能体更容易拿到项目仓库上下文",
-          "Cursor 和 OpenClaw 更容易配置：Cursor 连接设置可以由 Multica 托管，OpenClaw 也可以连接已有网关",
+          "Cursor 和 OpenClaw 更容易配置：Cursor 连接设置可以由 Orchestra 托管，OpenClaw 也可以连接已有网关",
           "编辑评论时，可以在保存前预览并控制哪些智能体或小队会开始运行",
         ],
         improvements: [
@@ -1325,7 +1325,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         title: "CodeBuddy Runtime",
         changes: [],
         features: [
-          "CodeBuddy 现在可以驱动本地 Multica 智能体，并会自动显示可用的模型和投入强度选项",
+          "CodeBuddy 现在可以驱动本地 Orchestra 智能体，并会自动显示可用的模型和投入强度选项",
           "快速创建任务时上传的文件现在会从草稿一直带到最终创建的任务里",
         ],
         improvements: [
@@ -1367,15 +1367,15 @@ export function createZhDict(allowSignup: boolean): LandingDict {
           "评论输入框现在会在发送前显示哪些智能体或小队会开始工作，也可以避免误触发运行",
           "智能体运行记录现在会显示时间点，回看进度和交接信息更清楚",
           "自动任务详情页现在会显示创建人",
-          "Claude Fable 5 现在已加入 Multica 支持的模型和价格列表",
+          "Claude Fable 5 现在已加入 Orchestra 支持的模型和价格列表",
           "任务讨论可以把某一条回复设为解决结论，长讨论收起后也能直接看到最终答案",
-          "在 Lark 和飞书里和 Multica 对话时，会显示等待中的输入状态，回复发出后自动清除",
+          "在 Lark 和飞书里和 Orchestra 对话时，会显示等待中的输入状态，回复发出后自动清除",
           "每次智能体 task 都会带上真实发起人信息，交接、审计和权限判断更准确",
           "OpenClaw 可以从本地配置中读取自定义程序位置和数据目录",
         ],
         improvements: [
           "评论触发提示更安静、更清楚，遇到较长的智能体名称时也不容易拥挤",
-          "桌面端在守护进程由 Multica 之外的环境管理时，会禁用启动和停止控制，例如 WSL2 场景",
+          "桌面端在守护进程由 Orchestra 之外的环境管理时，会禁用启动和停止控制，例如 WSL2 场景",
           "任务顶部的智能体状态更容易区分：运行中才显示动效，等待中会明确显示排队状态",
           "命令行会直接说明常见错误、登录问题和项目配置问题的处理方式",
         ],
@@ -1399,7 +1399,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         title: "网页版消息通知和 /note 指令",
         changes: [],
         features: [
-          "网页端现在可以显示浏览器原生通知横幅，即使 Multica 在后台，也更容易及时看到工作区动态",
+          "网页端现在可以显示浏览器原生通知横幅，即使 Orchestra 在后台，也更容易及时看到工作区动态",
           "以 /note 开头的评论现在可以记录上下文，但不会唤醒已分配的智能体，团队可以留下协作备注而不触发运行",
           "Antigravity 现在可以作为每个智能体单独选择的模型",
           "命令行现在会用更容易理解的语言解释常见请求失败，并提示下一步该怎么处理",
@@ -1457,10 +1457,10 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         title: "Lark Bot 集成",
         changes: [],
         features: [
-          "支持 Lark 第三方集成，扫码就能把 Multica 智能体创建成一个 Lark Bot",
+          "支持 Lark 第三方集成，扫码就能把 Orchestra 智能体创建成一个 Lark Bot",
           "聊天现在支持可搜索的智能体选择器和明确的上下文选择器，更容易指定谁来回复、需要看哪些内容",
           "描述和评论现在支持勾选式待办清单，任务里的轻量计划更好整理",
-          "智能体现在内置 Multica 技能，可以更稳定地遵循工作区工作流",
+          "智能体现在内置 Orchestra 技能，可以更稳定地遵循工作区工作流",
         ],
         improvements: [
           "聊天上下文会以清晰的提及形式呈现，交接和后续回看更容易理解",
@@ -1504,7 +1504,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         title: "日语支持和 /skill command",
         changes: [],
         features: [
-          "Multica 现在支持日语界面、官网和文档",
+          "Orchestra 现在支持日语界面、官网和文档",
           "聊天现在支持 /skill command，用来选择智能体技能",
           "工作区现在可以显示自定义 Logo",
           "可以给智能体追加技能，不会覆盖已有技能",
@@ -1560,7 +1560,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         changes: [],
         features: [
           "智能体在任务评论区继续工作时，会接着之前的会话继续，不再新开会话，task 上下文可以保留下来",
-          "Multica 现在支持韩语界面、官网和文档，包含完整韩语文档与本地化日期显示",
+          "Orchestra 现在支持韩语界面、官网和文档，包含完整韩语文档与本地化日期显示",
           "任务页面会在标题附近固定显示正在工作的智能体，多智能体同时工作时也能更清楚地查看",
           "智能体读取任务讨论时可以先看到线程摘要、回复数量和最近活跃时间，更快找到需要跟进的上下文",
           "OpenClaw 运行环境现在可以使用智能体里保存的 MCP 设置，Claude Opus 4.8 也可用于模型选择和用量估算",
@@ -1658,8 +1658,8 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         title: "iOS 客户端、Helm 自托管与更顺畅的协作体验",
         changes: [],
         features: [
-          "Multica iOS 客户端发布官方首个可用版本，覆盖登录、工作区、收件箱、任务、项目、聊天、评论、表情回应、在线状态和实时更新；目前暂未上架 App Store，需要用户自行打包安装",
-          "自托管团队现在可以通过 Helm 将 Multica 部署到 Kubernetes，Docker 安装也有更清晰的端口和 URL 配置",
+          "Orchestra iOS 客户端发布官方首个可用版本，覆盖登录、工作区、收件箱、任务、项目、聊天、评论、表情回应、在线状态和实时更新；目前暂未上架 App Store，需要用户自行打包安装",
+          "自托管团队现在可以通过 Helm 将 Orchestra 部署到 Kubernetes，Docker 安装也有更清晰的端口和 URL 配置",
           "项目资源选择器新增仓库搜索，工作区仓库设置也可以保存描述，帮助智能体理解每个代码库",
           "运行时用量现在可以更准确识别 DeepSeek、Kimi K2.6、Zhipu GLM 和长上下文 Claude Opus 的费用",
           "官网新增使用场景页面能力，并让文档、更新日志和开始使用入口更清晰",
@@ -1686,7 +1686,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         features: [
           "父任务会在子任务完成时自动收到更新，并通知对应负责人",
           "任务列表新增实时智能体工作状态，支持详情查看和工作中筛选",
-          "新用户完成设置后，会进入由 Multica Helper 引导的欢迎体验",
+          "新用户完成设置后，会进入由 Orchestra Helper 引导的欢迎体验",
           "官网新增 Contact Sales 流程，支持商务邮箱提交和防滥用保护",
           "桌面端支持 macOS 触控板前进/后退手势",
         ],
@@ -1802,7 +1802,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         ],
         improvements: [
           "任务操作失败时会显示更明确的错误原因，团队不用翻日志也能理解发生了什么",
-          "关联 GitHub 的 Pull Request 会在 Multica 内展示 CI 和合并冲突状态",
+          "关联 GitHub 的 Pull Request 会在 Orchestra 内展示 CI 和合并冲突状态",
           "自托管部署获得更安全的默认配置，并补充反向代理、登录限制和本地服务的说明",
           "搜索结果排序更准确，也会展示更有帮助的摘要片段",
         ],
@@ -1894,7 +1894,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         title: "GitHub 集成、聊天附件与任务定位优化",
         changes: [],
         features: [
-          "接入 GitHub 后，关联的 Pull Request 会显示在 Multica 任务中，状态会同步到 Multica，关闭 PR 后会自动关闭对应任务",
+          "接入 GitHub 后，关联的 Pull Request 会显示在 Orchestra 任务中，状态会同步到 Orchestra，关闭 PR 后会自动关闭对应任务",
           "聊天消息支持添加文件附件和图片预览",
           "Agent 和 runtime 可以设置公开或私有，方便控制团队可见范围",
           "停止单个 agent task 前会先弹出确认，避免误操作",
@@ -1905,7 +1905,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
           "很长的任务时间线滚动更顺畅",
           "反馈入口更明确地引导用户到 GitHub 参与讨论和反馈",
           "自托管 Caddy 配置文档补充实时连接要求",
-          "Linux 桌面端安装包恢复显示 Multica 应用图标",
+          "Linux 桌面端安装包恢复显示 Orchestra 应用图标",
         ],
         fixes: [
           "下载附件时保留原始文件名",
@@ -2007,7 +2007,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
           "Linux 上 daemon self-restart 改走 `brew prefix` 软链，Homebrew Cellar 删除后不再让 runtime 失联",
           "CLI 短 ID 现在可以正确路由，复制粘贴的短前缀不再 404",
           "Windows 上非 ASCII 字符评论 / 描述输入新增 `--content-file` / `--description-file`",
-          "Windows / Linux 桌面端用 Multica asterisk 替换 Electron 默认占位图标",
+          "Windows / Linux 桌面端用 Orchestra asterisk 替换 Electron 默认占位图标",
           "Timeline 中孤立的 reply 现在会被正确捞回展示",
           "Timeline 评论分页预算不再把 activity 算进去，避免活动多时挤掉真实评论",
         ],
@@ -2111,7 +2111,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         ],
         improvements: [
           "Daemon `/tasks/claim` 轮询走 Redis 空认领 fast-path，空闲态 DB 压力下降，长期 open 的任务自动回收磁盘",
-          "Multica Agent 的 Git 提交自动追加 `Co-authored-by` trailer，归属更清晰",
+          "Orchestra Agent 的 Git 提交自动追加 `Co-authored-by` trailer，归属更清晰",
           "Desktop 拦截 Cmd+R / Ctrl+R / F5 防止意外刷新，开发模式与 Updates 设置中均展示真实版本号",
         ],
         fixes: [
@@ -2714,29 +2714,29 @@ export function createZhDict(allowSignup: boolean): LandingDict {
   download: {
     hero: {
       macArm64: {
-        title: "Multica for macOS",
+        title: "Orchestra for macOS",
         sub: "Apple Silicon · 内置 daemon，无需配置",
         primary: "下载 (.dmg)",
         altZip: "或下载 .zip",
       },
       macIntel: {
-        title: "Multica for macOS",
+        title: "Orchestra for macOS",
         sub: "Intel · 内置守护进程，无需配置",
         primary: "下载 (.dmg)",
         altZip: "或下载 .zip",
       },
       winX64: {
-        title: "Multica for Windows",
+        title: "Orchestra for Windows",
         sub: "内置 daemon，无需配置",
         primary: "下载 (.exe)",
       },
       winArm64: {
-        title: "Multica for Windows",
+        title: "Orchestra for Windows",
         sub: "ARM · 内置 daemon，无需配置",
         primary: "下载 (.exe)",
       },
       linux: {
-        title: "Multica for Linux",
+        title: "Orchestra for Linux",
         sub: "内置 daemon，无需配置",
         primary: "下载 AppImage",
         altFormats: "或 .deb / .rpm",
@@ -2787,7 +2787,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
   contactSales: {
     pageTitle: "联系商务",
     pageDescription:
-      "了解如何在你的团队中落地 Multica 的人类 + 智能体协作工作流。",
+      "了解如何在你的团队中落地 Orchestra 的人类 + 智能体协作工作流。",
     eyebrow: "联系商务",
     title: "先了解你的需求",
     subtitle: "在正式沟通之前，让我们为你定制最合适的方案。",
@@ -2804,10 +2804,10 @@ export function createZhDict(allowSignup: boolean): LandingDict {
       companyName: "公司名称",
       companySize: "公司规模",
       countryRegion: "国家 / 地区",
-      useCase: "你打算如何使用 Multica 或与我们合作？",
+      useCase: "你打算如何使用 Orchestra 或与我们合作？",
       goals: "你的目标或挑战",
       goalsHint:
-        "告诉我们你希望借助 Multica 达成什么目标，或正在面临的挑战。信息越详细，我们越能给到合适的支持。",
+        "告诉我们你希望借助 Orchestra 达成什么目标，或正在面临的挑战。信息越详细，我们越能给到合适的支持。",
       selectPlaceholder: "请选择",
       submit: "提交",
       submitting: "正在提交…",
@@ -2821,7 +2821,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
       { value: "1000+", label: "1,000 人以上" },
     ],
     useCases: [
-      { value: "evaluate", label: "正在为团队评估 Multica" },
+      { value: "evaluate", label: "正在为团队评估 Orchestra" },
       { value: "adopt_team", label: "希望在团队 / 公司内推广使用" },
       { value: "self_host", label: "需要在自有基础设施上自托管" },
       { value: "integrate", label: "希望与现有工具集成" },
@@ -2873,22 +2873,22 @@ export function createZhDict(allowSignup: boolean): LandingDict {
     ],
     consent: {
       intro:
-        "Multica, Inc. 尊重你的隐私。我们仅会将你的个人信息用于管理账户，以及提供你所请求的产品或服务。我们偶尔也希望与你分享产品更新、最佳实践或行业洞察，如果你愿意接收，请在下方勾选。",
+        "Orchestra, Inc. 尊重你的隐私。我们仅会将你的个人信息用于管理账户，以及提供你所请求的产品或服务。我们偶尔也希望与你分享产品更新、最佳实践或行业洞察，如果你愿意接收，请在下方勾选。",
       outreach:
-        "我希望接收来自 Multica, Inc. 的一对一沟通，包括服务更新、支持咨询以及业务相关的跟进。",
+        "我希望接收来自 Orchestra, Inc. 的一对一沟通，包括服务更新、支持咨询以及业务相关的跟进。",
       updates:
-        "我希望接收 Multica 的产品更新、洞察以及活动邀请。",
+        "我希望接收 Orchestra 的产品更新、洞察以及活动邀请。",
       unsubscribe:
         "你可以随时取消订阅我们的邮件。关于我们如何处理你的数据以及隐私权利，请参阅",
       submitConsent:
-        "点击「提交」即表示你同意 Multica, Inc. 存储并处理你提交的信息，以便交付你请求的内容。",
+        "点击「提交」即表示你同意 Orchestra, Inc. 存储并处理你提交的信息，以便交付你请求的内容。",
       privacyLinkLabel: "隐私政策。",
       privacyLinkHref: "/about",
     },
     success: {
       title: "已收到，谢谢！",
       message:
-        "Multica 团队会在三个工作日内回复你。在此期间，欢迎查看我们的文档，或在 GitHub 上为我们点个 Star。",
+        "Orchestra 团队会在三个工作日内回复你。在此期间，欢迎查看我们的文档，或在 GitHub 上为我们点个 Star。",
       cta: "返回首页",
     },
     errors: {

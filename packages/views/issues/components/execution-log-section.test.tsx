@@ -2,14 +2,14 @@
 
 import { cleanup, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { AgentTask } from "@multica/core/types";
+import type { AgentTask } from "@orchestra/core/types";
 import { renderWithI18n } from "../../test/i18n";
 
 const mockState = vi.hoisted(() => ({
   taskMessagesOptions: vi.fn(),
 }));
 
-vi.mock("@multica/core/chat/queries", () => ({
+vi.mock("@orchestra/core/chat/queries", () => ({
   taskMessagesOptions: mockState.taskMessagesOptions,
 }));
 
@@ -28,9 +28,9 @@ vi.mock("./terminate-task-confirm-dialog", () => ({
 }));
 
 import { ActiveTaskRow, TaskCommentCoverage, IssueUsageTotal } from "./execution-log-section";
-import type { TaskUsage } from "@multica/core/types";
+import type { TaskUsage } from "@orchestra/core/types";
 import { act } from "@testing-library/react";
-import { useCustomPricingStore } from "@multica/core/runtimes/custom-pricing-store";
+import { useCustomPricingStore } from "@orchestra/core/runtimes/custom-pricing-store";
 
 function makeTask(overrides: Partial<AgentTask> = {}): AgentTask {
   return {

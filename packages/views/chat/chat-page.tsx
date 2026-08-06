@@ -4,21 +4,21 @@ import { useEffect, useRef, useState } from "react";
 import { useDefaultLayout } from "react-resizable-panels";
 import { ArrowLeft, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@multica/ui/components/ui/button";
+import { Button } from "@orchestra/ui/components/ui/button";
 import {
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
-} from "@multica/ui/components/ui/resizable";
-import { useIsMobile } from "@multica/ui/hooks/use-mobile";
-import { useWorkspacePaths } from "@multica/core/paths";
-import { useChatStore } from "@multica/core/chat";
-import { chatQuickActionsPendingOptions } from "@multica/core/chat/queries";
-import { useRegenerateChatQuickActions } from "@multica/core/chat/mutations";
-import { useQuickActionsPendingTimeout } from "@multica/core/chat/use-quick-actions-pending-timeout";
+} from "@orchestra/ui/components/ui/resizable";
+import { useIsMobile } from "@orchestra/ui/hooks/use-mobile";
+import { useWorkspacePaths } from "@orchestra/core/paths";
+import { useChatStore } from "@orchestra/core/chat";
+import { chatQuickActionsPendingOptions } from "@orchestra/core/chat/queries";
+import { useRegenerateChatQuickActions } from "@orchestra/core/chat/mutations";
+import { useQuickActionsPendingTimeout } from "@orchestra/core/chat/use-quick-actions-pending-timeout";
 import { useQuickActionsFailureToast } from "./components/use-quick-actions-failure-toast";
 import { useQuery } from "@tanstack/react-query";
-import type { Agent, ChatSession } from "@multica/core/types";
+import type { Agent, ChatSession } from "@orchestra/core/types";
 import { PageHeader } from "../layout/page-header";
 import { useNavigation } from "../navigation";
 import { useT } from "../i18n";

@@ -1,9 +1,9 @@
 "use client";
 
-import { ActorAvatar as ActorAvatarBase } from "@multica/ui/components/common/actor-avatar";
-import { AVATAR_SIZE_PX, type AvatarSize } from "@multica/ui/lib/avatar-size";
-import { useActorName } from "@multica/core/workspace/hooks";
-import { cn } from "@multica/ui/lib/utils";
+import { ActorAvatar as ActorAvatarBase } from "@orchestra/ui/components/common/actor-avatar";
+import { AVATAR_SIZE_PX, type AvatarSize } from "@orchestra/ui/lib/avatar-size";
+import { useActorName } from "@orchestra/core/workspace/hooks";
+import { cn } from "@orchestra/ui/lib/utils";
 
 interface AgentAvatarStackProps {
   // Agent ids to render, in display order. The component does NOT dedupe —

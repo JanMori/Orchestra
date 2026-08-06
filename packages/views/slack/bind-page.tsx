@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@multica/ui/components/ui/card";
-import { Button } from "@multica/ui/components/ui/button";
-import { api } from "@multica/core/api";
-import { useAuthStore } from "@multica/core/auth";
+import { Card, CardContent } from "@orchestra/ui/components/ui/card";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { api } from "@orchestra/core/api";
+import { useAuthStore } from "@orchestra/core/auth";
 import { useNavigation } from "../navigation";
 import { useT } from "../i18n";
 

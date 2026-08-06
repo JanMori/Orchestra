@@ -9,16 +9,16 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
-import type { ChatQueuedTask } from "@multica/core/types";
-import { Button } from "@multica/ui/components/ui/button";
+import type { ChatQueuedTask } from "@orchestra/core/types";
+import { Button } from "@orchestra/ui/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@multica/ui/components/ui/dropdown-menu";
-import { cn } from "@multica/ui/lib/utils";
+} from "@orchestra/ui/components/ui/dropdown-menu";
+import { cn } from "@orchestra/ui/lib/utils";
 import { useT } from "../../i18n";
 import { CHAT_COLUMN, CHAT_GUTTER } from "./chat-column";
 

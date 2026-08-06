@@ -1,14 +1,14 @@
 "use client";
 
-import { ActorAvatar } from "@multica/ui/components/common/actor-avatar";
-import { Button } from "@multica/ui/components/ui/button";
+import { ActorAvatar } from "@orchestra/ui/components/common/actor-avatar";
+import { Button } from "@orchestra/ui/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@multica/ui/components/ui/hover-card";
-import { useActorName } from "@multica/core/workspace/hooks";
-import type { WorkingAgentSummary } from "@multica/core/types";
+} from "@orchestra/ui/components/ui/hover-card";
+import { useActorName } from "@orchestra/core/workspace/hooks";
+import type { WorkingAgentSummary } from "@orchestra/core/types";
 import { AgentAvatarStack } from "../../agents/components/agent-avatar-stack";
 import { useT } from "../../i18n";
 

@@ -20,10 +20,10 @@ cd "$ROOT_DIR"
 mode=${1:-official}
 case "$mode" in
 official)
-  compose_files=(-f docker-compose.selfhost.yml)
+  compose_files=(-f docker-compose.selfhost.build.yml)
   ;;
 build)
-  compose_files=(-f docker-compose.selfhost.yml -f docker-compose.selfhost.build.yml)
+  compose_files=(-f docker-compose.selfhost.build.yml)
   ;;
 *)
   echo "usage: ${BASH_SOURCE[0]} [official|build]" >&2
@@ -35,7 +35,7 @@ esac
 read -r -a compose_cmd <<<"${COMPOSE:-docker compose}"
 
 # Published host port for a service, straight from Compose. Falls back to the
-# same default chain as docker-compose.selfhost.yml when the container is not up
+# same default chain as docker-compose.selfhost.build.yml when the container is not up
 # (e.g. `up -d` failed) so the message degrades instead of breaking.
 compose_host_port() {
   local service=$1 container_port=$2 fallback=$3 published
@@ -50,8 +50,8 @@ compose_host_port() {
   esac
 }
 
-backend_port=$(compose_host_port backend 8080 "${BACKEND_PORT:-${API_PORT:-${SERVER_PORT:-${PORT:-8080}}}}")
-frontend_port=$(compose_host_port frontend 3000 "${FRONTEND_PORT:-3000}")
+backend_port=$(compose_host_port backend 8080 "${BACKEND_PORT:-${API_PORT:-${SERVER_PORT:-${PORT:-7080}}}}")
+frontend_port=$(compose_host_port frontend 3000 "${FRONTEND_PORT:-5000}")
 
 backend_url="http://localhost:${backend_port}"
 frontend_url="http://localhost:${frontend_port}"
@@ -82,15 +82,15 @@ echo "  Backend:  ${backend_url}"
 echo ""
 if [ "$mode" = "build" ]; then
   echo "Built images locally via docker-compose.selfhost.build.yml."
-  echo "Local tags: multica-backend:dev and multica-web:dev."
+  echo "Local tags: orchestra-backend:dev and orchestra-web:dev."
 else
-  echo "Images: ${MULTICA_BACKEND_IMAGE:-ghcr.io/multica-ai/multica-backend}:${MULTICA_IMAGE_TAG:-latest}"
-  echo "        ${MULTICA_WEB_IMAGE:-ghcr.io/multica-ai/multica-web}:${MULTICA_IMAGE_TAG:-latest}"
+  echo "Images: ${ORCHESTRA_BACKEND_IMAGE:-ghcr.io/orchestra-ai/orchestra-backend}:${ORCHESTRA_IMAGE_TAG:-latest}"
+  echo "        ${ORCHESTRA_WEB_IMAGE:-ghcr.io/orchestra-ai/orchestra-web}:${ORCHESTRA_IMAGE_TAG:-latest}"
 fi
 echo ""
 echo "Log in: configure RESEND_API_KEY in .env for email codes,"
 echo "        or read the generated code from backend logs when Resend is unset."
 echo ""
 echo "Next — install the CLI and connect your machine:"
-echo "  brew install multica-ai/tap/multica"
+echo "  brew install orchestra-ai/tap/multica"
 echo "  multica setup self-host"

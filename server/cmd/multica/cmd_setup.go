@@ -73,8 +73,8 @@ func init() {
 	setupCmd.Flags().String(callbackHostFlag, "", callbackHostFlagHelp)
 	setupCloudCmd.Flags().String(callbackHostFlag, "", callbackHostFlagHelp)
 
-	setupSelfHostCmd.Flags().String("server-url", "", "Backend server URL (e.g. https://api.internal.co) (env: MULTICA_SERVER_URL)")
-	setupSelfHostCmd.Flags().String("app-url", "", "Frontend app URL (e.g. https://app.internal.co) (env: MULTICA_APP_URL)")
+	setupSelfHostCmd.Flags().String("server-url", "", "Backend server URL (e.g. https://api.internal.co) (env: ORCHESTRA_SERVER_URL)")
+	setupSelfHostCmd.Flags().String("app-url", "", "Frontend app URL (e.g. https://app.internal.co) (env: ORCHESTRA_APP_URL)")
 	setupSelfHostCmd.Flags().Int("port", 8080, "Backend server port (used when --server-url is not set)")
 	setupSelfHostCmd.Flags().Int("frontend-port", 3000, "Frontend port (used when --app-url is not set)")
 	setupSelfHostCmd.Flags().String(callbackHostFlag, "", callbackHostFlagHelp)
@@ -184,11 +184,11 @@ func runSetupSelfHost(cmd *cobra.Command, args []string) error {
 	// show the incoming values ("old -> new"), making it clear the passed flags
 	// were received.
 	//
-	// Honor MULTICA_SERVER_URL / MULTICA_APP_URL when the matching flag is not
+	// Honor ORCHESTRA_SERVER_URL / ORCHESTRA_APP_URL when the matching flag is not
 	// set — consistent with the rest of the CLI (resolveServerURL) and with the
 	// env vars documented on the root --server-url flag and in `multica --help`.
 	// Before this, setup self-host read only the flags, so a self-hoster who set
-	// MULTICA_SERVER_URL still got the localhost default and an "unreachable"
+	// ORCHESTRA_SERVER_URL still got the localhost default and an "unreachable"
 	// error (GitHub #3912).
 	existing, _ := cli.LoadCLIConfigForProfile(profile)
 	serverURL, userProvidedServerURL := resolveSelfHostServerURL(cmd, existing)
@@ -346,7 +346,7 @@ func persistSelfHostConfigIfReachable(serverURL, appURL, profile string, probe f
 }
 
 // resolveSelfHostServerURL picks the backend URL for `setup self-host`: the
-// --server-url flag wins, then the MULTICA_SERVER_URL env var (consistent with
+// --server-url flag wins, then the ORCHESTRA_SERVER_URL env var (consistent with
 // the rest of the CLI and the env var documented on the root flag), then an
 // already-configured server_url from the existing config, then the localhost
 // default built from --port. userProvided is true when the URL came from the
@@ -359,12 +359,12 @@ func persistSelfHostConfigIfReachable(serverURL, appURL, profile string, probe f
 // back into the localhost path for the local-dev case.
 //
 // A user-supplied URL is run through normalizeAPIBaseURL, the same path
-// resolveServerURL uses: MULTICA_SERVER_URL is documented as a ws:// daemon
+// resolveServerURL uses: ORCHESTRA_SERVER_URL is documented as a ws:// daemon
 // address (e.g. ws://localhost:8080/ws), so the ws/wss form and a trailing /ws
 // are accepted and converted to the http(s) base that the reachability probe
 // and the stored server_url expect.
 func resolveSelfHostServerURL(cmd *cobra.Command, existing cli.CLIConfig) (serverURL string, userProvided bool) {
-	if v := cli.FlagOrEnv(cmd, "server-url", "MULTICA_SERVER_URL", ""); v != "" {
+	if v := cli.FlagOrEnv(cmd, "server-url", "ORCHESTRA_SERVER_URL", ""); v != "" {
 		return normalizeAPIBaseURL(v), true
 	}
 	if !cmd.Flags().Changed("port") && existing.ServerURL != "" {
@@ -378,7 +378,7 @@ func resolveSelfHostServerURL(cmd *cobra.Command, existing cli.CLIConfig) (serve
 }
 
 // resolveSelfHostAppURL resolves the frontend URL for `setup self-host`: the
-// --app-url flag wins, then MULTICA_APP_URL, then an already-configured app_url
+// --app-url flag wins, then ORCHESTRA_APP_URL, then an already-configured app_url
 // from the existing config (unless --frontend-port was passed). Returns "" when
 // none of those is set, leaving the caller to infer it — prompt for a remote
 // host, or fall back to localhost:<frontend-port>.
@@ -388,7 +388,7 @@ func resolveSelfHostServerURL(cmd *cobra.Command, existing cli.CLIConfig) (serve
 // server_url, app_url is a plain frontend URL rather than a ws:// daemon
 // address, so it is used as-is without normalizeAPIBaseURL.
 func resolveSelfHostAppURL(cmd *cobra.Command, existing cli.CLIConfig) string {
-	if v := cli.FlagOrEnv(cmd, "app-url", "MULTICA_APP_URL", ""); v != "" {
+	if v := cli.FlagOrEnv(cmd, "app-url", "ORCHESTRA_APP_URL", ""); v != "" {
 		return v
 	}
 	if !cmd.Flags().Changed("frontend-port") && existing.AppURL != "" {

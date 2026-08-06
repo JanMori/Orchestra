@@ -1,9 +1,35 @@
-# Development override: build the backend/web images from the current checkout
-# instead of pulling the official GHCR images.
+# Self-hosting Docker Compose — builds backend and web images directly from source checkout.
+#
+# Usage:
+#   docker-compose -f docker-compose.selfhost.build.yml up -d --build
+#
+# Frontend: http://localhost:${FRONTEND_PORT:-5000}
+# Backend:  http://localhost:${BACKEND_PORT:-${API_PORT:-${SERVER_PORT:-${PORT:-7080}}}}
+
+name: orchestra
 
 services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-orchestra}
+      POSTGRES_USER: ${POSTGRES_USER:-orchestra}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-orchestra}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-orchestra} -d ${POSTGRES_DB:-orchestra}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   backend:
-    image: multica-backend:dev
+    image: orchestra-backend:latest
     build:
       context: .
       dockerfile: Dockerfile
@@ -11,11 +37,83 @@ services:
         VERSION: ${VERSION:-dev}
         COMMIT: ${COMMIT:-unknown}
         DATE: ${DATE:-unknown}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "0.0.0.0:${BACKEND_PORT:-${API_PORT:-${SERVER_PORT:-${PORT:-7080}}}}:8080"
+    volumes:
+      - backend_uploads:/app/data/uploads
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-orchestra}:${POSTGRES_PASSWORD:-orchestra}@postgres:5432/${POSTGRES_DB:-orchestra}?sslmode=disable
+      PORT: "8080"
+      METRICS_ADDR: ${METRICS_ADDR:-}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:5000}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-noreply@orchestra.ai}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-25}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_TLS: ${SMTP_TLS:-}
+      SMTP_TLS_INSECURE: ${SMTP_TLS_INSECURE:-false}
+      SMTP_EHLO_NAME: ${SMTP_EHLO_NAME:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-http://localhost:5000/auth/callback}
+      S3_BUCKET: ${S3_BUCKET:-}
+      S3_REGION: ${S3_REGION:-us-west-2}
+      AWS_ENDPOINT_URL: ${AWS_ENDPOINT_URL:-}
+      S3_USE_PATH_STYLE: ${S3_USE_PATH_STYLE:-}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      ATTACHMENT_DOWNLOAD_MODE: ${ATTACHMENT_DOWNLOAD_MODE:-auto}
+      ATTACHMENT_DOWNLOAD_URL_TTL: ${ATTACHMENT_DOWNLOAD_URL_TTL:-30m}
+      CLOUDFRONT_DOMAIN: ${CLOUDFRONT_DOMAIN:-}
+      CLOUDFRONT_KEY_PAIR_ID: ${CLOUDFRONT_KEY_PAIR_ID:-}
+      CLOUDFRONT_PRIVATE_KEY: ${CLOUDFRONT_PRIVATE_KEY:-}
+      COOKIE_DOMAIN: ${COOKIE_DOMAIN:-}
+      APP_ENV: ${APP_ENV:-production}
+      ORCHESTRA_DEV_VERIFICATION_CODE: ${ORCHESTRA_DEV_VERIFICATION_CODE:-}
+      ORCHESTRA_APP_URL: ${ORCHESTRA_APP_URL:-http://localhost:5000}
+      ORCHESTRA_SHUTDOWN_HOLD_DURATION: ${ORCHESTRA_SHUTDOWN_HOLD_DURATION:-}
+      ALLOW_SIGNUP: ${ALLOW_SIGNUP:-true}
+      ALLOWED_EMAILS: ${ALLOWED_EMAILS:-}
+      ALLOWED_EMAIL_DOMAINS: ${ALLOWED_EMAIL_DOMAINS:-}
+      DISABLE_WORKSPACE_CREATION: ${DISABLE_WORKSPACE_CREATION:-}
+      GITHUB_APP_SLUG: ${GITHUB_APP_SLUG:-}
+      GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET:-}
+      ORCHESTRA_PUBLIC_URL: ${ORCHESTRA_PUBLIC_URL:-}
+      ORCHESTRA_TRUSTED_PROXIES: ${ORCHESTRA_TRUSTED_PROXIES:-}
+      ORCHESTRA_LARK_SECRET_KEY: ${ORCHESTRA_LARK_SECRET_KEY:-}
+      ORCHESTRA_LARK_HTTP_BASE_URL: ${ORCHESTRA_LARK_HTTP_BASE_URL:-}
+      ORCHESTRA_LARK_CALLBACK_BASE_URL: ${ORCHESTRA_LARK_CALLBACK_BASE_URL:-}
+      ORCHESTRA_SLACK_SECRET_KEY: ${ORCHESTRA_SLACK_SECRET_KEY:-}
+      ORCHESTRA_VCS_INTEGRATION_ENABLED: ${ORCHESTRA_VCS_INTEGRATION_ENABLED:-true}
+      ORCHESTRA_VCS_SECRET_KEY: ${ORCHESTRA_VCS_SECRET_KEY:-}
+    restart: unless-stopped
 
   frontend:
-    image: multica-web:dev
+    image: orchestra-web:latest
     build:
       context: .
       dockerfile: Dockerfile.web
       args:
-        NEXT_PUBLIC_APP_VERSION: dev
+        NEXT_PUBLIC_APP_VERSION: ${VERSION:-dev}
+    depends_on:
+      - backend
+    ports:
+      - "0.0.0.0:${FRONTEND_PORT:-5000}:3000"
+    environment:
+      HOSTNAME: "0.0.0.0"
+      REMOTE_API_URL: ${REMOTE_API_URL:-http://backend:8080}
+      DOCS_URL: ${DOCS_URL:-}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-}
+      NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL:-}
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  backend_uploads:

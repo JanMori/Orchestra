@@ -11,12 +11,12 @@ import (
 
 func TestMain(m *testing.M) {
 	for _, key := range []string{
-		"MULTICA_AGENT_ID",
-		"MULTICA_TASK_ID",
-		"MULTICA_TOKEN",
-		"MULTICA_DAEMON_PORT",
-		"MULTICA_WORKSPACE_ID",
-		"MULTICA_SERVER_URL",
+		"ORCHESTRA_AGENT_ID",
+		"ORCHESTRA_TASK_ID",
+		"ORCHESTRA_TOKEN",
+		"ORCHESTRA_DAEMON_PORT",
+		"ORCHESTRA_WORKSPACE_ID",
+		"ORCHESTRA_SERVER_URL",
 	} {
 		os.Unsetenv(key)
 	}
@@ -34,8 +34,8 @@ func testCmd() *cobra.Command {
 func TestResolveAppURL(t *testing.T) {
 	cmd := testCmd()
 
-	t.Run("prefers MULTICA_APP_URL", func(t *testing.T) {
-		t.Setenv("MULTICA_APP_URL", "http://localhost:14000")
+	t.Run("prefers ORCHESTRA_APP_URL", func(t *testing.T) {
+		t.Setenv("ORCHESTRA_APP_URL", "http://localhost:14000")
 		t.Setenv("FRONTEND_ORIGIN", "http://localhost:13000")
 
 		if got := resolveAppURL(cmd); got != "http://localhost:14000" {
@@ -44,7 +44,7 @@ func TestResolveAppURL(t *testing.T) {
 	})
 
 	t.Run("falls back to FRONTEND_ORIGIN", func(t *testing.T) {
-		t.Setenv("MULTICA_APP_URL", "")
+		t.Setenv("ORCHESTRA_APP_URL", "")
 		t.Setenv("FRONTEND_ORIGIN", "http://localhost:13026")
 
 		if got := resolveAppURL(cmd); got != "http://localhost:13026" {

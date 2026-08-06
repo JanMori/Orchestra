@@ -1,8 +1,8 @@
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { screen } from "@testing-library/react";
-import type { Agent } from "@multica/core/types";
-import type { AgentActivity } from "@multica/core/agents";
+import type { Agent } from "@orchestra/core/types";
+import type { AgentActivity } from "@orchestra/core/agents";
 import { renderWithI18n } from "../../test/i18n";
 import { NavigationProvider, type NavigationAdapter } from "../../navigation";
 import { AgentsPage } from "./agents-page";
@@ -89,7 +89,7 @@ vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }));
 
-vi.mock("@multica/core/agents", () => ({
+vi.mock("@orchestra/core/agents", () => ({
   isAgentRuntimeBound: (agent: { runtime_id: string; runtime_bound?: boolean }) =>
     agent.runtime_bound !== false && agent.runtime_id.length > 0,
   agentRunCounts30dOptions: () => ({ queryKey: ["agent-run-counts"] }),
@@ -104,27 +104,27 @@ vi.mock("@multica/core/agents", () => ({
   ALL_ACCESS_SCOPES: ["workspace", "specific-people", "owner-only"],
 }));
 
-vi.mock("@multica/core/agents/stores", () => ({
+vi.mock("@orchestra/core/agents/stores", () => ({
   useAgentsViewStore: (selector: (state: unknown) => unknown) =>
     selector(mocks.viewState),
   AGENT_DEFAULT_HIDDEN_COLUMNS: ["model", "created"],
   AGENT_SCOPES: ["mine", "all", "archived"],
 }));
 
-vi.mock("@multica/core/api", () => ({
+vi.mock("@orchestra/core/api", () => ({
   api: { archiveAgent: vi.fn(), restoreAgent: vi.fn() },
 }));
 
-vi.mock("@multica/core/auth", () => ({
+vi.mock("@orchestra/core/auth", () => ({
   useAuthStore: (selector: (state: unknown) => unknown) =>
     selector({ user: { id: "user-1" } }),
 }));
 
-vi.mock("@multica/core/hooks", () => ({
+vi.mock("@orchestra/core/hooks", () => ({
   useWorkspaceId: () => "workspace-1",
 }));
 
-vi.mock("@multica/core/paths", () => ({
+vi.mock("@orchestra/core/paths", () => ({
   useWorkspacePaths: () => ({
     newAgent: () => "/test-workspace/agents/new",
     newAgentManual: () => "/test-workspace/agents/new/manual",
@@ -132,13 +132,13 @@ vi.mock("@multica/core/paths", () => ({
   }),
 }));
 
-vi.mock("@multica/core/workspace/queries", () => ({
+vi.mock("@orchestra/core/workspace/queries", () => ({
   agentListOptions: () => ({ queryKey: ["agents"] }),
   memberListOptions: () => ({ queryKey: ["members"] }),
   workspaceKeys: { agents: (wsId: string) => ["agents", wsId] },
 }));
 
-vi.mock("@multica/core/runtimes", () => ({
+vi.mock("@orchestra/core/runtimes", () => ({
   runtimeListOptions: () => ({ queryKey: ["runtimes"] }),
 }));
 
@@ -151,12 +151,12 @@ vi.mock("./agent-list-toolbar", () => ({
   countActiveFilterDimensions: () => 0,
 }));
 vi.mock("../presence", () => ({ availabilityConfig: {} }));
-vi.mock("@multica/ui/components/ui/skeleton", () => ({
+vi.mock("@orchestra/ui/components/ui/skeleton", () => ({
   Skeleton: (props: Record<string, unknown>) => (
     <div data-testid="skeleton" {...props} />
   ),
 }));
-vi.mock("@multica/ui/components/ui/tooltip", () => ({
+vi.mock("@orchestra/ui/components/ui/tooltip", () => ({
   Tooltip: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   TooltipTrigger: ({ render }: { render: React.ReactNode }) => <>{render}</>,
   TooltipContent: ({ children }: { children: React.ReactNode }) => (

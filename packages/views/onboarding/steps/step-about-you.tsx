@@ -20,10 +20,10 @@ import {
   Settings2,
   User,
 } from "lucide-react";
-import { Button } from "@multica/ui/components/ui/button";
-import { useScrollFade } from "@multica/ui/hooks/use-scroll-fade";
-import type { QuestionnaireAnswers, Role, UseCase } from "@multica/core/onboarding";
-import { DragStrip } from "@multica/views/platform";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { useScrollFade } from "@orchestra/ui/hooks/use-scroll-fade";
+import type { QuestionnaireAnswers, Role, UseCase } from "@orchestra/core/onboarding";
+import { DragStrip } from "@orchestra/views/platform";
 import { StepHeader } from "../components/step-header";
 import {
   IconOptionCard,

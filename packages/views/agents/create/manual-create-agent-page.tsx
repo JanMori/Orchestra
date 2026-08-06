@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useWorkspaceId } from "@multica/core/hooks";
-import { useWorkspacePaths } from "@multica/core/paths";
-import { runtimeDisplayLabel } from "@multica/core/runtimes";
-import { agentListOptions } from "@multica/core/workspace/queries";
+import { useWorkspaceId } from "@orchestra/core/hooks";
+import { useWorkspacePaths } from "@orchestra/core/paths";
+import { runtimeDisplayLabel } from "@orchestra/core/runtimes";
+import { agentListOptions } from "@orchestra/core/workspace/queries";
 import { useNavigation } from "../../navigation";
 import { useT } from "../../i18n";
 import { AgentConfigurationPanel } from "./agent-configuration-panel";

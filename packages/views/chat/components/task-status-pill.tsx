@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { cn } from "@multica/ui/lib/utils";
-import { UnicodeSpinner } from "@multica/ui/components/common/unicode-spinner";
-import type { AgentAvailability } from "@multica/core/agents";
-import type { ChatPendingTask, TaskMessagePayload } from "@multica/core/types";
+import { cn } from "@orchestra/ui/lib/utils";
+import { UnicodeSpinner } from "@orchestra/ui/components/common/unicode-spinner";
+import type { AgentAvailability } from "@orchestra/core/agents";
+import type { ChatPendingTask, TaskMessagePayload } from "@orchestra/core/types";
 import { formatElapsedSecs } from "../lib/format";
 import { useT } from "../../i18n";
 

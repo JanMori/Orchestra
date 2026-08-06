@@ -71,13 +71,13 @@ type Config struct {
 	DisableWorkspaceCreation bool
 	// VCSIntegrationEnabled gates the self-hosted Git provider integration
 	// (Forgejo / Gitea / GitLab) at the deployment level, independent of whether
-	// MULTICA_VCS_SECRET_KEY is set. It is the product boundary: the feature is
+	// ORCHESTRA_VCS_SECRET_KEY is set. It is the product boundary: the feature is
 	// intended for self-hosted Multica only (where Multica and the Git instance
 	// can share a network), and is left off on the managed cloud — connect,
 	// rotate, and webhook handlers reject when it is false, and /api/config
 	// omits it so the UI hides the whole section rather than showing a
 	// "missing key" message a cloud user cannot act on. Populated from
-	// MULTICA_VCS_INTEGRATION_ENABLED; the self-host compose defaults it on.
+	// ORCHESTRA_VCS_INTEGRATION_ENABLED; the self-host compose defaults it on.
 	VCSIntegrationEnabled bool
 	// PublicURL is the absolute base URL the API is reachable at from the
 	// public internet, with no trailing slash (e.g. "https://multica.ai").
@@ -92,7 +92,7 @@ type Config struct {
 	// TrustedProxies are CIDRs whose source IP we trust to set
 	// X-Forwarded-For / X-Real-IP. Empty means "trust nothing": the rate
 	// limiter uses r.RemoteAddr exclusively. Populated via the
-	// MULTICA_TRUSTED_PROXIES env var (comma-separated CIDRs, e.g.
+	// ORCHESTRA_TRUSTED_PROXIES env var (comma-separated CIDRs, e.g.
 	// "10.0.0.0/8,127.0.0.1/32"). This is specifically to keep the per-IP
 	// webhook limiter from being bypassed by a spoofed XFF on deployments
 	// without a header-stripping reverse proxy in front.
@@ -115,9 +115,9 @@ type Config struct {
 	// MUL-4309; LLM access is internal-only now. When both LLMAPIKey and
 	// LLMBaseURL are empty the layer is disabled and callers fall back
 	// silently (see maybeGenerateChatTitleAsync).
-	//   - LLMAPIKey       -> MULTICA_LLM_API_KEY
-	//   - LLMBaseURL       -> MULTICA_LLM_BASE_URL (OpenAI or any compatible gateway)
-	//   - LLMDefaultModel  -> MULTICA_LLM_DEFAULT_MODEL (used when a request omits `model`)
+	//   - LLMAPIKey       -> ORCHESTRA_LLM_API_KEY
+	//   - LLMBaseURL       -> ORCHESTRA_LLM_BASE_URL (OpenAI or any compatible gateway)
+	//   - LLMDefaultModel  -> ORCHESTRA_LLM_DEFAULT_MODEL (used when a request omits `model`)
 	LLMAPIKey       string
 	LLMBaseURL      string
 	LLMDefaultModel string
@@ -197,7 +197,7 @@ type Handler struct {
 	WebhookDeliveryWorker        *WebhookDeliveryWorker
 	CloudRuntime                 cloudRuntimeProxy
 	// Lark integration. All three are nil when the Lark master key
-	// (MULTICA_LARK_SECRET_KEY) is unset; the corresponding HTTP
+	// (ORCHESTRA_LARK_SECRET_KEY) is unset; the corresponding HTTP
 	// handlers return 503 in that case so a misconfigured self-host
 	// deployment surfaces a clear error instead of silently using a
 	// zero key. Wired in cmd/server/router.go after handler.New.
@@ -213,7 +213,7 @@ type Handler struct {
 	// LarkAPIClient is the live transport that backs SendInteractiveCard,
 	// PatchInteractiveCard, SendBindingPromptCard, GetBotInfo. The
 	// router wires the real Lark HTTP client whenever
-	// MULTICA_LARK_SECRET_KEY is set; tests that need a no-op
+	// ORCHESTRA_LARK_SECRET_KEY is set; tests that need a no-op
 	// behaviour can swap in `lark.NewStubAPIClient(...)` directly. The
 	// UI consults IsConfigured() to decide whether to surface install
 	// entry points.
@@ -228,7 +228,7 @@ type Handler struct {
 	// engine). The router constructs it UNCONDITIONALLY — it drives any
 	// channel type, not just Feishu, so it does not depend on the Lark
 	// master key; each platform registers its Factory only when configured
-	// (Feishu when MULTICA_LARK_SECRET_KEY is set). The router does NOT
+	// (Feishu when ORCHESTRA_LARK_SECRET_KEY is set). The router does NOT
 	// call Run; the process owner (main.go) starts it under a long-running
 	// context and joins via WaitWithTimeout (bounded, fenced by
 	// ShutdownTimeout) during graceful shutdown so the lease renewer yields
@@ -248,11 +248,11 @@ type Handler struct {
 	ChannelMediaReconciler *service.ChannelMediaReconciler
 	// SlackInstall owns the bring-your-own-app Slack install lifecycle (register
 	// pasted tokens / list / revoke) and the at-rest encryption of each app's bot
-	// + app tokens (MUL-3666). Nil unless MULTICA_SLACK_SECRET_KEY is set.
+	// + app tokens (MUL-3666). Nil unless ORCHESTRA_SLACK_SECRET_KEY is set.
 	SlackInstall *slack.InstallService
 	// SlackBindingTokens mints/redeems the user-binding tokens behind the
 	// "link your Slack account" prompt (MUL-3666). Nil unless Slack is
-	// configured (MULTICA_SLACK_SECRET_KEY set).
+	// configured (ORCHESTRA_SLACK_SECRET_KEY set).
 	SlackBindingTokens *slack.BindingTokenService
 	// SlackHistory backs the agent-facing `multica chat history` command: it
 	// reads a chat session's bound Slack conversation on demand (MUL-3871). Nil
@@ -268,7 +268,7 @@ type Handler struct {
 	LLM *llm.Client
 	// VCSSecretBox encrypts/decrypts per-workspace Git provider access tokens and
 	// webhook secrets at rest (Forgejo / Gitea / GitLab). Nil when
-	// MULTICA_VCS_SECRET_KEY is unset; the connect/webhook handlers return 503
+	// ORCHESTRA_VCS_SECRET_KEY is unset; the connect/webhook handlers return 503
 	// in that case so a misconfigured self-host deployment surfaces a clear
 	// error rather than silently storing plaintext. Wired in
 	// cmd/server/router.go after New.
@@ -322,7 +322,7 @@ func New(queries *db.Queries, txStarter txStarter, hub *realtime.Hub, bus *event
 	taskSvc := service.NewTaskService(queries, txStarter, hub, bus, daemonHub)
 	taskSvc.Analytics = analyticsClient
 	// Chat follow-up suggestions run through the same internal LLM layer that
-	// backs auto-titling. A deployment with no MULTICA_LLM_* configuration gets
+	// backs auto-titling. A deployment with no ORCHESTRA_LLM_* configuration gets
 	// a disabled client, which turns the feature off rather than failing.
 	taskSvc.QuickActions = llmClient
 	h := &Handler{

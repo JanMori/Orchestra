@@ -3,10 +3,10 @@
 import { useState, type ReactNode } from "react";
 import { Check, Copy, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
-import { maskAutopilotWebhookUrl } from "@multica/core/autopilots";
-import { Button } from "@multica/ui/components/ui/button";
-import { cn } from "@multica/ui/lib/utils";
-import { copyText } from "@multica/ui/lib/clipboard";
+import { maskAutopilotWebhookUrl } from "@orchestra/core/autopilots";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { cn } from "@orchestra/ui/lib/utils";
+import { copyText } from "@orchestra/ui/lib/clipboard";
 import { useT } from "../../i18n";
 
 const SIZES = {

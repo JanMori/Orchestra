@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import type { ReactElement, ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { Attachment as AttachmentRecord } from "@multica/core/types";
+import type { Attachment as AttachmentRecord } from "@orchestra/core/types";
 
 const {
   getAttachmentTextContentMock,
@@ -26,7 +26,7 @@ const {
   openByUrlMock: vi.fn(),
 }));
 
-vi.mock("@multica/core/api", () => ({
+vi.mock("@orchestra/core/api", () => ({
   api: {
     getAttachmentTextContent: getAttachmentTextContentMock,
     getAttachment: getAttachmentMock,
@@ -83,8 +83,8 @@ vi.mock("../navigation", () => ({
   }),
 }));
 
-vi.mock("@multica/core/paths", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@multica/core/paths")>();
+vi.mock("@orchestra/core/paths", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@orchestra/core/paths")>();
   return {
     ...actual,
     useWorkspaceSlug: () => "acme",
@@ -127,7 +127,7 @@ vi.mock("./attachment-download-context", () => ({
 }));
 
 import { Attachment } from "./attachment";
-import { configStore } from "@multica/core/config";
+import { configStore } from "@orchestra/core/config";
 
 function makeRecord(overrides: Partial<AttachmentRecord> = {}): AttachmentRecord {
   return {

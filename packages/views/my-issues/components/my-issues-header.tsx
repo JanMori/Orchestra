@@ -1,23 +1,23 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { Button } from "@multica/ui/components/ui/button";
+import { Button } from "@orchestra/ui/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@multica/ui/components/ui/dropdown-menu";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@multica/ui/components/ui/tooltip";
+} from "@orchestra/ui/components/ui/dropdown-menu";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@orchestra/ui/components/ui/tooltip";
 import type {
   Issue,
   IssueTableFacetSpec,
   IssueTableFacetsResponse,
   WorkingAgentSummary,
-} from "@multica/core/types";
-import { type MyIssuesScope } from "@multica/core/issues/stores/my-issues-view-store";
-import { useViewStore } from "@multica/core/issues/stores/view-store-context";
+} from "@orchestra/core/types";
+import { type MyIssuesScope } from "@orchestra/core/issues/stores/my-issues-view-store";
+import { useViewStore } from "@orchestra/core/issues/stores/view-store-context";
 import { useT } from "../../i18n";
 import { WorkspaceAgentWorkingChip } from "../../issues/components/workspace-agent-working-chip";
 import {

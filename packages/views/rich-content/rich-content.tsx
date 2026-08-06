@@ -38,16 +38,16 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
-import { cn } from "@multica/ui/lib/utils";
-import { useWorkspaceSlug } from "@multica/core/paths";
-import { useConfigStore } from "@multica/core/config";
-import type { Attachment } from "@multica/core/types";
+import { cn } from "@orchestra/ui/lib/utils";
+import { useWorkspaceSlug } from "@orchestra/core/paths";
+import { useConfigStore } from "@orchestra/core/config";
+import type { Attachment } from "@orchestra/core/types";
 import {
   isAllowedFileCardHref,
   isIssueIdentifier,
   markdownSanitizeSchema,
   markdownUrlTransform,
-} from "@multica/ui/markdown";
+} from "@orchestra/ui/markdown";
 import { useAppOrigin } from "../navigation";
 import { IssueMentionCard } from "../issues/components/issue-mention-card";
 import { useResolveIssueIdentifier } from "../issues/hooks";

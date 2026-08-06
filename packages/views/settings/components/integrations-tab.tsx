@@ -5,10 +5,10 @@ import { LarkTab } from "./lark-tab";
 import { ComposioTab } from "./composio-tab";
 import { SlackTab } from "./slack-tab";
 import { VCSTab } from "./vcs-tab";
-import { ApiError } from "@multica/core/api";
-import { composioToolkitsOptions } from "@multica/core/composio";
-import { useConfigStore, useFeatureEnabled } from "@multica/core/config";
-import { COMPOSIO_MCP_APPS_FLAG } from "@multica/core/feature-flags";
+import { ApiError } from "@orchestra/core/api";
+import { composioToolkitsOptions } from "@orchestra/core/composio";
+import { useConfigStore, useFeatureEnabled } from "@orchestra/core/config";
+import { COMPOSIO_MCP_APPS_FLAG } from "@orchestra/core/feature-flags";
 import { useT } from "../../i18n";
 import { SettingsSection, SettingsTab } from "./settings-layout";
 

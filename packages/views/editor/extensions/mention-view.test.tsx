@@ -20,7 +20,7 @@ vi.mock("@tiptap/react", () => ({
   NodeViewWrapper: ({ children, ...rest }: any) => <span {...rest}>{children}</span>,
 }));
 
-vi.mock("@multica/core/paths", () => ({
+vi.mock("@orchestra/core/paths", () => ({
   useWorkspacePaths: () => ({
     issueDetail: (id: string) => `/acme/issues/${id}`,
     projectDetail: (id: string) => `/acme/projects/${id}`,
@@ -29,7 +29,7 @@ vi.mock("@multica/core/paths", () => ({
 
 const { newTabPreferred } = vi.hoisted(() => ({ newTabPreferred: { value: false } }));
 
-vi.mock("@multica/core/issues/stores", () => ({
+vi.mock("@orchestra/core/issues/stores", () => ({
   useIssueLinkStore: (selector: (s: { openInNewTab: boolean }) => unknown) =>
     selector({ openInNewTab: newTabPreferred.value }),
 }));

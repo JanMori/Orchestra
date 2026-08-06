@@ -23,7 +23,7 @@ STUB
   cat >"$stub_bin/curl" <<'STUB'
 #!/usr/bin/env bash
 if [[ "$*" == *"-sI"* ]]; then
-  printf 'HTTP/2 302\r\nlocation: https://github.com/multica-ai/multica/releases/tag/v0.3.2\r\n'
+  printf 'HTTP/2 302\r\nlocation: https://github.com/orchestra-ai/multica/releases/tag/v0.3.2\r\n'
   exit 0
 fi
 
@@ -44,7 +44,7 @@ if [[ -z "$out" ]]; then
   echo "stub curl expected -o" >&2
   exit 2
 fi
-cp "$MULTICA_TEST_ARCHIVE" "$out"
+cp "$ORCHESTRA_TEST_ARCHIVE" "$out"
 STUB
   chmod +x "$stub_bin/curl"
 }
@@ -54,8 +54,8 @@ _run_installer() {
   local out="$tmp/install.out"
   local err="$tmp/install.err"
   if ! PATH="$tmp/stub-bin:$tmp/install-bin:/usr/bin:/bin" \
-    MULTICA_BIN_DIR="$tmp/install-bin" \
-    MULTICA_TEST_ARCHIVE="$tmp/multica.tar.gz" \
+    ORCHESTRA_BIN_DIR="$tmp/install-bin" \
+    ORCHESTRA_TEST_ARCHIVE="$tmp/multica.tar.gz" \
     bash "$ROOT_DIR/scripts/install.sh" >"$out" 2>"$err"; then
     echo "install.sh exited non-zero" >&2
     cat "$out" >&2 || true
@@ -261,16 +261,16 @@ _setup_server_sandbox() {
 
   # Minimal self-host assets: only the port mapping matters here.
   cat >"$server_dir/.env.example" <<'ENVFILE'
-PORT=8080
-# BACKEND_PORT=8080
-# API_PORT=8080
-# SERVER_PORT=8080
-FRONTEND_PORT=3000
+PORT=7080
+# BACKEND_PORT=7080
+# API_PORT=7080
+# SERVER_PORT=7080
+FRONTEND_PORT=5000
 JWT_SECRET=change-me-in-production
 POSTGRES_PASSWORD=multica
 DATABASE_URL=postgres://multica:multica@localhost:5432/multica?sslmode=disable
 ENVFILE
-  touch "$server_dir/docker-compose.selfhost.yml"
+  touch "$server_dir/docker-compose.selfhost.build.yml"
 
   # Compose stand-in. Resolves the published host port the way Compose does:
   # the process environment wins over .env, then the alias chain decides.
@@ -304,7 +304,7 @@ _published_backend_port() {
       return
     fi
   done
-  printf '8080'
+  printf '7080'
 }
 
 _published_frontend_port() {
@@ -313,7 +313,7 @@ _published_frontend_port() {
     printf '%s' "$value"
     return
   fi
-  printf '3000'
+  printf '5000'
 }
 
 case "${1:-}" in
@@ -367,7 +367,7 @@ STUB
 set -uo pipefail
 for arg in "$@"; do
   case "$arg" in
-    http*) printf '%s\n' "$arg" >>"$MULTICA_TEST_CURL_LOG" ;;
+    http*) printf '%s\n' "$arg" >>"$ORCHESTRA_TEST_CURL_LOG" ;;
   esac
 done
 exit 0
@@ -389,9 +389,9 @@ _run_with_server() {
   if ! env -i \
     PATH="$tmp/stub-bin:/usr/bin:/bin" \
     HOME="$tmp" \
-    MULTICA_INSTALL_DIR="$tmp/server" \
-    MULTICA_SELFHOST_REF="main" \
-    MULTICA_TEST_CURL_LOG="$tmp/curl.log" \
+    ORCHESTRA_INSTALL_DIR="$tmp/server" \
+    ORCHESTRA_SELFHOST_REF="main" \
+    ORCHESTRA_TEST_CURL_LOG="$tmp/curl.log" \
     "$@" \
     bash "$ROOT_DIR/scripts/install.sh" --with-server \
     >"$tmp/install.out" 2>"$tmp/install.err"; then
@@ -429,19 +429,19 @@ test_with_server_uses_compose_published_ports() {
   trap 'rm -rf "$tmp"' RETURN
 
   # label | .env mutation (sed) | ambient env | expected backend | expected frontend
-  local cases='defaults|||8080|3000
-env-file PORT|s/^PORT=8080/PORT=9100/||9100|3000
-env-file BACKEND_PORT|s/^# BACKEND_PORT=8080/BACKEND_PORT=9200/||9200|3000
-env-file API_PORT|s/^# API_PORT=8080/API_PORT=9300/||9300|3000
-env-file SERVER_PORT|s/^# SERVER_PORT=8080/SERVER_PORT=9400/||9400|3000
-env-file FRONTEND_PORT|s/^FRONTEND_PORT=3000/FRONTEND_PORT=3100/||8080|3100
-ambient PORT beats .env|s/^PORT=8080/PORT=9100/|PORT=9500|9500|3000
-ambient BACKEND_PORT beats .env|s/^PORT=8080/PORT=9100/|BACKEND_PORT=9600|9600|3000
-ambient API_PORT beats .env|s/^PORT=8080/PORT=9100/|API_PORT=9700|9700|3000
-ambient SERVER_PORT beats .env|s/^PORT=8080/PORT=9100/|SERVER_PORT=9800|9800|3000
-ambient FRONTEND_PORT beats .env|s/^FRONTEND_PORT=3000/FRONTEND_PORT=3100/|FRONTEND_PORT=3200|8080|3200
-empty ambient BACKEND_PORT falls through|s/^PORT=8080/PORT=9100/|BACKEND_PORT=|9100|3000
-empty env-file BACKEND_PORT falls through|s/^PORT=8080/PORT=9100/;s/^# BACKEND_PORT=8080/BACKEND_PORT=/||9100|3000'
+  local cases='defaults|||7080|5000
+env-file PORT|s/^PORT=7080/PORT=9100/||9100|5000
+env-file BACKEND_PORT|s/^# BACKEND_PORT=7080/BACKEND_PORT=9200/||9200|5000
+env-file API_PORT|s/^# API_PORT=7080/API_PORT=9300/||9300|5000
+env-file SERVER_PORT|s/^# SERVER_PORT=7080/SERVER_PORT=9400/||9400|5000
+env-file FRONTEND_PORT|s/^FRONTEND_PORT=5000/FRONTEND_PORT=3100/||7080|3100
+ambient PORT beats .env|s/^PORT=7080/PORT=9100/|PORT=9500|9500|5000
+ambient BACKEND_PORT beats .env|s/^PORT=7080/PORT=9100/|BACKEND_PORT=9600|9600|5000
+ambient API_PORT beats .env|s/^PORT=7080/PORT=9100/|API_PORT=9700|9700|5000
+ambient SERVER_PORT beats .env|s/^PORT=7080/PORT=9100/|SERVER_PORT=9800|9800|5000
+ambient FRONTEND_PORT beats .env|s/^FRONTEND_PORT=5000/FRONTEND_PORT=3100/|FRONTEND_PORT=3200|7080|3200
+empty ambient BACKEND_PORT falls through|s/^PORT=7080/PORT=9100/|BACKEND_PORT=|9100|5000
+empty env-file BACKEND_PORT falls through|s/^PORT=7080/PORT=9100/;s/^# BACKEND_PORT=7080/BACKEND_PORT=/||9100|5000'
 
   local label mutation ambient expect_backend expect_frontend
   while IFS='|' read -r label mutation ambient expect_backend expect_frontend; do

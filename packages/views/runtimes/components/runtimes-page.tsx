@@ -9,16 +9,16 @@ import {
   Server,
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useAuthStore } from "@multica/core/auth";
-import { useWorkspaceId } from "@multica/core/hooks";
-import { useWorkspacePaths } from "@multica/core/paths";
-import { agentTaskSnapshotOptions } from "@multica/core/agents";
-import { runtimeProfileListOptions } from "@multica/core/runtimes";
-import { runtimeListOptions, runtimeKeys } from "@multica/core/runtimes/queries";
-import { useWSEvent } from "@multica/core/realtime";
-import { agentListOptions } from "@multica/core/workspace/queries";
-import { Button } from "@multica/ui/components/ui/button";
-import { Skeleton } from "@multica/ui/components/ui/skeleton";
+import { useAuthStore } from "@orchestra/core/auth";
+import { useWorkspaceId } from "@orchestra/core/hooks";
+import { useWorkspacePaths } from "@orchestra/core/paths";
+import { agentTaskSnapshotOptions } from "@orchestra/core/agents";
+import { runtimeProfileListOptions } from "@orchestra/core/runtimes";
+import { runtimeListOptions, runtimeKeys } from "@orchestra/core/runtimes/queries";
+import { useWSEvent } from "@orchestra/core/realtime";
+import { agentListOptions } from "@orchestra/core/workspace/queries";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { Skeleton } from "@orchestra/ui/components/ui/skeleton";
 import {
   CollectionPageHeader,
   CollectionPageHeaderAction,

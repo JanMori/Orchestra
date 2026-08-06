@@ -27,8 +27,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Image as RNImage, Pressable, View } from "react-native";
 import { Image as ExpoImage } from "expo-image";
-import type { Attachment } from "@multica/core/types";
-import { matchAttachmentByURL } from "@multica/core/attachments/image-sequence";
+import type { Attachment } from "@orchestra/core/types";
+import { matchAttachmentByURL } from "@orchestra/core/attachments/image-sequence";
 import { resolveAttachmentUrl } from "@/lib/attachment-url";
 import { useLightbox } from "./lightbox-provider";
 import { useImageSequence } from "./image-sequence";

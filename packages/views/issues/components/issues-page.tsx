@@ -6,9 +6,9 @@ import type {
   IssueTableFacetSpec,
   IssueTableFacetsResponse,
   WorkingAgentSummary,
-} from "@multica/core/types";
-import { useIssuesScopeStore } from "@multica/core/issues/stores/issues-scope-store";
-import { useViewStore } from "@multica/core/issues/stores/view-store-context";
+} from "@orchestra/core/types";
+import { useIssuesScopeStore } from "@orchestra/core/issues/stores/issues-scope-store";
+import { useViewStore } from "@orchestra/core/issues/stores/view-store-context";
 import { PageHeader } from "../../layout/page-header";
 import { useT } from "../../i18n";
 import { IssueSurface } from "../surface/issue-surface";

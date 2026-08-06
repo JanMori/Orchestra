@@ -4,8 +4,8 @@ import { StrictMode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
-import type { Agent } from "@multica/core/types";
-import { I18nProvider } from "@multica/core/i18n/react";
+import type { Agent } from "@orchestra/core/types";
+import { I18nProvider } from "@orchestra/core/i18n/react";
 import enCommon from "../locales/en/common.json";
 import enChat from "../locales/en/chat.json";
 import {
@@ -62,7 +62,7 @@ vi.mock("./components/archived-agent-banner", () => ({
 vi.mock("react-resizable-panels", () => ({
   useDefaultLayout: () => ({ defaultLayout: undefined, onLayoutChanged: vi.fn() }),
 }));
-vi.mock("@multica/ui/components/ui/resizable", () => ({
+vi.mock("@orchestra/ui/components/ui/resizable", () => ({
   ResizablePanelGroup: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
   ),
@@ -71,10 +71,10 @@ vi.mock("@multica/ui/components/ui/resizable", () => ({
   ),
   ResizableHandle: () => null,
 }));
-vi.mock("@multica/ui/hooks/use-mobile", () => ({
+vi.mock("@orchestra/ui/hooks/use-mobile", () => ({
   useIsMobile: () => false,
 }));
-vi.mock("@multica/core/paths", () => ({
+vi.mock("@orchestra/core/paths", () => ({
   useWorkspacePaths: () => ({ chat: () => "/acme/chat" }),
 }));
 
@@ -107,7 +107,7 @@ vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: mockToastError },
 }));
 
-vi.mock("@multica/core/chat", () => ({
+vi.mock("@orchestra/core/chat", () => ({
   useChatStore: Object.assign(
     (selector?: (s: { activeSessionId: string | null }) => unknown) =>
       selector ? selector(storeRef.current) : storeRef.current,

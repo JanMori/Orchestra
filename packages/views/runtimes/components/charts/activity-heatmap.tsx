@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import type { RuntimeUsage } from "@multica/core/types";
-import { useCustomPricingStore } from "@multica/core/runtimes/custom-pricing-store";
+import type { RuntimeUsage } from "@orchestra/core/types";
+import { useCustomPricingStore } from "@orchestra/core/runtimes/custom-pricing-store";
 import { addDaysIso, estimateCost, formatUsd, todayIso, weekStartIso } from "../../utils";
 import { useT } from "../../../i18n";
 

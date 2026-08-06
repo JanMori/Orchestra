@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Loader2, Save } from "lucide-react";
-import type { Agent } from "@multica/core/types";
-import { Button } from "@multica/ui/components/ui/button";
-import { Textarea } from "@multica/ui/components/ui/textarea";
+import type { Agent } from "@orchestra/core/types";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { Textarea } from "@orchestra/ui/components/ui/textarea";
 import { useT } from "../../../i18n";
 
 export function InstructionsTab({

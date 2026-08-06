@@ -1,10 +1,10 @@
 # Multica installer for Windows — one command to get started.
 #
 # Install CLI (default): connects to multica.ai
-#   irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/orchestra-ai/multica/main/scripts/install.ps1 | iex
 #
 # Self-host: starts a local Multica server + installs CLI + configures
-#   $env:MULTICA_MODE="local"; irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex
+#   $env:ORCHESTRA_MODE="local"; irm https://raw.githubusercontent.com/orchestra-ai/multica/main/scripts/install.ps1 | iex
 #
 
 $ErrorActionPreference = "Stop"
@@ -12,10 +12,10 @@ $ErrorActionPreference = "Stop"
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-$RepoUrl       = "https://github.com/multica-ai/multica.git"
-$RepoWebUrl    = "https://github.com/multica-ai/multica"
+$RepoUrl       = "https://github.com/orchestra-ai/multica.git"
+$RepoWebUrl    = "https://github.com/orchestra-ai/multica"
 $DefaultInstallDir = Join-Path $env:USERPROFILE ".multica\server"
-$InstallDir    = if ($env:MULTICA_INSTALL_DIR) { $env:MULTICA_INSTALL_DIR } else { $DefaultInstallDir }
+$InstallDir    = if ($env:ORCHESTRA_INSTALL_DIR) { $env:ORCHESTRA_INSTALL_DIR } else { $DefaultInstallDir }
 
 # Host ports Compose reported after `up -d`; set by Setup-Server and reused by
 # the summary so the health check and the printed URLs cannot diverge.
@@ -64,7 +64,7 @@ function Get-ComposePublishedPort {
 
     $output = $null
     try {
-        $output = docker compose -f docker-compose.selfhost.yml port $Service $ContainerPort 2>$null
+        $output = docker compose -f docker-compose.selfhost.build.yml port $Service $ContainerPort 2>$null
     } catch {
         return $null
     }
@@ -86,7 +86,7 @@ function Get-ComposePublishedPort {
 
 function Get-LatestVersion {
     try {
-        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/multica-ai/multica/releases/latest" -ErrorAction Stop
+        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/orchestra-ai/multica/releases/latest" -ErrorAction Stop
         return $release.tag_name
     } catch {
         return $null
@@ -94,8 +94,8 @@ function Get-LatestVersion {
 }
 
 function Get-SelfHostRef {
-    if ($env:MULTICA_SELFHOST_REF) {
-        return $env:MULTICA_SELFHOST_REF
+    if ($env:ORCHESTRA_SELFHOST_REF) {
+        return $env:ORCHESTRA_SELFHOST_REF
     }
 
     $latest = Get-LatestVersion
@@ -129,7 +129,7 @@ function Checkout-ServerRef {
 }
 
 function Pull-OfficialSelfHostImages {
-    docker compose -f docker-compose.selfhost.yml pull
+    docker compose -f docker-compose.selfhost.build.yml pull
     if ($LASTEXITCODE -eq 0) {
         return
     }
@@ -138,7 +138,7 @@ function Pull-OfficialSelfHostImages {
     Write-Warn "Official images for the selected self-host channel are not published yet."
     Write-Host "This can happen before the first GHCR release is available."
     Write-Host "From $InstallDir, build from source instead:"
-    Write-Host "  docker compose -f docker-compose.selfhost.yml -f docker-compose.selfhost.build.yml up -d --build"
+    Write-Host "  docker compose -f docker-compose.selfhost.build.yml up -d --build"
     exit 1
 }
 
@@ -247,7 +247,7 @@ function Install-CliBinary {
     }
 
     $version = $latest.TrimStart('v')
-    $url = "https://github.com/multica-ai/multica/releases/download/$latest/multica-cli-$version-windows-$arch.zip"
+    $url = "https://github.com/orchestra-ai/multica/releases/download/$latest/multica-cli-$version-windows-$arch.zip"
     $tmpDir = Join-Path ([System.IO.Path]::GetTempPath()) "multica-install"
 
     if (Test-Path $tmpDir) { Remove-Item $tmpDir -Recurse -Force }
@@ -262,7 +262,7 @@ function Install-CliBinary {
     }
 
     # Verify SHA256 checksum
-    $checksumUrl = "https://github.com/multica-ai/multica/releases/download/$latest/checksums.txt"
+    $checksumUrl = "https://github.com/orchestra-ai/multica/releases/download/$latest/checksums.txt"
     try {
         $checksums = Invoke-WebRequest -Uri $checksumUrl -UseBasicParsing -ErrorAction Stop
         $checksumContent = if ($checksums.Content -is [byte[]]) {
@@ -380,7 +380,7 @@ Docker is not installed. Multica self-hosting requires Docker and Docker Compose
 Install Docker Desktop for Windows:
   https://docs.docker.com/desktop/install/windows-install/
 
-After installing Docker, re-run this script with `$env:MULTICA_MODE="local"`.
+After installing Docker, re-run this script with `$env:ORCHESTRA_MODE="local"`.
 "@
     }
 
@@ -442,17 +442,17 @@ function Install-Server {
     Write-Info "Pulling official Multica images..."
     Pull-OfficialSelfHostImages
     Write-Info "Starting Multica services (this may take a few minutes on first run)..."
-    docker compose -f docker-compose.selfhost.yml up -d
+    docker compose -f docker-compose.selfhost.build.yml up -d
 
     # Read the ports Compose actually published, once, and reuse them for both
     # the health check and the summary so the two can never disagree.
     $script:SelfHostBackendPort = Get-ComposePublishedPort -Service "backend" -ContainerPort 8080
     if (-not $script:SelfHostBackendPort) {
-        Write-Fail "Started the stack but could not read the backend host port from Docker Compose.`n  Check it with: cd $InstallDir; docker compose -f docker-compose.selfhost.yml ps"
+        Write-Fail "Started the stack but could not read the backend host port from Docker Compose.`n  Check it with: cd $InstallDir; docker compose -f docker-compose.selfhost.build.yml ps"
     }
     $script:SelfHostFrontendPort = Get-ComposePublishedPort -Service "frontend" -ContainerPort 3000
     if (-not $script:SelfHostFrontendPort) {
-        Write-Fail "Started the stack but could not read the frontend host port from Docker Compose.`n  Check it with: cd $InstallDir; docker compose -f docker-compose.selfhost.yml ps"
+        Write-Fail "Started the stack but could not read the frontend host port from Docker Compose.`n  Check it with: cd $InstallDir; docker compose -f docker-compose.selfhost.build.yml ps"
     }
 
     Write-Info "Waiting for backend to be ready..."
@@ -471,7 +471,7 @@ function Install-Server {
         Write-Ok "Multica server is running"
     } else {
         Write-Warn "Server is still starting. Check logs with:"
-        Write-Host "  cd $InstallDir; docker compose -f docker-compose.selfhost.yml logs"
+        Write-Host "  cd $InstallDir; docker compose -f docker-compose.selfhost.build.yml logs"
     }
 
     Pop-Location
@@ -499,7 +499,7 @@ function Start-DefaultInstall {
     Write-Host "     multica setup self-host      " -NoNewline; Write-Host "# Connect to a self-hosted server" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "  Self-hosting? Install the server first:"
-    Write-Host '     $env:MULTICA_MODE="with-server"; irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex'
+    Write-Host '     $env:ORCHESTRA_MODE="with-server"; irm https://raw.githubusercontent.com/orchestra-ai/multica/main/scripts/install.ps1 | iex'
     Write-Host ""
 }
 
@@ -533,7 +533,7 @@ function Start-LocalInstall {
     Write-Host "  or read the generated code from backend logs when Resend is unset."
     Write-Host ""
     Write-Host "  To stop all services:"
-    Write-Host '     $env:MULTICA_MODE="stop"; irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex'
+    Write-Host '     $env:ORCHESTRA_MODE="stop"; irm https://raw.githubusercontent.com/orchestra-ai/multica/main/scripts/install.ps1 | iex'
     Write-Host ""
 }
 
@@ -546,11 +546,11 @@ function Start-Stop {
 
     if (Test-Path $InstallDir) {
         Push-Location $InstallDir
-        if (Test-Path "docker-compose.selfhost.yml") {
-            docker compose -f docker-compose.selfhost.yml down
+        if (Test-Path "docker-compose.selfhost.build.yml") {
+            docker compose -f docker-compose.selfhost.build.yml down
             Write-Ok "Docker services stopped"
         } else {
-            Write-Warn "No docker-compose.selfhost.yml found at $InstallDir"
+            Write-Warn "No docker-compose.selfhost.build.yml found at $InstallDir"
         }
         Pop-Location
     } else {
@@ -570,7 +570,7 @@ function Start-Stop {
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
-$mode = if ($env:MULTICA_MODE) { $env:MULTICA_MODE.ToLower() } else { "default" }
+$mode = if ($env:ORCHESTRA_MODE) { $env:ORCHESTRA_MODE.ToLower() } else { "default" }
 
 switch ($mode) {
     "with-server" { Start-LocalInstall }

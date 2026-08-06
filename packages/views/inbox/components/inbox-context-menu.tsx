@@ -11,13 +11,13 @@ import {
   type ReactNode,
 } from "react";
 import { Archive, ArchiveRestore, Check, CircleDot } from "lucide-react";
-import type { InboxItem } from "@multica/core/types";
+import type { InboxItem } from "@orchestra/core/types";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
-} from "@multica/ui/components/ui/context-menu";
+} from "@orchestra/ui/components/ui/context-menu";
 import type { InboxView } from "./inbox-view";
 import { useT } from "../../i18n";
 

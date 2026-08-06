@@ -9,19 +9,19 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@multica/ui/components/ui/card";
-import { Input } from "@multica/ui/components/ui/input";
-import { Button } from "@multica/ui/components/ui/button";
-import { Label } from "@multica/ui/components/ui/label";
+} from "@orchestra/ui/components/ui/card";
+import { Input } from "@orchestra/ui/components/ui/input";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { Label } from "@orchestra/ui/components/ui/label";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-} from "@multica/ui/components/ui/input-otp";
-import { useAuthStore } from "@multica/core/auth";
-import { workspaceKeys } from "@multica/core/workspace/queries";
-import { api } from "@multica/core/api";
-import type { User } from "@multica/core/types";
+} from "@orchestra/ui/components/ui/input-otp";
+import { useAuthStore } from "@orchestra/core/auth";
+import { workspaceKeys } from "@orchestra/core/workspace/queries";
+import { api } from "@orchestra/core/api";
+import type { User } from "@orchestra/core/types";
 import { useT } from "../i18n";
 
 // ---------------------------------------------------------------------------
@@ -108,24 +108,24 @@ export function LoginPage({
 }: LoginPageProps) {
   const { t } = useT("auth");
   const qc = useQueryClient();
-  const [step, setStep] = useState<"email" | "code" | "cli_confirm">("email");
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [step, setStep] = useState<"form" | "code" | "cli_confirm">("form");
+  const [account, setAccount] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [existingUser, setExistingUser] = useState<User | null>(null);
-  // Tracks how the existing session was detected so handleCliAuthorize
-  // uses the matching token source (cookie → issueCliToken, localStorage → direct).
   const authSourceRef = useRef<"cookie" | "localStorage">("cookie");
 
   // Check for existing session when CLI callback is present.
-  // Prioritises cookie auth (= current browser session) to avoid authorising
-  // the CLI with a stale or mismatched localStorage token.
   useEffect(() => {
     if (!cliCallback) return;
 
-    // Ensure no stale bearer token interferes — we want to test the cookie first.
     api.setToken(null);
 
     api
@@ -136,7 +136,6 @@ export function LoginPage({
         setStep("cli_confirm");
       })
       .catch(() => {
-        // Cookie auth failed — fall back to localStorage token
         const token = localStorage.getItem("multica_token");
         if (!token) return;
 
@@ -162,42 +161,22 @@ export function LoginPage({
     return () => clearTimeout(timer);
   }, [cooldown]);
 
-  const handleSendCode = useCallback(
+  const handleLogin = useCallback(
     async (e?: React.FormEvent) => {
       e?.preventDefault();
-      if (!email) {
-        setError(t(($) => $.common.email_required));
+      if (!account) {
+        setError(t(($) => $.common.account_required));
+        return;
+      }
+      if (!password) {
+        setError(t(($) => $.common.password_required));
         return;
       }
       setLoading(true);
       setError("");
       try {
-        await useAuthStore.getState().sendCode(email);
-        setStep("code");
-        setCode("");
-        setCooldown(60);
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : `${t(($) => $.errors.send_failed)} ${t(($) => $.errors.server_unreachable)}`,
-        );
-      } finally {
-        setLoading(false);
-      }
-    },
-    [email, t],
-  );
-
-  const handleVerify = useCallback(
-    async (value: string) => {
-      if (value.length !== 6) return;
-      setLoading(true);
-      setError("");
-      try {
         if (cliCallback) {
-          // CLI path: get token directly for the redirect URL
-          const { token } = await api.verifyCode(email, value);
+          const { token } = await api.login(account, password);
           localStorage.setItem("multica_token", token);
           api.setToken(token);
           onTokenObtained?.();
@@ -205,11 +184,91 @@ export function LoginPage({
           return;
         }
 
-        // Normal path: seed the workspace list into the Query cache so the
-        // caller's onSuccess can read it synchronously to compute a destination
-        // URL (first workspace's slug, or /workspaces/new for zero-workspace
-        // users).
-        await useAuthStore.getState().verifyCode(email, value);
+        await useAuthStore.getState().login(account, password);
+        const wsList = await api.listWorkspaces();
+        qc.setQueryData(workspaceKeys.list(), wsList);
+        onTokenObtained?.();
+        onSuccess();
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : t(($) => $.errors.login_failed),
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [account, password, onSuccess, cliCallback, onTokenObtained, qc, t],
+  );
+
+  const handleRegister = useCallback(
+    async (e?: React.FormEvent) => {
+      e?.preventDefault();
+      if (!email) {
+        setError(t(($) => $.common.email_required));
+        return;
+      }
+      if (!password || password.length < 6) {
+        setError(t(($) => $.common.password_min_length));
+        return;
+      }
+      setLoading(true);
+      setError("");
+      try {
+        const emailName = email && email.includes("@") ? (email.split("@")[0] ?? "User") : (email || "User");
+        const computedName: string = name || emailName || "User";
+        const regPayload: { name: string; email: string; username?: string; password: string } = {
+          name: computedName || "User",
+          email: email || "",
+          password,
+        };
+        if (username) regPayload.username = username;
+
+        if (cliCallback) {
+          const { token } = await api.register(regPayload);
+          localStorage.setItem("multica_token", token);
+          api.setToken(token);
+          onTokenObtained?.();
+          redirectToCliCallback(cliCallback.url, token, cliCallback.state);
+          return;
+        }
+
+        await useAuthStore.getState().register(regPayload);
+        const wsList = await api.listWorkspaces();
+        qc.setQueryData(workspaceKeys.list(), wsList);
+        onTokenObtained?.();
+        onSuccess();
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : t(($) => $.errors.signup_failed),
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [name, email, username, password, onSuccess, cliCallback, onTokenObtained, qc, t],
+  );
+
+  const handleVerify = useCallback(
+    async (value: string) => {
+      if (value.length !== 6) return;
+      const targetEmail = email || account;
+      setLoading(true);
+      setError("");
+      try {
+        if (cliCallback) {
+          const { token } = await api.verifyCode(targetEmail, value);
+          localStorage.setItem("multica_token", token);
+          api.setToken(token);
+          onTokenObtained?.();
+          redirectToCliCallback(cliCallback.url, token, cliCallback.state);
+          return;
+        }
+
+        await useAuthStore.getState().verifyCode(targetEmail, value);
         const wsList = await api.listWorkspaces();
         qc.setQueryData(workspaceKeys.list(), wsList);
         onTokenObtained?.();
@@ -224,14 +283,15 @@ export function LoginPage({
         setLoading(false);
       }
     },
-    [email, onSuccess, cliCallback, onTokenObtained, qc, t],
+    [email, account, onSuccess, cliCallback, onTokenObtained, qc, t],
   );
 
   const handleResend = async () => {
     if (cooldown > 0) return;
+    const targetEmail = email || account;
     setError("");
     try {
-      await useAuthStore.getState().sendCode(email);
+      await useAuthStore.getState().sendCode(targetEmail);
       setCooldown(60);
     } catch (err) {
       setError(
@@ -248,12 +308,10 @@ export function LoginPage({
       let token: string;
 
       if (authSourceRef.current === "localStorage") {
-        // Session was detected via localStorage — reuse that token directly.
         const stored = localStorage.getItem("multica_token");
         if (!stored) throw new Error("token missing");
         token = stored;
       } else {
-        // Session was detected via cookie — obtain a bearer token from the server.
         const res = await api.issueCliToken();
         token = res.token;
       }
@@ -263,7 +321,7 @@ export function LoginPage({
     } catch {
       setError(t(($) => $.errors.cli_auth_failed));
       setExistingUser(null);
-      setStep("email");
+      setStep("form");
       setLoading(false);
     }
   };
@@ -319,7 +377,7 @@ export function LoginPage({
               className="w-full"
               onClick={() => {
                 setExistingUser(null);
-                setStep("email");
+                setStep("form");
               }}
             >
               {t(($) => $.cli.different_account)}
@@ -344,7 +402,7 @@ export function LoginPage({
               {t(($) => $.verify.title)}
             </CardTitle>
             <CardDescription>
-              {t(($) => $.verify.description, { email })}
+              {t(($) => $.verify.description, { email: email || account })}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-4">
@@ -389,7 +447,7 @@ export function LoginPage({
               variant="ghost"
               className="w-full"
               onClick={() => {
-                setStep("email");
+                setStep("form");
                 setCode("");
                 setError("");
               }}
@@ -403,7 +461,7 @@ export function LoginPage({
   }
 
   // -------------------------------------------------------------------------
-  // Email step
+  // Main Auth Form (Sign In / Sign Up)
   // -------------------------------------------------------------------------
 
   return (
@@ -412,42 +470,143 @@ export function LoginPage({
         <CardHeader className="text-center">
           {logo && <div className="mx-auto mb-4">{logo}</div>}
           <CardTitle className="text-display-sm">
-            {t(($) => $.signin.title)}
+            {mode === "signin"
+              ? t(($) => $.signin.title)
+              : t(($) => $.signin.signup_title)}
           </CardTitle>
           <CardDescription>
-            {t(($) => $.signin.description)}
+            {mode === "signin"
+              ? t(($) => $.signin.description)
+              : t(($) => $.signin.signup_description)}
           </CardDescription>
+          <div className="mt-3 flex rounded-lg border p-1">
+            <button
+              type="button"
+              onClick={() => {
+                setMode("signin");
+                setError("");
+              }}
+              className={`flex-1 rounded-md py-1 text-caption font-medium transition-colors ${
+                mode === "signin"
+                  ? "bg-accent text-accent-foreground shadow-xs"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t(($) => $.signin.tab_signin)}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("signup");
+                setError("");
+              }}
+              className={`flex-1 rounded-md py-1 text-caption font-medium transition-colors ${
+                mode === "signup"
+                  ? "bg-accent text-accent-foreground shadow-xs"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t(($) => $.signin.tab_signup)}
+            </button>
+          </div>
         </CardHeader>
         <CardContent>
-          <form id="login-form" onSubmit={handleSendCode} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="login-email">{t(($) => $.common.email)}</Label>
-              <Input
-                id="login-email"
-                type="email"
-                placeholder={t(($) => $.common.email_placeholder)}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoFocus
-                required
-              />
-            </div>
-            {error && (
-              <p className="text-body text-destructive">{error}</p>
-            )}
-          </form>
+          {mode === "signin" ? (
+            <form id="auth-form" onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="login-account">{t(($) => $.signin.account)}</Label>
+                <Input
+                  id="login-account"
+                  type="text"
+                  placeholder={t(($) => $.signin.account_placeholder)}
+                  value={account}
+                  onChange={(e) => setAccount(e.target.value)}
+                  autoFocus
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="login-password">{t(($) => $.signin.password)}</Label>
+                <Input
+                  id="login-password"
+                  type="password"
+                  placeholder={t(($) => $.signin.password_placeholder)}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              {error && (
+                <p className="text-body text-destructive">{error}</p>
+              )}
+            </form>
+          ) : (
+            <form id="auth-form" onSubmit={handleRegister} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="signup-name">{t(($) => $.signin.name)}</Label>
+                <Input
+                  id="signup-name"
+                  type="text"
+                  placeholder={t(($) => $.signin.name_placeholder)}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="signup-email">{t(($) => $.common.email)}</Label>
+                <Input
+                  id="signup-email"
+                  type="email"
+                  placeholder={t(($) => $.common.email_placeholder)}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="signup-username">{t(($) => $.signin.username)}</Label>
+                <Input
+                  id="signup-username"
+                  type="text"
+                  placeholder={t(($) => $.signin.username_placeholder)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="signup-password">{t(($) => $.signin.password)}</Label>
+                <Input
+                  id="signup-password"
+                  type="password"
+                  placeholder={t(($) => $.signin.password_placeholder)}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              {error && (
+                <p className="text-body text-destructive">{error}</p>
+              )}
+            </form>
+          )}
         </CardContent>
         <CardFooter className="flex flex-col gap-3">
           <Button
             type="submit"
-            form="login-form"
+            form="auth-form"
             className="w-full"
             size="lg"
-            disabled={!email || loading}
+            disabled={
+              mode === "signin"
+                ? !account || !password || loading
+                : !email || !password || loading
+            }
           >
             {loading
               ? t(($) => $.signin.sending)
-              : t(($) => $.signin.continue)}
+              : mode === "signin"
+                ? t(($) => $.signin.continue)
+                : t(($) => $.signin.signup_submit)}
           </Button>
           {(google || onGoogleLogin) && (
             <Button

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { QueryClient, type InfiniteData } from "@tanstack/react-query";
-import { chatKeys } from "@multica/core/chat/queries";
-import type { ChatMessage, ChatMessagesPage, ChatPendingTask } from "@multica/core/types";
+import { chatKeys } from "@orchestra/core/chat/queries";
+import type { ChatMessage, ChatMessagesPage, ChatPendingTask } from "@orchestra/core/types";
 import {
   hasInFlightPendingTask,
   isStillOnComposeTarget,

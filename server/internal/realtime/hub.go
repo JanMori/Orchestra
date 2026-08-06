@@ -77,14 +77,14 @@ func loadAllowedOrigins() []string {
 	return origins
 }
 
-// loadTrustedProxies reads the same MULTICA_TRUSTED_PROXIES env var the rest of
+// loadTrustedProxies reads the same ORCHESTRA_TRUSTED_PROXIES env var the rest of
 // the server uses (see cmd/server/router.go and handler.Config.TrustedProxies),
 // parsing it as a comma-separated list of CIDR prefixes. Invalid entries are
 // dropped with a warn-line rather than crashing. Empty input returns nil, which
 // means "trust no proxy" — X-Forwarded-Host is then never honored. The router
 // overrides this at startup via SetTrustedProxies so both share one config.
 func loadTrustedProxies() []netip.Prefix {
-	raw := strings.TrimSpace(os.Getenv("MULTICA_TRUSTED_PROXIES"))
+	raw := strings.TrimSpace(os.Getenv("ORCHESTRA_TRUSTED_PROXIES"))
 	if raw == "" {
 		return nil
 	}
@@ -110,7 +110,7 @@ func SetAllowedOrigins(origins []string) {
 }
 
 // SetTrustedProxies overrides the trusted proxy CIDR list. The server wires the
-// shared MULTICA_TRUSTED_PROXIES value in here at startup.
+// shared ORCHESTRA_TRUSTED_PROXIES value in here at startup.
 func SetTrustedProxies(proxies []netip.Prefix) {
 	trustedProxies.Store(proxies)
 }

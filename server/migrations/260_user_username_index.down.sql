@@ -1,0 +1,1 @@
+DROP INDEX CONCURRENTLY IF NOT EXISTS idx_user_username;

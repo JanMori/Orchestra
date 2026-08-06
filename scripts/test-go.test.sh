@@ -13,7 +13,7 @@ cleanup() {
 trap cleanup EXIT
 
 mkdir -p "$BIN_DIR"
-export MULTICA_TEST_GO_CALLS="$CALLS_FILE"
+export ORCHESTRA_TEST_GO_CALLS="$CALLS_FILE"
 
 cat >"$BIN_DIR/go" <<'EOF'
 #!/usr/bin/env bash
@@ -26,13 +26,13 @@ case "${1:-}" in
       exit 2
     fi
     printf '%s\n' \
-      github.com/multica-ai/multica/server \
-      github.com/multica-ai/multica/server/internal/daemon \
-      github.com/multica-ai/multica/server/pkg/agent \
-      github.com/multica-ai/multica/server/pkg/agent/internal/testutil
+      github.com/orchestra-ai/multica/server \
+      github.com/orchestra-ai/multica/server/internal/daemon \
+      github.com/orchestra-ai/multica/server/pkg/agent \
+      github.com/orchestra-ai/multica/server/pkg/agent/internal/testutil
     ;;
   test)
-    printf '%s\n' "$*" >>"$MULTICA_TEST_GO_CALLS"
+    printf '%s\n' "$*" >>"$ORCHESTRA_TEST_GO_CALLS"
     ;;
   *)
     echo "unexpected go command: $*" >&2
@@ -44,7 +44,7 @@ chmod 755 "$BIN_DIR/go"
 
 PATH="$BIN_DIR:$PATH" bash "$SCRIPT_DIR/test-go.sh" --race
 
-expected_calls='test -race github.com/multica-ai/multica/server github.com/multica-ai/multica/server/internal/daemon
+expected_calls='test -race github.com/orchestra-ai/multica/server github.com/orchestra-ai/multica/server/internal/daemon
 test -race -p 2 -parallel 2 ./pkg/agent/...'
 actual_calls=$(cat "$CALLS_FILE")
 if [ "$actual_calls" != "$expected_calls" ]; then

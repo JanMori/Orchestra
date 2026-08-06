@@ -37,7 +37,7 @@ printf '\nBACKEND_PORT=9100\n' >>"$tmp_env"
 config="$(
   docker compose \
     --env-file "$tmp_env" \
-    -f docker-compose.selfhost.yml \
+    -f docker-compose.selfhost.build.yml \
     config
 )"
 
@@ -45,7 +45,7 @@ require_config "$config" 'published: "3100"'
 require_config "$config" 'published: "9100"'
 require_config "$config" 'FRONTEND_ORIGIN: http://localhost:3100'
 require_config "$config" 'GOOGLE_REDIRECT_URI: http://localhost:3100/auth/callback'
-require_config "$config" 'MULTICA_APP_URL: http://localhost:3100'
+require_config "$config" 'ORCHESTRA_APP_URL: http://localhost:3100'
 
 for script in scripts/dev.sh scripts/check.sh; do
   if ! grep -Fq '. scripts/local-env.sh' "$script"; then
@@ -68,9 +68,9 @@ local_env="$(
       "PORT=${PORT}" \
       "FRONTEND_PORT=${FRONTEND_PORT}" \
       "FRONTEND_ORIGIN=${FRONTEND_ORIGIN}" \
-      "MULTICA_APP_URL=${MULTICA_APP_URL}" \
+      "ORCHESTRA_APP_URL=${ORCHESTRA_APP_URL}" \
       "GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}" \
-      "MULTICA_SERVER_URL=${MULTICA_SERVER_URL}" \
+      "ORCHESTRA_SERVER_URL=${ORCHESTRA_SERVER_URL}" \
       "LOCAL_UPLOAD_BASE_URL=${LOCAL_UPLOAD_BASE_URL}" \
       "PLAYWRIGHT_BASE_URL=${PLAYWRIGHT_BASE_URL}"
   ' _ "$tmp_env"
@@ -79,16 +79,16 @@ local_env="$(
 require_env "$local_env" 'PORT=9100'
 require_env "$local_env" 'FRONTEND_PORT=3100'
 require_env "$local_env" 'FRONTEND_ORIGIN=http://localhost:3100'
-require_env "$local_env" 'MULTICA_APP_URL=http://localhost:3100'
+require_env "$local_env" 'ORCHESTRA_APP_URL=http://localhost:3100'
 require_env "$local_env" 'GOOGLE_REDIRECT_URI=http://localhost:3100/auth/callback'
-require_env "$local_env" 'MULTICA_SERVER_URL=ws://localhost:9100/ws'
+require_env "$local_env" 'ORCHESTRA_SERVER_URL=ws://localhost:9100/ws'
 require_env "$local_env" 'LOCAL_UPLOAD_BASE_URL=http://localhost:9100'
 require_env "$local_env" 'PLAYWRIGHT_BASE_URL=http://localhost:3100'
 
 worktree_env="$tmp_dir/.env.worktree"
 WORKTREE_NAME=selfhost-config-test bash scripts/init-worktree-env.sh "$worktree_env" >/dev/null
 worktree_backend_port="$(sed -n 's/^PORT=//p' "$worktree_env")"
-require_env "$(cat "$worktree_env")" "MULTICA_PUBLIC_URL=http://localhost:${worktree_backend_port}"
+require_env "$(cat "$worktree_env")" "ORCHESTRA_PUBLIC_URL=http://localhost:${worktree_backend_port}"
 
 resolve_local_public_url() {
   env -i PATH="$PATH" bash -c '
@@ -100,7 +100,7 @@ resolve_local_public_url() {
     set +a
     # shellcheck disable=SC1091
     . scripts/local-env.sh
-    printf "%s\n" "$MULTICA_PUBLIC_URL"
+    printf "%s\n" "$ORCHESTRA_PUBLIC_URL"
   ' _ "$1"
 }
 
@@ -108,7 +108,7 @@ make_env_probe="$tmp_dir/print-public-url.mk"
 printf '%s\n' \
   '.PHONY: print-public-url' \
   'print-public-url:' \
-  '	@printf "%s\n" "$$MULTICA_PUBLIC_URL"' \
+  '	@printf "%s\n" "$$ORCHESTRA_PUBLIC_URL"' \
   >"$make_env_probe"
 
 resolve_make_public_url() {
@@ -122,7 +122,7 @@ resolve_make_public_url() {
 }
 
 old_worktree_env="$tmp_dir/.env.worktree.old"
-grep -v '^MULTICA_PUBLIC_URL=' "$worktree_env" >"$old_worktree_env"
+grep -v '^ORCHESTRA_PUBLIC_URL=' "$worktree_env" >"$old_worktree_env"
 require_env \
   "$(resolve_local_public_url "$old_worktree_env")" \
   "http://localhost:${worktree_backend_port}"
@@ -132,7 +132,7 @@ require_env \
 
 explicit_worktree_env="$tmp_dir/.env.worktree.explicit"
 cp "$old_worktree_env" "$explicit_worktree_env"
-printf '\nMULTICA_PUBLIC_URL=https://api.explicit.example\n' >>"$explicit_worktree_env"
+printf '\nORCHESTRA_PUBLIC_URL=https://api.explicit.example\n' >>"$explicit_worktree_env"
 require_env \
   "$(resolve_local_public_url "$explicit_worktree_env")" \
   "https://api.explicit.example"
@@ -224,7 +224,7 @@ chmod +x "$stub_dir/docker" "$stub_dir/curl"
 # Throwaway checkout so the recipe never touches this repo's own .env.
 recipe_dir="$tmp_dir/recipe"
 mkdir -p "$recipe_dir/scripts"
-cp Makefile .env.example docker-compose.selfhost.yml docker-compose.selfhost.build.yml "$recipe_dir/"
+cp Makefile .env.example docker-compose.selfhost.build.yml docker-compose.selfhost.build.yml "$recipe_dir/"
 cp scripts/selfhost-wait.sh "$recipe_dir/scripts/"
 
 record="$tmp_dir/published"
@@ -281,17 +281,17 @@ require_consistent() {
 # PORT is the value to edit, so editing it must move the published port and the
 # probe together. Fails on the old recipe, which probed 9100 while Compose
 # published 8080.
-run_recipe selfhost 's/^PORT=8080/PORT=9100/' '' '' >/dev/null
+run_recipe selfhost 's/^PORT=7080/PORT=9100/' '' '' >/dev/null
 require_consistent 'PORT edited in .env' 9100
 
 # BACKEND_PORT remains an alias that overrides PORT.
-run_recipe selfhost 's/^# BACKEND_PORT=8080/BACKEND_PORT=9200/' '' '' >/dev/null
+run_recipe selfhost 's/^# BACKEND_PORT=7080/BACKEND_PORT=9200/' '' '' >/dev/null
 require_consistent 'BACKEND_PORT alias in .env' 9200
 
 # A make command-line override must not desync the probe from Compose. Fails on
 # the old recipe, which probed 8080 while Compose published 9100.
-run_recipe selfhost 's/^# BACKEND_PORT=8080/BACKEND_PORT=9100/' '' 'PORT=8080' >/dev/null
-require_consistent 'make PORT=8080 over BACKEND_PORT=9100' 9100
+run_recipe selfhost 's/^# BACKEND_PORT=7080/BACKEND_PORT=9100/' '' 'PORT=7080' >/dev/null
+require_consistent 'make PORT=7080 over BACKEND_PORT=9100' 9100
 
 # With no alias pinned in .env, an alias from the environment survives make's
 # include and takes effect end to end.
@@ -301,30 +301,30 @@ require_consistent 'BACKEND_PORT from the environment' 9300
 # The env file stays authoritative for values it does set, so an environment
 # PORT loses to it — and the probe must follow whatever Compose then published.
 run_recipe selfhost '' 'PORT=9500' '' >/dev/null
-require_consistent 'PORT from the environment is overridden by .env' 8080
+require_consistent 'PORT from the environment is overridden by .env' 7080
 
-# Defaults stay 8080/3000.
+# Defaults stay 7080/5000.
 run_recipe selfhost '' '' '' >/dev/null
-require_consistent 'defaults' 8080
-if [ "$(published_port frontend)" != "3000" ]; then
-  echo "default frontend host port should be 3000, got $(published_port frontend)"
+require_consistent 'defaults' 7080
+if [ "$(published_port frontend)" != "5000" ]; then
+  echo "default frontend host port should be 5000, got $(published_port frontend)"
   exit 1
 fi
 
 # selfhost-build resolves the port the same way.
-run_recipe selfhost-build 's/^PORT=8080/PORT=9400/' '' '' >/dev/null
+run_recipe selfhost-build 's/^PORT=7080/PORT=9400/' '' '' >/dev/null
 require_consistent 'selfhost-build with PORT edited' 9400
 
 # Every alias at once: BACKEND_PORT wins, and the probe follows it.
 run_recipe selfhost \
-  's/^PORT=8080/PORT=9000/;s/^# BACKEND_PORT=8080/BACKEND_PORT=8000/;s/^# API_PORT=8080/API_PORT=7000/;s/^# SERVER_PORT=8080/SERVER_PORT=6000/' \
+  's/^PORT=7080/PORT=9000/;s/^# BACKEND_PORT=7080/BACKEND_PORT=8000/;s/^# API_PORT=7080/API_PORT=7000/;s/^# SERVER_PORT=7080/SERVER_PORT=6000/' \
   '' '' >/dev/null
 require_consistent 'every alias set at once' 8000
 
 # A higher-priority alias in the env file beats a lower-priority one from the
 # shell.
 run_recipe selfhost \
-  's/^PORT=8080/PORT=8000/;s/^# BACKEND_PORT=8080/BACKEND_PORT=8000/' \
+  's/^PORT=7080/PORT=8000/;s/^# BACKEND_PORT=7080/BACKEND_PORT=8000/' \
   'API_PORT=7000' '' >/dev/null
 require_consistent 'env-file BACKEND_PORT over shell API_PORT' 8000
 
@@ -337,16 +337,16 @@ require_consistent 'env-file BACKEND_PORT over shell API_PORT' 8000
 # ---------------------------------------------------------------------------
 
 # Command-line high-priority alias over a low-priority alias in the env file.
-run_recipe selfhost 's/^# API_PORT=8080/API_PORT=7000/' '' 'BACKEND_PORT=9000' >/dev/null
+run_recipe selfhost 's/^# API_PORT=7080/API_PORT=7000/' '' 'BACKEND_PORT=9000' >/dev/null
 require_consistent 'command-line BACKEND_PORT over env-file API_PORT' 9000
 
 # Env-file high-priority alias over a low-priority alias on the command line.
-run_recipe selfhost 's/^# BACKEND_PORT=8080/BACKEND_PORT=9100/' '' 'SERVER_PORT=6000' >/dev/null
+run_recipe selfhost 's/^# BACKEND_PORT=7080/BACKEND_PORT=9100/' '' 'SERVER_PORT=6000' >/dev/null
 require_consistent 'env-file BACKEND_PORT over command-line SERVER_PORT' 9100
 
 # An explicit empty value on the command line drops out of the chain.
 run_recipe selfhost '' '' 'BACKEND_PORT=' >/dev/null
-require_consistent 'command-line BACKEND_PORT= falls through to PORT' 8080
+require_consistent 'command-line BACKEND_PORT= falls through to PORT' 7080
 
 # ---------------------------------------------------------------------------
 # Explicit empty assignments in the env file
@@ -357,15 +357,15 @@ require_consistent 'command-line BACKEND_PORT= falls through to PORT' 8080
 # way, so the two agree.
 # ---------------------------------------------------------------------------
 
-run_recipe selfhost 's/^# BACKEND_PORT=8080/BACKEND_PORT=/' 'BACKEND_PORT=9000' '' >/dev/null
-require_consistent 'empty BACKEND_PORT in .env over shell BACKEND_PORT' 8080
+run_recipe selfhost 's/^# BACKEND_PORT=7080/BACKEND_PORT=/' 'BACKEND_PORT=9000' '' >/dev/null
+require_consistent 'empty BACKEND_PORT in .env over shell BACKEND_PORT' 7080
 
-run_recipe selfhost 's/^PORT=8080/PORT=/;s/^# BACKEND_PORT=8080/BACKEND_PORT=/' 'PORT=9000' '' >/dev/null
-require_consistent 'every chain variable emptied in .env' 8080
+run_recipe selfhost 's/^PORT=7080/PORT=/;s/^# BACKEND_PORT=7080/BACKEND_PORT=/' 'PORT=9000' '' >/dev/null
+require_consistent 'every chain variable emptied in .env' 7080
 
-run_recipe selfhost 's/^FRONTEND_PORT=3000/FRONTEND_PORT=/' 'FRONTEND_PORT=3100' '' >/dev/null
-if [ "$(published_port frontend)" != "3000" ]; then
-  echo "an empty FRONTEND_PORT in .env must fall back to 3000, got $(published_port frontend)"
+run_recipe selfhost 's/^FRONTEND_PORT=5000/FRONTEND_PORT=/' 'FRONTEND_PORT=3100' '' >/dev/null
+if [ "$(published_port frontend)" != "5000" ]; then
+  echo "an empty FRONTEND_PORT in .env must fall back to 5000, got $(published_port frontend)"
   exit 1
 fi
 
@@ -427,7 +427,7 @@ done
 compose_published_ports() {
   local env_file=$1
   shift
-  env "$@" docker compose --env-file "$env_file" -f docker-compose.selfhost.yml config --format json |
+  env "$@" docker compose --env-file "$env_file" -f docker-compose.selfhost.build.yml config --format json |
     node -e '
 let raw = "";
 process.stdin.on("data", (chunk) => (raw += chunk));
@@ -464,22 +464,22 @@ while IFS='|' read -r case_label case_mutation case_ambient case_backend case_fr
     exit 1
   fi
 done <<'CASES'
-defaults|||8080|3000
-PORT only|s/^PORT=8080/PORT=9100/||9100|3000
-SERVER_PORT overrides PORT|s/^# SERVER_PORT=8080/SERVER_PORT=9200/||9200|3000
-API_PORT overrides SERVER_PORT|s/^# API_PORT=8080/API_PORT=9300/;s/^# SERVER_PORT=8080/SERVER_PORT=9200/||9300|3000
-BACKEND_PORT overrides all|s/^# BACKEND_PORT=8080/BACKEND_PORT=9400/;s/^# API_PORT=8080/API_PORT=9300/;s/^# SERVER_PORT=8080/SERVER_PORT=9200/||9400|3000
-ambient PORT beats the env file|s/^PORT=8080/PORT=9100/|PORT=9500|9500|3000
-ambient BACKEND_PORT beats the env file|s/^PORT=8080/PORT=9100/|BACKEND_PORT=9600|9600|3000
-ambient API_PORT beats the env file|s/^PORT=8080/PORT=9100/|API_PORT=9700|9700|3000
-ambient SERVER_PORT beats the env file|s/^PORT=8080/PORT=9100/|SERVER_PORT=9800|9800|3000
-ambient FRONTEND_PORT beats the env file|s/^FRONTEND_PORT=3000/FRONTEND_PORT=3100/|FRONTEND_PORT=3200|8080|3200
+defaults|||7080|5000
+PORT only|s/^PORT=7080/PORT=9100/||9100|5000
+SERVER_PORT overrides PORT|s/^# SERVER_PORT=7080/SERVER_PORT=9200/||9200|5000
+API_PORT overrides SERVER_PORT|s/^# API_PORT=7080/API_PORT=9300/;s/^# SERVER_PORT=7080/SERVER_PORT=9200/||9300|5000
+BACKEND_PORT overrides all|s/^# BACKEND_PORT=7080/BACKEND_PORT=9400/;s/^# API_PORT=7080/API_PORT=9300/;s/^# SERVER_PORT=7080/SERVER_PORT=9200/||9400|5000
+ambient PORT beats the env file|s/^PORT=7080/PORT=9100/|PORT=9500|9500|5000
+ambient BACKEND_PORT beats the env file|s/^PORT=7080/PORT=9100/|BACKEND_PORT=9600|9600|5000
+ambient API_PORT beats the env file|s/^PORT=7080/PORT=9100/|API_PORT=9700|9700|5000
+ambient SERVER_PORT beats the env file|s/^PORT=7080/PORT=9100/|SERVER_PORT=9800|9800|5000
+ambient FRONTEND_PORT beats the env file|s/^FRONTEND_PORT=5000/FRONTEND_PORT=3100/|FRONTEND_PORT=3200|7080|3200
 CASES
 
 # An env-file alias beats the same alias from the environment, and the probe
 # follows whatever Compose published either way.
 for shadowed_alias in BACKEND_PORT API_PORT SERVER_PORT; do
-  run_recipe selfhost "s/^# ${shadowed_alias}=8080/${shadowed_alias}=9700/" \
+  run_recipe selfhost "s/^# ${shadowed_alias}=7080/${shadowed_alias}=9700/" \
     "${shadowed_alias}=9600" '' >/dev/null
   require_consistent "env-file ${shadowed_alias} over the same shell variable" 9700
 done

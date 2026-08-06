@@ -59,8 +59,8 @@ func TestGetConfigIncludesRuntimeAuthConfig(t *testing.T) {
 	t.Setenv("GOOGLE_CLIENT_ID", "google-client-id")
 	t.Setenv("POSTHOG_API_KEY", "phc_test")
 	t.Setenv("POSTHOG_HOST", "https://eu.i.posthog.com")
-	t.Setenv("MULTICA_PUBLIC_URL", "https://api.example.com/")
-	t.Setenv("MULTICA_APP_URL", "https://app.example.com/")
+	t.Setenv("ORCHESTRA_PUBLIC_URL", "https://api.example.com/")
+	t.Setenv("ORCHESTRA_APP_URL", "https://app.example.com/")
 
 	req := httptest.NewRequest(http.MethodGet, "/api/config", nil)
 	w := httptest.NewRecorder()
@@ -139,8 +139,8 @@ func TestGetConfigHonorsVCSIntegrationSwitch(t *testing.T) {
 }
 
 func TestGetConfigUsesAppURLForSameOriginDaemonSetup(t *testing.T) {
-	t.Setenv("MULTICA_PUBLIC_URL", "")
-	t.Setenv("MULTICA_APP_URL", "https://multica.internal.example/")
+	t.Setenv("ORCHESTRA_PUBLIC_URL", "")
+	t.Setenv("ORCHESTRA_APP_URL", "https://multica.internal.example/")
 
 	req := httptest.NewRequest(http.MethodGet, "/api/config", nil)
 	w := httptest.NewRecorder()
@@ -163,8 +163,8 @@ func TestGetConfigUsesAppURLForSameOriginDaemonSetup(t *testing.T) {
 }
 
 func TestGetConfigUsesFrontendOriginForSameOriginDaemonSetup(t *testing.T) {
-	t.Setenv("MULTICA_PUBLIC_URL", "")
-	t.Setenv("MULTICA_APP_URL", "")
+	t.Setenv("ORCHESTRA_PUBLIC_URL", "")
+	t.Setenv("ORCHESTRA_APP_URL", "")
 	t.Setenv("FRONTEND_ORIGIN", "https://multica.internal.example/")
 
 	req := httptest.NewRequest(http.MethodGet, "/api/config", nil)
@@ -188,8 +188,8 @@ func TestGetConfigUsesFrontendOriginForSameOriginDaemonSetup(t *testing.T) {
 }
 
 func TestGetConfigOmitsOfficialCloudDaemonSetup(t *testing.T) {
-	t.Setenv("MULTICA_PUBLIC_URL", "https://api.multica.ai")
-	t.Setenv("MULTICA_APP_URL", "")
+	t.Setenv("ORCHESTRA_PUBLIC_URL", "https://api.multica.ai")
+	t.Setenv("ORCHESTRA_APP_URL", "")
 	t.Setenv("FRONTEND_ORIGIN", "https://multica.ai")
 
 	req := httptest.NewRequest(http.MethodGet, "/api/config", nil)
@@ -214,7 +214,7 @@ func TestGetConfigOmitsOfficialCloudDaemonSetup(t *testing.T) {
 
 // TestGetConfigOmitsCloudDaemonSetupWithoutPublicURL reproduces the production
 // regression behind the broken "Add a computer" command: the official cloud
-// frontend is multica.ai, but the deployment does not set MULTICA_PUBLIC_URL to
+// frontend is multica.ai, but the deployment does not set ORCHESTRA_PUBLIC_URL to
 // the api host. Previously this fell through to the same-origin branch and
 // emitted daemon_server_url=https://multica.ai, which the dialog turned into
 // `multica setup self-host --server-url https://multica.ai` — pointing the
@@ -222,8 +222,8 @@ func TestGetConfigOmitsOfficialCloudDaemonSetup(t *testing.T) {
 // official cloud must be recognised by its frontend host alone so the daemon
 // setup URLs are omitted and the dialog falls back to `multica setup`.
 func TestGetConfigOmitsCloudDaemonSetupWithoutPublicURL(t *testing.T) {
-	t.Setenv("MULTICA_PUBLIC_URL", "")
-	t.Setenv("MULTICA_APP_URL", "")
+	t.Setenv("ORCHESTRA_PUBLIC_URL", "")
+	t.Setenv("ORCHESTRA_APP_URL", "")
 	t.Setenv("FRONTEND_ORIGIN", "https://multica.ai")
 
 	req := httptest.NewRequest(http.MethodGet, "/api/config", nil)
@@ -247,10 +247,10 @@ func TestGetConfigOmitsCloudDaemonSetupWithoutPublicURL(t *testing.T) {
 }
 
 // TestGetConfigOmitsCloudDaemonSetupForConfiguredAppURL covers the official
-// cloud frontend when it is configured through MULTICA_APP_URL.
+// cloud frontend when it is configured through ORCHESTRA_APP_URL.
 func TestGetConfigOmitsCloudDaemonSetupForConfiguredAppURL(t *testing.T) {
-	t.Setenv("MULTICA_PUBLIC_URL", "")
-	t.Setenv("MULTICA_APP_URL", "https://multica.ai")
+	t.Setenv("ORCHESTRA_PUBLIC_URL", "")
+	t.Setenv("ORCHESTRA_APP_URL", "https://multica.ai")
 	t.Setenv("FRONTEND_ORIGIN", "")
 
 	req := httptest.NewRequest(http.MethodGet, "/api/config", nil)
@@ -332,7 +332,7 @@ func TestGetConfigExposesServerVersion(t *testing.T) {
 	defer func() { testHandler.cfg = origCfg }()
 
 	// Self-hosted frontend origin: the version row is meant for these deployments.
-	t.Setenv("MULTICA_APP_URL", "https://multica.self-hosted.example")
+	t.Setenv("ORCHESTRA_APP_URL", "https://multica.self-hosted.example")
 	t.Setenv("FRONTEND_ORIGIN", "")
 
 	testHandler.cfg.ServerVersion = ""
@@ -373,7 +373,7 @@ func TestGetConfigOmitsServerVersionOnOfficialCloud(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/api/config", nil)
 
 	// Official cloud: frontend host multica.ai -> version omitted.
-	t.Setenv("MULTICA_APP_URL", "https://multica.ai")
+	t.Setenv("ORCHESTRA_APP_URL", "https://multica.ai")
 	t.Setenv("FRONTEND_ORIGIN", "")
 	w := httptest.NewRecorder()
 	testHandler.GetConfig(w, req)
@@ -386,7 +386,7 @@ func TestGetConfigOmitsServerVersionOnOfficialCloud(t *testing.T) {
 	}
 
 	// Self-hosted: operator's own frontend origin -> version reported.
-	t.Setenv("MULTICA_APP_URL", "https://multica.self-hosted.example")
+	t.Setenv("ORCHESTRA_APP_URL", "https://multica.self-hosted.example")
 	w = httptest.NewRecorder()
 	testHandler.GetConfig(w, req)
 	if err := json.Unmarshal(w.Body.Bytes(), &cfg); err != nil {

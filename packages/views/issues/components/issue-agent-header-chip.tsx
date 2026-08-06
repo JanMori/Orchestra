@@ -6,12 +6,12 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@multica/ui/components/ui/popover";
-import { useActorName } from "@multica/core/workspace/hooks";
-import { cn } from "@multica/ui/lib/utils";
-import { api } from "@multica/core/api";
-import { issueKeys } from "@multica/core/issues/queries";
-import type { AgentTask } from "@multica/core/types";
+} from "@orchestra/ui/components/ui/popover";
+import { useActorName } from "@orchestra/core/workspace/hooks";
+import { cn } from "@orchestra/ui/lib/utils";
+import { api } from "@orchestra/core/api";
+import { issueKeys } from "@orchestra/core/issues/queries";
+import type { AgentTask } from "@orchestra/core/types";
 import { TranscriptButton } from "../../common/task-transcript";
 import { AgentAvatarStack } from "../../agents/components/agent-avatar-stack";
 import { ActiveTaskRow } from "./execution-log-section";

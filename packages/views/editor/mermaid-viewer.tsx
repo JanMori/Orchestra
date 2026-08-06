@@ -24,15 +24,15 @@ import {
   Image as ImageIcon,
   X,
 } from "lucide-react";
-import { cn } from "@multica/ui/lib/utils";
-import { copyText } from "@multica/ui/lib/clipboard";
-import { Dialog, DialogContent, DialogTitle } from "@multica/ui/components/ui/dialog";
+import { cn } from "@orchestra/ui/lib/utils";
+import { copyText } from "@orchestra/ui/lib/clipboard";
+import { Dialog, DialogContent, DialogTitle } from "@orchestra/ui/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@multica/ui/components/ui/dropdown-menu";
+} from "@orchestra/ui/components/ui/dropdown-menu";
 import { useT } from "../i18n";
 import { CodeBlockStatic } from "./code-block-static";
 import { useZoomCanvas } from "./hooks/use-zoom-canvas";

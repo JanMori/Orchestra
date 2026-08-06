@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { Check, Copy, Terminal } from "lucide-react";
-import { Card, CardContent } from "@multica/ui/components/ui/card";
-import { CODE_LIGATURE_CLASS } from "@multica/ui/lib/code-style";
-import { cn } from "@multica/ui/lib/utils";
-import { copyText } from "@multica/ui/lib/clipboard";
+import { Card, CardContent } from "@orchestra/ui/components/ui/card";
+import { CODE_LIGATURE_CLASS } from "@orchestra/ui/lib/code-style";
+import { cn } from "@orchestra/ui/lib/utils";
+import { copyText } from "@orchestra/ui/lib/clipboard";
 import { useT } from "../../i18n";
 
 const INSTALL_CMD =

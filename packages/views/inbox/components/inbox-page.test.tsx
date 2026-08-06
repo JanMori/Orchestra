@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import type { InboxItem } from "@multica/core/types";
+import type { InboxItem } from "@orchestra/core/types";
 import { InboxPage } from "./inbox-page";
 
 vi.mock("react-resizable-panels", () => ({
@@ -23,26 +23,26 @@ vi.mock("@tanstack/react-query", () => ({
   }),
 }));
 
-vi.mock("@multica/core/hooks", () => ({
+vi.mock("@orchestra/core/hooks", () => ({
   useWorkspaceId: () => "workspace-1",
 }));
 
-vi.mock("@multica/core/paths", () => ({
+vi.mock("@orchestra/core/paths", () => ({
   useWorkspacePaths: () => ({
     inbox: () => "/acme/inbox",
     issueDetail: (id: string) => `/acme/issues/${id}`,
   }),
 }));
 
-vi.mock("@multica/core/modals", () => ({
+vi.mock("@orchestra/core/modals", () => ({
   useModalStore: { getState: () => ({ open: vi.fn() }) },
 }));
 
-vi.mock("@multica/core/issues/stores/draft-store", () => ({
+vi.mock("@orchestra/core/issues/stores/draft-store", () => ({
   useIssueDraftStore: { getState: () => ({ setDraft: vi.fn() }) },
 }));
 
-vi.mock("@multica/core/inbox/queries", () => ({
+vi.mock("@orchestra/core/inbox/queries", () => ({
   inboxListOptions: () => ({ queryKey: ["inbox", "workspace-1", "list"] }),
   archivedInboxListOptions: () => ({ queryKey: ["inbox", "workspace-1", "archived"] }),
   deduplicateInboxItems: (items: InboxItem[]) => items.filter((i) => !i.archived),
@@ -55,7 +55,7 @@ vi.mock("@multica/core/inbox/queries", () => ({
 const markReadMutate = vi.fn();
 const markUnreadMutate = vi.fn();
 
-vi.mock("@multica/core/inbox/mutations", () => {
+vi.mock("@orchestra/core/inbox/mutations", () => {
   const mutation = () => ({ mutate: vi.fn() });
   return {
     useMarkInboxRead: () => ({ mutate: markReadMutate }),
@@ -86,10 +86,10 @@ vi.mock("../../navigation", () => ({
 // need the two-panel desktop layout, since mobile swaps the list out for the
 // detail on selection.
 const layout = { isMobile: true };
-vi.mock("@multica/ui/hooks/use-mobile", () => ({
+vi.mock("@orchestra/ui/hooks/use-mobile", () => ({
   useIsMobile: () => layout.isMobile,
 }));
-vi.mock("@multica/ui/components/ui/resizable", () => ({
+vi.mock("@orchestra/ui/components/ui/resizable", () => ({
   ResizablePanelGroup: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
   ),

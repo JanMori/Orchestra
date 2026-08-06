@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import type { InboxItem } from "@multica/core/types";
+import type { InboxItem } from "@orchestra/core/types";
 import en from "../../locales/en/inbox.json";
 import { InboxDetailLabel } from "./inbox-detail-label";
 
@@ -8,7 +8,7 @@ vi.mock("../../issues/components", () => ({
   StatusIcon: () => null,
   PriorityIcon: () => null,
 }));
-vi.mock("@multica/core/workspace/hooks", () => ({
+vi.mock("@orchestra/core/workspace/hooks", () => ({
   useActorName: () => ({ getActorName: () => "Someone" }),
 }));
 

@@ -2,27 +2,27 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { Trash2, Copy, Check, Info } from "lucide-react";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@multica/ui/components/ui/tooltip";
-import type { PersonalAccessToken } from "@multica/core/types";
-import { Alert, AlertDescription } from "@multica/ui/components/ui/alert";
-import { Checkbox } from "@multica/ui/components/ui/checkbox";
-import { Input } from "@multica/ui/components/ui/input";
-import { Button } from "@multica/ui/components/ui/button";
-import { Card, CardContent } from "@multica/ui/components/ui/card";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@orchestra/ui/components/ui/tooltip";
+import type { PersonalAccessToken } from "@orchestra/core/types";
+import { Alert, AlertDescription } from "@orchestra/ui/components/ui/alert";
+import { Checkbox } from "@orchestra/ui/components/ui/checkbox";
+import { Input } from "@orchestra/ui/components/ui/input";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { Card, CardContent } from "@orchestra/ui/components/ui/card";
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@multica/ui/components/ui/select";
+} from "@orchestra/ui/components/ui/select";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@multica/ui/components/ui/dialog";
+} from "@orchestra/ui/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,11 +32,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@multica/ui/components/ui/alert-dialog";
-import { Skeleton } from "@multica/ui/components/ui/skeleton";
-import { copyText } from "@multica/ui/lib/clipboard";
+} from "@orchestra/ui/components/ui/alert-dialog";
+import { Skeleton } from "@orchestra/ui/components/ui/skeleton";
+import { copyText } from "@orchestra/ui/lib/clipboard";
 import { toast } from "sonner";
-import { api } from "@multica/core/api";
+import { api } from "@orchestra/core/api";
 import { useT } from "../../i18n";
 import { SettingsSection, SettingsTab } from "./settings-layout";
 

@@ -8,7 +8,7 @@ const { issueLinkState } = vi.hoisted(() => ({
   issueLinkState: { openInNewTab: true, setOpenInNewTab: vi.fn() },
 }));
 
-vi.mock("@multica/core/issues/stores", () => {
+vi.mock("@orchestra/core/issues/stores", () => {
   const useIssueLinkStore = (
     selector?: (s: typeof issueLinkState) => unknown,
   ) => (selector ? selector(issueLinkState) : issueLinkState);
@@ -16,7 +16,7 @@ vi.mock("@multica/core/issues/stores", () => {
   return { useIssueLinkStore };
 });
 
-vi.mock("@multica/core/paths", () => ({
+vi.mock("@orchestra/core/paths", () => ({
   useWorkspacePaths: () => ({
     issueDetail: (id: string) => `/acme/issues/${id}`,
   }),

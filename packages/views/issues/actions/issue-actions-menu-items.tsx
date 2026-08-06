@@ -19,15 +19,15 @@ import {
   Unlink,
   UserMinus,
 } from "lucide-react";
-import type { AgentTask, Issue } from "@multica/core/types";
-import { todayDateOnly, addDaysDateOnly } from "@multica/core/issues/date";
-import { api } from "@multica/core/api";
+import type { AgentTask, Issue } from "@orchestra/core/types";
+import { todayDateOnly, addDaysDateOnly } from "@orchestra/core/issues/date";
+import { api } from "@orchestra/core/api";
 import {
   ALL_STATUSES,
   PRIORITY_DISPLAY_ORDER,
   PRIORITY_CONFIG,
-} from "@multica/core/issues/config";
-import { issueKeys } from "@multica/core/issues/queries";
+} from "@orchestra/core/issues/config";
+import { issueKeys } from "@orchestra/core/issues/queries";
 import { StatusIcon } from "../components/status-icon";
 import { PriorityIcon } from "../components/priority-icon";
 import {
@@ -36,15 +36,15 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
   DropdownMenuSeparator,
-} from "@multica/ui/components/ui/dropdown-menu";
+} from "@orchestra/ui/components/ui/dropdown-menu";
 import {
   ContextMenuItem,
   ContextMenuSub,
   ContextMenuSubTrigger,
   ContextMenuSubContent,
   ContextMenuSeparator,
-} from "@multica/ui/components/ui/context-menu";
-import { copyText } from "@multica/ui/lib/clipboard";
+} from "@orchestra/ui/components/ui/context-menu";
+import { copyText } from "@orchestra/ui/lib/clipboard";
 import type { UseIssueActionsResult } from "./use-issue-actions";
 import { useT } from "../../i18n";
 

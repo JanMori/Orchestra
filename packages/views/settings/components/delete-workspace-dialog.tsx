@@ -8,11 +8,11 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@multica/ui/components/ui/dialog";
-import { Input } from "@multica/ui/components/ui/input";
-import { Label } from "@multica/ui/components/ui/label";
-import { Button } from "@multica/ui/components/ui/button";
-import { isImeComposing } from "@multica/core/utils";
+} from "@orchestra/ui/components/ui/dialog";
+import { Input } from "@orchestra/ui/components/ui/input";
+import { Label } from "@orchestra/ui/components/ui/label";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { isImeComposing } from "@orchestra/core/utils";
 import { useT } from "../../i18n";
 
 /**

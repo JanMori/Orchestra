@@ -398,7 +398,7 @@ func TestKiroIssueCommentAddCommand(t *testing.T) {
 		{"multica issue comment add issue-1 --content-file ./reply.md", true},
 		{"./multica issue comment add issue-1 --content-file ./reply.md", true},
 		{"/usr/local/bin/multica issue comment add issue-1 --content-file ./reply.md", true},
-		{"MULTICA_TOKEN=x multica issue comment add issue-1 --content-file ./reply.md", true},
+		{"ORCHESTRA_TOKEN=x multica issue comment add issue-1 --content-file ./reply.md", true},
 		{"FOO=1 BAR=2 ./multica issue comment add issue-1", true},
 		{`sh -c "multica issue comment add issue-1 --content-file ./reply.md"`, true},
 		{`bash -c 'multica issue comment add issue-1'`, true},

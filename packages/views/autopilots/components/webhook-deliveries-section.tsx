@@ -18,25 +18,25 @@ import {
   autopilotDeliveriesOptions,
   autopilotDeliveryOptions,
   useReplayAutopilotDelivery,
-} from "@multica/core/autopilots";
-import { useWorkspaceId } from "@multica/core/hooks";
-import { Skeleton } from "@multica/ui/components/ui/skeleton";
-import { Button } from "@multica/ui/components/ui/button";
-import { Badge } from "@multica/ui/components/ui/badge";
+} from "@orchestra/core/autopilots";
+import { useWorkspaceId } from "@orchestra/core/hooks";
+import { Skeleton } from "@orchestra/ui/components/ui/skeleton";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { Badge } from "@orchestra/ui/components/ui/badge";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
-} from "@multica/ui/components/ui/dialog";
-import { cn } from "@multica/ui/lib/utils";
-import { copyText } from "@multica/ui/lib/clipboard";
+} from "@orchestra/ui/components/ui/dialog";
+import { cn } from "@orchestra/ui/lib/utils";
+import { copyText } from "@orchestra/ui/lib/clipboard";
 import { toast } from "sonner";
 import { useT } from "../../i18n";
 import type {
   WebhookDelivery,
   WebhookDeliveryStatus,
   WebhookSignatureStatus,
-} from "@multica/core/types";
+} from "@orchestra/core/types";
 
 // --- Status visuals -------------------------------------------------------
 

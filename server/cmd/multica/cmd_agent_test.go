@@ -64,7 +64,7 @@ func chdirWithDaemonTaskMarker(t *testing.T) {
 }
 
 // TestNewAPIClient_WorkdirParentEscapeFailsClosed reproduces the confirmed
-// impersonation escape: a sandbox fault strips every MULTICA_* env var from
+// impersonation escape: a sandbox fault strips every ORCHESTRA_* env var from
 // an agent subprocess, which then runs `multica` from the *parent* directory
 // of its workdir. The per-workdir marker sits below cwd, so the upward walk
 // used to find no daemon signal and silently fell back to the user's config
@@ -112,11 +112,11 @@ func TestNewAPIClient_WorkdirParentEscapeFailsClosed(t *testing.T) {
 			t.Fatalf("restore cwd: %v", err)
 		}
 	})
-	t.Setenv("MULTICA_AGENT_ID", "")
-	t.Setenv("MULTICA_TASK_ID", "")
-	t.Setenv("MULTICA_DAEMON_PORT", "")
-	t.Setenv("MULTICA_TOKEN", "")
-	t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:8080")
+	t.Setenv("ORCHESTRA_AGENT_ID", "")
+	t.Setenv("ORCHESTRA_TASK_ID", "")
+	t.Setenv("ORCHESTRA_DAEMON_PORT", "")
+	t.Setenv("ORCHESTRA_TOKEN", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:8080")
 
 	if got := resolveToken(testCmd()); got != "" {
 		t.Fatalf("resolveToken() = %q, want empty (config PAT must not leak into an escaped daemon subprocess)", got)
@@ -134,11 +134,11 @@ func TestNewAPIClient_WorkdirParentEscapeFailsClosed(t *testing.T) {
 // rather than an opaque "requires mat_ token" error.
 func TestNewAPIClient_LeftoverMarkerActionableError(t *testing.T) {
 	chdirWithDaemonTaskMarker(t)
-	t.Setenv("MULTICA_AGENT_ID", "")
-	t.Setenv("MULTICA_TASK_ID", "")
-	t.Setenv("MULTICA_DAEMON_PORT", "")
-	t.Setenv("MULTICA_TOKEN", "")
-	t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:8080")
+	t.Setenv("ORCHESTRA_AGENT_ID", "")
+	t.Setenv("ORCHESTRA_TASK_ID", "")
+	t.Setenv("ORCHESTRA_DAEMON_PORT", "")
+	t.Setenv("ORCHESTRA_TOKEN", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:8080")
 
 	if _, err := newAPIClient(testCmd()); err == nil {
 		t.Fatal("newAPIClient(): expected error for leftover daemon-task marker, got nil")
@@ -151,7 +151,7 @@ func TestNewAPIClient_LeftoverMarkerActionableError(t *testing.T) {
 
 // TestResolveWorkspaceID_AgentContextSkipsConfig is a regression test for
 // the cross-workspace contamination bug (#1235). Inside a daemon-spawned
-// agent task (MULTICA_AGENT_ID / MULTICA_TASK_ID set), the CLI must NOT
+// agent task (ORCHESTRA_AGENT_ID / ORCHESTRA_TASK_ID set), the CLI must NOT
 // silently read the user-global ~/.multica/config.json to recover a missing
 // workspace — that fallback is how agent operations leaked into an
 // unrelated workspace when the daemon failed to inject the right value.
@@ -168,10 +168,10 @@ func TestResolveWorkspaceID_AgentContextSkipsConfig(t *testing.T) {
 	}
 
 	t.Run("outside agent context falls back to config", func(t *testing.T) {
-		t.Setenv("MULTICA_AGENT_ID", "")
-		t.Setenv("MULTICA_TASK_ID", "")
-		t.Setenv("MULTICA_DAEMON_PORT", "")
-		t.Setenv("MULTICA_WORKSPACE_ID", "")
+		t.Setenv("ORCHESTRA_AGENT_ID", "")
+		t.Setenv("ORCHESTRA_TASK_ID", "")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "")
+		t.Setenv("ORCHESTRA_WORKSPACE_ID", "")
 
 		got := resolveWorkspaceID(testCmd())
 		if got != "config-file-ws" {
@@ -180,10 +180,10 @@ func TestResolveWorkspaceID_AgentContextSkipsConfig(t *testing.T) {
 	})
 
 	t.Run("agent context with explicit env uses env", func(t *testing.T) {
-		t.Setenv("MULTICA_AGENT_ID", "agent-123")
-		t.Setenv("MULTICA_TASK_ID", "task-456")
-		t.Setenv("MULTICA_DAEMON_PORT", "")
-		t.Setenv("MULTICA_WORKSPACE_ID", "env-ws")
+		t.Setenv("ORCHESTRA_AGENT_ID", "agent-123")
+		t.Setenv("ORCHESTRA_TASK_ID", "task-456")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "")
+		t.Setenv("ORCHESTRA_WORKSPACE_ID", "env-ws")
 
 		got := resolveWorkspaceID(testCmd())
 		if got != "env-ws" {
@@ -192,10 +192,10 @@ func TestResolveWorkspaceID_AgentContextSkipsConfig(t *testing.T) {
 	})
 
 	t.Run("agent context without env returns empty, never config", func(t *testing.T) {
-		t.Setenv("MULTICA_AGENT_ID", "agent-123")
-		t.Setenv("MULTICA_TASK_ID", "task-456")
-		t.Setenv("MULTICA_DAEMON_PORT", "")
-		t.Setenv("MULTICA_WORKSPACE_ID", "")
+		t.Setenv("ORCHESTRA_AGENT_ID", "agent-123")
+		t.Setenv("ORCHESTRA_TASK_ID", "task-456")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "")
+		t.Setenv("ORCHESTRA_WORKSPACE_ID", "")
 
 		got := resolveWorkspaceID(testCmd())
 		if got != "" {
@@ -204,10 +204,10 @@ func TestResolveWorkspaceID_AgentContextSkipsConfig(t *testing.T) {
 	})
 
 	t.Run("task marker alone also counts as agent context", func(t *testing.T) {
-		t.Setenv("MULTICA_AGENT_ID", "")
-		t.Setenv("MULTICA_TASK_ID", "task-456")
-		t.Setenv("MULTICA_DAEMON_PORT", "")
-		t.Setenv("MULTICA_WORKSPACE_ID", "")
+		t.Setenv("ORCHESTRA_AGENT_ID", "")
+		t.Setenv("ORCHESTRA_TASK_ID", "task-456")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "")
+		t.Setenv("ORCHESTRA_WORKSPACE_ID", "")
 
 		if got := resolveWorkspaceID(testCmd()); got != "" {
 			t.Fatalf("resolveWorkspaceID() = %q, want empty", got)
@@ -215,10 +215,10 @@ func TestResolveWorkspaceID_AgentContextSkipsConfig(t *testing.T) {
 	})
 
 	t.Run("daemon port marker also skips config", func(t *testing.T) {
-		t.Setenv("MULTICA_AGENT_ID", "")
-		t.Setenv("MULTICA_TASK_ID", "")
-		t.Setenv("MULTICA_DAEMON_PORT", "27182")
-		t.Setenv("MULTICA_WORKSPACE_ID", "")
+		t.Setenv("ORCHESTRA_AGENT_ID", "")
+		t.Setenv("ORCHESTRA_TASK_ID", "")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "27182")
+		t.Setenv("ORCHESTRA_WORKSPACE_ID", "")
 
 		if got := resolveWorkspaceID(testCmd()); got != "" {
 			t.Fatalf("resolveWorkspaceID() = %q, want empty", got)
@@ -227,10 +227,10 @@ func TestResolveWorkspaceID_AgentContextSkipsConfig(t *testing.T) {
 
 	t.Run("workdir marker also skips config when env is stripped", func(t *testing.T) {
 		chdirWithDaemonTaskMarker(t)
-		t.Setenv("MULTICA_AGENT_ID", "")
-		t.Setenv("MULTICA_TASK_ID", "")
-		t.Setenv("MULTICA_DAEMON_PORT", "")
-		t.Setenv("MULTICA_WORKSPACE_ID", "")
+		t.Setenv("ORCHESTRA_AGENT_ID", "")
+		t.Setenv("ORCHESTRA_TASK_ID", "")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "")
+		t.Setenv("ORCHESTRA_WORKSPACE_ID", "")
 
 		if got := resolveWorkspaceID(testCmd()); got != "" {
 			t.Fatalf("resolveWorkspaceID() = %q, want empty", got)
@@ -238,10 +238,10 @@ func TestResolveWorkspaceID_AgentContextSkipsConfig(t *testing.T) {
 	})
 
 	t.Run("requireWorkspaceID surfaces agent-context error", func(t *testing.T) {
-		t.Setenv("MULTICA_AGENT_ID", "agent-123")
-		t.Setenv("MULTICA_TASK_ID", "task-456")
-		t.Setenv("MULTICA_DAEMON_PORT", "")
-		t.Setenv("MULTICA_WORKSPACE_ID", "")
+		t.Setenv("ORCHESTRA_AGENT_ID", "agent-123")
+		t.Setenv("ORCHESTRA_TASK_ID", "task-456")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "")
+		t.Setenv("ORCHESTRA_WORKSPACE_ID", "")
 
 		_, err := requireWorkspaceID(testCmd())
 		if err == nil {
@@ -261,10 +261,10 @@ func TestResolveToken_AgentContextSkipsConfig(t *testing.T) {
 	}
 
 	t.Run("outside agent context falls back to config", func(t *testing.T) {
-		t.Setenv("MULTICA_AGENT_ID", "")
-		t.Setenv("MULTICA_TASK_ID", "")
-		t.Setenv("MULTICA_DAEMON_PORT", "")
-		t.Setenv("MULTICA_TOKEN", "")
+		t.Setenv("ORCHESTRA_AGENT_ID", "")
+		t.Setenv("ORCHESTRA_TASK_ID", "")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "")
+		t.Setenv("ORCHESTRA_TOKEN", "")
 
 		if got := resolveToken(testCmd()); got != "mul_profile_token" {
 			t.Fatalf("resolveToken() = %q, want profile token", got)
@@ -272,12 +272,12 @@ func TestResolveToken_AgentContextSkipsConfig(t *testing.T) {
 	})
 
 	t.Run("explicit server URL alone still allows normal config token fallback", func(t *testing.T) {
-		t.Setenv("MULTICA_AGENT_ID", "")
-		t.Setenv("MULTICA_TASK_ID", "")
-		t.Setenv("MULTICA_DAEMON_PORT", "")
-		t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:8080")
-		t.Setenv("MULTICA_TOKEN", "")
-		t.Setenv("MULTICA_DAEMON_PORT", "")
+		t.Setenv("ORCHESTRA_AGENT_ID", "")
+		t.Setenv("ORCHESTRA_TASK_ID", "")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "")
+		t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:8080")
+		t.Setenv("ORCHESTRA_TOKEN", "")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "")
 
 		if got := resolveToken(testCmd()); got != "mul_profile_token" {
 			t.Fatalf("resolveToken() = %q, want profile token", got)
@@ -285,38 +285,38 @@ func TestResolveToken_AgentContextSkipsConfig(t *testing.T) {
 	})
 
 	t.Run("agent context without env never reads config", func(t *testing.T) {
-		t.Setenv("MULTICA_AGENT_ID", "agent-123")
-		t.Setenv("MULTICA_TASK_ID", "task-456")
-		t.Setenv("MULTICA_DAEMON_PORT", "")
-		t.Setenv("MULTICA_TOKEN", "")
+		t.Setenv("ORCHESTRA_AGENT_ID", "agent-123")
+		t.Setenv("ORCHESTRA_TASK_ID", "task-456")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "")
+		t.Setenv("ORCHESTRA_TOKEN", "")
 
 		if got := resolveToken(testCmd()); got != "" {
-			t.Fatalf("resolveToken() = %q, want empty in agent context without MULTICA_TOKEN", got)
+			t.Fatalf("resolveToken() = %q, want empty in agent context without ORCHESTRA_TOKEN", got)
 		}
 	})
 
 	t.Run("daemon port marker without env never reads config", func(t *testing.T) {
-		t.Setenv("MULTICA_AGENT_ID", "")
-		t.Setenv("MULTICA_TASK_ID", "")
-		t.Setenv("MULTICA_DAEMON_PORT", "27182")
-		t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:8080")
-		t.Setenv("MULTICA_TOKEN", "")
+		t.Setenv("ORCHESTRA_AGENT_ID", "")
+		t.Setenv("ORCHESTRA_TASK_ID", "")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "27182")
+		t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:8080")
+		t.Setenv("ORCHESTRA_TOKEN", "")
 
 		if got := resolveToken(testCmd()); got != "" {
-			t.Fatalf("resolveToken() = %q, want empty in daemon-managed context without MULTICA_TOKEN", got)
+			t.Fatalf("resolveToken() = %q, want empty in daemon-managed context without ORCHESTRA_TOKEN", got)
 		}
 	})
 
 	t.Run("workdir marker without env never reads config", func(t *testing.T) {
 		chdirWithDaemonTaskMarker(t)
-		t.Setenv("MULTICA_AGENT_ID", "")
-		t.Setenv("MULTICA_TASK_ID", "")
-		t.Setenv("MULTICA_DAEMON_PORT", "")
-		t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:8080")
-		t.Setenv("MULTICA_TOKEN", "")
+		t.Setenv("ORCHESTRA_AGENT_ID", "")
+		t.Setenv("ORCHESTRA_TASK_ID", "")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "")
+		t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:8080")
+		t.Setenv("ORCHESTRA_TOKEN", "")
 
 		if got := resolveToken(testCmd()); got != "" {
-			t.Fatalf("resolveToken() = %q, want empty in daemon-managed context without MULTICA_TOKEN", got)
+			t.Fatalf("resolveToken() = %q, want empty in daemon-managed context without ORCHESTRA_TOKEN", got)
 		}
 	})
 
@@ -347,11 +347,11 @@ func TestResolveToken_AgentContextSkipsConfig(t *testing.T) {
 			}
 		})
 
-		t.Setenv("MULTICA_AGENT_ID", "")
-		t.Setenv("MULTICA_TASK_ID", "")
-		t.Setenv("MULTICA_DAEMON_PORT", "")
-		t.Setenv("MULTICA_SERVER_URL", "")
-		t.Setenv("MULTICA_TOKEN", "")
+		t.Setenv("ORCHESTRA_AGENT_ID", "")
+		t.Setenv("ORCHESTRA_TASK_ID", "")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "")
+		t.Setenv("ORCHESTRA_SERVER_URL", "")
+		t.Setenv("ORCHESTRA_TOKEN", "")
 
 		if got := resolveToken(testCmd()); got != "mul_profile_token" {
 			t.Fatalf("resolveToken() = %q, want profile token (unreadable marker path must not fail closed)", got)
@@ -359,21 +359,21 @@ func TestResolveToken_AgentContextSkipsConfig(t *testing.T) {
 	})
 
 	t.Run("agent context uses explicit task token env", func(t *testing.T) {
-		t.Setenv("MULTICA_AGENT_ID", "agent-123")
-		t.Setenv("MULTICA_TASK_ID", "task-456")
-		t.Setenv("MULTICA_DAEMON_PORT", "")
-		t.Setenv("MULTICA_TOKEN", "mat_task_token")
+		t.Setenv("ORCHESTRA_AGENT_ID", "agent-123")
+		t.Setenv("ORCHESTRA_TASK_ID", "task-456")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "")
+		t.Setenv("ORCHESTRA_TOKEN", "mat_task_token")
 
 		if got := resolveToken(testCmd()); got != "mat_task_token" {
-			t.Fatalf("resolveToken() = %q, want MULTICA_TOKEN", got)
+			t.Fatalf("resolveToken() = %q, want ORCHESTRA_TOKEN", got)
 		}
 	})
 
 	t.Run("daemon port set without agent context avoids config fallback", func(t *testing.T) {
-		t.Setenv("MULTICA_AGENT_ID", "")
-		t.Setenv("MULTICA_TASK_ID", "")
-		t.Setenv("MULTICA_TOKEN", "")
-		t.Setenv("MULTICA_DAEMON_PORT", "19514")
+		t.Setenv("ORCHESTRA_AGENT_ID", "")
+		t.Setenv("ORCHESTRA_TASK_ID", "")
+		t.Setenv("ORCHESTRA_TOKEN", "")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "19514")
 
 		if got := resolveToken(testCmd()); got != "" {
 			t.Fatalf("resolveToken() = %q, want empty (daemon port set, fail closed)", got)
@@ -381,26 +381,26 @@ func TestResolveToken_AgentContextSkipsConfig(t *testing.T) {
 	})
 
 	t.Run("daemon port set with explicit task token uses task token", func(t *testing.T) {
-		t.Setenv("MULTICA_AGENT_ID", "")
-		t.Setenv("MULTICA_TASK_ID", "")
-		t.Setenv("MULTICA_TOKEN", "mat_task_token")
-		t.Setenv("MULTICA_DAEMON_PORT", "19514")
+		t.Setenv("ORCHESTRA_AGENT_ID", "")
+		t.Setenv("ORCHESTRA_TASK_ID", "")
+		t.Setenv("ORCHESTRA_TOKEN", "mat_task_token")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "19514")
 
 		if got := resolveToken(testCmd()); got != "mat_task_token" {
-			t.Fatalf("resolveToken() = %q, want MULTICA_TOKEN (task token wins over daemon signal)", got)
+			t.Fatalf("resolveToken() = %q, want ORCHESTRA_TOKEN (task token wins over daemon signal)", got)
 		}
 	})
 
-	// MULTICA_SERVER_URL is a user-facing env var that may be set in a
+	// ORCHESTRA_SERVER_URL is a user-facing env var that may be set in a
 	// normal shell. It is NOT a daemon identity signal — only
-	// MULTICA_DAEMON_PORT is. The config fallback must still work when
+	// ORCHESTRA_DAEMON_PORT is. The config fallback must still work when
 	// SERVER_URL is set but no daemon signal is present.
-	t.Run("MULTICA_SERVER_URL alone does not block config fallback", func(t *testing.T) {
-		t.Setenv("MULTICA_AGENT_ID", "")
-		t.Setenv("MULTICA_TASK_ID", "")
-		t.Setenv("MULTICA_TOKEN", "")
-		t.Setenv("MULTICA_DAEMON_PORT", "")
-		t.Setenv("MULTICA_SERVER_URL", "https://api.multica.ai")
+	t.Run("ORCHESTRA_SERVER_URL alone does not block config fallback", func(t *testing.T) {
+		t.Setenv("ORCHESTRA_AGENT_ID", "")
+		t.Setenv("ORCHESTRA_TASK_ID", "")
+		t.Setenv("ORCHESTRA_TOKEN", "")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "")
+		t.Setenv("ORCHESTRA_SERVER_URL", "https://api.multica.ai")
 
 		if got := resolveToken(testCmd()); got != "mul_profile_token" {
 			t.Fatalf("resolveToken() = %q, want profile token (SERVER_URL is not a daemon identity signal)", got)
@@ -411,11 +411,11 @@ func TestResolveToken_AgentContextSkipsConfig(t *testing.T) {
 	// config token must be reachable. This is the most basic path and
 	// must not be broken by any daemon-signal guard expansion.
 	t.Run("no daemon signals, normal CLI reads config token", func(t *testing.T) {
-		t.Setenv("MULTICA_AGENT_ID", "")
-		t.Setenv("MULTICA_TASK_ID", "")
-		t.Setenv("MULTICA_TOKEN", "")
-		t.Setenv("MULTICA_DAEMON_PORT", "")
-		t.Setenv("MULTICA_SERVER_URL", "")
+		t.Setenv("ORCHESTRA_AGENT_ID", "")
+		t.Setenv("ORCHESTRA_TASK_ID", "")
+		t.Setenv("ORCHESTRA_TOKEN", "")
+		t.Setenv("ORCHESTRA_DAEMON_PORT", "")
+		t.Setenv("ORCHESTRA_SERVER_URL", "")
 
 		if got := resolveToken(testCmd()); got != "mul_profile_token" {
 			t.Fatalf("resolveToken() = %q, want profile token (normal CLI flow)", got)
@@ -424,13 +424,13 @@ func TestResolveToken_AgentContextSkipsConfig(t *testing.T) {
 }
 
 func TestNewAPIClient_AgentContextRequiresTaskToken(t *testing.T) {
-	t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:8080")
-	t.Setenv("MULTICA_WORKSPACE_ID", "workspace-123")
-	t.Setenv("MULTICA_AGENT_ID", "agent-123")
-	t.Setenv("MULTICA_TASK_ID", "task-456")
+	t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:8080")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "workspace-123")
+	t.Setenv("ORCHESTRA_AGENT_ID", "agent-123")
+	t.Setenv("ORCHESTRA_TASK_ID", "task-456")
 
 	t.Run("missing token fails closed", func(t *testing.T) {
-		t.Setenv("MULTICA_TOKEN", "")
+		t.Setenv("ORCHESTRA_TOKEN", "")
 
 		_, err := newAPIClient(testCmd())
 		if err == nil {
@@ -442,7 +442,7 @@ func TestNewAPIClient_AgentContextRequiresTaskToken(t *testing.T) {
 	})
 
 	t.Run("member token fails closed", func(t *testing.T) {
-		t.Setenv("MULTICA_TOKEN", "mul_member_token")
+		t.Setenv("ORCHESTRA_TOKEN", "mul_member_token")
 
 		_, err := newAPIClient(testCmd())
 		if err == nil {
@@ -454,7 +454,7 @@ func TestNewAPIClient_AgentContextRequiresTaskToken(t *testing.T) {
 	})
 
 	t.Run("task token succeeds", func(t *testing.T) {
-		t.Setenv("MULTICA_TOKEN", "mat_task_token")
+		t.Setenv("ORCHESTRA_TOKEN", "mat_task_token")
 
 		client, err := newAPIClient(testCmd())
 		if err != nil {
@@ -468,12 +468,12 @@ func TestNewAPIClient_AgentContextRequiresTaskToken(t *testing.T) {
 
 func TestNewAPIClient_DaemonPortRequiresTaskToken(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:8080")
-	t.Setenv("MULTICA_WORKSPACE_ID", "workspace-123")
-	t.Setenv("MULTICA_AGENT_ID", "")
-	t.Setenv("MULTICA_TASK_ID", "")
-	t.Setenv("MULTICA_DAEMON_PORT", "27182")
-	t.Setenv("MULTICA_TOKEN", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:8080")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "workspace-123")
+	t.Setenv("ORCHESTRA_AGENT_ID", "")
+	t.Setenv("ORCHESTRA_TASK_ID", "")
+	t.Setenv("ORCHESTRA_DAEMON_PORT", "27182")
+	t.Setenv("ORCHESTRA_TOKEN", "")
 
 	if err := cli.SaveCLIConfig(cli.CLIConfig{Token: "mul_profile_token", WorkspaceID: "config-file-ws"}); err != nil {
 		t.Fatalf("seed config: %v", err)
@@ -490,11 +490,11 @@ func TestNewAPIClient_DaemonPortRequiresTaskToken(t *testing.T) {
 
 func TestNewAPIClient_WorkdirMarkerRequiresTaskToken(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:8080")
-	t.Setenv("MULTICA_AGENT_ID", "")
-	t.Setenv("MULTICA_TASK_ID", "")
-	t.Setenv("MULTICA_DAEMON_PORT", "")
-	t.Setenv("MULTICA_TOKEN", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:8080")
+	t.Setenv("ORCHESTRA_AGENT_ID", "")
+	t.Setenv("ORCHESTRA_TASK_ID", "")
+	t.Setenv("ORCHESTRA_DAEMON_PORT", "")
+	t.Setenv("ORCHESTRA_TOKEN", "")
 	chdirWithDaemonTaskMarker(t)
 
 	if err := cli.SaveCLIConfig(cli.CLIConfig{Token: "mul_profile_token", WorkspaceID: "config-file-ws"}); err != nil {
@@ -598,11 +598,11 @@ func TestParseCustomEnv(t *testing.T) {
 // surface their replacement so users discover the new audited path.
 func TestAgentUpdateNoFieldsErrorPointsAtEnvCommand(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:0")
-	t.Setenv("MULTICA_WORKSPACE_ID", "test-ws")
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_AGENT_ID", "")
-	t.Setenv("MULTICA_TASK_ID", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:0")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "test-ws")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_AGENT_ID", "")
+	t.Setenv("ORCHESTRA_TASK_ID", "")
 
 	cmd := &cobra.Command{Use: "update"}
 	cmd.Flags().String("name", "", "")
@@ -678,11 +678,11 @@ func TestAgentMaxConcurrentTasksFlagValidation(t *testing.T) {
 	defer srv.Close()
 
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_AGENT_ID", "")
-	t.Setenv("MULTICA_TASK_ID", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_AGENT_ID", "")
+	t.Setenv("ORCHESTRA_TASK_ID", "")
 
 	newCreateCmd := func(t *testing.T, value string) *cobra.Command {
 		t.Helper()
@@ -1260,9 +1260,9 @@ func TestAgentSkillsAddCallsAdditiveEndpoint(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := &cobra.Command{Use: "add"}
 	cmd.Flags().StringSlice("skill-ids", nil, "")
@@ -1287,9 +1287,9 @@ func TestAgentSkillsAddCallsAdditiveEndpoint(t *testing.T) {
 }
 
 func TestAgentSkillsAddRequiresSkillIDs(t *testing.T) {
-	t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:0")
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:0")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := &cobra.Command{Use: "add"}
 	cmd.Flags().StringSlice("skill-ids", nil, "")
@@ -1349,9 +1349,9 @@ func TestAgentAvatarHappyPath(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := &cobra.Command{Use: "avatar"}
 	cmd.Flags().String("file", "", "")
@@ -1372,9 +1372,9 @@ func TestAgentAvatarHappyPath(t *testing.T) {
 
 // TestAgentAvatarUnsupportedFormat rejects files with unsupported extensions.
 func TestAgentAvatarUnsupportedFormat(t *testing.T) {
-	t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:0")
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:0")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	dir := t.TempDir()
 	txtPath := filepath.Join(dir, "avatar.txt")
@@ -1401,9 +1401,9 @@ func TestAgentAvatarUnsupportedFormat(t *testing.T) {
 
 // TestAgentAvatarOversizedFile rejects files larger than 5MB.
 func TestAgentAvatarOversizedFile(t *testing.T) {
-	t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:0")
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:0")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	dir := t.TempDir()
 	bigPath := filepath.Join(dir, "big.png")
@@ -1447,9 +1447,9 @@ func TestAgentAvatarMissingAgent(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := &cobra.Command{Use: "avatar"}
 	cmd.Flags().String("file", "", "")
@@ -1489,9 +1489,9 @@ func TestAgentAvatarUploadFailure(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := &cobra.Command{Use: "avatar"}
 	cmd.Flags().String("file", "", "")
@@ -1538,9 +1538,9 @@ func TestAgentAvatarUpdateFailure(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := &cobra.Command{Use: "avatar"}
 	cmd.Flags().String("file", "", "")
@@ -1561,9 +1561,9 @@ func TestAgentAvatarUpdateFailure(t *testing.T) {
 
 // TestAgentAvatarMissingFileFlag rejects when --file is not provided.
 func TestAgentAvatarMissingFileFlag(t *testing.T) {
-	t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:0")
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:0")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := &cobra.Command{Use: "avatar"}
 	cmd.Flags().String("file", "", "")
@@ -1581,9 +1581,9 @@ func TestAgentAvatarMissingFileFlag(t *testing.T) {
 
 // TestAgentAvatarNonexistentFile rejects when the file path does not exist.
 func TestAgentAvatarNonexistentFile(t *testing.T) {
-	t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:0")
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:0")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := &cobra.Command{Use: "avatar"}
 	cmd.Flags().String("file", "", "")
@@ -1604,9 +1604,9 @@ func TestAgentAvatarNonexistentFile(t *testing.T) {
 
 // TestAgentAvatarSizeBoundary verifies that exactly 5MB passes and 5MB+1 fails.
 func TestAgentAvatarSizeBoundary(t *testing.T) {
-	t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:0")
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:0")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	t.Run("exactly 5MB passes", func(t *testing.T) {
 		dir := t.TempDir()
@@ -1659,9 +1659,9 @@ func TestAgentAvatarSizeBoundary(t *testing.T) {
 
 // TestAgentAvatarCaseInsensitiveExtension verifies uppercase extensions are accepted.
 func TestAgentAvatarCaseInsensitiveExtension(t *testing.T) {
-	t.Setenv("MULTICA_SERVER_URL", "http://127.0.0.1:0")
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", "http://127.0.0.1:0")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	for _, ext := range []string{"avatar.PNG", "avatar.JPG", "avatar.JPEG", "avatar.GIF", "avatar.WEBP"} {
 		t.Run(ext, func(t *testing.T) {
@@ -1706,9 +1706,9 @@ func TestAgentGetTableIncludesAvatarURL(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := &cobra.Command{Use: "get"}
 	cmd.Flags().String("output", "table", "")
@@ -1754,11 +1754,11 @@ func TestAgentCreateSendsThinkingLevel(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_AGENT_ID", "")
-	t.Setenv("MULTICA_TASK_ID", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_AGENT_ID", "")
+	t.Setenv("ORCHESTRA_TASK_ID", "")
 
 	cmd := &cobra.Command{Use: "create"}
 	cmd.Flags().String("name", "", "")
@@ -1799,11 +1799,11 @@ func TestAgentCreateOmitsThinkingLevelWhenUnset(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_AGENT_ID", "")
-	t.Setenv("MULTICA_TASK_ID", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_AGENT_ID", "")
+	t.Setenv("ORCHESTRA_TASK_ID", "")
 
 	cmd := &cobra.Command{Use: "create"}
 	cmd.Flags().String("name", "", "")
@@ -1850,11 +1850,11 @@ func TestAgentUpdateSendsThinkingLevel(t *testing.T) {
 			}))
 			defer srv.Close()
 
-			t.Setenv("MULTICA_SERVER_URL", srv.URL)
-			t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-			t.Setenv("MULTICA_TOKEN", "test-token")
-			t.Setenv("MULTICA_AGENT_ID", "")
-			t.Setenv("MULTICA_TASK_ID", "")
+			t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+			t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+			t.Setenv("ORCHESTRA_TOKEN", "test-token")
+			t.Setenv("ORCHESTRA_AGENT_ID", "")
+			t.Setenv("ORCHESTRA_TASK_ID", "")
 
 			cmd := &cobra.Command{Use: "update"}
 			cmd.Flags().String("thinking-level", "", "")
@@ -1913,11 +1913,11 @@ func TestAgentServiceTierFlagsAndBodies(t *testing.T) {
 			json.NewEncoder(w).Encode(map[string]any{"id": "agent-123"})
 		}))
 		defer srv.Close()
-		t.Setenv("MULTICA_SERVER_URL", srv.URL)
-		t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-		t.Setenv("MULTICA_TOKEN", "test-token")
-		t.Setenv("MULTICA_AGENT_ID", "")
-		t.Setenv("MULTICA_TASK_ID", "")
+		t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+		t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+		t.Setenv("ORCHESTRA_TOKEN", "test-token")
+		t.Setenv("ORCHESTRA_AGENT_ID", "")
+		t.Setenv("ORCHESTRA_TASK_ID", "")
 
 		cmd := &cobra.Command{Use: "create"}
 		cmd.Flags().String("name", "", "")
@@ -1946,11 +1946,11 @@ func TestAgentServiceTierFlagsAndBodies(t *testing.T) {
 			json.NewEncoder(w).Encode(map[string]any{"id": "agent-123"})
 		}))
 		defer srv.Close()
-		t.Setenv("MULTICA_SERVER_URL", srv.URL)
-		t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-		t.Setenv("MULTICA_TOKEN", "test-token")
-		t.Setenv("MULTICA_AGENT_ID", "")
-		t.Setenv("MULTICA_TASK_ID", "")
+		t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+		t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+		t.Setenv("ORCHESTRA_TOKEN", "test-token")
+		t.Setenv("ORCHESTRA_AGENT_ID", "")
+		t.Setenv("ORCHESTRA_TASK_ID", "")
 
 		cmd := &cobra.Command{Use: "update"}
 		cmd.Flags().String("service-tier", "", "")
@@ -1982,11 +1982,11 @@ func TestAgentCreateThinkingLevelServerRejectionSurfaces(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_AGENT_ID", "")
-	t.Setenv("MULTICA_TASK_ID", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_AGENT_ID", "")
+	t.Setenv("ORCHESTRA_TASK_ID", "")
 
 	cmd := &cobra.Command{Use: "create"}
 	cmd.Flags().String("name", "", "")

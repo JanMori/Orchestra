@@ -14,21 +14,21 @@ import {
   Square,
   Trash2,
 } from "lucide-react";
-import { cn } from "@multica/ui/lib/utils";
-import { useWorkspaceId } from "@multica/core/hooks";
-import { useWorkspacePresenceMap } from "@multica/core/agents";
-import { api } from "@multica/core/api";
-import { pendingChatTasksOptions, chatKeys, sortChatSessions } from "@multica/core/chat/queries";
+import { cn } from "@orchestra/ui/lib/utils";
+import { useWorkspaceId } from "@orchestra/core/hooks";
+import { useWorkspacePresenceMap } from "@orchestra/core/agents";
+import { api } from "@orchestra/core/api";
+import { pendingChatTasksOptions, chatKeys, sortChatSessions } from "@orchestra/core/chat/queries";
 import {
   useDeleteChatSession,
   useSetChatSessionArchived,
   useSetChatSessionPinned,
-} from "@multica/core/chat/mutations";
-import { useChatStore } from "@multica/core/chat";
-import type { Agent, ChatSession, PendingChatTasksResponse } from "@multica/core/types";
+} from "@orchestra/core/chat/mutations";
+import { useChatStore } from "@orchestra/core/chat";
+import type { Agent, ChatSession, PendingChatTasksResponse } from "@orchestra/core/types";
 import { ActorAvatar } from "../../common/actor-avatar";
-import { createLogger } from "@multica/core/logger";
-import { removeChatMessageFromCaches } from "@multica/core/realtime";
+import { createLogger } from "@orchestra/core/logger";
+import { removeChatMessageFromCaches } from "@orchestra/core/realtime";
 import { useT } from "../../i18n";
 
 const apiLogger = createLogger("chat.api");

@@ -1,7 +1,7 @@
 "use client";
 
 import { LogOut } from "lucide-react";
-import { Button } from "@multica/ui/components/ui/button";
+import { Button } from "@orchestra/ui/components/ui/button";
 import { useLogout } from "../../auth";
 import { useT } from "../../i18n";
 

@@ -3,14 +3,14 @@
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { useAuthStore } from "@multica/core/auth";
+import { useAuthStore } from "@orchestra/core/auth";
 import {
   paths,
   resolvePostAuthDestination,
   useHasOnboarded,
-} from "@multica/core/paths";
-import { workspaceListOptions } from "@multica/core/workspace/queries";
-import { CliInstallInstructions, OnboardingFlow } from "@multica/views/onboarding";
+} from "@orchestra/core/paths";
+import { workspaceListOptions } from "@orchestra/core/workspace/queries";
+import { CliInstallInstructions, OnboardingFlow } from "@orchestra/views/onboarding";
 
 /**
  * Web shell for the onboarding flow. The route is the platform chrome on
@@ -49,20 +49,10 @@ export default function OnboardingPage() {
       return;
     }
     if (!workspacesFetched) return;
-    if (completingRef.current) return;
-    // Bounce out only when onboarding genuinely doesn't apply: the user is
-    // already onboarded. We deliberately don't bounce on `workspaces.length`
-    // here — Step 3 of the flow creates a workspace mid-onboarding, and a
-    // hasWorkspaces bounce here would kick the user out before Steps 4–5
-    // (runtime / agent / first issue) can run. The new entry-point
-    // judgment in callback / login handles "where should this user go on
-    // login" so OnboardingPage no longer needs to second-guess it.
-    if (hasOnboarded) {
-      router.replace(resolvePostAuthDestination(workspaces, hasOnboarded));
-    }
-  }, [isLoading, user, hasOnboarded, workspacesFetched, workspaces, router]);
+    router.replace(resolvePostAuthDestination(workspaces, true));
+  }, [isLoading, user, workspacesFetched, workspaces, router]);
 
-  if (isLoading || !user || hasOnboarded) return null;
+  return null;
 
   // Layout: page owns its own scroll (root layout sets `body {
   // overflow: hidden }` for the app-shell convention). OnboardingFlow

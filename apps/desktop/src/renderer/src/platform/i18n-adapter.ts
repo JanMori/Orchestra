@@ -1,4 +1,4 @@
-import type { LocaleAdapter, SupportedLocale } from "@multica/core/i18n";
+import type { LocaleAdapter, SupportedLocale } from "@orchestra/core/i18n";
 
 const STORAGE_KEY = "multica-locale";
 

@@ -89,9 +89,9 @@ func TestRunWorkspaceCreatePostsWorkspaceAndDoesNotSwitchDefault(t *testing.T) {
 	defer srv.Close()
 
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_WORKSPACE_ID", "existing-workspace")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "existing-workspace")
 	if err := cli.SaveCLIConfig(cli.CLIConfig{WorkspaceID: "existing-workspace"}); err != nil {
 		t.Fatalf("seed config: %v", err)
 	}
@@ -244,8 +244,8 @@ func TestRunWorkspaceCreatePrintsTable(t *testing.T) {
 	defer srv.Close()
 
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := newWorkspaceCreateTestCmd()
 	_ = cmd.Flags().Set("name", "Support Team")
@@ -281,9 +281,9 @@ func TestRunWorkspaceSwitch(t *testing.T) {
 
 	// Isolate HOME so the test never touches the developer's ~/.multica.
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_WORKSPACE_ID", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "")
 
 	t.Run("switches by slug and persists workspace_id", func(t *testing.T) {
 		cmd := newWorkspaceSwitchTestCmd()
@@ -671,8 +671,8 @@ func TestWorkspaceMemberInviteCommandIsRegistered(t *testing.T) {
 
 func TestRunWorkspaceMemberInvitePostsInvitation(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_WORKSPACE_ID", "workspace-123")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "workspace-123")
 
 	var gotMethod, gotPath string
 	var gotBody map[string]any
@@ -693,7 +693,7 @@ func TestRunWorkspaceMemberInvitePostsInvitation(t *testing.T) {
 		})
 	}))
 	defer srv.Close()
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
 
 	cmd := newWorkspaceMemberInviteTestCmd()
 	// A mixed-case email should be lowercased before it is sent.
@@ -716,7 +716,7 @@ func TestRunWorkspaceMemberInvitePostsInvitation(t *testing.T) {
 
 func TestRunWorkspaceMemberInviteUsesWorkspaceArgAndRoleFlag(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	const wsUUID = "11111111-1111-1111-1111-111111111111"
 	var gotPath string
@@ -730,7 +730,7 @@ func TestRunWorkspaceMemberInviteUsesWorkspaceArgAndRoleFlag(t *testing.T) {
 		_ = json.NewEncoder(w).Encode(map[string]any{"invitee_email": "bob@example.com", "role": "admin", "status": "pending"})
 	}))
 	defer srv.Close()
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
 
 	cmd := newWorkspaceMemberInviteTestCmd()
 	_ = cmd.Flags().Set("role", "admin")
@@ -748,15 +748,15 @@ func TestRunWorkspaceMemberInviteUsesWorkspaceArgAndRoleFlag(t *testing.T) {
 
 func TestRunWorkspaceMemberInviteRejectsOwnerRole(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_WORKSPACE_ID", "workspace-123")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "workspace-123")
 
 	called := false
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		called = true
 	}))
 	defer srv.Close()
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
 
 	cmd := newWorkspaceMemberInviteTestCmd()
 	_ = cmd.Flags().Set("role", "owner")
@@ -770,8 +770,8 @@ func TestRunWorkspaceMemberInviteRejectsOwnerRole(t *testing.T) {
 
 func TestRunWorkspaceMemberInviteRejectsUnknownRole(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_WORKSPACE_ID", "workspace-123")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "workspace-123")
 
 	cmd := newWorkspaceMemberInviteTestCmd()
 	_ = cmd.Flags().Set("role", "superuser")

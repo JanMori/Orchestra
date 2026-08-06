@@ -1,17 +1,17 @@
 import { useEffect } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { WorkspaceSlugProvider } from "@multica/core/paths";
+import { WorkspaceSlugProvider } from "@orchestra/core/paths";
 import {
   workspaceBySlugOptions,
   workspaceListOptions,
-} from "@multica/core/workspace";
-import { setCurrentWorkspace } from "@multica/core/platform";
-import { useAuthStore } from "@multica/core/auth";
-import { useWorkspaceSeen } from "@multica/views/workspace/use-workspace-seen";
-import { WelcomeAfterOnboarding } from "@multica/views/workspace/welcome-after-onboarding";
-import { WorkspacePresencePrefetch } from "@multica/views/layout";
-import { SourceBackfillModal } from "@multica/views/onboarding";
+} from "@orchestra/core/workspace";
+import { setCurrentWorkspace } from "@orchestra/core/platform";
+import { useAuthStore } from "@orchestra/core/auth";
+import { useWorkspaceSeen } from "@orchestra/views/workspace/use-workspace-seen";
+import { WelcomeAfterOnboarding } from "@orchestra/views/workspace/welcome-after-onboarding";
+import { WorkspacePresencePrefetch } from "@orchestra/views/layout";
+import { SourceBackfillModal } from "@orchestra/views/onboarding";
 import { useTabStore } from "@/stores/tab-store";
 import { useWindowOverlayStore } from "@/stores/window-overlay-store";
 

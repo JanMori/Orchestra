@@ -21,13 +21,13 @@ default_config="$(
   helm template multica "$CHART_DIR" \
     --show-only templates/configmap.yaml
 )"
-require_rendered_value "$default_config" 'MULTICA_VCS_INTEGRATION_ENABLED: "true"'
+require_rendered_value "$default_config" 'ORCHESTRA_VCS_INTEGRATION_ENABLED: "true"'
 
 disabled_config="$(
   helm template multica "$CHART_DIR" \
     --show-only templates/configmap.yaml \
     --set backend.config.vcsIntegrationEnabled=false
 )"
-require_rendered_value "$disabled_config" 'MULTICA_VCS_INTEGRATION_ENABLED: "false"'
+require_rendered_value "$disabled_config" 'ORCHESTRA_VCS_INTEGRATION_ENABLED: "false"'
 
 echo "helm config rendering ok"

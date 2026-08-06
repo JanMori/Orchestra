@@ -19,7 +19,7 @@ const (
 	// CursorMcpAuthSourceEnv is an agent custom_env key the daemon consumes
 	// before launching cursor-agent. When set, it must point at an explicit
 	// mcp-auth.json file, or at a Cursor project data directory containing one.
-	// The key is intentionally not MULTICA_* because custom_env blocks those
+	// The key is intentionally not ORCHESTRA_* because custom_env blocks those
 	// from being set by users.
 	CursorMcpAuthSourceEnv = "CURSOR_MCP_AUTH_SOURCE"
 

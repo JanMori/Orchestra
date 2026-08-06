@@ -1,5 +1,5 @@
-import type { IssuePriority } from "@multica/core/types";
-import { PRIORITY_CONFIG } from "@multica/core/issues/config";
+import type { IssuePriority } from "@orchestra/core/types";
+import { PRIORITY_CONFIG } from "@orchestra/core/issues/config";
 
 export function PriorityIcon({
   priority,

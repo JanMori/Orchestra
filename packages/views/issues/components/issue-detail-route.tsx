@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useCanonicalIssue } from "@multica/core/issues/canonical-id";
-import { useWorkspaceId } from "@multica/core/hooks";
-import { useWorkspacePaths } from "@multica/core/paths";
+import { useCanonicalIssue } from "@orchestra/core/issues/canonical-id";
+import { useWorkspaceId } from "@orchestra/core/hooks";
+import { useWorkspacePaths } from "@orchestra/core/paths";
 import { useNavigation } from "../../navigation";
 import { IssueDetail, IssueDetailSkeleton, IssueNotFound } from "./issue-detail";
 

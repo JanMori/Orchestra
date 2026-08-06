@@ -5,7 +5,7 @@ import { NavigationProvider } from "../navigation";
 import type { NavigationAdapter } from "../navigation";
 
 const mockDelete = vi.fn().mockResolvedValue(undefined);
-vi.mock("@multica/core/issues/mutations", () => ({
+vi.mock("@orchestra/core/issues/mutations", () => ({
   useDeleteIssue: () => ({ mutateAsync: mockDelete }),
 }));
 

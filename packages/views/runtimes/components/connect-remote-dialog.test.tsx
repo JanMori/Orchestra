@@ -1,19 +1,19 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { I18nProvider } from "@multica/core/i18n/react";
-import { configStore } from "@multica/core/config";
+import { I18nProvider } from "@orchestra/core/i18n/react";
+import { configStore } from "@orchestra/core/config";
 import enCommon from "../../locales/en/common.json";
 import enRuntimes from "../../locales/en/runtimes.json";
 import { ConnectRemoteDialog } from "./connect-remote-dialog";
 
 const TEST_RESOURCES = { en: { common: enCommon, runtimes: enRuntimes } };
 
-vi.mock("@multica/core/hooks", () => ({
+vi.mock("@orchestra/core/hooks", () => ({
   useWorkspaceId: () => "ws-test",
 }));
 
-vi.mock("@multica/core/paths", () => ({
+vi.mock("@orchestra/core/paths", () => ({
   paths: {
     workspace: () => ({
       agents: () => "/agents",
@@ -27,7 +27,7 @@ const wsEventState = vi.hoisted(() => ({
   handler: null as ((payload: unknown) => void) | null,
 }));
 
-vi.mock("@multica/core/realtime", () => ({
+vi.mock("@orchestra/core/realtime", () => ({
   useWSEvent: (_event: string, handler: (payload: unknown) => void) => {
     wsEventState.handler = handler;
   },

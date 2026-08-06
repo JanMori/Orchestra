@@ -13,7 +13,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { NavigationProvider } from "../navigation/context";
 import type { NavigationAdapter } from "../navigation/types";
 
-vi.mock("@multica/core/workspace/hooks", () => ({
+vi.mock("@orchestra/core/workspace/hooks", () => ({
   useActorName: () => ({
     getActorName: () => "Ada Lovelace",
     getActorInitials: () => "AL",
@@ -21,7 +21,7 @@ vi.mock("@multica/core/workspace/hooks", () => ({
   }),
 }));
 
-vi.mock("@multica/core/paths", () => ({
+vi.mock("@orchestra/core/paths", () => ({
   useWorkspacePaths: () => ({
     memberDetail: (id: string) => `/acme/members/${id}`,
     agentDetail: (id: string) => `/acme/agents/${id}`,
@@ -30,7 +30,7 @@ vi.mock("@multica/core/paths", () => ({
   useCurrentWorkspace: () => ({ id: "ws1", slug: "acme" }),
 }));
 
-vi.mock("@multica/core/agents", () => ({
+vi.mock("@orchestra/core/agents", () => ({
   useAgentPresenceDetail: () => ({ availability: "offline", workload: null }),
 }));
 

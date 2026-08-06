@@ -8,15 +8,15 @@ import {
   decodeBuilderInput,
   pickBuilderRestore,
   type BuilderRestore,
-} from "@multica/core/agents";
-import { api, ApiError } from "@multica/core/api";
+} from "@orchestra/core/agents";
+import { api, ApiError } from "@orchestra/core/api";
 import {
   chatKeys,
   chatMessagesOptions,
   pendingChatTaskOptions,
-} from "@multica/core/chat/queries";
-import { useWorkspaceId } from "@multica/core/hooks";
-import type { ChatMessage } from "@multica/core/types";
+} from "@orchestra/core/chat/queries";
+import { useWorkspaceId } from "@orchestra/core/hooks";
+import type { ChatMessage } from "@orchestra/core/types";
 import { useAppForeground } from "../../common/use-app-foreground";
 import { useChatDraftRestore } from "../../chat/components/use-chat-draft-restore";
 import { useT } from "../../i18n";

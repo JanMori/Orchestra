@@ -5,8 +5,8 @@
  * (react-markdown link component), and link-hover-card (Open button).
  */
 
-import { isGlobalPath, isReservedSlug } from "@multica/core/paths";
-import { isIssueIdentifier } from "@multica/ui/markdown";
+import { isGlobalPath, isReservedSlug } from "@orchestra/core/paths";
+import { isIssueIdentifier } from "@orchestra/ui/markdown";
 
 /**
  * Top-level workspace-scoped routes. Used to detect "/{route}/..." paths that

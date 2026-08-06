@@ -284,8 +284,8 @@ func DetectLanguage() Language {
 // kindMessages holds the {English, Chinese} user-facing message for each kind.
 var kindMessages = map[ErrorKind][2]string{
 	KindNetworkTimeout: {
-		"Request timed out: the server did not respond in time. Check your network connection or try again later. You can raise the limit with MULTICA_HTTP_TIMEOUT.",
-		"请求超时：服务器未在规定时间内响应。请检查网络连接或稍后重试。可通过 MULTICA_HTTP_TIMEOUT 调高超时时间。",
+		"Request timed out: the server did not respond in time. Check your network connection or try again later. You can raise the limit with ORCHESTRA_HTTP_TIMEOUT.",
+		"请求超时：服务器未在规定时间内响应。请检查网络连接或稍后重试。可通过 ORCHESTRA_HTTP_TIMEOUT 调高超时时间。",
 	},
 	KindNetworkDNS: {
 		"Could not resolve the Multica server address. Check your network connection or the --server-url setting.",
@@ -372,7 +372,7 @@ func messageFor(kind ErrorKind, lang Language) string {
 //
 // When debug is false it skips the internal verb chain ("resolve issue: ...")
 // and the raw URL/JSON body, showing only the friendly message. When debug is
-// true (or MULTICA_DEBUG is set) it additionally prints the full original
+// true (or ORCHESTRA_DEBUG is set) it additionally prints the full original
 // error chain for troubleshooting.
 func FormatError(err error, debug bool) string {
 	if err == nil {
@@ -489,7 +489,7 @@ func looksLikeMachineCode(s string) bool {
 }
 
 // debugDetail renders the full original error chain plus any structured
-// details from typed errors, for --debug / MULTICA_DEBUG output.
+// details from typed errors, for --debug / ORCHESTRA_DEBUG output.
 func debugDetail(err error) string {
 	var sb strings.Builder
 	sb.WriteString("[debug] ")
@@ -507,9 +507,9 @@ func debugDetail(err error) string {
 	return sb.String()
 }
 
-// debugEnabled reports whether MULTICA_DEBUG requests debug output.
+// debugEnabled reports whether ORCHESTRA_DEBUG requests debug output.
 func debugEnabled() bool {
-	switch strings.ToLower(strings.TrimSpace(os.Getenv("MULTICA_DEBUG"))) {
+	switch strings.ToLower(strings.TrimSpace(os.Getenv("ORCHESTRA_DEBUG"))) {
 	case "", "0", "false", "no", "off":
 		return false
 	default:

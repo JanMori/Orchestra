@@ -15,7 +15,7 @@ import (
 
 // Codex filters environment variables before running shell tool subprocesses.
 // Its default secret guard drops names containing KEY, SECRET, or TOKEN, so a
-// daemon-spawned Codex process can have MULTICA_TOKEN while `multica issue ...`
+// daemon-spawned Codex process can have ORCHESTRA_TOKEN while `multica issue ...`
 // inside a shell tool does not. The daemon therefore owns the shell policy in
 // each task's isolated Codex home.
 const (
@@ -46,9 +46,9 @@ type tomlByteRange struct {
 // names containing KEY, SECRET, or TOKEN. Credential-looking explicit values
 // are included only when their names also appear in authorizedExplicit, which
 // daemon.go derives solely from the current agent's blocklist-checked
-// custom_env. Inherited MULTICA_* variables are always dropped because they
+// custom_env. Inherited ORCHESTRA_* variables are always dropped because they
 // belong to the daemon process, not necessarily to this task. Explicit
-// MULTICA_* values are safe to include because daemon.go blocklists that
+// ORCHESTRA_* values are safe to include because daemon.go blocklists that
 // namespace from agent custom_env and constructs those values from the current
 // task.
 func CodexShellEnvAllowlist(inherited []string, explicit map[string]string, authorizedExplicit []string) []string {
@@ -67,7 +67,7 @@ func CodexShellEnvAllowlist(inherited []string, explicit map[string]string, auth
 			return
 		}
 		upper := strings.ToUpper(key)
-		if strings.HasPrefix(upper, "MULTICA_") {
+		if strings.HasPrefix(upper, "ORCHESTRA_") {
 			if !isExplicit {
 				return
 			}

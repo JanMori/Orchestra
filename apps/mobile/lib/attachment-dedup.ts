@@ -1,5 +1,5 @@
-import type { Attachment } from "@multica/core/types";
-import { contentReferencesAttachment } from "@multica/core/types";
+import type { Attachment } from "@orchestra/core/types";
+import { contentReferencesAttachment } from "@orchestra/core/types";
 
 /**
  * The attachments to render as standalone cards below a message / comment

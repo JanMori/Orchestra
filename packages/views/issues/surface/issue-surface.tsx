@@ -2,17 +2,17 @@
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { FilterX, ListTodo, Plus } from "lucide-react";
-import { Button } from "@multica/ui/components/ui/button";
-import { Skeleton } from "@multica/ui/components/ui/skeleton";
-import { cn } from "@multica/ui/lib/utils";
-import { useWorkspaceId } from "@multica/core/hooks";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { Skeleton } from "@orchestra/ui/components/ui/skeleton";
+import { cn } from "@orchestra/ui/lib/utils";
+import { useWorkspaceId } from "@orchestra/core/hooks";
 import {
   useViewStore,
   ViewStoreProvider,
-} from "@multica/core/issues/stores/view-store-context";
-import { getIssueSurfaceViewStore } from "@multica/core/issues/stores/surface-view-store";
-import { issueScopeKey } from "@multica/core/issues/surface/scope";
-import type { Issue } from "@multica/core/types";
+} from "@orchestra/core/issues/stores/view-store-context";
+import { getIssueSurfaceViewStore } from "@orchestra/core/issues/stores/surface-view-store";
+import { issueScopeKey } from "@orchestra/core/issues/surface/scope";
+import type { Issue } from "@orchestra/core/types";
 import { BoardView } from "../components/board-view";
 import { BatchActionToolbar } from "../components/batch-action-toolbar";
 import { GanttView } from "../components/gantt-view";

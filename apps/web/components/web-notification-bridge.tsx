@@ -4,9 +4,9 @@ import { useEffect, useRef } from "react";
 import {
   registerSystemNotificationClickHandler,
   type SystemNotificationPayload,
-} from "@multica/core/platform";
-import { paths } from "@multica/core/paths";
-import { useNavigation } from "@multica/views/navigation";
+} from "@orchestra/core/platform";
+import { paths } from "@orchestra/core/paths";
+import { useNavigation } from "@orchestra/views/navigation";
 
 /**
  * Routes browser notification clicks to the source workspace's inbox, focused

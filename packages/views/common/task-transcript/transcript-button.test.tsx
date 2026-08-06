@@ -12,18 +12,18 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { api } from "@multica/core/api";
+import { api } from "@orchestra/core/api";
 import {
   chatKeys,
   mergeTaskMessagesBySeq,
-} from "@multica/core/chat/queries";
-import type { AgentTask } from "@multica/core/types/agent";
-import type { TaskMessagePayload } from "@multica/core/types/events";
+} from "@orchestra/core/chat/queries";
+import type { AgentTask } from "@orchestra/core/types/agent";
+import type { TaskMessagePayload } from "@orchestra/core/types/events";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TranscriptButton } from "./transcript-button";
 import type { TimelineItem } from "./build-timeline";
 
-vi.mock("@multica/core/api", () => ({
+vi.mock("@orchestra/core/api", () => ({
   api: {
     listTaskMessages: vi.fn(),
   },

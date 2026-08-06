@@ -23,7 +23,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 import { WebNavigationProvider } from "./navigation";
-import { useNavigation, type NavigationAdapter } from "@multica/views/navigation";
+import { useNavigation, type NavigationAdapter } from "@orchestra/views/navigation";
 
 function navigate(path: string) {
   window.dispatchEvent(

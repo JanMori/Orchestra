@@ -165,8 +165,8 @@ func TestDiskUsageNeedsParentStatus(t *testing.T) {
 func TestRunDaemonDiskUsageByWorkspaceTableMakesNoRequest(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
-	t.Setenv("MULTICA_WORKSPACES_ROOT", "")
-	t.Setenv("MULTICA_SERVER_URL", "")
+	t.Setenv("ORCHESTRA_WORKSPACES_ROOT", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", "")
 
 	rec := &gcCheckRecorder{}
 	srv := newGCCheckServer(t, rec)
@@ -195,8 +195,8 @@ func TestRunDaemonDiskUsageByWorkspaceTableMakesNoRequest(t *testing.T) {
 func TestRunDaemonDiskUsageTaskTableResolvesStatus(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
-	t.Setenv("MULTICA_WORKSPACES_ROOT", "")
-	t.Setenv("MULTICA_SERVER_URL", "")
+	t.Setenv("ORCHESTRA_WORKSPACES_ROOT", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", "")
 
 	rec := &gcCheckRecorder{}
 	srv := newGCCheckServer(t, rec)
@@ -221,8 +221,8 @@ func TestRunDaemonDiskUsageTaskTableResolvesStatus(t *testing.T) {
 func TestRunDaemonDiskUsageJSONSurvivesServerFailure(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
-	t.Setenv("MULTICA_WORKSPACES_ROOT", "")
-	t.Setenv("MULTICA_SERVER_URL", "")
+	t.Setenv("ORCHESTRA_WORKSPACES_ROOT", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", "")
 
 	rec := &gcCheckRecorder{statusCode: http.StatusInternalServerError}
 	srv := newGCCheckServer(t, rec)
@@ -265,8 +265,8 @@ func TestRunDaemonDiskUsageJSONSurvivesServerFailure(t *testing.T) {
 func TestRunDaemonDiskUsageAllProfilesUsesPerProfileToken(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
-	t.Setenv("MULTICA_WORKSPACES_ROOT", "")
-	t.Setenv("MULTICA_SERVER_URL", "")
+	t.Setenv("ORCHESTRA_WORKSPACES_ROOT", "")
+	t.Setenv("ORCHESTRA_SERVER_URL", "")
 
 	rec := &gcCheckRecorder{}
 	srv := newGCCheckServer(t, rec)

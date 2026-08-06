@@ -1,9 +1,9 @@
 import { cloneElement, forwardRef, useEffect, useRef, useImperativeHandle } from "react";
 import { beforeEach, describe, it, expect, vi } from "vitest";
 import { act, render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { I18nProvider } from "@multica/core/i18n/react";
-import type { UploadResult } from "@multica/core/hooks/use-file-upload";
-import type { DraftUpload } from "@multica/core/drafts";
+import { I18nProvider } from "@orchestra/core/i18n/react";
+import type { UploadResult } from "@orchestra/core/hooks/use-file-upload";
+import type { DraftUpload } from "@orchestra/core/drafts";
 import enCommon from "../../locales/en/common.json";
 import enChat from "../../locales/en/chat.json";
 import enEditor from "../../locales/en/editor.json";
@@ -22,7 +22,7 @@ const insertMarkdownSpy = vi.hoisted(() => vi.fn());
 // the same or the two records drift apart only in tests.
 let mockUploadIdSeq = 0;
 
-vi.mock("@multica/core/api", () => ({
+vi.mock("@orchestra/core/api", () => ({
   api: { uploadFile: mockApiUploadFile },
 }));
 
@@ -210,7 +210,7 @@ vi.mock("../../projects/components/project-picker", () => ({
 // Mock chat store with an in-memory implementation that supports both
 // (selector) calls and getState(). Draft attachments hold coordinator-owned
 // DraftUpload entries (MUL-5181 L2).
-vi.mock("@multica/core/chat", () => {
+vi.mock("@orchestra/core/chat", () => {
   const state = {
     activeSessionId: null as string | null,
     selectedAgentId: "agent-1",
@@ -237,7 +237,7 @@ vi.mock("@multica/core/chat", () => {
 });
 
 import { ChatInput } from "./chat-input";
-import { useChatStore } from "@multica/core/chat";
+import { useChatStore } from "@orchestra/core/chat";
 
 type ChatInputOnSend = React.ComponentProps<typeof ChatInput>["onSend"];
 type ChatInputCommit = Parameters<ChatInputOnSend>[2];

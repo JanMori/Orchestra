@@ -3,16 +3,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, Loader2, RefreshCw } from "lucide-react";
-import { Button } from "@multica/ui/components/ui/button";
-import { cn } from "@multica/ui/lib/utils";
-import { useScrollFade } from "@multica/ui/hooks/use-scroll-fade";
-import { runtimeKeys } from "@multica/core/runtimes/queries";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { cn } from "@orchestra/ui/lib/utils";
+import { useScrollFade } from "@orchestra/ui/hooks/use-scroll-fade";
+import { runtimeKeys } from "@orchestra/core/runtimes/queries";
 import {
   runtimeDisplayLabel,
   runtimeDisplayName,
-} from "@multica/core/runtimes";
-import type { AgentRuntime } from "@multica/core/types";
-import { DragStrip } from "@multica/views/platform";
+} from "@orchestra/core/runtimes";
+import type { AgentRuntime } from "@orchestra/core/types";
+import { DragStrip } from "@orchestra/views/platform";
 import { StepHeader } from "../components/step-header";
 import { RuntimeAsidePanel } from "../components/runtime-aside-panel";
 import { useRuntimePicker } from "../components/use-runtime-picker";

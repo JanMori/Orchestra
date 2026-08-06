@@ -2,10 +2,10 @@
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { ApiError } from "@multica/core/api";
-import { configStore } from "@multica/core/config";
-import { COMPOSIO_MCP_APPS_FLAG } from "@multica/core/feature-flags";
-import { I18nProvider } from "@multica/core/i18n/react";
+import { ApiError } from "@orchestra/core/api";
+import { configStore } from "@orchestra/core/config";
+import { COMPOSIO_MCP_APPS_FLAG } from "@orchestra/core/feature-flags";
+import { I18nProvider } from "@orchestra/core/i18n/react";
 import enCommon from "../../locales/en/common.json";
 import enSettings from "../../locales/en/settings.json";
 
@@ -28,7 +28,7 @@ vi.mock("@tanstack/react-query", () => ({
   queryOptions: <T,>(opts: T) => opts,
 }));
 
-vi.mock("@multica/core/composio", () => ({
+vi.mock("@orchestra/core/composio", () => ({
   composioToolkitsOptions: () => ({ queryKey: ["composio", "toolkits"] }),
 }));
 

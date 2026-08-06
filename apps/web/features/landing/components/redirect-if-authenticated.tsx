@@ -3,9 +3,9 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { useAuthStore } from "@multica/core/auth";
-import { workspaceListOptions } from "@multica/core/workspace";
-import { resolvePostAuthDestination, useHasOnboarded } from "@multica/core/paths";
+import { useAuthStore } from "@orchestra/core/auth";
+import { workspaceListOptions } from "@orchestra/core/workspace";
+import { resolvePostAuthDestination, useHasOnboarded } from "@orchestra/core/paths";
 import { isOfficialMarketingHost } from "@/lib/public-host";
 
 /**

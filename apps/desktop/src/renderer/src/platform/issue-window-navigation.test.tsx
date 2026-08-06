@@ -13,7 +13,7 @@ import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 
 const APP_URL = "https://app.example";
 
-vi.mock("@multica/core/paths", () => ({
+vi.mock("@orchestra/core/paths", () => ({
   useCurrentWorkspace: () => ({ slug: "acme", id: "ws-1" }),
 }));
 

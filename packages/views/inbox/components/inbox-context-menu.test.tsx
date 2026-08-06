@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
-import type { InboxItem } from "@multica/core/types";
-import { I18nProvider } from "@multica/core/i18n/react";
+import type { InboxItem } from "@orchestra/core/types";
+import { I18nProvider } from "@orchestra/core/i18n/react";
 import enInbox from "../../locales/en/inbox.json";
 
 vi.mock("../../issues/components", () => ({ StatusIcon: () => null }));

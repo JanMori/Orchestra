@@ -13,7 +13,7 @@ import (
 // value itself via envOrDefault, so when only env is set we return "" —
 // the "don't touch, let the runtime read it" signal.
 func TestResolveDaemonStringOverridePrecedence(t *testing.T) {
-	const envName = "TEST_MULTICA_STR_OVERRIDE"
+	const envName = "TEST_ORCHESTRA_STR_OVERRIDE"
 
 	cases := []struct {
 		name   string
@@ -48,7 +48,7 @@ func TestResolveDaemonStringOverridePrecedence(t *testing.T) {
 // flag>0 wins, env suppresses cfg, cfg parsed on demand, invalid cfg
 // surfaces as an error so the daemon doesn't silently fall back.
 func TestResolveDaemonDurationOverridePrecedence(t *testing.T) {
-	const envName = "TEST_MULTICA_DUR_OVERRIDE"
+	const envName = "TEST_ORCHESTRA_DUR_OVERRIDE"
 
 	cases := []struct {
 		name    string
@@ -98,7 +98,7 @@ func TestResolveDaemonDurationOverridePrecedence(t *testing.T) {
 // but with the int knob (max_concurrent_tasks). flag>0 wins; env
 // non-empty suppresses cfg; cfg>0 wins only when both are absent.
 func TestResolveDaemonIntOverridePrecedence(t *testing.T) {
-	const envName = "TEST_MULTICA_INT_OVERRIDE"
+	const envName = "TEST_ORCHESTRA_INT_OVERRIDE"
 
 	cases := []struct {
 		name string
@@ -134,7 +134,7 @@ func TestResolveDaemonIntOverridePrecedence(t *testing.T) {
 // (nil); cfg pointer is only consulted when both flag and env are silent,
 // and "0s" there is a legitimate persisted "disable the cap" sentinel.
 func TestResolveDaemonAgentTimeoutOverridePrecedence(t *testing.T) {
-	const envName = "TEST_MULTICA_AGENT_TIMEOUT"
+	const envName = "TEST_ORCHESTRA_AGENT_TIMEOUT"
 	strPtr := func(s string) *string { return &s }
 
 	newCmd := func(changed bool, flagVal time.Duration) *cobra.Command {
@@ -210,7 +210,7 @@ func TestResolveDaemonAgentTimeoutOverridePrecedence(t *testing.T) {
 // LoadConfig honors the raw env; missing signals return false so the default
 // wins.
 func TestResolveDaemonDisableSignalPrecedence(t *testing.T) {
-	const envName = "TEST_MULTICA_DAEMON_AUTO_UPDATE"
+	const envName = "TEST_ORCHESTRA_DAEMON_AUTO_UPDATE"
 
 	cases := []struct {
 		name string

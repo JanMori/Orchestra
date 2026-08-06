@@ -1,4 +1,4 @@
-import type { Agent } from "@multica/core/types";
+import type { Agent } from "@orchestra/core/types";
 
 /**
  * Mobile-owned mirror of packages/core/agents/runtime-binding.ts.

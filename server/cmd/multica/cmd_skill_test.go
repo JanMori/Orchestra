@@ -46,8 +46,8 @@ func captureStdout(t *testing.T, fn func() error) (string, error) {
 
 func TestRunSkillImportJsonTreatsDuplicateAsConflictResult(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_WORKSPACE_ID", "workspace-123")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "workspace-123")
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
@@ -81,7 +81,7 @@ func TestRunSkillImportJsonTreatsDuplicateAsConflictResult(t *testing.T) {
 		})
 	}))
 	defer srv.Close()
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
 
 	cmd := newSkillImportTestCmd()
 	_ = cmd.Flags().Set("url", "https://skills.sh/acme/review-helper")
@@ -115,8 +115,8 @@ func TestRunSkillImportJsonTreatsDuplicateAsConflictResult(t *testing.T) {
 
 func TestRunSkillImportSendsOnConflictAndPrintsStructuredResult(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_WORKSPACE_ID", "workspace-123")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "workspace-123")
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var body map[string]any
@@ -137,7 +137,7 @@ func TestRunSkillImportSendsOnConflictAndPrintsStructuredResult(t *testing.T) {
 		})
 	}))
 	defer srv.Close()
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
 
 	cmd := newSkillImportTestCmd()
 	_ = cmd.Flags().Set("url", "https://skills.sh/acme/review-helper")
@@ -183,9 +183,9 @@ func TestRunSkillSearchRequestsSearchEndpoint(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 
 	cmd := &cobra.Command{Use: "search"}
 	cmd.Flags().String("output", "json", "")
@@ -265,9 +265,9 @@ func newSkillBodyCaptureServer(t *testing.T, wantMethod, wantPath string, body *
 
 func setSkillServerEnv(t *testing.T, serverURL string) {
 	t.Helper()
-	t.Setenv("MULTICA_SERVER_URL", serverURL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", serverURL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 }
 
 func TestRunSkillCreateReadsContentFileVerbatim(t *testing.T) {

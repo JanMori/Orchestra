@@ -1,15 +1,15 @@
 import { useState, useEffect, useCallback, type ReactNode } from "react";
 import { AlertCircle, Info, LogIn } from "lucide-react";
-import { Button } from "@multica/ui/components/ui/button";
-import { Switch } from "@multica/ui/components/ui/switch";
-import { cn } from "@multica/ui/lib/utils";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { Switch } from "@orchestra/ui/components/ui/switch";
+import { cn } from "@orchestra/ui/lib/utils";
 import { toast } from "sonner";
 import {
   SettingsCard,
   SettingsRow,
   SettingsSection,
   SettingsTab,
-} from "@multica/views/settings";
+} from "@orchestra/views/settings";
 import { reauthenticateDaemon } from "../platform/daemon-reauth";
 import type { DaemonPrefs, DaemonStatus } from "../../../shared/daemon-types";
 import {

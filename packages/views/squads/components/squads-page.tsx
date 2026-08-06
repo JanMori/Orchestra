@@ -15,17 +15,17 @@ import {
 } from "lucide-react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useCurrentWorkspace, useWorkspacePaths } from "@multica/core/paths";
+import { useCurrentWorkspace, useWorkspacePaths } from "@orchestra/core/paths";
 import {
   agentListOptions,
   memberListOptions,
   squadListOptions,
   workspaceKeys,
-} from "@multica/core/workspace/queries";
-import { resolvePublicFileUrl } from "@multica/core/workspace/avatar-url";
-import { useAuthStore } from "@multica/core/auth";
-import { api } from "@multica/core/api";
-import { useModalStore } from "@multica/core/modals";
+} from "@orchestra/core/workspace/queries";
+import { resolvePublicFileUrl } from "@orchestra/core/workspace/avatar-url";
+import { useAuthStore } from "@orchestra/core/auth";
+import { api } from "@orchestra/core/api";
+import { useModalStore } from "@orchestra/core/modals";
 import {
   useSquadsViewStore,
   SQUAD_SCOPES,
@@ -34,9 +34,9 @@ import {
   type SquadListFilters,
   type SquadsScope,
   type SquadSortField,
-} from "@multica/core/squads/stores";
-import type { Agent, MemberWithUser, Squad } from "@multica/core/types";
-import { Button } from "@multica/ui/components/ui/button";
+} from "@orchestra/core/squads/stores";
+import type { Agent, MemberWithUser, Squad } from "@orchestra/core/types";
+import { Button } from "@orchestra/ui/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -44,7 +44,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@multica/ui/components/ui/dialog";
+} from "@orchestra/ui/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -56,7 +56,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@multica/ui/components/ui/dropdown-menu";
+} from "@orchestra/ui/components/ui/dropdown-menu";
 import {
   ListGrid,
   ListGridCell,
@@ -65,20 +65,20 @@ import {
   ListGridRow,
   LIST_GRID_BOTTOM_CLEARANCE,
   type ListGridSortDirection,
-} from "@multica/ui/components/ui/list-grid";
+} from "@orchestra/ui/components/ui/list-grid";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@multica/ui/components/ui/popover";
-import { Skeleton } from "@multica/ui/components/ui/skeleton";
-import { Switch } from "@multica/ui/components/ui/switch";
+} from "@orchestra/ui/components/ui/popover";
+import { Skeleton } from "@orchestra/ui/components/ui/skeleton";
+import { Switch } from "@orchestra/ui/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@multica/ui/components/ui/tooltip";
-import { ActorAvatar as ActorAvatarBase } from "@multica/ui/components/common/actor-avatar";
+} from "@orchestra/ui/components/ui/tooltip";
+import { ActorAvatar as ActorAvatarBase } from "@orchestra/ui/components/common/actor-avatar";
 import { ActorAvatar } from "../../common/actor-avatar";
 import { FILTER_ITEM_CLASS, HoverCheck } from "../../common/hover-check";
 import { useRowLink } from "../../navigation";

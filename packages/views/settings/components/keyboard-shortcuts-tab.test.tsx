@@ -5,7 +5,7 @@ import {
   configureShortcutPlatform,
   getShortcut,
   useShortcutStore,
-} from "@multica/core/shortcuts";
+} from "@orchestra/core/shortcuts";
 import { renderWithI18n } from "../../test/i18n";
 import { KeyboardShortcutsTab } from "./keyboard-shortcuts-tab";
 

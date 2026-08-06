@@ -10,7 +10,7 @@ import (
 // withAgentContext makes inAgentExecutionContext() report true for one test.
 func withAgentContext(t *testing.T) {
 	t.Helper()
-	t.Setenv("MULTICA_TASK_ID", "task-1")
+	t.Setenv("ORCHESTRA_TASK_ID", "task-1")
 }
 
 // withWorkdir chdirs into a fresh temp dir so workdir-prefix classification has
@@ -206,11 +206,11 @@ func TestGuardLocalPathLinksOnlyFiresInAgentContext(t *testing.T) {
 	body := "[screenshot](" + shot + ")"
 
 	t.Run("human PAT context is never linted", func(t *testing.T) {
-		// No MULTICA_AGENT_ID / MULTICA_TASK_ID: a person running the CLI. Their
+		// No ORCHESTRA_AGENT_ID / ORCHESTRA_TASK_ID: a person running the CLI. Their
 		// links are their own business — they may well have a path the reader
 		// really can open.
-		t.Setenv("MULTICA_AGENT_ID", "")
-		t.Setenv("MULTICA_TASK_ID", "")
+		t.Setenv("ORCHESTRA_AGENT_ID", "")
+		t.Setenv("ORCHESTRA_TASK_ID", "")
 		if err := guardLocalPathLinks(body, "comment body", "hint"); err != nil {
 			t.Errorf("expected no error outside agent context, got: %v", err)
 		}

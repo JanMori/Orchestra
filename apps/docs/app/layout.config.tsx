@@ -1,7 +1,7 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import { ArrowUpRight } from "lucide-react";
 
-// Docs-local stateless Multica mark — matches @multica/ui's MulticaIcon
+// Docs-local stateless Multica mark — matches @orchestra/ui's MulticaIcon
 // visually (same 8-pointed-asterisk clip-path), but without useState/
 // useEffect so it's safe to render from Server Components such as
 // layout.config.tsx / layout.tsx. Keep in sync with
@@ -15,13 +15,37 @@ const MULTICA_CLIP = `polygon(
   0% 55%, 37.9% 55%, 11.1% 81.8%, 18.2% 88.9%
 )`;
 
-function MulticaMark() {
+function OrchestraMark() {
   return (
-    <span className="inline-block size-[1em]" aria-hidden="true">
-      <span
-        className="block size-full bg-current"
-        style={{ clipPath: MULTICA_CLIP }}
-      />
+    <span className="inline-block size-[1.2em]" aria-hidden="true">
+      <svg
+        viewBox="240 257 1098 1098"
+        className="size-full"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g id="shapeci78WHxu7z">
+          <g id="g1">
+            <clipPath id="clipPath1">
+              <path d="M 240.57019 257.21553 L 1338.244629 257.21553 L 1338.244629 1354.889969 L 240.57019 1354.889969 Z" />
+            </clipPath>
+            <g id="g2" clipPath="url(#clipPath1)">
+              <g id="Y9oRq9ViRT">
+                <g id="g3">
+                  <g id="g4">
+                    <g id="g5">
+                      <path fill="#00b1f2" d="M 546.428528 498.770386 C 546.428528 518.951782 528.58728 535.312012 506.57901 535.312012 C 484.570679 535.312012 466.729431 518.951782 466.729431 498.770386 C 466.729431 478.588989 484.570679 462.228638 506.57901 462.228638 C 528.58728 462.228638 546.428528 478.588989 546.428528 498.770386 Z" />
+                      <path fill="#00b1f2" d="M 506.57901 537.684814 C 483.290283 537.684814 464.141785 520.125854 464.141785 498.770386 C 464.141785 477.414795 483.290283 459.855835 506.57901 459.855835 C 529.867676 459.855835 549.016174 477.414795 549.016174 498.770386 C 549.016174 520.125854 529.867676 537.684814 506.57901 537.684814 Z M 506.57901 464.60144 C 485.87793 464.60144 469.317047 479.78772 469.317047 498.770386 C 469.317047 517.753052 485.87793 532.939209 506.57901 532.939209 C 527.28009 532.939209 543.840942 517.753052 543.840942 498.770386 C 543.840942 479.78772 527.28009 464.60144 506.57901 464.60144 Z" />
+                    </g>
+                  </g>
+                  <g id="g27">
+                    <path fill="currentColor" d="M 280.419739 373.959106 C 293.875458 373.959106 304.7435 383.925049 304.7435 396.263794 C 304.7435 408.602539 293.875458 418.568481 280.419739 418.568481 C 266.96405 418.568481 256.095978 408.602539 256.095978 396.263794 C 256.095978 383.925049 266.96405 373.959106 280.419739 373.959106 M 280.419739 359.722046 C 258.166107 359.722046 240.57019 375.857422 240.57019 396.263794 C 240.57019 416.670166 258.166107 432.80542 280.419739 432.80542 C 302.673401 432.80542 320.269318 416.670166 320.269318 396.263794 C 320.269318 375.857422 302.673401 359.722046 280.419739 359.722046 L 280.419739 359.722046 Z" />
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </svg>
     </span>
   );
 }
@@ -43,7 +67,7 @@ function GitHubMark() {
 }
 
 // External links shown at the top of the sidebar (and in the top nav on
-// desktop). Leading icon = brand identity (GitHub mark / Multica asterisk);
+// desktop). Leading icon = brand identity (GitHub mark / Orchestra mark);
 // trailing ArrowUpRight = "opens externally" glyph, same pattern as
 // `packages/views/layout/help-launcher.tsx` from PR #1560.
 const externalLinkText = (label: string) => (
@@ -56,21 +80,10 @@ const externalLinkText = (label: string) => (
 export const baseOptions: BaseLayoutProps = {
   nav: {
     title: (
-      <span className="font-semibold text-base">Multica Docs</span>
+      <span className="flex items-center gap-2 font-semibold text-base">
+        <OrchestraMark /> Orchestra Docs
+      </span>
     ),
   },
-  links: [
-    {
-      icon: <GitHubMark />,
-      text: externalLinkText("GitHub"),
-      url: "https://github.com/multica-ai/multica",
-      external: true,
-    },
-    {
-      icon: <MulticaMark />,
-      text: externalLinkText("Multica"),
-      url: "https://multica.ai",
-      external: true,
-    },
-  ],
+  links: [],
 };

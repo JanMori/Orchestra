@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Issue } from "@multica/core/types";
+import type { Issue } from "@orchestra/core/types";
 import {
   getIssueGroupId,
   getMoveAnchors,

@@ -4,11 +4,11 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight, Loader2, Zap } from "lucide-react";
 import { toast } from "sonner";
-import { dispatchReasonCode } from "@multica/core/api";
-import { useCurrentWorkspace } from "@multica/core/paths";
-import { quickActionListOptions, useRunQuickAction } from "@multica/core/quick-actions";
-import type { Comment, CommentTriggerOutcome, QuickAction } from "@multica/core/types";
-import { QUICK_ACTION_SIDEBAR_LIMIT } from "@multica/core/types";
+import { dispatchReasonCode } from "@orchestra/core/api";
+import { useCurrentWorkspace } from "@orchestra/core/paths";
+import { quickActionListOptions, useRunQuickAction } from "@orchestra/core/quick-actions";
+import type { Comment, CommentTriggerOutcome, QuickAction } from "@orchestra/core/types";
+import { QUICK_ACTION_SIDEBAR_LIMIT } from "@orchestra/core/types";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,9 +17,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@multica/ui/components/ui/alert-dialog";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@multica/ui/components/ui/tooltip";
-import { cn } from "@multica/ui/lib/utils";
+} from "@orchestra/ui/components/ui/alert-dialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@orchestra/ui/components/ui/tooltip";
+import { cn } from "@orchestra/ui/lib/utils";
 import { ActorAvatar } from "../../common/actor-avatar";
 import { useT } from "../../i18n";
 

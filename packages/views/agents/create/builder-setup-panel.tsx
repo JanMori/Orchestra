@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import { useWorkspacePaths } from "@multica/core/paths";
+import { useWorkspacePaths } from "@orchestra/core/paths";
 import type {
   AgentBuilderSessionSummary,
   RuntimeDevice,
-} from "@multica/core/types";
+} from "@orchestra/core/types";
 import { useNavigation } from "../../navigation";
 import { BuilderSetup } from "./builder-conversation";
 import { UnfinishedDraftsBanner } from "./unfinished-drafts";

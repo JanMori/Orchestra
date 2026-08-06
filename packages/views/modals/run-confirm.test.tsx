@@ -4,7 +4,7 @@ import {
   configureShortcutPlatform,
   createShortcutChord,
   useShortcutStore,
-} from "@multica/core/shortcuts";
+} from "@orchestra/core/shortcuts";
 import { RunConfirmModal } from "./run-confirm";
 
 // --- Warm agent / squad / runtime caches (prefetched in the real app) --------
@@ -27,8 +27,8 @@ vi.mock("@tanstack/react-query", () => ({
     return { data: [] };
   },
 }));
-vi.mock("@multica/core/hooks", () => ({ useWorkspaceId: () => "ws-test" }));
-vi.mock("@multica/core/workspace/queries", () => ({
+vi.mock("@orchestra/core/hooks", () => ({ useWorkspaceId: () => "ws-test" }));
+vi.mock("@orchestra/core/workspace/queries", () => ({
   agentListOptions: (wsId: string) => ({ queryKey: ["workspaces", wsId, "agents"] }),
   squadListOptions: (wsId: string) => ({ queryKey: ["workspaces", wsId, "squads"] }),
 }));
@@ -38,7 +38,7 @@ vi.mock("@multica/core/workspace/queries", () => ({
 // packages/core/runtimes/cli-version.test.ts; here we only need a faithful
 // stand-in for the >= 0.3.28 threshold so the cache → version → verdict wiring
 // is exercised end to end.
-vi.mock("@multica/core/runtimes", () => ({
+vi.mock("@orchestra/core/runtimes", () => ({
   runtimeListOptions: (wsId: string) => ({ queryKey: ["runtimes", wsId, "list"] }),
   readRuntimeCliVersion: (m?: { cli_version?: unknown }) =>
     typeof m?.cli_version === "string" ? m.cli_version : "",
@@ -51,12 +51,12 @@ vi.mock("@multica/core/runtimes", () => ({
 
 const mockUpdate = vi.fn().mockResolvedValue({ id: "issue-1" });
 const mockBatch = vi.fn().mockResolvedValue({ updated: 2 });
-vi.mock("@multica/core/issues/mutations", () => ({
+vi.mock("@orchestra/core/issues/mutations", () => ({
   useUpdateIssue: () => ({ mutateAsync: mockUpdate }),
   useBatchUpdateIssues: () => ({ mutateAsync: mockBatch }),
 }));
 
-vi.mock("@multica/core/workspace/hooks", () => ({
+vi.mock("@orchestra/core/workspace/hooks", () => ({
   useActorName: () => ({ getActorName: () => "Walt" }),
 }));
 
@@ -88,7 +88,7 @@ vi.mock("../i18n", () => ({
 }));
 
 // Keep the ui primitives as light DOM so the logic is what's under test.
-vi.mock("@multica/ui/components/ui/dialog", () => ({
+vi.mock("@orchestra/ui/components/ui/dialog", () => ({
   Dialog: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   // Keeps the real Popup's prop passthrough, which the send chord binds to.
   DialogContent: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
@@ -99,15 +99,15 @@ vi.mock("@multica/ui/components/ui/dialog", () => ({
   DialogTitle: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   DialogDescription: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
-vi.mock("@multica/ui/components/ui/button", () => ({
+vi.mock("@orchestra/ui/components/ui/button", () => ({
   Button: ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
     <button {...props}>{children}</button>
   ),
 }));
-vi.mock("@multica/ui/components/ui/textarea", () => ({
+vi.mock("@orchestra/ui/components/ui/textarea", () => ({
   Textarea: (props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => <textarea {...props} />,
 }));
-vi.mock("@multica/ui/components/ui/spinner", () => ({
+vi.mock("@orchestra/ui/components/ui/spinner", () => ({
   Spinner: () => <span data-testid="spinner" />,
 }));
 // vi.hoisted: vi.mock factories run before module-level consts initialize.

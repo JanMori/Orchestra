@@ -38,8 +38,8 @@ func TestSquadMemberSetRoleCommandIsRegistered(t *testing.T) {
 
 func TestRunSquadMemberSetRolePatchesRole(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("MULTICA_TOKEN", "test-token")
-	t.Setenv("MULTICA_WORKSPACE_ID", "workspace-123")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "workspace-123")
 
 	var gotMethod, gotPath string
 	var gotBody map[string]any
@@ -61,7 +61,7 @@ func TestRunSquadMemberSetRolePatchesRole(t *testing.T) {
 		})
 	}))
 	defer srv.Close()
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
 
 	cmd := newSquadMemberSetRoleTestCmd()
 	_ = cmd.Flags().Set("member-id", "member-456")

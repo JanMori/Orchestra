@@ -12,10 +12,10 @@ import {
   ALL_ACCESS_SCOPES,
   effectiveAccessScope,
   type AgentAvailability,
-} from "@multica/core/agents";
-import type { MemberWithUser } from "@multica/core/types";
-import { runtimeDisplayLabel } from "@multica/core/runtimes";
-import { resolvePublicFileUrl } from "@multica/core/workspace/avatar-url";
+} from "@orchestra/core/agents";
+import type { MemberWithUser } from "@orchestra/core/types";
+import { runtimeDisplayLabel } from "@orchestra/core/runtimes";
+import { resolvePublicFileUrl } from "@orchestra/core/workspace/avatar-url";
 import {
   AGENT_SCOPES,
   type AgentColumnKey,
@@ -23,9 +23,9 @@ import {
   type AgentsScope,
   type AgentSortDirection,
   type AgentSortField,
-} from "@multica/core/agents/stores";
-import { Button } from "@multica/ui/components/ui/button";
-import { Input } from "@multica/ui/components/ui/input";
+} from "@orchestra/core/agents/stores";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { Input } from "@orchestra/ui/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -36,19 +36,19 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@multica/ui/components/ui/dropdown-menu";
+} from "@orchestra/ui/components/ui/dropdown-menu";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@multica/ui/components/ui/popover";
-import { Switch } from "@multica/ui/components/ui/switch";
+} from "@orchestra/ui/components/ui/popover";
+import { Switch } from "@orchestra/ui/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@multica/ui/components/ui/tooltip";
-import { ActorAvatar } from "@multica/ui/components/common/actor-avatar";
+} from "@orchestra/ui/components/ui/tooltip";
+import { ActorAvatar } from "@orchestra/ui/components/common/actor-avatar";
 import { FILTER_ITEM_CLASS, HoverCheck } from "../../common/hover-check";
 import { availabilityConfig } from "../presence";
 import { useT } from "../../i18n";

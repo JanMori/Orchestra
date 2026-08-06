@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { NewWorkspacePage } from "@multica/views/workspace/new-workspace-page";
-import { InvitePage } from "@multica/views/invite";
-import { InvitationsPage } from "@multica/views/invitations";
-import { OnboardingFlow } from "@multica/views/onboarding";
-import { useNavigation } from "@multica/views/navigation";
-import { paths } from "@multica/core/paths";
-import { workspaceListOptions } from "@multica/core/workspace/queries";
+import { NewWorkspacePage } from "@orchestra/views/workspace/new-workspace-page";
+import { InvitePage } from "@orchestra/views/invite";
+import { InvitationsPage } from "@orchestra/views/invitations";
+import { OnboardingFlow } from "@orchestra/views/onboarding";
+import { useNavigation } from "@orchestra/views/navigation";
+import { paths } from "@orchestra/core/paths";
+import { workspaceListOptions } from "@orchestra/core/workspace/queries";
 import { useWindowOverlayStore } from "@/stores/window-overlay-store";
 import { useLocalRuntimesPending } from "../platform/use-local-runtimes-pending";
 

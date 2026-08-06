@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { Bot, Users } from "lucide-react";
-import { cn } from "@multica/ui/lib/utils";
+import { cn } from "@orchestra/ui/lib/utils";
 import {
   AVATAR_SIZE_PX,
   DEFAULT_AVATAR_SIZE,
   type AvatarSize,
-} from "@multica/ui/lib/avatar-size";
-import { parseAvatarEmoji } from "@multica/ui/lib/avatar-emoji";
+} from "@orchestra/ui/lib/avatar-size";
+import { parseAvatarEmoji } from "@orchestra/ui/lib/avatar-emoji";
 import { MulticaIcon } from "./multica-icon";
 
 interface ActorAvatarProps {

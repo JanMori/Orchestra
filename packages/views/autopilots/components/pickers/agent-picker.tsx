@@ -3,10 +3,10 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Bot } from "lucide-react";
-import { useWorkspaceId } from "@multica/core/hooks";
-import { isAgentRuntimeBound } from "@multica/core/agents";
-import { agentListOptions, squadListOptions } from "@multica/core/workspace/queries";
-import type { AutopilotAssigneeType } from "@multica/core/types";
+import { useWorkspaceId } from "@orchestra/core/hooks";
+import { isAgentRuntimeBound } from "@orchestra/core/agents";
+import { agentListOptions, squadListOptions } from "@orchestra/core/workspace/queries";
+import type { AutopilotAssigneeType } from "@orchestra/core/types";
 import { ActorAvatar } from "../../../common/actor-avatar";
 import {
   PropertyPicker,

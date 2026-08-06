@@ -12,7 +12,7 @@ import {
   Users,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useAuthStore } from "@multica/core/auth";
+import { useAuthStore } from "@orchestra/core/auth";
 import {
   agentCompletedIssueCountOptions,
   needsSourceBackfill,
@@ -20,13 +20,13 @@ import {
   SOURCE_BACKFILL_MIN_AGENT_DONE_ISSUES,
   type QuestionnaireAnswers,
   type Source,
-} from "@multica/core/onboarding";
-import { useCurrentWorkspace } from "@multica/core/paths";
-import { Button } from "@multica/ui/components/ui/button";
+} from "@orchestra/core/onboarding";
+import { useCurrentWorkspace } from "@orchestra/core/paths";
+import { Button } from "@orchestra/ui/components/ui/button";
 import {
   Dialog,
   DialogContent,
-} from "@multica/ui/components/ui/dialog";
+} from "@orchestra/ui/components/ui/dialog";
 import {
   GitHubIcon,
   GoogleIcon,

@@ -4,23 +4,23 @@ import { readFileSync } from "node:fs";
 import { cleanup, fireEvent, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
-import { api } from "@multica/core/api";
-import type { AgentRuntime, AgentTask } from "@multica/core/types/agent";
-import { useTranscriptViewStore } from "@multica/core/agents/stores";
+import { api } from "@orchestra/core/api";
+import type { AgentRuntime, AgentTask } from "@orchestra/core/types/agent";
+import { useTranscriptViewStore } from "@orchestra/core/agents/stores";
 import { renderWithI18n } from "../../test/i18n";
 import { AgentTranscriptDialog } from "./agent-transcript-dialog";
 import type { TimelineItem } from "./build-timeline";
 
 const copyTextMock = vi.hoisted(() => vi.fn().mockResolvedValue(true));
 
-vi.mock("@multica/core/api", () => ({
+vi.mock("@orchestra/core/api", () => ({
   api: {
     getAgent: vi.fn().mockResolvedValue(null),
     listRuntimes: vi.fn().mockResolvedValue([]),
   },
 }));
 
-vi.mock("@multica/ui/lib/clipboard", () => ({
+vi.mock("@orchestra/ui/lib/clipboard", () => ({
   copyText: copyTextMock,
 }));
 
@@ -48,7 +48,7 @@ vi.mock("../actor-avatar", () => ({
   ActorAvatar: () => <span data-testid="actor-avatar" />,
 }));
 
-vi.mock("@multica/ui/components/ui/dialog", () => ({
+vi.mock("@orchestra/ui/components/ui/dialog", () => ({
   Dialog: ({ open, children }: { open: boolean; children: ReactNode }) =>
     open ? <>{children}</> : null,
   DialogContent: ({ children }: { children: ReactNode }) => (
@@ -57,7 +57,7 @@ vi.mock("@multica/ui/components/ui/dialog", () => ({
   DialogTitle: ({ children }: { children: ReactNode }) => <h2>{children}</h2>,
 }));
 
-vi.mock("@multica/ui/components/ui/dropdown-menu", async () => {
+vi.mock("@orchestra/ui/components/ui/dropdown-menu", async () => {
   const React = await import("react");
   const RadioContext = React.createContext<{
     value?: string;
@@ -146,7 +146,7 @@ vi.mock("../../rich-content", () => ({
   ),
 }));
 
-vi.mock("@multica/ui/components/ui/collapsible", async () => {
+vi.mock("@orchestra/ui/components/ui/collapsible", async () => {
   const React = await import("react");
   const Context = React.createContext<{
     open: boolean;

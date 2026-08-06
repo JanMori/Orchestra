@@ -6,6 +6,10 @@ WHERE id = $1;
 SELECT * FROM "user"
 WHERE email = $1;
 
+-- name: GetUserByUsernameOrEmail :one
+SELECT * FROM "user"
+WHERE (LOWER(email) = LOWER($1)) OR (username IS NOT NULL AND LOWER(username) = LOWER($1));
+
 -- name: GetUsersByIDs :many
 -- Batch lookup from the GLOBAL user table (not gated on membership, so departed
 -- members still render). Used to enrich attribution initiator / originator refs on
@@ -16,6 +20,18 @@ WHERE id = ANY(@ids::uuid[]);
 -- name: CreateUser :one
 INSERT INTO "user" (name, email, avatar_url)
 VALUES ($1, $2, $3)
+RETURNING *;
+
+-- name: CreateUserWithPassword :one
+INSERT INTO "user" (name, email, username, password_hash, avatar_url)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING *;
+
+-- name: SetUserPassword :one
+UPDATE "user" SET
+    password_hash = $2,
+    updated_at = now()
+WHERE id = $1
 RETURNING *;
 
 -- name: UpdateUser :one

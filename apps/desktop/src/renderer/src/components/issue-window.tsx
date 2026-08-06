@@ -7,15 +7,15 @@ import {
   useRouteError,
 } from "react-router-dom";
 import { AlertTriangle, RotateCw, X } from "lucide-react";
-import { useAuthStore } from "@multica/core/auth";
-import { setCurrentWorkspace } from "@multica/core/platform";
-import { WorkspaceSlugProvider } from "@multica/core/paths";
-import { workspaceBySlugOptions } from "@multica/core/workspace";
-import { Button } from "@multica/ui/components/ui/button";
-import { MulticaIcon } from "@multica/ui/components/common/multica-icon";
-import { ModalRegistry } from "@multica/views/modals/registry";
-import { WorkspacePresencePrefetch } from "@multica/views/layout";
-import { DragStrip } from "@multica/views/platform";
+import { useAuthStore } from "@orchestra/core/auth";
+import { setCurrentWorkspace } from "@orchestra/core/platform";
+import { WorkspaceSlugProvider } from "@orchestra/core/paths";
+import { workspaceBySlugOptions } from "@orchestra/core/workspace";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { MulticaIcon } from "@orchestra/ui/components/common/multica-icon";
+import { ModalRegistry } from "@orchestra/views/modals/registry";
+import { WorkspacePresencePrefetch } from "@orchestra/views/layout";
+import { DragStrip } from "@orchestra/views/platform";
 import type { IssueWindowContext } from "../../../shared/issue-window";
 import { IssueDetailPage } from "../pages/issue-detail-page";
 import { IssueWindowNavigationProvider } from "../platform/issue-window-navigation";

@@ -10,10 +10,10 @@ import {
   Save,
   Trash2,
 } from "lucide-react";
-import { api } from "@multica/core/api";
-import type { Agent } from "@multica/core/types";
-import { Button } from "@multica/ui/components/ui/button";
-import { Input } from "@multica/ui/components/ui/input";
+import { api } from "@orchestra/core/api";
+import type { Agent } from "@orchestra/core/types";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { Input } from "@orchestra/ui/components/ui/input";
 import { toast } from "sonner";
 import { useT } from "../../../i18n";
 

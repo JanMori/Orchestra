@@ -68,7 +68,7 @@ var workspaceMemberInviteCmd = &cobra.Command{
 		"add them instantly. The optional workspace argument accepts a full " +
 		"UUID, a slug, or a short UUID prefix (≥4 hex chars) as shown in " +
 		"'workspace list'; if omitted the current default workspace is used " +
-		"(--workspace-id / MULTICA_WORKSPACE_ID / profile default).\n\n" +
+		"(--workspace-id / ORCHESTRA_WORKSPACE_ID / profile default).\n\n" +
 		"Role defaults to 'member'; pass '--role admin' to invite an admin. " +
 		"Owners cannot be invited.",
 	Args: cobra.RangeArgs(1, 2),
@@ -88,10 +88,10 @@ var workspaceSwitchCmd = &cobra.Command{
 	Long: "Sets the default workspace for the current profile after verifying you " +
 		"have access to it. Accepts a full UUID, a slug, or a short UUID " +
 		"prefix (≥4 hex chars) as shown in 'workspace list'. Subsequent " +
-		"commands without --workspace-id or MULTICA_WORKSPACE_ID will target " +
+		"commands without --workspace-id or ORCHESTRA_WORKSPACE_ID will target " +
 		"this workspace.\n\n" +
 		"Resolution priority (highest to lowest): --workspace-id flag, " +
-		"MULTICA_WORKSPACE_ID env, profile default (set by this command).\n\n" +
+		"ORCHESTRA_WORKSPACE_ID env, profile default (set by this command).\n\n" +
 		"For low-level use, 'multica config set workspace_id <id>' writes the " +
 		"same setting without verification.",
 	Args: exactArgs(1),
@@ -404,7 +404,7 @@ func runWorkspaceGet(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if wsID == "" {
-		return fmt.Errorf("workspace ID is required: pass an id/slug/prefix as argument or set MULTICA_WORKSPACE_ID")
+		return fmt.Errorf("workspace ID is required: pass an id/slug/prefix as argument or set ORCHESTRA_WORKSPACE_ID")
 	}
 
 	client, err := newAPIClient(cmd)
@@ -494,7 +494,7 @@ func runWorkspaceUpdate(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if wsID == "" {
-		return fmt.Errorf("workspace ID is required: pass an id/slug/prefix as argument or set MULTICA_WORKSPACE_ID")
+		return fmt.Errorf("workspace ID is required: pass an id/slug/prefix as argument or set ORCHESTRA_WORKSPACE_ID")
 	}
 
 	body, err := buildWorkspaceUpdateBody(cmd)
@@ -527,7 +527,7 @@ func runWorkspaceMembers(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if wsID == "" {
-		return fmt.Errorf("workspace ID is required: pass an id/slug/prefix as argument or set MULTICA_WORKSPACE_ID")
+		return fmt.Errorf("workspace ID is required: pass an id/slug/prefix as argument or set ORCHESTRA_WORKSPACE_ID")
 	}
 
 	client, err := newAPIClient(cmd)
@@ -589,7 +589,7 @@ func runWorkspaceMemberInvite(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if wsID == "" {
-		return fmt.Errorf("workspace ID is required: pass an id/slug/prefix as argument or set MULTICA_WORKSPACE_ID")
+		return fmt.Errorf("workspace ID is required: pass an id/slug/prefix as argument or set ORCHESTRA_WORKSPACE_ID")
 	}
 
 	client, err := newAPIClient(cmd)

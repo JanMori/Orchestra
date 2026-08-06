@@ -28,7 +28,7 @@ import (
 //
 // Users who explicitly want Codex native subagents inside a Multica task
 // (and accept the lifecycle risk) can keep the feature enabled by setting
-// `MULTICA_CODEX_MULTI_AGENT=1` in the daemon environment.
+// `ORCHESTRA_CODEX_MULTI_AGENT=1` in the daemon environment.
 //
 // Layout note
 //
@@ -49,7 +49,7 @@ import (
 // native multi-agent enabled inside daemon-managed tasks. Anything truthy
 // (1, true, yes, on; case-insensitive) keeps the feature on; everything
 // else (including unset) disables it.
-const MulticaCodexMultiAgentEnv = "MULTICA_CODEX_MULTI_AGENT"
+const MulticaCodexMultiAgentEnv = "ORCHESTRA_CODEX_MULTI_AGENT"
 
 // multicaMultiAgentBeginMarker / multicaMultiAgentEndMarker delimit the
 // multi-agent-specific managed block. Kept separate from the sandbox
@@ -186,7 +186,7 @@ func injectManagedBlockIntoFeaturesTable(content string) string {
 // into the per-task config.toml so Codex native subagents stay disabled.
 // Idempotent: running it twice produces the same file.
 //
-// When MULTICA_CODEX_MULTI_AGENT is set to a truthy value, the function is
+// When ORCHESTRA_CODEX_MULTI_AGENT is set to a truthy value, the function is
 // a no-op — the user has explicitly opted into Codex native subagents and
 // accepts the lifecycle risk. Toggling the env var across prepare runs is
 // not supported: the per-task config is short-lived (recreated per task),
@@ -194,7 +194,7 @@ func injectManagedBlockIntoFeaturesTable(content string) string {
 func ensureCodexMultiAgentConfig(configPath string, logger *slog.Logger) error {
 	if codexMultiAgentEnabled() {
 		if logger != nil {
-			logger.Info("codex multi-agent: leaving Codex native multi-agent untouched per MULTICA_CODEX_MULTI_AGENT",
+			logger.Info("codex multi-agent: leaving Codex native multi-agent untouched per ORCHESTRA_CODEX_MULTI_AGENT",
 				"config_path", configPath,
 			)
 		}

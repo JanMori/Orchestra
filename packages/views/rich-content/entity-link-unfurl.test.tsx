@@ -16,7 +16,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "@testing-library/react";
 import { NavigationProvider } from "../navigation/context";
 import type { NavigationAdapter } from "../navigation/types";
-import type { Issue } from "@multica/core/types";
+import type { Issue } from "@orchestra/core/types";
 
 // Identifier → issue lookup, set per test. `null` is the honest default: a
 // miss, a still-loading query and a cross-workspace identifier all look the
@@ -41,7 +41,7 @@ vi.mock("../i18n", async () => {
   };
 });
 
-vi.mock("@multica/core/api", () => ({
+vi.mock("@orchestra/core/api", () => ({
   api: { getAttachmentTextContent: vi.fn() },
   PreviewTooLargeError: class extends Error {},
   PreviewUnsupportedError: class extends Error {},
@@ -51,8 +51,8 @@ vi.mock("@multica/core/api", () => ({
 // helpers (isReservedSlug / isGlobalPath) stay real — the URL parser under test
 // depends on the same reserved-slug list the backend enforces, and stubbing it
 // would make the assertions meaningless.
-vi.mock("@multica/core/paths", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@multica/core/paths")>()),
+vi.mock("@orchestra/core/paths", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@orchestra/core/paths")>()),
   useWorkspacePaths: () => ({
     issueDetail: (id: string) => `/acme/issues/${id}`,
     projectDetail: (id: string) => `/acme/projects/${id}`,

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { I18nProvider } from "@multica/core/i18n/react";
-import type { UploadResult } from "@multica/core/hooks/use-file-upload";
+import { I18nProvider } from "@orchestra/core/i18n/react";
+import type { UploadResult } from "@orchestra/core/hooks/use-file-upload";
 import enCommon from "../../locales/en/common.json";
 import enChat from "../../locales/en/chat.json";
 import enEditor from "../../locales/en/editor.json";
@@ -10,7 +10,7 @@ import enEditor from "../../locales/en/editor.json";
 // `api.uploadFile(file, ctx, signal)` (MUL-5181 L2).
 const mockApiUploadFile = vi.hoisted(() => vi.fn());
 
-vi.mock("@multica/core/api", () => ({
+vi.mock("@orchestra/core/api", () => ({
   api: { uploadFile: mockApiUploadFile },
 }));
 
@@ -153,7 +153,7 @@ vi.mock("@tiptap/react", () => ({
   ),
 }));
 
-vi.mock("@multica/core/chat", () => {
+vi.mock("@orchestra/core/chat", () => {
   const state = {
     activeSessionId: null as string | null,
     selectedAgentId: "agent-1",
@@ -184,7 +184,7 @@ vi.mock("@multica/core/chat", () => {
 });
 
 import { ChatInput } from "./chat-input";
-import { useChatStore } from "@multica/core/chat";
+import { useChatStore } from "@orchestra/core/chat";
 
 const TEST_RESOURCES = { en: { common: enCommon, chat: enChat, editor: enEditor } };
 

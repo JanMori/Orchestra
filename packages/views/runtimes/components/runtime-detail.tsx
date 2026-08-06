@@ -15,27 +15,27 @@ import type {
   Agent,
   MemberWithUser,
   RuntimeProfile,
-} from "@multica/core/types";
-import { useAuthStore } from "@multica/core/auth";
-import { useWorkspaceId } from "@multica/core/hooks";
-import { memberListOptions, agentListOptions } from "@multica/core/workspace/queries";
-import { useUpdateRuntime } from "@multica/core/runtimes/mutations";
+} from "@orchestra/core/types";
+import { useAuthStore } from "@orchestra/core/auth";
+import { useWorkspaceId } from "@orchestra/core/hooks";
+import { memberListOptions, agentListOptions } from "@orchestra/core/workspace/queries";
+import { useUpdateRuntime } from "@orchestra/core/runtimes/mutations";
 import {
   deriveRuntimeHealth,
   runtimeDisplayName,
   runtimeProfileListOptions,
-} from "@multica/core/runtimes";
+} from "@orchestra/core/runtimes";
 import {
   type AgentPresenceDetail,
   useWorkspacePresenceMap,
-} from "@multica/core/agents";
-import { useWorkspacePaths } from "@multica/core/paths";
-import { Button } from "@multica/ui/components/ui/button";
+} from "@orchestra/core/agents";
+import { useWorkspacePaths } from "@orchestra/core/paths";
+import { Button } from "@orchestra/ui/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@multica/ui/components/ui/tooltip";
+} from "@orchestra/ui/components/ui/tooltip";
 import { ActorAvatar } from "../../common/actor-avatar";
 import { BreadcrumbHeader } from "../../layout/breadcrumb-header";
 import { AppLink, useNavigation } from "../../navigation";

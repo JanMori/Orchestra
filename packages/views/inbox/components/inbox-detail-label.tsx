@@ -1,10 +1,10 @@
 "use client";
 
-import { STATUS_CONFIG, PRIORITY_CONFIG } from "@multica/core/issues/config";
-import { formatDateOnly } from "@multica/core/issues/date";
-import { useActorName } from "@multica/core/workspace/hooks";
+import { STATUS_CONFIG, PRIORITY_CONFIG } from "@orchestra/core/issues/config";
+import { formatDateOnly } from "@orchestra/core/issues/date";
+import { useActorName } from "@orchestra/core/workspace/hooks";
 import { StatusIcon, PriorityIcon } from "../../issues/components";
-import type { InboxItem, InboxItemType, IssueStatus, IssuePriority } from "@multica/core/types";
+import type { InboxItem, InboxItemType, IssueStatus, IssuePriority } from "@orchestra/core/types";
 import { getQuickCreateOutcomeDetail } from "./inbox-display";
 import { useT } from "../../i18n";
 
@@ -37,7 +37,7 @@ export function useTypeLabels(): Record<InboxItemType, string> {
 }
 
 // start_date / due_date are calendar days — format timezone-safely so the day
-// never shifts with the viewer's offset (see @multica/core/issues/date).
+// never shifts with the viewer's offset (see @orchestra/core/issues/date).
 function shortDate(dateStr: string): string {
   return formatDateOnly(dateStr, { month: "short", day: "numeric" }, "en-US");
 }

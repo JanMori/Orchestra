@@ -86,9 +86,9 @@ func metadataTestServer(t *testing.T, metadataHandler http.HandlerFunc) (*httpte
 		}
 	}))
 	t.Cleanup(srv.Close)
-	t.Setenv("MULTICA_SERVER_URL", srv.URL)
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_TOKEN", "test-token")
+	t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_TOKEN", "test-token")
 	return srv, &paths
 }
 

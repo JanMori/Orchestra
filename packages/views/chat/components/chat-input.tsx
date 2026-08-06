@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { TriangleAlert } from "lucide-react";
-import { cn } from "@multica/ui/lib/utils";
+import { cn } from "@orchestra/ui/lib/utils";
 import {
   ContentEditor,
   type ContentEditorRef,
@@ -17,15 +17,15 @@ import {
   useCoordinatedUploads,
   type UploadDraftBinding,
 } from "../../editor/use-coordinated-uploads";
-import { SubmitButton } from "@multica/ui/components/common/submit-button";
+import { SubmitButton } from "@orchestra/ui/components/common/submit-button";
 import { ChatAddMenu } from "./chat-add-menu";
 import { CHAT_COLUMN, CHAT_GUTTER } from "./chat-column";
-import { useChatStore, DRAFT_NEW_SESSION } from "@multica/core/chat";
-import { attachmentToDraftUpload, type DraftUpload } from "@multica/core/drafts";
-import { createLogger } from "@multica/core/logger";
-import { formatShortcut, useShortcut } from "@multica/core/shortcuts";
+import { useChatStore, DRAFT_NEW_SESSION } from "@orchestra/core/chat";
+import { attachmentToDraftUpload, type DraftUpload } from "@orchestra/core/drafts";
+import { createLogger } from "@orchestra/core/logger";
+import { formatShortcut, useShortcut } from "@orchestra/core/shortcuts";
 import type { MentionItem } from "../../editor/extensions/mention-suggestion";
-import type { Attachment, Project } from "@multica/core/types";
+import type { Attachment, Project } from "@orchestra/core/types";
 import { ProjectPicker } from "../../projects/components/project-picker";
 import { useT } from "../../i18n";
 

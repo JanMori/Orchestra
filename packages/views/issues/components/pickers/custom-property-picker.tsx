@@ -3,24 +3,24 @@
 import { useEffect, useState } from "react";
 import { CalendarDays, Check, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
-import type { Issue, IssueProperty, IssuePropertyValue } from "@multica/core/types";
+import type { Issue, IssueProperty, IssuePropertyValue } from "@orchestra/core/types";
 import {
   useSetIssueProperty,
   useUnsetIssueProperty,
-} from "@multica/core/properties";
+} from "@orchestra/core/properties";
 import {
   toDateOnly,
   dateOnlyToLocalDate,
   formatDateOnly,
-} from "@multica/core/issues/date";
-import { Calendar } from "@multica/ui/components/ui/calendar";
+} from "@orchestra/core/issues/date";
+import { Calendar } from "@orchestra/ui/components/ui/calendar";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "@multica/ui/components/ui/popover";
-import { Button } from "@multica/ui/components/ui/button";
-import { Input } from "@multica/ui/components/ui/input";
+} from "@orchestra/ui/components/ui/popover";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { Input } from "@orchestra/ui/components/ui/input";
 import { useT } from "../../../i18n";
 import { PropertyPicker, PickerItem } from "./property-picker";
 

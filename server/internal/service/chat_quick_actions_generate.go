@@ -83,7 +83,7 @@ const (
 // A nil ChatQuickActionsLLM, or one whose Enabled() is false, disables the
 // feature entirely: no pending marker is raised and no pills are generated.
 // That is the expected state for a self-hosted deployment with no
-// MULTICA_LLM_API_KEY / MULTICA_LLM_BASE_URL, and matches how chat auto-titling
+// ORCHESTRA_LLM_API_KEY / ORCHESTRA_LLM_BASE_URL, and matches how chat auto-titling
 // already degrades.
 type ChatQuickActionsLLM interface {
 	Enabled() bool
@@ -214,7 +214,7 @@ func (s *TaskService) GenerateChatQuickActionsForTask(ctx context.Context, task 
 	}
 
 	raw, err := s.QuickActions.GenerateJSON(ctx,
-		"", // deployment default: MULTICA_LLM_DEFAULT_MODEL, else llm.FallbackModel
+		"", // deployment default: ORCHESTRA_LLM_DEFAULT_MODEL, else llm.FallbackModel
 		chatQuickActionsSystemPrompt,
 		prompt,
 		chatQuickActionsTemperature,

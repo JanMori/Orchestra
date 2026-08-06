@@ -1,21 +1,21 @@
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "motion/react";
-import { cn } from "@multica/ui/lib/utils";
+import { cn } from "@orchestra/ui/lib/utils";
 import { useTabHistory } from "@/hooks/use-tab-history";
 import {
   SidebarProvider,
   SidebarTrigger,
   useSidebar,
-} from "@multica/ui/components/ui/sidebar";
-import { ModalRegistry } from "@multica/views/modals/registry";
-import { AppSidebar, GlobalShortcuts } from "@multica/views/layout";
-import { SearchCommand, SearchTrigger } from "@multica/views/search";
-import { FloatingChat } from "@multica/views/chat";
-import { WorkspaceSlugProvider, paths, useCurrentWorkspace } from "@multica/core/paths";
-import { useNavigation } from "@multica/views/navigation";
-import { getCurrentSlug, subscribeToCurrentSlug } from "@multica/core/platform";
-import { useDesktopUnreadBadge } from "@multica/views/platform";
+} from "@orchestra/ui/components/ui/sidebar";
+import { ModalRegistry } from "@orchestra/views/modals/registry";
+import { AppSidebar, GlobalShortcuts } from "@orchestra/views/layout";
+import { SearchCommand, SearchTrigger } from "@orchestra/views/search";
+import { FloatingChat } from "@orchestra/views/chat";
+import { WorkspaceSlugProvider, paths, useCurrentWorkspace } from "@orchestra/core/paths";
+import { useNavigation } from "@orchestra/views/navigation";
+import { getCurrentSlug, subscribeToCurrentSlug } from "@orchestra/core/platform";
+import { useDesktopUnreadBadge } from "@orchestra/views/platform";
 import {
   DesktopNavigationProvider,
   routeContentLinkPath,

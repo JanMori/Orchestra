@@ -16,17 +16,17 @@ import {
 } from "lucide-react";
 import { SkillIcon } from "../../skills/lib/skill-icon";
 import { toast } from "sonner";
-import { Button } from "@multica/ui/components/ui/button";
-import { Input } from "@multica/ui/components/ui/input";
-import { Label } from "@multica/ui/components/ui/label";
-import { useScrollFade } from "@multica/ui/hooks/use-scroll-fade";
-import { cn } from "@multica/ui/lib/utils";
-import { useCreateWorkspace } from "@multica/core/workspace/mutations";
-import type { Workspace } from "@multica/core/types";
-import { isImeComposing } from "@multica/core/utils";
-import { useConfigStore } from "@multica/core/config";
-import { workspaceUrlHost } from "@multica/core/workspace/workspace-url";
-import { DragStrip } from "@multica/views/platform";
+import { Button } from "@orchestra/ui/components/ui/button";
+import { Input } from "@orchestra/ui/components/ui/input";
+import { Label } from "@orchestra/ui/components/ui/label";
+import { useScrollFade } from "@orchestra/ui/hooks/use-scroll-fade";
+import { cn } from "@orchestra/ui/lib/utils";
+import { useCreateWorkspace } from "@orchestra/core/workspace/mutations";
+import type { Workspace } from "@orchestra/core/types";
+import { isImeComposing } from "@orchestra/core/utils";
+import { useConfigStore } from "@orchestra/core/config";
+import { workspaceUrlHost } from "@orchestra/core/workspace/workspace-url";
+import { DragStrip } from "@orchestra/views/platform";
 import { useLogout } from "../../auth";
 import { StepHeader } from "../components/step-header";
 import { RadioMark } from "../components/option-card";
@@ -37,7 +37,7 @@ import {
   isWorkspaceSlugConflict,
   nameToWorkspaceSlug,
 } from "../../workspace/slug";
-import { isReservedSlug } from "@multica/core/paths";
+import { isReservedSlug } from "@orchestra/core/paths";
 
 /**
  * Step 2 — create your first workspace, or continue with one set up in

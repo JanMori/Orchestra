@@ -206,11 +206,11 @@ func TestRunRepoCheckoutForwardsManagedCheckoutMode(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	t.Setenv("MULTICA_DAEMON_PORT", strings.TrimPrefix(srv.URL, "http://127.0.0.1:"))
-	t.Setenv("MULTICA_WORKSPACE_ID", "ws-1")
-	t.Setenv("MULTICA_AGENT_NAME", "Test Agent")
-	t.Setenv("MULTICA_TASK_ID", "task-1")
-	t.Setenv("MULTICA_REPO_CHECKOUT_MODE", "isolated")
+	t.Setenv("ORCHESTRA_DAEMON_PORT", strings.TrimPrefix(srv.URL, "http://127.0.0.1:"))
+	t.Setenv("ORCHESTRA_WORKSPACE_ID", "ws-1")
+	t.Setenv("ORCHESTRA_AGENT_NAME", "Test Agent")
+	t.Setenv("ORCHESTRA_TASK_ID", "task-1")
+	t.Setenv("ORCHESTRA_REPO_CHECKOUT_MODE", "isolated")
 
 	previousRef := repoCheckoutRef
 	repoCheckoutRef = "release/v2"

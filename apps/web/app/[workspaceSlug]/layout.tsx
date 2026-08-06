@@ -3,14 +3,14 @@
 import { use, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { WorkspaceSlugProvider, paths } from "@multica/core/paths";
-import { workspaceBySlugOptions } from "@multica/core/workspace";
-import { setCurrentWorkspace } from "@multica/core/platform";
-import { useAuthStore } from "@multica/core/auth";
-import { NoAccessPage } from "@multica/views/workspace/no-access-page";
-import { WelcomeAfterOnboarding } from "@multica/views/workspace/welcome-after-onboarding";
-import { MulticaIcon } from "@multica/ui/components/common/multica-icon";
-import { useWorkspaceSeen } from "@multica/views/workspace/use-workspace-seen";
+import { WorkspaceSlugProvider, paths } from "@orchestra/core/paths";
+import { workspaceBySlugOptions } from "@orchestra/core/workspace";
+import { setCurrentWorkspace } from "@orchestra/core/platform";
+import { useAuthStore } from "@orchestra/core/auth";
+import { NoAccessPage } from "@orchestra/views/workspace/no-access-page";
+import { WelcomeAfterOnboarding } from "@orchestra/views/workspace/welcome-after-onboarding";
+import { MulticaIcon } from "@orchestra/ui/components/common/multica-icon";
+import { useWorkspaceSeen } from "@orchestra/views/workspace/use-workspace-seen";
 
 export default function WorkspaceLayout({
   children,
@@ -32,17 +32,6 @@ export default function WorkspaceLayout({
     if (!isAuthLoading && !user) router.replace(paths.login());
   }, [isAuthLoading, user, router]);
 
-  // Hard onboarding gate. Authenticated user but onboarded_at NULL means
-  // they bypassed /onboarding (typed the URL, deeplink, etc.). Redirect
-  // back so the questionnaire + Step 3 finish. The reverse gate lives in
-  // `apps/web/app/(auth)/onboarding/page.tsx` — onboarded users hitting
-  // /onboarding bounce out to their workspace. Together those two effects
-  // make `onboarded_at` the single source of truth for "may access /<slug>/*".
-  useEffect(() => {
-    if (user && user.onboarded_at == null) {
-      router.replace(paths.onboarding());
-    }
-  }, [user, router]);
 
   // Resolve workspace by slug from the React Query list cache.
   // Enabled only when user is authenticated — otherwise the list query isn't seeded.
