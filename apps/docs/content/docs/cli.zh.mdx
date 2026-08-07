@@ -1,11 +1,11 @@
 ---
 title: 使用 CLI
-description: 安装并登录 Multica CLI，在终端中管理工作区、issue、智能体和运行时。
+description: 安装并登录 Orchestra CLI，在终端中管理工作区、issue、智能体和运行时。
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-Multica CLI 既负责连接本机运行时，也可以在终端中管理工作区、issue、智能体和自动化。这里介绍常用路径；当前版本支持的参数始终以命令自身的 `--help` 为准。
+Orchestra CLI 既负责连接本机运行时，也可以在终端中管理工作区、issue、智能体和自动化。这里介绍常用路径；当前版本支持的参数始终以命令自身的 `--help` 为准。
 
 ## 安装
 
@@ -30,7 +30,7 @@ irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps
 确认安装成功：
 
 ```bash
-multica version
+orchestra version
 ```
 
 ## 第一次连接
@@ -38,13 +38,13 @@ multica version
 连接 Multica Cloud：
 
 ```bash
-multica setup
+orchestra setup
 ```
 
 连接自托管实例：
 
 ```bash
-multica setup self-host \
+orchestra setup self-host \
   --server-url https://api.example.com \
   --app-url https://app.example.com
 ```
@@ -52,14 +52,14 @@ multica setup self-host \
 `setup` 会保存服务地址、打开浏览器完成登录，并启动守护进程。完成后检查：
 
 ```bash
-multica auth status
-multica daemon status
+orchestra auth status
+orchestra daemon status
 ```
 
-如果只需要重新登录，不想覆盖其他配置，运行 `multica login`。没有浏览器的环境可以先在 Web 设置中创建个人访问令牌，再输入：
+如果只需要重新登录，不想覆盖其他配置，运行 `orchestra login`。没有浏览器的环境可以先在 Web 设置中创建个人访问令牌，再输入：
 
 ```bash
-multica login --token
+orchestra login --token
 ```
 
 命令会在终端中提示粘贴令牌，避免把完整值留在 shell history 中。
@@ -69,72 +69,72 @@ multica login --token
 列出并切换默认工作区：
 
 ```bash
-multica workspace list
-multica workspace switch <slug>
+orchestra workspace list
+orchestra workspace switch <slug>
 ```
 
-之后的命令会使用这个工作区。单次命令可以通过 `--workspace-id` 临时覆盖，也可以设置 `MULTICA_WORKSPACE_ID`。
+之后的命令会使用这个工作区。单次命令可以通过 `--workspace-id` 临时覆盖，也可以设置 `ORCHESTRA_WORKSPACE_ID`。
 
 邀请成员：
 
 ```bash
-multica workspace member invite teammate@example.com
-multica workspace member invite admin@example.com --role admin
+orchestra workspace member invite teammate@example.com
+orchestra workspace member invite admin@example.com --role admin
 ```
 
 ## 常用 issue 操作
 
 ```bash
 # 查看和搜索
-multica issue list
-multica issue get MUL-123
-multica issue search "登录失败"
+orchestra issue list
+orchestra issue get MUL-123
+orchestra issue search "登录失败"
 
 # 创建和修改
-multica issue create --title "修复登录失败"
-multica issue status MUL-123 in_progress
-multica issue assign MUL-123 --to "Backend Agent"
+orchestra issue create --title "修复登录失败"
+orchestra issue status MUL-123 in_progress
+orchestra issue assign MUL-123 --to "Backend Agent"
 
 # 评论和执行记录
-multica issue comment list MUL-123
-multica issue comment add MUL-123 --content "请先检查回归测试"
-multica issue runs MUL-123
+orchestra issue comment list MUL-123
+orchestra issue comment add MUL-123 --content "请先检查回归测试"
+orchestra issue runs MUL-123
 ```
 
 长描述或评论从 stdin 读取，避免处理换行和引号：
 
 ```bash
-multica issue create --title "升级说明" --description-stdin < notes.md
-multica issue comment add MUL-123 --content-stdin < review.md
+orchestra issue create --title "升级说明" --description-stdin < notes.md
+orchestra issue comment add MUL-123 --content-stdin < review.md
 ```
 
 查看某次执行的消息，或停止 task：
 
 ```bash
-multica issue run-messages <task-id> --issue MUL-123
-multica issue cancel-task <task-id> --issue MUL-123
+orchestra issue run-messages <task-id> --issue MUL-123
+orchestra issue cancel-task <task-id> --issue MUL-123
 ```
 
 ## 智能体和 skill
 
 ```bash
-multica agent list
-multica agent get <agent-id>
-multica agent create --help
-multica agent update <agent-id> --help
+orchestra agent list
+orchestra agent get <agent-id>
+orchestra agent create --help
+orchestra agent update <agent-id> --help
 
-multica skill list
-multica skill get <skill-id>
-multica skill import --url <skill-url>
-multica agent skills add <agent-id> --skill-ids <skill-id>
+orchestra skill list
+orchestra skill get <skill-id>
+orchestra skill import --url <skill-url>
+orchestra agent skills add <agent-id> --skill-ids <skill-id>
 ```
 
 导入时遇到同名 skill，默认会停止且不修改现有内容。按意图选择：
 
 ```bash
-multica skill import --url <skill-url> --on-conflict overwrite
-multica skill import --url <skill-url> --on-conflict rename
-multica skill import --url <skill-url> --on-conflict skip
+orchestra skill import --url <skill-url> --on-conflict overwrite
+orchestra skill import --url <skill-url> --on-conflict rename
+orchestra skill import --url <skill-url> --on-conflict skip
 ```
 
 `overwrite` 只允许 skill 的创建者使用，并保留原来的 ID 与智能体绑定关系。
@@ -142,11 +142,11 @@ multica skill import --url <skill-url> --on-conflict skip
 ## 守护进程和运行时
 
 ```bash
-multica daemon start
-multica daemon stop
-multica daemon restart
-multica daemon status --output json
-multica daemon logs --follow
+orchestra daemon start
+orchestra daemon stop
+orchestra daemon restart
+orchestra daemon status --output json
+orchestra daemon logs --follow
 
 multica runtime list
 multica runtime rename <runtime-id> "Office Mac"
@@ -165,7 +165,7 @@ multica runtime activity <runtime-id>
 | `issue` | 创建、更新、分配和搜索 issue；管理评论、订阅、标签、属性与执行记录 |
 | `project` | 管理项目及其资源 |
 | `label`、`property` | 管理工作区标签和自定义属性 |
-| `agent`、`skill`、`squad` | 管理智能体、skill 和小队 |
+| `agent`、`skill`、`crew` | 管理智能体、skill 和小组 |
 | `autopilot` | 管理自动化、触发器和运行历史 |
 | `workspace` | 创建、查看、切换工作区和邀请成员 |
 | `repo` | 管理工作区仓库，并把仓库检出到本机 |
@@ -187,8 +187,8 @@ Issue 使用 `MUL-123` 这样的 key 或完整 UUID，不接受 UUID 短前缀�
 许多命令支持结构化输出：
 
 ```bash
-multica issue list --output json
-multica agent list --output json
+orchestra issue list --output json
+orchestra agent list --output json
 ```
 
 脚本使用 JSON 输出，不解析面向终端的表格。各命令支持的输出格式和分页参数以 `multica <command> --help` 为准。
@@ -198,18 +198,18 @@ multica agent list --output json
 默认配置保存在 `~/.multica/config.json`。使用 `--profile <name>` 可以隔离另一套服务地址、令牌、默认工作区和守护进程状态：
 
 ```bash
-multica setup self-host --profile staging \
+orchestra setup self-host --profile staging \
   --server-url https://api.staging.example.com \
   --app-url https://app.staging.example.com
 
-multica issue list --profile staging
+orchestra issue list --profile staging
 ```
 
 命名 profile 保存在 `~/.multica/profiles/<name>/config.json`。查看当前值：
 
 ```bash
-multica config show
-multica config show --profile staging
+orchestra config show
+orchestra config show --profile staging
 ```
 
 <Callout type="warning">
@@ -228,7 +228,7 @@ CLI 配置文件包含可代表你访问 Multica 的令牌。不要提交到仓�
 | | `get <id>` | 查看单个 issue | |
 | | `create` | 创建 issue | `--title`（必填）、`--description` / `--description-stdin` / `--description-file`、`--status`、`--priority`、`--assignee`、`--parent`、`--stage`、`--project`、`--start-date`、`--due-date`、`--attachment`（可重复） |
 | | `update <id>` | 更新 issue 字段 | 与 `create` 同类字段，另有 `--position` |
-| | `assign <id>` | 指派或取消指派 | `--to`（名称模糊匹配成员、智能体或小队）、`--to-id`、`--unassign` |
+| | `assign <id>` | 指派或取消指派 | `--to`（名称模糊匹配成员、智能体或小组）、`--to-id`、`--unassign` |
 | | `status <id> <status>` | 修改状态 | |
 | | `reorder <id>` | 在列内移动 | |
 | | `search <query>` | 搜索 issue | `--limit`、`--include-closed` |
@@ -266,8 +266,8 @@ CLI 配置文件包含可代表你访问 Multica 的令牌。不要提交到仓�
 | | `import` | 从 URL 或本地文件导入 skill | `--url` / `--file`、`--on-conflict`（`fail`、`overwrite`、`rename`、`skip`，默认 `fail`） |
 | | `search <query>` | 搜索 skill | |
 | | `files list/upsert/delete <skill-id>` | 管理 skill 内的文件 | |
-| `squad` | `list/get/create/update/delete` | 管理小队（`delete` 为归档） | |
-| | `member list/add/set-role/remove` | 管理小队成员 | |
+| `crew` | `list/get/create/update/delete` | 管理小组（`delete` 为归档） | |
+| | `member list/add/set-role/remove` | 管理小组成员 | |
 | | `activity <issue-id> <outcome>` | 记录队长评价 | |
 | `chat` | `history`、`thread [id]` | 读取智能体当前正在处理的外部聊天会话 | `--limit`、`--before` |
 
@@ -275,7 +275,7 @@ CLI 配置文件包含可代表你访问 Multica 的令牌。不要提交到仓�
 
 | 命令 | 子命令 | 用途 | 关键 flag |
 | --- | --- | --- | --- |
-| `daemon` | `start` | 启动本机守护进程 | `--foreground`、`--device-name`、`--runtime-name`、`--poll-interval`、`--heartbeat-interval`、`--agent-timeout`（`0` 表示不设上限）、`--max-concurrent-tasks`、`--no-auto-update`；均有对应的 `MULTICA_*` 环境变量 |
+| `daemon` | `start` | 启动本机守护进程 | `--foreground`、`--device-name`、`--runtime-name`、`--poll-interval`、`--heartbeat-interval`、`--agent-timeout`（`0` 表示不设上限）、`--max-concurrent-tasks`、`--no-auto-update`；均有对应的 `ORCHESTRA_*` 环境变量 |
 | | `stop` / `status` / `restart` | 停止、查看状态、重启（`restart` 与 `start` 同一套 flag） | |
 | | `logs` | 查看守护进程日志 | `--follow`、`--lines` |
 | | `disk-usage` | 查看本机磁盘占用 | `--by-workspace`、`--by-task`、`--top` |

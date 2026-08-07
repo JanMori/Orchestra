@@ -49,7 +49,7 @@ archive path (below); a JSON body keeps the URL flow. Both converge on the share
 | Per-entry size-capped read | `server/internal/handler/skill_import_archive.go:234` |
 | Tests (parser units + handler multipart create/skip/reject) | `server/internal/handler/skill_import_archive_test.go` |
 
-## CLI: `multica skill import --url` / `--file`
+## CLI: `orchestra skill import --url` / `--file`
 
 | Behavior | File:line |
 |---|---|

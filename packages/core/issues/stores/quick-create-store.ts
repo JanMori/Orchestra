@@ -6,9 +6,9 @@ import { createWorkspaceAwareStorage, registerForWorkspaceRehydration } from "..
 import { defaultStorage } from "../../platform/storage";
 import { registerDraftCleanup } from "../../drafts/cleanup-registry";
 
-export type QuickCreateActorType = "agent" | "squad";
+export type QuickCreateActorType = "agent" | "crew";
 
-// Per-workspace memory of the last actor (agent or squad) and project the
+// Per-workspace memory of the last actor (agent or crew) and project the
 // user picked in the Quick Create modal. Defaulted to those values on next
 // open so frequent users skip the pickers entirely — without this, anyone
 // targeting a single project ends up retyping "in project A" on every
@@ -19,7 +19,7 @@ export type QuickCreateActorType = "agent" | "squad";
 // namespace themselves.
 //
 // lastActorType + lastActorId replace the prior `lastAgentId` field once
-// squads became selectable. Users who had a persisted agent preference
+// crews became selectable. Users who had a persisted agent preference
 // land back on whatever the picker shows first; a one-time re-pick is
 // preferable to the type-tag ambiguity of overloading a single UUID.
 //

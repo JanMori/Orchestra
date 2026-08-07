@@ -66,14 +66,14 @@ Multica はエージェントのために[タスク](/tasks)を作成します�
 ## CLI での操作
 
 ```bash
-multica issue assign MUL-42 --to "Agent name"
-multica issue assign MUL-42 --unassign
+orchestra issue assign MUL-42 --to "Agent name"
+orchestra issue assign MUL-42 --unassign
 ```
 
-スクリプトでは `--to-id <uuid>` を使うと、同名のオブジェクトへの誤マッチを避けられます。UUID は `multica agent list --output json` または `multica workspace member list --output json` で確認できます。
+スクリプトでは `--to-id <uuid>` を使うと、同名のオブジェクトへの誤マッチを避けられます。UUID は `orchestra agent list --output json` または `orchestra workspace member list --output json` で確認できます。
 
 ## 次のステップ
 
 - [コメントでエージェントを @メンション](/mentioning-agents) — 担当者を変えずに、新しい依頼を処理します。
 - [タスク](/tasks) — キュー、リトライ、停止のルールを確認します。
-- [スクワッド](/squads) — リーダーに複数のエージェントを調整させます。
+- [スクワッド](/crews) — リーダーに複数のエージェントを調整させます。

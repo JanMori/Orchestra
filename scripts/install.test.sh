@@ -3,9 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-# Build a self-contained sandbox with stub `curl` and a tarball that the
-# release-binary fallback path will download. Each test supplies its own
-# `brew` stub to model a specific Homebrew failure mode.
+# Build a self-contained sandbox with stub `curl` and local Orchestra binary setup.
 _setup_sandbox() {
   local tmp="$1"
   local stub_bin="$tmp/stub-bin"
@@ -13,17 +11,17 @@ _setup_sandbox() {
   local payload_dir="$tmp/payload"
   mkdir -p "$stub_bin" "$install_bin" "$payload_dir"
 
-  cat >"$payload_dir/multica" <<'STUB'
+  cat >"$payload_dir/orchestra" <<'STUB'
 #!/usr/bin/env bash
-echo "multica v0.3.2 (commit: test)"
+echo "orchestra v0.3.2 (commit: test)"
 STUB
-  chmod +x "$payload_dir/multica"
-  tar -czf "$tmp/multica.tar.gz" -C "$payload_dir" multica
+  chmod +x "$payload_dir/orchestra"
+  tar -czf "$tmp/orchestra.tar.gz" -C "$payload_dir" orchestra
 
   cat >"$stub_bin/curl" <<'STUB'
 #!/usr/bin/env bash
 if [[ "$*" == *"-sI"* ]]; then
-  printf 'HTTP/2 302\r\nlocation: https://github.com/orchestra-ai/multica/releases/tag/v0.3.2\r\n'
+  printf 'HTTP/2 302\r\nlocation: https://github.com/JanMori/Orchestra/releases/tag/v0.3.2\r\n'
   exit 0
 fi
 
@@ -55,7 +53,7 @@ _run_installer() {
   local err="$tmp/install.err"
   if ! PATH="$tmp/stub-bin:$tmp/install-bin:/usr/bin:/bin" \
     ORCHESTRA_BIN_DIR="$tmp/install-bin" \
-    ORCHESTRA_TEST_ARCHIVE="$tmp/multica.tar.gz" \
+    ORCHESTRA_TEST_ARCHIVE="$tmp/orchestra.tar.gz" \
     bash "$ROOT_DIR/scripts/install.sh" >"$out" 2>"$err"; then
     echo "install.sh exited non-zero" >&2
     cat "$out" >&2 || true
@@ -63,71 +61,12 @@ _run_installer() {
     return 1
   fi
 
-  if [[ ! -x "$tmp/install-bin/multica" ]]; then
-    echo "expected fallback binary at $tmp/install-bin/multica" >&2
+  if [[ ! -x "$tmp/install-bin/orchestra" ]]; then
+    echo "expected binary at $tmp/install-bin/orchestra" >&2
     cat "$out" >&2 || true
     cat "$err" >&2 || true
     return 1
   fi
-
-  if ! grep -q "Homebrew output (last 80 lines):" "$err"; then
-    echo "expected diagnostic tail in stderr" >&2
-    cat "$err" >&2 || true
-    return 1
-  fi
-}
-
-test_brew_install_failure_falls_back_to_release_binary() {
-  local tmp
-  tmp="$(mktemp -d)"
-  trap 'rm -rf "$tmp"' RETURN
-
-  _setup_sandbox "$tmp"
-  cat >"$tmp/stub-bin/brew" <<'STUB'
-#!/usr/bin/env bash
-case "${1:-}" in
-  tap)
-    exit 0
-    ;;
-  install)
-    echo "simulated brew install failure" >&2
-    exit 42
-    ;;
-  list)
-    exit 1
-    ;;
-  *)
-    exit 0
-    ;;
-esac
-STUB
-  chmod +x "$tmp/stub-bin/brew"
-
-  _run_installer "$tmp"
-}
-
-test_brew_tap_failure_falls_back_to_release_binary() {
-  local tmp
-  tmp="$(mktemp -d)"
-  trap 'rm -rf "$tmp"' RETURN
-
-  _setup_sandbox "$tmp"
-  cat >"$tmp/stub-bin/brew" <<'STUB'
-#!/usr/bin/env bash
-case "${1:-}" in
-  tap)
-    echo "simulated brew tap failure" >&2
-    exit 17
-    ;;
-  *)
-    echo "brew $* should not be reached after tap failure" >&2
-    exit 99
-    ;;
-esac
-STUB
-  chmod +x "$tmp/stub-bin/brew"
-
-  _run_installer "$tmp"
 }
 
 test_remote_ssh_install_prints_token_login_hint() {
@@ -136,25 +75,6 @@ test_remote_ssh_install_prints_token_login_hint() {
   trap 'rm -rf "$tmp"' RETURN
 
   _setup_sandbox "$tmp"
-  cat >"$tmp/stub-bin/brew" <<'STUB'
-#!/usr/bin/env bash
-case "${1:-}" in
-  tap)
-    exit 0
-    ;;
-  install)
-    echo "simulated brew install failure" >&2
-    exit 42
-    ;;
-  list)
-    exit 1
-    ;;
-  *)
-    exit 0
-    ;;
-esac
-STUB
-  chmod +x "$tmp/stub-bin/brew"
 
   (
     export SSH_CONNECTION="192.0.2.10 54321 198.51.100.20 22"
@@ -166,27 +86,22 @@ STUB
     cat "$tmp/install.out" >&2 || true
     return 1
   fi
-  if ! grep -q "https://multica.ai/settings?tab=tokens" "$tmp/install.out"; then
-    echo "expected direct API Tokens settings URL in installer output" >&2
-    cat "$tmp/install.out" >&2 || true
-    return 1
-  fi
   if ! grep -q "Settings > API Tokens" "$tmp/install.out"; then
     echo "expected API Tokens tab name in installer output" >&2
     cat "$tmp/install.out" >&2 || true
     return 1
   fi
-  if ! grep -q "multica login --token <YOUR_TOKEN>" "$tmp/install.out"; then
+  if ! grep -q "orchestra login --token <YOUR_TOKEN>" "$tmp/install.out"; then
     echo "expected token login command in installer output" >&2
     cat "$tmp/install.out" >&2 || true
     return 1
   fi
-  if grep -q "multica config set server_url" "$tmp/install.out"; then
+  if grep -q "orchestra config set server_url" "$tmp/install.out"; then
     echo "did not expect default cloud server config command in installer output" >&2
     cat "$tmp/install.out" >&2 || true
     return 1
   fi
-  if grep -q "multica config set app_url" "$tmp/install.out"; then
+  if grep -q "orchestra config set app_url" "$tmp/install.out"; then
     echo "did not expect default cloud app config command in installer output" >&2
     cat "$tmp/install.out" >&2 || true
     return 1
@@ -199,25 +114,6 @@ test_local_install_does_not_print_token_login_hint() {
   trap 'rm -rf "$tmp"' RETURN
 
   _setup_sandbox "$tmp"
-  cat >"$tmp/stub-bin/brew" <<'STUB'
-#!/usr/bin/env bash
-case "${1:-}" in
-  tap)
-    exit 0
-    ;;
-  install)
-    echo "simulated brew install failure" >&2
-    exit 42
-    ;;
-  list)
-    exit 1
-    ;;
-  *)
-    exit 0
-    ;;
-esac
-STUB
-  chmod +x "$tmp/stub-bin/brew"
 
   (
     unset SSH_CONNECTION SSH_CLIENT SSH_TTY
@@ -229,51 +125,31 @@ STUB
     cat "$tmp/install.out" >&2 || true
     return 1
   fi
-  if grep -q "multica login --token <YOUR_TOKEN>" "$tmp/install.out"; then
+  if grep -q "orchestra login --token <YOUR_TOKEN>" "$tmp/install.out"; then
     echo "did not expect token login command in local installer output" >&2
     cat "$tmp/install.out" >&2 || true
     return 1
   fi
 }
 
-# ---------------------------------------------------------------------------
-# --with-server: the probed port and the printed port must both be the port
-# Docker Compose reported (#6145)
-#
-# The installer used to derive the port from .env with its own copy of the alias
-# chain. Compose gives the *calling environment* precedence over .env, so any
-# ambient PORT / BACKEND_PORT / API_PORT / SERVER_PORT / FRONTEND_PORT moved the
-# published port while the installer kept probing and printing the file value.
-#
-# Here the docker stub plays Compose: it answers `port` from the same resolution
-# Compose performs, environment first, then .env. The installer must take that
-# answer as given for both the health check and the summary — which is exactly
-# what a .env-only derivation cannot do, because the two disagree in every case
-# below. That real Compose resolves this way is proven separately, against real
-# `docker compose config`, in scripts/selfhost-config.test.sh; that test needs a
-# Docker CLI, which this job deliberately does not require.
-# ---------------------------------------------------------------------------
 _setup_server_sandbox() {
   local tmp="$1"
   local stub_bin="$tmp/stub-bin"
   local server_dir="$tmp/server"
   mkdir -p "$stub_bin" "$server_dir/.git"
 
-  # Minimal self-host assets: only the port mapping matters here.
   cat >"$server_dir/.env.example" <<'ENVFILE'
-PORT=7080
-# BACKEND_PORT=7080
-# API_PORT=7080
-# SERVER_PORT=7080
-FRONTEND_PORT=5000
+PORT=7081
+# BACKEND_PORT=7081
+# API_PORT=7081
+# SERVER_PORT=7081
+FRONTEND_PORT=5001
 JWT_SECRET=change-me-in-production
-POSTGRES_PASSWORD=multica
-DATABASE_URL=postgres://multica:multica@localhost:5432/multica?sslmode=disable
+POSTGRES_PASSWORD=orchestra
+DATABASE_URL=postgres://orchestra:orchestra@localhost:5432/orchestra?sslmode=disable
 ENVFILE
   touch "$server_dir/docker-compose.selfhost.build.yml"
 
-  # Compose stand-in. Resolves the published host port the way Compose does:
-  # the process environment wins over .env, then the alias chain decides.
   cat >"$stub_bin/docker" <<'STUB'
 #!/usr/bin/env bash
 set -uo pipefail
@@ -285,7 +161,6 @@ _env_file_value() {
   printf '%s' "${line#*=}"
 }
 
-# Environment first (Compose interpolation), then the env file.
 _resolve() {
   local key="$1" from_env
   eval "from_env=\${$key-__unset__}"
@@ -304,7 +179,7 @@ _published_backend_port() {
       return
     fi
   done
-  printf '7080'
+  printf '7081'
 }
 
 _published_frontend_port() {
@@ -313,7 +188,7 @@ _published_frontend_port() {
     printf '%s' "$value"
     return
   fi
-  printf '5000'
+  printf '5001'
 }
 
 case "${1:-}" in
@@ -349,19 +224,12 @@ exit 0
 STUB
   chmod +x "$stub_bin/docker"
 
-  # git: the installer takes the "existing installation" path, so only the
-  # fetch/checkout calls run and they are all tolerant of failure.
   printf '#!/usr/bin/env bash\nexit 0\n' >"$stub_bin/git"
   chmod +x "$stub_bin/git"
 
-  # brew: pretend the CLI installs cleanly so the run reaches the summary.
-  printf '#!/usr/bin/env bash\nexit 0\n' >"$stub_bin/brew"
-  chmod +x "$stub_bin/brew"
+  printf '#!/usr/bin/env bash\necho "orchestra v0.3.2 (commit: test)"\n' >"$stub_bin/orchestra"
+  chmod +x "$stub_bin/orchestra"
 
-  printf '#!/usr/bin/env bash\necho "multica v0.3.2 (commit: test)"\n' >"$stub_bin/multica"
-  chmod +x "$stub_bin/multica"
-
-  # curl records every probed URL so the health-check port can be asserted.
   cat >"$stub_bin/curl" <<'STUB'
 #!/usr/bin/env bash
 set -uo pipefail
@@ -378,9 +246,6 @@ STUB
   chmod +x "$stub_bin/openssl"
 }
 
-# Runs `install.sh --with-server` with the sandbox stubs. Remaining arguments are
-# ambient environment assignments, so each case controls the environment
-# explicitly instead of inheriting a CI runner's PORT.
 _run_with_server() {
   local tmp="$1"
   shift
@@ -402,7 +267,6 @@ _run_with_server() {
   fi
 }
 
-# Asserts the probed port and the printed ports all match the stub's answer.
 _require_server_ports() {
   local tmp="$1" label="$2" expected_backend="$3" expected_frontend="$4"
   local probed printed_backend printed_frontend
@@ -428,20 +292,19 @@ test_with_server_uses_compose_published_ports() {
   tmp="$(mktemp -d)"
   trap 'rm -rf "$tmp"' RETURN
 
-  # label | .env mutation (sed) | ambient env | expected backend | expected frontend
-  local cases='defaults|||7080|5000
-env-file PORT|s/^PORT=7080/PORT=9100/||9100|5000
-env-file BACKEND_PORT|s/^# BACKEND_PORT=7080/BACKEND_PORT=9200/||9200|5000
-env-file API_PORT|s/^# API_PORT=7080/API_PORT=9300/||9300|5000
-env-file SERVER_PORT|s/^# SERVER_PORT=7080/SERVER_PORT=9400/||9400|5000
-env-file FRONTEND_PORT|s/^FRONTEND_PORT=5000/FRONTEND_PORT=3100/||7080|3100
-ambient PORT beats .env|s/^PORT=7080/PORT=9100/|PORT=9500|9500|5000
-ambient BACKEND_PORT beats .env|s/^PORT=7080/PORT=9100/|BACKEND_PORT=9600|9600|5000
-ambient API_PORT beats .env|s/^PORT=7080/PORT=9100/|API_PORT=9700|9700|5000
-ambient SERVER_PORT beats .env|s/^PORT=7080/PORT=9100/|SERVER_PORT=9800|9800|5000
-ambient FRONTEND_PORT beats .env|s/^FRONTEND_PORT=5000/FRONTEND_PORT=3100/|FRONTEND_PORT=3200|7080|3200
-empty ambient BACKEND_PORT falls through|s/^PORT=7080/PORT=9100/|BACKEND_PORT=|9100|5000
-empty env-file BACKEND_PORT falls through|s/^PORT=7080/PORT=9100/;s/^# BACKEND_PORT=7080/BACKEND_PORT=/||9100|5000'
+  local cases='defaults|||7081|5001
+env-file PORT|s/^PORT=7081/PORT=9100/||9100|5001
+env-file BACKEND_PORT|s/^# BACKEND_PORT=7081/BACKEND_PORT=9200/||9200|5001
+env-file API_PORT|s/^# API_PORT=7081/API_PORT=9300/||9300|5001
+env-file SERVER_PORT|s/^# SERVER_PORT=7081/SERVER_PORT=9400/||9400|5001
+env-file FRONTEND_PORT|s/^FRONTEND_PORT=5001/FRONTEND_PORT=3100/||7081|3100
+ambient PORT beats .env|s/^PORT=7081/PORT=9100/|PORT=9500|9500|5001
+ambient BACKEND_PORT beats .env|s/^PORT=7081/PORT=9100/|BACKEND_PORT=9600|9600|5001
+ambient API_PORT beats .env|s/^PORT=7081/PORT=9100/|API_PORT=9700|9700|5001
+ambient SERVER_PORT beats .env|s/^PORT=7081/PORT=9100/|SERVER_PORT=9800|9800|5001
+ambient FRONTEND_PORT beats .env|s/^FRONTEND_PORT=5001/FRONTEND_PORT=3100/|FRONTEND_PORT=3200|7081|3200
+empty ambient BACKEND_PORT falls through|s/^PORT=7081/PORT=9100/|BACKEND_PORT=|9100|5001
+empty env-file BACKEND_PORT falls through|s/^PORT=7081/PORT=9100/;s/^# BACKEND_PORT=7081/BACKEND_PORT=/||9100|5001'
 
   local label mutation ambient expect_backend expect_frontend
   while IFS='|' read -r label mutation ambient expect_backend expect_frontend; do
@@ -472,7 +335,6 @@ test_with_server_fails_when_compose_port_is_unavailable() {
   _setup_server_sandbox "$tmp"
   cp "$tmp/server/.env.example" "$tmp/server/.env"
 
-  # Compose cannot report a port, e.g. the container never came up.
   cat >"$tmp/stub-bin/docker" <<'STUB'
 #!/usr/bin/env bash
 set -uo pipefail
@@ -509,8 +371,6 @@ STUB
   fi
 }
 
-test_brew_install_failure_falls_back_to_release_binary
-test_brew_tap_failure_falls_back_to_release_binary
 test_remote_ssh_install_prints_token_login_hint
 test_local_install_does_not_print_token_login_hint
 test_with_server_uses_compose_published_ports

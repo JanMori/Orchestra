@@ -1,0 +1,2 @@
+ALTER TABLE crew DROP COLUMN IF EXISTS archived_by;
+ALTER TABLE crew DROP COLUMN IF EXISTS archived_at;

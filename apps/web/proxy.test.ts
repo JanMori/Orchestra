@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { NextRequest } from "next/server";
-import { MULTICA_LOCALE_HEADER } from "./lib/locale-routing";
+import { ORCHESTRA_LOCALE_HEADER } from "./lib/locale-routing";
 import { proxy } from "./proxy";
 
 function makeRequest(
@@ -60,7 +60,7 @@ describe("proxy legacy workspace route redirects", () => {
     ["issues", "/acme/issues"],
     ["projects", "/acme/projects"],
     ["agents", "/acme/agents"],
-    ["squads", "/acme/squads"],
+    ["crews", "/acme/crews"],
     ["inbox", "/acme/inbox"],
     ["my-issues", "/acme/my-issues"],
     ["autopilots", "/acme/autopilots"],
@@ -79,8 +79,8 @@ describe("proxy legacy workspace route redirects", () => {
 
   it("preserves nested legacy paths and query strings", () => {
     expect(
-      redirectLocation("/squads/squad-123?view=members", sessionCookies),
-    ).toBe("https://app.multica.test/acme/squads/squad-123?view=members");
+      redirectLocation("/crews/crew-123?view=members", sessionCookies),
+    ).toBe("https://app.multica.test/acme/crews/crew-123?view=members");
   });
 
   it("sends logged-out legacy URLs to login", () => {
@@ -91,12 +91,12 @@ describe("proxy legacy workspace route redirects", () => {
 
   it("sends logged-in legacy URLs without a last workspace cookie to root", () => {
     expect(
-      redirectLocation("/squads", { multica_logged_in: "1" }),
+      redirectLocation("/crews", { multica_logged_in: "1" }),
     ).toBe("https://app.multica.test/");
   });
 
   it("does not redirect workspace-scoped URLs whose first segment is already a slug", () => {
-    expect(redirectLocation("/acme/squads", sessionCookies)).toBeNull();
+    expect(redirectLocation("/acme/crews", sessionCookies)).toBeNull();
   });
 
   it("redirects app-host root URLs to the last workspace", () => {
@@ -127,7 +127,7 @@ describe("proxy runtime upstream rewrites", () => {
       expect(res.status).toBe(200);
       expect(res.headers.get("x-middleware-rewrite")).toBeNull();
       expect(
-        res.headers.get(`x-middleware-request-${MULTICA_LOCALE_HEADER}`),
+        res.headers.get(`x-middleware-request-${ORCHESTRA_LOCALE_HEADER}`),
       ).toBe("en");
     });
   });
@@ -139,7 +139,7 @@ describe("proxy runtime upstream rewrites", () => {
       expect(res.status).toBe(200);
       expect(res.headers.get("x-middleware-rewrite")).toBeNull();
       expect(
-        res.headers.get(`x-middleware-request-${MULTICA_LOCALE_HEADER}`),
+        res.headers.get(`x-middleware-request-${ORCHESTRA_LOCALE_HEADER}`),
       ).toBe("en");
     });
   });
@@ -198,7 +198,7 @@ describe("proxy runtime upstream rewrites", () => {
       expect(res.status).toBe(200);
       expect(res.headers.get("x-middleware-rewrite")).toBeNull();
       expect(
-        res.headers.get(`x-middleware-request-${MULTICA_LOCALE_HEADER}`),
+        res.headers.get(`x-middleware-request-${ORCHESTRA_LOCALE_HEADER}`),
       ).toBe("en");
     } finally {
       restoreEnv("REMOTE_API_URL", previous);
@@ -227,7 +227,7 @@ describe("proxy root and locale handling", () => {
     expect(res.status).toBe(200);
     expect(res.headers.get("location")).toBeNull();
     expect(
-      res.headers.get(`x-middleware-request-${MULTICA_LOCALE_HEADER}`),
+      res.headers.get(`x-middleware-request-${ORCHESTRA_LOCALE_HEADER}`),
     ).toBe("zh-Hans");
   });
 });

@@ -414,7 +414,7 @@ func TestFormatErrorActionableHints(t *testing.T) {
 		enWant []string
 		zhWant []string
 	}{
-		{401, []string{"multica login", "self-hosted", "administrator"}, []string{"multica login", "自托管", "管理员"}},
+		{401, []string{"orchestra login", "self-hosted", "administrator"}, []string{"orchestra login", "自托管", "管理员"}},
 		{403, []string{"permission", "workspace"}, []string{"无权", "workspace"}},
 		{404, []string{"not found", "list"}, []string{"未找到", "list"}},
 		{409, []string{"conflict", "again"}, []string{"冲突", "重新获取"}},
@@ -448,10 +448,10 @@ func TestFormatErrorActionableHints(t *testing.T) {
 // custom message is shown by default (overriding the generic kind copy),
 // ExitCodeFor still classifies by the underlying typed error, and --debug
 // still exposes the full original chain. This is the mechanism that makes the
-// `multica login` failure guidance visible without losing classification.
+// `orchestra login` failure guidance visible without losing classification.
 func TestUserMessageError(t *testing.T) {
 	withLang(t, "en_US.UTF-8")
-	const hint = "Could not sign in with that token — make sure it is valid and not expired, then run `multica login --token <token>` again."
+	const hint = "Could not sign in with that token — make sure it is valid and not expired, then run `orchestra login --token <token>` again."
 
 	t.Run("wrapped HTTPError (invalid token -> 401)", func(t *testing.T) {
 		underlying := &HTTPError{Method: "GET", Path: "/api/me", StatusCode: 401, Body: `{"error":"unauthorized"}`}
@@ -486,7 +486,7 @@ func TestUserMessageError(t *testing.T) {
 
 	t.Run("wrapped NetworkError classifies as network", func(t *testing.T) {
 		underlying := &NetworkError{Kind: KindNetworkTimeout, Op: "GET /api/me", Err: errors.New("context deadline exceeded")}
-		err := WithUserMessage("Sign-in did not complete: the server did not accept the new credential. Run `multica login` again.", underlying)
+		err := WithUserMessage("Sign-in did not complete: the server did not accept the new credential. Run `orchestra login` again.", underlying)
 
 		if code := ExitCodeFor(err); code != ExitNetwork {
 			t.Errorf("ExitCodeFor = %d, want ExitNetwork(%d)", code, ExitNetwork)

@@ -33,7 +33,7 @@ docker compose version
 
 Multica uses Compose v2, invoked as `docker compose`. The legacy `docker-compose` v1 is not supported.
 
-The computer also needs at least one [AI coding tool](/providers) installed and logged in, such as Claude Code, Codex, or Cursor. The Multica CLI is installed in step 5.
+The computer also needs at least one [AI coding tool](/providers) installed and logged in, such as Claude Code, Codex, or Cursor. The Orchestra CLI is installed in step 5.
 
 ## 1. Start Multica
 
@@ -48,7 +48,7 @@ make selfhost
 On first run, `make selfhost` will:
 
 1. Create `.env` from `.env.example`
-2. Generate a random `JWT_SECRET`, PostgreSQL password, and `MULTICA_VCS_SECRET_KEY` (the encryption key for self-hosted Git integrations)
+2. Generate a random `JWT_SECRET`, PostgreSQL password, and `ORCHESTRA_VCS_SECRET_KEY` (the encryption key for self-hosted Git integrations)
 3. Pull the PostgreSQL, Multica backend, and Multica frontend images
 4. Create persistent volumes and start the three containers
 5. Wait until the backend starts answering health checks
@@ -85,7 +85,7 @@ The backend container runs database migrations on every startup before serving; 
 
 ### Local access
 
-Open [http://localhost:3000](http://localhost:3000) directly. You also won't need to pass any URLs when running `multica setup self-host` later.
+Open [http://localhost:3000](http://localhost:3000) directly. You also won't need to pass any URLs when running `orchestra setup self-host` later.
 
 ### Remote access
 
@@ -100,8 +100,8 @@ First set the public URLs in `.env`:
 
 ```bash
 FRONTEND_ORIGIN=https://app.example.com
-MULTICA_APP_URL=https://app.example.com
-MULTICA_PUBLIC_URL=https://api.example.com
+ORCHESTRA_APP_URL=https://app.example.com
+ORCHESTRA_PUBLIC_URL=https://api.example.com
 ```
 
 With this configuration all browser traffic stays on the app domain, so cookies never cross domains and `COOKIE_DOMAIN` is not needed. If the browser talks to the api domain directly instead, you must set it — see [Environment variables](/environment-variables).
@@ -162,7 +162,7 @@ The logs contain a line like:
 Enter the code and create your first workspace. Once Resend or SMTP is configured, codes are sent by email and members no longer need to read container logs — see [Auth setup](/auth-setup).
 
 <Callout type="warning">
-Self-hosted deployments default to `APP_ENV=production`, which disables fixed verification codes. Do not set `MULTICA_DEV_VERIFICATION_CODE` on a public instance.
+Self-hosted deployments default to `APP_ENV=production`, which disables fixed verification codes. Do not set `ORCHESTRA_DEV_VERIFICATION_CODE` on a public instance.
 </Callout>
 
 ## 5. Connect a computer
@@ -173,7 +173,7 @@ Run the commands below on **the computer that runs your AI coding tools**, which
 Tasks run with the full permissions of the user running the daemon — they can read and write everything that user can. Run the daemon as a dedicated Unix user, in a container, or in a VM rather than under your personal account. See the [security model](/security-model).
 </Callout>
 
-Install the Multica CLI first:
+Install the Orchestra CLI first:
 
 **macOS / Linux**
 
@@ -190,13 +190,13 @@ irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps
 If the Multica service runs on this same computer:
 
 ```bash
-multica setup self-host
+orchestra setup self-host
 ```
 
 If the Multica service runs on another machine, pass the two URLs you configured earlier:
 
 ```bash
-multica setup self-host \
+orchestra setup self-host \
   --server-url https://api.example.com \
   --app-url https://app.example.com
 ```
@@ -206,7 +206,7 @@ The command first checks `<server-url>/health`, then opens a browser to complete
 Confirm the connection:
 
 ```bash
-multica daemon status
+orchestra daemon status
 ```
 
 The output should show:
@@ -270,11 +270,11 @@ docker compose -f docker-compose.selfhost.yml up -d
 The version you end up running is resolved by `docker compose pull`, which asks GHCR what the tag points at right now. A checkout that is months out of date will still pull today's `latest` images; conversely, `git pull` alone changes nothing until you pull images and recreate the containers.
 
 <Callout type="warning">
-**If you pinned `MULTICA_IMAGE_TAG`, neither command upgrades anything.** Both images resolve as `${MULTICA_IMAGE_TAG:-latest}` (`docker-compose.selfhost.yml:42`, `:125`), and `.env.example` ships `MULTICA_IMAGE_TAG=latest`. If your `.env` pins an exact release, `pull` just re-fetches that same tag and you stay on the old version — no error, no warning. Check before you upgrade:
+**If you pinned `ORCHESTRA_IMAGE_TAG`, neither command upgrades anything.** Both images resolve as `${ORCHESTRA_IMAGE_TAG:-latest}` (`docker-compose.selfhost.yml:42`, `:125`), and `.env.example` ships `ORCHESTRA_IMAGE_TAG=latest`. If your `.env` pins an exact release, `pull` just re-fetches that same tag and you stay on the old version — no error, no warning. Check before you upgrade:
 
 ```bash
-grep MULTICA_IMAGE_TAG .env
-# MULTICA_IMAGE_TAG=v0.4.5   ← pinned: edit to `latest` (or the release you want) first
+grep ORCHESTRA_IMAGE_TAG .env
+# ORCHESTRA_IMAGE_TAG=v0.4.5   ← pinned: edit to `latest` (or the release you want) first
 ```
 </Callout>
 
@@ -322,7 +322,7 @@ Anything other than HTTP 200 with both checks `ok` means the new version did not
 
 Helm has its own upgrade path: set `images.backend.tag` / `images.frontend.tag` to the release you want in your values file, then `helm upgrade`. Changing the tag changes the pod spec, so Kubernetes pulls the new image and rolls the Deployments — this is the reliable route.
 
-`kubectl -n multica rollout restart` is **not** an upgrade on its own. The chart ships `pullPolicy: IfNotPresent` (`deploy/helm/multica/values.yaml`), so a node that already has that tag cached reuses the old image and the restart silently changes nothing — the same class of trap as a pinned `MULTICA_IMAGE_TAG`. If you want to track a floating tag that way, set `images.backend.pullPolicy` / `images.frontend.pullPolicy` to `Always` first. See the [Self-hosting guide](https://github.com/multica-ai/multica/blob/main/SELF_HOSTING.md#kubernetes-deployment-alternative).
+`kubectl -n multica rollout restart` is **not** an upgrade on its own. The chart ships `pullPolicy: IfNotPresent` (`deploy/helm/multica/values.yaml`), so a node that already has that tag cached reuses the old image and the restart silently changes nothing — the same class of trap as a pinned `ORCHESTRA_IMAGE_TAG`. If you want to track a floating tag that way, set `images.backend.pullPolicy` / `images.frontend.pullPolicy` to `Always` first. See the [Self-hosting guide](https://github.com/multica-ai/multica/blob/main/SELF_HOSTING.md#kubernetes-deployment-alternative).
 
 <Callout type="warning">
 `docker compose down` keeps `pgdata` and `backend_uploads`. Adding `-v` deletes these volumes, including the database; do not run `docker compose down -v` unless you intend to wipe the instance.
@@ -335,8 +335,8 @@ Helm has its own upgrade path: set `images.backend.tag` / `images.frontend.tag` 
 | `/readyz` does not return `ok` | Run `docker compose -f docker-compose.selfhost.yml logs backend postgres`. |
 | No verification code arrives | Request a code, then search the backend logs for `Verification code`. |
 | `setup self-host` reports the server is unreachable | From the computer, request `https://api.example.com/health` to confirm DNS, TLS, and the reverse proxy are all reachable. |
-| The daemon lists no `Agents` | Confirm the AI coding tools are on `PATH` and logged in, then run `multica daemon restart`. |
-| Issues stay queued | Run `multica daemon status` to confirm the daemon is running and connected to the workspace. |
+| The daemon lists no `Agents` | Confirm the AI coding tools are on `PATH` and logged in, then run `orchestra daemon restart`. |
+| Issues stay queued | Run `orchestra daemon status` to confirm the daemon is running and connected to the workspace. |
 
 For more scenarios, see [Troubleshooting](/troubleshooting).
 

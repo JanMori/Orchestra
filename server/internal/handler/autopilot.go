@@ -36,9 +36,9 @@ type AutopilotResponse struct {
 	Title       string  `json:"title"`
 	Description *string `json:"description"`
 	ProjectID   *string `json:"project_id"`
-	// AssigneeType is "agent" or "squad". Path A from MUL-2429: when set
-	// to "squad", AssigneeID points at squad(id) rather than agent(id) and
-	// dispatch resolves to squad.leader_id at run time.
+	// AssigneeType is "agent" or "crew". Path A from MUL-2429: when set
+	// to "crew", AssigneeID points at crew(id) rather than agent(id) and
+	// dispatch resolves to crew.leader_id at run time.
 	AssigneeType       string  `json:"assignee_type"`
 	AssigneeID         string  `json:"assignee_id"`
 	Status             string  `json:"status"`
@@ -96,7 +96,7 @@ func collaboratorToEntry(c db.AutopilotCollaborator) AutopilotCollaboratorEntry 
 }
 
 // user_type is restricted to "member" at the DB layer; the field is kept on
-// the wire so a future expansion to agents/squads is additive, not breaking.
+// the wire so a future expansion to agents/crews is additive, not breaking.
 type AutopilotSubscriberEntry struct {
 	UserType  string `json:"user_type"`
 	UserID    string `json:"user_id"`
@@ -648,7 +648,7 @@ func (h *Handler) CreateAutopilot(w http.ResponseWriter, r *http.Request) {
 		assigneeType = *req.AssigneeType
 	}
 	if !isValidAutopilotAssigneeType(assigneeType) {
-		writeError(w, http.StatusBadRequest, "assignee_type must be agent or squad")
+		writeError(w, http.StatusBadRequest, "assignee_type must be agent or crew")
 		return
 	}
 	projectID, ok := h.parseAutopilotProjectID(w, r, req.ProjectID, wsUUID)
@@ -840,7 +840,7 @@ func (h *Handler) UpdateAutopilot(w http.ResponseWriter, r *http.Request) {
 		params.ProjectID = projectID
 	}
 	// assignee_type and assignee_id are validated as a pair: switching
-	// between agent and squad without supplying a new id would leave the
+	// between agent and crew without supplying a new id would leave the
 	// row pointing at the wrong table. The client is expected to send both
 	// fields on any change; partial updates that change only one are
 	// rejected.
@@ -853,7 +853,7 @@ func (h *Handler) UpdateAutopilot(w http.ResponseWriter, r *http.Request) {
 			nextType = *req.AssigneeType
 		}
 		if !isValidAutopilotAssigneeType(nextType) {
-			writeError(w, http.StatusBadRequest, "assignee_type must be agent or squad")
+			writeError(w, http.StatusBadRequest, "assignee_type must be agent or crew")
 			return
 		}
 		if idSent {
@@ -867,8 +867,8 @@ func (h *Handler) UpdateAutopilot(w http.ResponseWriter, r *http.Request) {
 			}
 			nextID = parsed
 		}
-		// Reject the agent↔squad switch without a paired id, otherwise the
-		// row would address agent(id) under assignee_type='squad' or vice
+		// Reject the agent↔crew switch without a paired id, otherwise the
+		// row would address agent(id) under assignee_type='crew' or vice
 		// versa.
 		if typeSent && !idSent && nextType != prev.AssigneeType {
 			writeError(w, http.StatusBadRequest, "assignee_id is required when changing assignee_type")
@@ -920,8 +920,8 @@ func (h *Handler) UpdateAutopilot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Assignment locks come first. Runtime teardown and squad leader changes
-	// also lock Agent/Squad before they update matching Autopilot rows; keeping
+	// Assignment locks come first. Runtime teardown and crew leader changes
+	// also lock Agent/Crew before they update matching Autopilot rows; keeping
 	// that global order prevents an Agent↔Autopilot deadlock.
 	lockedPrev, err := qtx.LockAutopilotForUpdate(r.Context(), db.LockAutopilotForUpdateParams{
 		ID:          prev.ID,
@@ -1009,7 +1009,7 @@ func (h *Handler) UpdateAutopilot(w http.ResponseWriter, r *http.Request) {
 // WHAT the automation instructs the agent to do, or WHO / WHETHER it runs, and so
 // transfers accountability to the editor (MUL-4302 §3.4; boundary pinned with Elon):
 //
-//   - assignee_type / assignee_id — who (agent / squad leader) executes;
+//   - assignee_type / assignee_id — who (agent / crew leader) executes;
 //   - status — enabled state (active / paused / archived);
 //   - execution_mode — run_only vs create_issue;
 //   - description — the product surfaces this as the run PROMPT, i.e. the task
@@ -1500,14 +1500,14 @@ func isAllowedWebhookProvider(p string) bool {
 
 func isValidAutopilotAssigneeType(t string) bool {
 	switch t {
-	case "agent", "squad":
+	case "agent", "crew":
 		return true
 	default:
 		return false
 	}
 }
 
-// validateAutopilotAssigneeForSave checks that the assignee (agent or squad)
+// validateAutopilotAssigneeForSave checks that the assignee (agent or crew)
 // exists in the given workspace and, when requireRuntime is true, that its
 // effective Agent has a Runtime. It takes assignment locks through q so active
 // saves and the caller's Autopilot write are serialized with Runtime teardown.
@@ -1544,51 +1544,51 @@ func (h *Handler) validateAutopilotAssigneeForSave(
 			return false
 		}
 		return true
-	case "squad":
-		squad, err := q.LockSquadForAutopilotAssignment(r.Context(), db.LockSquadForAutopilotAssignmentParams{
+	case "crew":
+		crew, err := q.LockCrewForAutopilotAssignment(r.Context(), db.LockCrewForAutopilotAssignmentParams{
 			ID:          assigneeID,
 			WorkspaceID: workspaceID,
 		})
 		if err != nil {
-			writeError(w, http.StatusBadRequest, "assignee must be a valid squad in this workspace")
+			writeError(w, http.StatusBadRequest, "assignee must be a valid crew in this workspace")
 			return false
 		}
-		// Archived squads must be rejected at save time: the dispatcher will
+		// Archived crews must be rejected at save time: the dispatcher will
 		// otherwise produce an unbroken stream of skipped runs against a
-		// squad that can never be revived without an explicit un-archive.
-		// Pair with TransferSquadAutopilotsToLeader on DeleteSquad so any
+		// crew that can never be revived without an explicit un-archive.
+		// Pair with TransferCrewAutopilotsToLeader on DeleteCrew so any
 		// autopilot that survives the archive flips to assignee_type='agent'
-		// (the leader) and stops referencing the dead squad row.
-		if squad.ArchivedAt.Valid {
-			writeError(w, http.StatusUnprocessableEntity, "squad is archived; pick a different squad")
+		// (the leader) and stops referencing the dead crew row.
+		if crew.ArchivedAt.Valid {
+			writeError(w, http.StatusUnprocessableEntity, "crew is archived; pick a different crew")
 			return false
 		}
 		leader, err := q.LockAgentForAutopilotAssignment(r.Context(), db.LockAgentForAutopilotAssignmentParams{
-			ID:          squad.LeaderID,
+			ID:          crew.LeaderID,
 			WorkspaceID: workspaceID,
 		})
 		if err != nil {
-			writeError(w, http.StatusBadRequest, "squad leader agent not found")
+			writeError(w, http.StatusBadRequest, "crew leader agent not found")
 			return false
 		}
 		if leader.ArchivedAt.Valid {
-			writeError(w, http.StatusUnprocessableEntity, "squad leader is archived; pick a different squad or rotate the leader before assigning autopilot")
+			writeError(w, http.StatusUnprocessableEntity, "crew leader is archived; pick a different crew or rotate the leader before assigning autopilot")
 			return false
 		}
 		if requireRuntime && !leader.RuntimeID.Valid {
-			writeError(w, http.StatusUnprocessableEntity, "squad leader needs a runtime before this autopilot can be active")
+			writeError(w, http.StatusUnprocessableEntity, "crew leader needs a runtime before this autopilot can be active")
 			return false
 		}
 		// Private-leader gate: the member configuring the autopilot must have
 		// access to the private leader, same as validateAssigneePair.
 		actorType, actorID := h.resolveActor(r, requestUserID(r), util.UUIDToString(workspaceID))
 		if !h.canInvokeAgent(r.Context(), leader, actorType, actorID, h.invokeOriginatorFromRequest(r, actorType, actorID), util.UUIDToString(workspaceID)) {
-			writeError(w, http.StatusForbidden, "cannot assign autopilot to squad with private leader")
+			writeError(w, http.StatusForbidden, "cannot assign autopilot to crew with private leader")
 			return false
 		}
 		return true
 	default:
-		writeError(w, http.StatusBadRequest, "assignee_type must be agent or squad")
+		writeError(w, http.StatusBadRequest, "assignee_type must be agent or crew")
 		return false
 	}
 }

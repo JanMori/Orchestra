@@ -36,7 +36,7 @@ func BuildNewCommentsHint(issueID, triggerCommentID, triggerThreadID, newComment
 		return fmt.Sprintf(
 			"%d new comment(s) on this issue since your last run — don't read them all blindly. "+
 				"Start with the thread your triggering comment is in: "+
-				"`multica issue comment list %s --thread %s --since %s --output json` "+
+				"`orchestra issue comment list %s --thread %s --since %s --output json` "+
 				"(swap `--since` for `--tail 30` if you need the full thread, not just the delta). "+
 				"Only if you need context from the other threads, rerun it without `--thread` for the issue-wide catch-up.\n\n",
 			newCommentCount, issueID, threadID, newCommentsSince,
@@ -47,7 +47,7 @@ func BuildNewCommentsHint(issueID, triggerCommentID, triggerThreadID, newComment
 	// issue-wide catch-up.
 	return fmt.Sprintf(
 		"%d new comment(s) on this issue since your last run. Catch up: "+
-			"`multica issue comment list %s --since %s --output json`.\n\n",
+			"`orchestra issue comment list %s --since %s --output json`.\n\n",
 		newCommentCount, issueID, newCommentsSince,
 	)
 }
@@ -73,7 +73,7 @@ func BuildResumedCommentsHint(issueID, triggerCommentID, triggerThreadID string)
 			"No other new comments on this issue since your last run. "+
 			"If your reply depends on thread context, do not rely only on resumed session memory — "+
 			"first pull the triggering conversation with: "+
-			"`multica issue comment list %s --thread %s --tail 30 --output json`.\n\n",
+			"`orchestra issue comment list %s --thread %s --tail 30 --output json`.\n\n",
 		issueID, threadID,
 	)
 }
@@ -103,7 +103,7 @@ func BuildColdCommentsHint(issueID, triggerCommentID, triggerThreadID string) st
 	// routing value (MUL-5721 OPT-1).
 	return fmt.Sprintf(
 		"Read the triggering conversation first: "+
-			"`multica issue comment list %s --thread %s --tail 30 --output json` "+
+			"`orchestra issue comment list %s --thread %s --tail 30 --output json` "+
 			"(that thread's root + its 30 newest replies). "+
 			"Need cross-thread background? Rerun with `--roots-only --summary` replacing `--thread ... --tail 30` "+
 			"to scan the other threads cheaply, and expand only what looks relevant.\n\n",
@@ -145,7 +145,7 @@ func activeThreadID(triggerThreadID, triggerCommentID string) string {
 //     `?` before the bytes reach `multica.exe` (#2198 Chinese, #2236
 //     Chinese, #2376 Cyrillic).
 //     2. On any host, when the model emits a multi-flag command (e.g.
-//     `multica issue create --title ... --assignee-id ... --project ...`)
+//     `orchestra issue create --title ... --assignee-id ... --project ...`)
 //     the bash heredoc/flag boundary is fragile: a `BODY \` "terminator
 //     with trailing token" is not recognised as the heredoc end, so flag
 //     lines after it are swallowed into the description; or a clean
@@ -188,7 +188,7 @@ func buildCommentReplyInstructionsSlim(provider, issueID, triggerCommentID strin
 			"If you decide to reply, post it as a comment — always use the trigger comment ID below, "+
 				"do NOT reuse --parent values from previous turns in this session.\n\n"+
 				"Write the body file first — never pipe via `--content-stdin` (PowerShell drops non-ASCII; full rules: ## Comment Formatting above):\n\n"+
-				"    multica issue comment add %s --parent %s --content-file ./reply.md\n"+
+				"    orchestra issue comment add %s --parent %s --content-file ./reply.md\n"+
 				"    Remove-Item ./reply.md\n\n"+
 				"Do NOT write literal `\\n` escapes to simulate line breaks; the file preserves real newlines.\n",
 			issueID, triggerCommentID,
@@ -198,7 +198,7 @@ func buildCommentReplyInstructionsSlim(provider, issueID, triggerCommentID strin
 		"If you decide to reply, post it as a comment — always use the trigger comment ID below, "+
 			"do NOT reuse --parent values from previous turns in this session.\n\n"+
 			"Write the body file first (rules: ## Comment Formatting above — MUL-2904 / #4182):\n\n"+
-			"    multica issue comment add %s --parent %s --content-file ./reply.md\n"+
+			"    orchestra issue comment add %s --parent %s --content-file ./reply.md\n"+
 			"    rm ./reply.md\n\n"+
 			"Do NOT write literal `\\n` escapes to simulate line breaks; the file preserves real newlines.\n",
 		issueID, triggerCommentID,
@@ -245,18 +245,18 @@ func BuildMultiThreadCommentReplyInstructions(issueID string, targets []ThreadRe
 	if runtimeGOOS == "windows" {
 		cookbook = fmt.Sprintf(
 			"For EACH thread above, write that reply's body to its own UTF-8 file with your file-write tool, then post it with `--content-file` (do NOT use inline `--content` or a `--content-stdin` HEREDOC — see ## Comment Formatting above for why). Use a DISTINCT file per thread (never reuse one file) and remove each after posting:\n\n"+
-				"    multica issue comment add %s --parent <thread-1-parent> --content-file ./reply-1.md\n"+
+				"    orchestra issue comment add %s --parent <thread-1-parent> --content-file ./reply-1.md\n"+
 				"    Remove-Item ./reply-1.md\n"+
-				"    multica issue comment add %s --parent <thread-2-parent> --content-file ./reply-2.md\n"+
+				"    orchestra issue comment add %s --parent <thread-2-parent> --content-file ./reply-2.md\n"+
 				"    Remove-Item ./reply-2.md\n\n",
 			issueID, issueID,
 		)
 	} else {
 		cookbook = fmt.Sprintf(
 			"For EACH thread above, write that reply's body to its own UTF-8 file with your file-write tool, then post it with `--content-file` (do NOT use inline `--content` or a `--content-stdin` HEREDOC — see ## Comment Formatting above for why). Use a DISTINCT file per thread (never reuse one file) and remove each after posting:\n\n"+
-				"    multica issue comment add %s --parent <thread-1-parent> --content-file ./reply-1.md\n"+
+				"    orchestra issue comment add %s --parent <thread-1-parent> --content-file ./reply-1.md\n"+
 				"    rm ./reply-1.md\n"+
-				"    multica issue comment add %s --parent <thread-2-parent> --content-file ./reply-2.md\n"+
+				"    orchestra issue comment add %s --parent <thread-2-parent> --content-file ./reply-2.md\n"+
 				"    rm ./reply-2.md\n\n",
 			issueID, issueID,
 		)

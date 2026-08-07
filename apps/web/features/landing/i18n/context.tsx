@@ -42,7 +42,7 @@ const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 export function LocaleProvider({
   children,
-  initialLocale = "en",
+  initialLocale = "zh-Hans",
 }: {
   children: React.ReactNode;
   initialLocale?: Locale;

@@ -91,7 +91,7 @@ import { buildActorNameResolver, useActorName } from "@orchestra/core/workspace/
 import {
   agentListOptions,
   memberListOptions,
-  squadListOptions,
+  crewListOptions,
 } from "@orchestra/core/workspace/queries";
 import type {
   Issue,
@@ -2272,9 +2272,9 @@ export function TableView({
           ? Promise.all([
               queryClient.fetchQuery(memberListOptions(wsId)),
               queryClient.fetchQuery(agentListOptions(wsId)),
-              queryClient.fetchQuery(squadListOptions(wsId)),
-            ]).then(([members, agents, squads]) =>
-              buildActorNameResolver({ members, agents, squads }),
+              queryClient.fetchQuery(crewListOptions(wsId)),
+            ]).then(([members, agents, crews]) =>
+              buildActorNameResolver({ members, agents, crews }),
             )
           : Promise.resolve(getActorName),
       ]);

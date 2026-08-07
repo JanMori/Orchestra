@@ -103,7 +103,7 @@ export function SlackTab() {
             <p className="text-caption text-muted-foreground">
               {t(($) => $.slack.not_enabled_description_prefix)}{" "}
               <code className="rounded bg-muted px-1 py-0.5 text-micro">
-                MULTICA_SLACK_SECRET_KEY
+                ORCHESTRA_SLACK_SECRET_KEY
               </code>{" "}
               {t(($) => $.slack.not_enabled_description_suffix)}{" "}
               {t(($) => $.slack.not_enabled_self_host_hint)}

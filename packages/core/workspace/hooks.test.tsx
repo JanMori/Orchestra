@@ -34,7 +34,7 @@ describe("useActorName", () => {
     vi.restoreAllMocks();
   });
 
-  // MUL-4985 regression: while the member/agent/squad directory queries are
+  // MUL-4985 regression: while the member/agent/crew directory queries are
   // still loading, `data` is undefined. A `= []` default allocated a fresh
   // array every render, so `getActorName` (memoized on those arrays) changed
   // identity on every render. Consumers that list `getActorName` in their own
@@ -52,7 +52,7 @@ describe("useActorName", () => {
     setApiInstance({
       listMembers: pending,
       listAgents: pending,
-      listSquads: pending,
+      listCrews: pending,
     } as unknown as ApiClient);
 
     const { result, rerender } = renderHook(() => useActorName(), {
@@ -77,15 +77,15 @@ describe("useActorName", () => {
     // break name resolution when data IS present.
     const members = [{ user_id: "user-1", name: "Ada", avatar_url: null }];
     const agents = [{ id: "agent-1", name: "Walt", avatar_url: null }];
-    const squads = [{ id: "squad-1", name: "Core", avatar_url: null }];
+    const crews = [{ id: "crew-1", name: "Core", avatar_url: null }];
     setApiInstance({
       listMembers: () => Promise.resolve(members),
       listAgents: () => Promise.resolve(agents),
-      listSquads: () => Promise.resolve(squads),
+      listCrews: () => Promise.resolve(crews),
     } as unknown as ApiClient);
     qc.setQueryData(workspaceKeys.members("ws-1"), members);
     qc.setQueryData(workspaceKeys.agents("ws-1"), agents);
-    qc.setQueryData(workspaceKeys.squads("ws-1"), squads);
+    qc.setQueryData(workspaceKeys.crews("ws-1"), crews);
 
     const { result } = renderHook(() => useActorName(), {
       wrapper: createWrapper(qc),
@@ -93,6 +93,6 @@ describe("useActorName", () => {
 
     expect(result.current.getActorName("member", "user-1")).toBe("Ada");
     expect(result.current.getActorName("agent", "agent-1")).toBe("Walt");
-    expect(result.current.getActorName("squad", "squad-1")).toBe("Core");
+    expect(result.current.getActorName("crew", "crew-1")).toBe("Core");
   });
 });

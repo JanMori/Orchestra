@@ -34,7 +34,7 @@ import { pendingRuntimeFromProfile } from "./pending-runtime";
 import { buildRuntimeMachines, type RuntimeMachine } from "./runtime-machines";
 import { HealthDot, HealthIcon, useHealthLabel } from "./shared";
 import { useT, useTimeAgo } from "../../i18n";
-import { daemonRuntimesDocsHref } from "./runtime-docs";
+
 
 export interface RuntimesPageProps {
   /** Desktop-only daemon id used to identify this device. */
@@ -214,17 +214,13 @@ function PageHeaderBar({
   cloudRuntimeEnabled: boolean;
   onOpenCloudRuntime: () => void;
 }) {
-  const { t, i18n } = useT("runtimes");
+  const { t } = useT("runtimes");
   return (
     <CollectionPageHeader
       icon={Server}
       title={t(($) => $.page.title)}
       count={totalCount}
       description={t(($) => $.page.tagline)}
-      learnMore={{
-        href: daemonRuntimesDocsHref(i18n.language),
-        label: t(($) => $.page.learn_more),
-      }}
       actions={
         <>
           {cloudRuntimeEnabled && (

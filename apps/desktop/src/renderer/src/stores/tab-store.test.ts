@@ -923,9 +923,9 @@ describe("mergePersistedTabs (rehydration, MUL-4370)", () => {
   });
 
   it("rehydrates payloads with no icon field at all", () => {
-    const tab = rehydrate(persistedTab("/acme/squads"));
+    const tab = rehydrate(persistedTab("/acme/crews"));
     expect(tab).not.toHaveProperty("icon");
-    expect(tab.url).toBe("/acme/squads");
+    expect(tab.url).toBe("/acme/crews");
   });
 
   function rehydrateGroup(

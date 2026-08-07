@@ -102,7 +102,7 @@ async function installFresh(): Promise<string> {
   }
   const url = `${GITHUB_LATEST_BASE}/${assetName}`;
 
-  const workDir = join(tmpdir(), `multica-cli-${Date.now()}`);
+  const workDir = join(tmpdir(), `orchestra-cli-${Date.now()}`);
   await mkdir(workDir, { recursive: true });
 
   try {

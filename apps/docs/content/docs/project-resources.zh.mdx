@@ -73,25 +73,25 @@ Multica 清理执行环境时不会删除关联的本地目录。智能体对该
 
 ```bash
 # 创建项目时关联仓库
-multica project create \
+orchestra project create \
   --title "Agent UX" \
   --repo https://github.com/multica-ai/multica
 
 # 查看和添加资源
-multica project resource list <project-id>
-multica project resource add <project-id> \
+orchestra project resource list <project-id>
+orchestra project resource add <project-id> \
   --type github_repo \
   --url https://github.com/multica-ai/multica \
   --ref main
 
 # 关联指定守护进程上的本地目录
-multica project resource add <project-id> \
+orchestra project resource add <project-id> \
   --type local_directory \
   --local-path /absolute/path/to/repo \
   --daemon-id <daemon-id>
 
 # 移除资源
-multica project resource remove <project-id> <resource-id>
+orchestra project resource remove <project-id> <resource-id>
 ```
 
 资源变更会影响之后创建的执行任务，不会改写已经结束的执行记录。

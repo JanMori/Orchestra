@@ -13,7 +13,7 @@ type RunEnqueueSource string
 
 const (
 	// RunSourceAssign covers issue creation and assignee changes — the issue
-	// is being handed to an agent/squad. Parks silently on backlog.
+	// is being handed to an agent/crew. Parks silently on backlog.
 	RunSourceAssign RunEnqueueSource = "assign"
 	// RunSourceStatus covers promoting an already-assigned issue out of
 	// backlog into an active status.
@@ -24,8 +24,8 @@ const (
 // resolve from issue state alone.
 //
 // CanAccessAgent is the private-agent gate. The write paths enforce it at the
-// HTTP boundary (validateAssigneePair on assign, canEnqueueSquadLeader inside
-// the squad enqueue helper) and therefore pass an allow-all probe so the gate
+// HTTP boundary (validateAssigneePair on assign, canEnqueueCrewLeader inside
+// the crew enqueue helper) and therefore pass an allow-all probe so the gate
 // is never duplicated or sunk into the service layer. Preview passes the real
 // gate so it never leaks a private agent's readiness to a member who cannot
 // see it. A nil func is treated as allow-all.
@@ -51,7 +51,7 @@ type IssueTriggerInput struct {
 
 // IssueRunTrigger is the resolved decision shared by preview and the write
 // paths. AgentID is the agent that will actually run — the assignee for an
-// agent issue, the squad leader for a squad issue.
+// agent issue, the crew leader for a crew issue.
 type IssueRunTrigger struct {
 	IssueID      pgtype.UUID
 	AgentID      pgtype.UUID
@@ -64,7 +64,7 @@ func allowAllAgents(db.Agent) bool { return true }
 // WillEnqueueRun is the single predicate answering "will this issue write
 // start an agent run, and for whom". It is the one source of truth shared by
 // the issue update / batch-update write paths and the preview endpoint,
-// replacing the per-site copies that drifted (squad omitted, self-loop
+// replacing the per-site copies that drifted (crew omitted, self-loop
 // omitted, four entry points inconsistent — see MUL-3375).
 //
 // It is intentionally a distinct predicate from the comment trigger
@@ -133,15 +133,15 @@ func (s *IssueService) WillEnqueueRun(ctx context.Context, in IssueTriggerInput,
 			Source:       source,
 		}, true
 
-	case "squad":
-		squad, err := s.Queries.GetSquadInWorkspace(ctx, db.GetSquadInWorkspaceParams{
+	case "crew":
+		crew, err := s.Queries.GetCrewInWorkspace(ctx, db.GetCrewInWorkspaceParams{
 			ID:          issue.AssigneeID,
 			WorkspaceID: issue.WorkspaceID,
 		})
 		if err != nil {
 			return IssueRunTrigger{}, false
 		}
-		leader, err := s.Queries.GetAgent(ctx, squad.LeaderID)
+		leader, err := s.Queries.GetAgent(ctx, crew.LeaderID)
 		if err != nil {
 			return IssueRunTrigger{}, false
 		}
@@ -152,13 +152,13 @@ func (s *IssueService) WillEnqueueRun(ctx context.Context, in IssueTriggerInput,
 		if !canAccess(leader) {
 			return IssueRunTrigger{}, false
 		}
-		if source == RunSourceStatus && s.hasPendingRun(ctx, issue.ID, squad.LeaderID) {
+		if source == RunSourceStatus && s.hasPendingRun(ctx, issue.ID, crew.LeaderID) {
 			return IssueRunTrigger{}, false
 		}
 		return IssueRunTrigger{
 			IssueID:      issue.ID,
-			AgentID:      squad.LeaderID,
-			AssigneeType: "squad",
+			AgentID:      crew.LeaderID,
+			AssigneeType: "crew",
 			Source:       source,
 		}, true
 	}

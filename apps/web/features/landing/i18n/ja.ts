@@ -139,7 +139,7 @@ export function createJaDict(allowSignup: boolean): LandingDict {
         {
           title: "CLI をインストールしてマシンを接続",
           description:
-            "multica setup を実行すると、OAuth の手順を案内し、デーモンを起動し、15種類の対応コーディングツール(Antigravity、Claude Code、CodeBuddy、Codex、Cursor、Copilot、Hermes、Kimi、Reasonix、Kiro CLI、OpenCode、OpenClaw、Pi、Qoder、Trae CLI)をスキャンします。すでにインストール済みのものは、自動的にランタイムとして登録されます。",
+            "orchestra setup を実行すると、OAuth の手順を案内し、デーモンを起動し、15種類の対応コーディングツール(Antigravity、Claude Code、CodeBuddy、Codex、Cursor、Copilot、Hermes、Kimi、Reasonix、Kiro CLI、OpenCode、OpenClaw、Pi、Qoder、Trae CLI)をスキャンします。すでにインストール済みのものは、自動的にランタイムとして登録されます。",
         },
         {
           title: "最初のエージェントを作成",
@@ -242,9 +242,6 @@ export function createJaDict(allowSignup: boolean): LandingDict {
           label: "リソース",
           links: [
             { label: "ドキュメント", href: "/docs/ja" },
-            { label: "API", href: githubUrl },
-            { label: "X (Twitter)", href: "https://x.com/OrchestraAI" },
-            { label: "Discord", href: discordUrl },
           ],
         },
         company: {
@@ -253,7 +250,6 @@ export function createJaDict(allowSignup: boolean): LandingDict {
             { label: "概要", href: "/about" },
             { label: "オープンソース", href: "#open-source" },
             { label: "営業に相談", href: "/contact-sales" },
-            { label: "GitHub", href: githubUrl },
           ],
         },
       },
@@ -964,7 +960,7 @@ export function createJaDict(allowSignup: boolean): LandingDict {
             "ランタイムがオフラインでも、Autopilot の「タスクを作成」実行がラン リストに残るようになりました。",
             "本文が Attachment / Block Kit / rich_text にしか無い Slack アラート カード（Grafana、Incoming Webhook 等）を、フォールバック文ではなく Attachment 本体から読み込みます。",
             "Codex エージェントの作業ホームからデーモンの Codex モデル カタログが再び見えるようになりました。（コミュニティ報告）",
-            "レガシーの `/squads/…` と `/usage` の Web ルートが 404 ではなく現行ページへリダイレクトされます。",
+            "レガシーの `/crews/…` と `/usage` の Web ルートが 404 ではなく現行ページへリダイレクトされます。",
             "デスクトップ アプリの保存ダイアログが `download.txt` にフォールバックせず、正しい添付ファイル名を使うようになりました。（コミュニティ貢献）",
             "スクワッド連携：Leader が mention でディスパッチしたワーカー エージェントが完了コメントを HTTP API で投稿したとき、プライベート スクワッドの Leader が正しく起動され、Leader → Worker → Leader のループが初回ホップで止まらなくなりました。",
             "ホストの Claude CLI が `--effort` フラグより古い場合でも、作業はハード フェイルせず、デーモンが effort フラグを警告付きで外して素の実行にフォールバックします。",
@@ -1022,7 +1018,7 @@ export function createJaDict(allowSignup: boolean): LandingDict {
             "Slack のチャット エージェントが履歴取得の作業を毎回説明しなくなり、内部で静かに読み込み、回答だけを送るようになりました。",
             "セルフホストのローカル ディスク構成で、添付ファイル（PDF / HTML）のプレビューが再び開くようになりました。（コミュニティ報告）",
             "Cursor と Kiro ランタイムの完了時トランスクリプトを取り戻し、最終的な結果が失われなくなりました。",
-            "セルフホスト：docker-compose.selfhost.yml で MULTICA_SLACK_SECRET_KEY をバックエンド コンテナへ引き渡すようになりました。（コミュニティ報告）",
+            "セルフホスト：docker-compose.selfhost.yml で ORCHESTRA_SLACK_SECRET_KEY をバックエンド コンテナへ引き渡すようになりました。（コミュニティ報告）",
             "タスク一覧上部の「N 件処理中」チップが、エージェントではなくタスクの数を数えるようになりました。",
             "セルフホストの匿名ソース チャネル送信先を正式な Orchestra API エンドポイントに戻しました。",
             "コメント ディープリンクのハイライトは背景色のみになり、ルート コメントと返信で挙動が統一されました。",
@@ -1038,7 +1034,7 @@ export function createJaDict(allowSignup: boolean): LandingDict {
             "Slack チャンネルの過去のやり取りを Orchestra にバックフィルでき、エージェントが加わった時点で会話の流れをそのまま把握できます。",
             "Slack でエージェントが返信を準備している間、ユーザーのメッセージに 👀 のリアクションが付き、終了時に確実に外れます。",
             "スキル パッケージをローカルの .skill / .zip アーカイブから取り込めるようになりました。",
-            "multica issue 系のコマンドは短い UUID プレフィックスを受け付けなくなりました。タスク Key（MUL-123）または完全な UUID を指定してください。",
+            "orchestra issue 系のコマンドは短い UUID プレフィックスを受け付けなくなりました。タスク Key（MUL-123）または完全な UUID を指定してください。",
             "Agents ページがモバイルに最適化されました。",
           ],
           improvements: [
@@ -1672,7 +1668,7 @@ export function createJaDict(allowSignup: boolean): LandingDict {
             "スクワッド作成の流れにおけるメンバー選択が、チームの調整によりよく合うようになりました。",
           ],
           improvements: [
-            "ページ遷移、長いタスクのアクティビティの折りたたみ、Agents / Squads 一覧の表示の記憶、SSH リポジトリ URL の処理、スクワッドの引き継ぎが改善されました。",
+            "ページ遷移、長いタスクのアクティビティの折りたたみ、Agents / Crews 一覧の表示の記憶、SSH リポジトリ URL の処理、スクワッドの引き継ぎが改善されました。",
           ],
           fixes: [
             "セルフホストのファイルカード、ローカルツールとスキルの検出、Claude の使用量、ワークスペース切り替え後のリアルタイム更新、狭い画面でのメニューを修正しました。",
@@ -1768,7 +1764,7 @@ export function createJaDict(allowSignup: boolean): LandingDict {
           title: "デーモンのディスク使用量 CLI とタイムラインの改善",
           changes: [],
           features: [
-            "`multica daemon disk-usage` が、作業ごと・ワークスペースごとのディスク使用量を表示します。",
+            "`orchestra daemon disk-usage` が、作業ごと・ワークスペースごとのディスク使用量を表示します。",
             "エージェント設定のスキル picker に検索ボックスが加わり、デーモンの GC 範囲がチャット、オートパイロット、quick-create の作業まで広がりました。",
             "タスク詳細のパンくずに、すばやく参照できる識別子が表示されます。",
           ],
@@ -1817,15 +1813,15 @@ export function createJaDict(allowSignup: boolean): LandingDict {
           title: "Repo checkout --ref と Hermes の再生修正",
           changes: [],
           features: [
-            "`multica repo checkout --ref` が、ブランチ、タグ、特定のコミットを対象にリポジトリを取得できます。",
-            "`multica agent avatar` が、CLI からエージェントのアバターを直接アップロードします。",
+            "`orchestra repo checkout --ref` が、ブランチ、タグ、特定のコミットを対象にリポジトリを取得できます。",
+            "`orchestra agent avatar` が、CLI からエージェントのアバターを直接アップロードします。",
             "インボックスの Done 作業にアーカイブボタンが加わり、重複していた mark-as-done の hover ボタンは削除されました。",
           ],
           improvements: [
             "長いタイムラインのタスクを開く処理、multi-replica のモデル picker、デーモンの empty-claim cache TTL が改善されました。",
           ],
           fixes: [
-            "新しいエージェントの即時表示、Hermes の以前の回答の再生、Codex の GPT-5.5 モデル表示、`multica login --token`、CLI 更新の状態、session resume、Kanban 設定、オートパイロットのレスポンシブ対応などを修正しました。",
+            "新しいエージェントの即時表示、Hermes の以前の回答の再生、Codex の GPT-5.5 モデル表示、`orchestra login --token`、CLI 更新の状態、session resume、Kanban 設定、オートパイロットのレスポンシブ対応などを修正しました。",
           ],
         },
         {
@@ -1901,7 +1897,7 @@ export function createJaDict(allowSignup: boolean): LandingDict {
           title: "カスタムエージェント環境変数と、より分かりやすい失敗メッセージ",
           changes: [],
           features: [
-            "`multica agent create/update --custom-env KEY=VALUE` が、エージェントの実行にカスタム環境変数を注入します。",
+            "`orchestra agent create/update --custom-env KEY=VALUE` が、エージェントの実行にカスタム環境変数を注入します。",
             "エージェントの失敗メッセージにランタイム CLI の stderr の末尾が含まれ、デバッグが容易になりました。",
             "CLI 更新ダウンロードの timeout を設定できます。",
           ],

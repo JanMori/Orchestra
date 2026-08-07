@@ -17,33 +17,33 @@ go test ./internal/service -run TestBuiltinSkillsConformToTemplate
 
 | Contract | Line | Behavior | Safe check |
 |---|---|---|---|
-| Create flags: `name`, `description`, `instructions`, `runtime-id` | 160–163 | Registered create flags; `name`/`runtime-id` enforced in `runAgentCreate` | `multica agent create --help` |
-| `runtime-config`, `model`, `thinking-level`, `service-tier`, `custom-args` flags | 164–168 | `model` help: "Prefer this over passing --model in --custom-args"; thinking and Codex service-tier values are thin catalog-owned pass-throughs, with exact model compatibility checked by the daemon; empty = runtime default | `multica agent create --help` |
-| Secret-safe env input: `custom-env`, `custom-env-stdin`, `custom-env-file` | 169–171 | `--custom-env` warns about shell history / `ps`; stdin and file modes keep secrets off the command line; mutually exclusive | `multica agent create --help` |
-| Secret-safe MCP input: `mcp-config`, `mcp-config-stdin`, `mcp-config-file` (create) | 172–174 | Same three-channel pattern as `custom-env`; `--mcp-config` warns about shell history / `ps`; value must be a JSON object or `null` | `multica agent create --help` |
-| MCP flags on `agent update` | 200–202 | Same three channels on update; `--mcp-config null` clears. Unlike `custom_env`, `mcp_config` IS settable via update | `multica agent update --help` |
-| `thinking-level` / `service-tier` flags on `agent update` | 189–190 | Thin pass-throughs; an explicit empty string clears the saved override and restores the runtime/local Codex default | `multica agent update --help` |
-| `max-concurrent-tasks` flags + validation | `cmd_agent.go` 179, 208; `cmd_agent_validation.go` 5–20 | Shared CLI helper enforces 1–50; create/update call it before their HTTP mutation and omitted create flags stay absent | `multica agent create --help`; `multica agent update --help` |
+| Create flags: `name`, `description`, `instructions`, `runtime-id` | 160–163 | Registered create flags; `name`/`runtime-id` enforced in `runAgentCreate` | `orchestra agent create --help` |
+| `runtime-config`, `model`, `thinking-level`, `service-tier`, `custom-args` flags | 164–168 | `model` help: "Prefer this over passing --model in --custom-args"; thinking and Codex service-tier values are thin catalog-owned pass-throughs, with exact model compatibility checked by the daemon; empty = runtime default | `orchestra agent create --help` |
+| Secret-safe env input: `custom-env`, `custom-env-stdin`, `custom-env-file` | 169–171 | `--custom-env` warns about shell history / `ps`; stdin and file modes keep secrets off the command line; mutually exclusive | `orchestra agent create --help` |
+| Secret-safe MCP input: `mcp-config`, `mcp-config-stdin`, `mcp-config-file` (create) | 172–174 | Same three-channel pattern as `custom-env`; `--mcp-config` warns about shell history / `ps`; value must be a JSON object or `null` | `orchestra agent create --help` |
+| MCP flags on `agent update` | 200–202 | Same three channels on update; `--mcp-config null` clears. Unlike `custom_env`, `mcp_config` IS settable via update | `orchestra agent update --help` |
+| `thinking-level` / `service-tier` flags on `agent update` | 189–190 | Thin pass-throughs; an explicit empty string clears the saved override and restores the runtime/local Codex default | `orchestra agent update --help` |
+| `max-concurrent-tasks` flags + validation | `cmd_agent.go` 179, 208; `cmd_agent_validation.go` 5–20 | Shared CLI helper enforces 1–50; create/update call it before their HTTP mutation and omitted create flags stay absent | `orchestra agent create --help`; `orchestra agent update --help` |
 | `runAgentCreate` builds body + `POST /api/agents` | 533–628 | Only sets a body key when the flag `Changed`; validates `max_concurrent_tasks` at 605–611, then posts to `/api/agents` (617) | read 533–628 |
 | Body assembly: description/instructions/runtime-config/custom-args/custom-env/mcp-config/model/thinking-level/service-tier | 548–611 | `model`, `thinking_level`, and `service_tier` are `Changed`-gated pass-throughs; omitted flags are not sent | read the `runAgentCreate` body assembly |
 | `runAgentUpdate` sends `thinking_level` / `service_tier` / `mcp_config` | 630–725 | Each override key is added only when its flag is `Changed`; `max_concurrent_tasks` is range-checked at 693–699; `custom_env` is intentionally not a flag here | read the `runAgentUpdate` body assembly |
 | `parseMcpConfig` / `resolveMcpConfig` helpers | 1216, 1244 | Validator (object-or-`null`, content-free errors) + three-channel resolver, mirroring `parseCustomEnv`/`resolveCustomEnv` | read 1216–1301 |
-| `agent skills set` = replace-all | 922 | `PUT /api/agents/{id}/skills` (940); `--skill-ids ''` clears all (928–931) | `multica agent skills set --help` |
-| `agent skills add` = additive | 947 | `POST /api/agents/{id}/skills/add` (968); requires ≥1 id (953–958) | `multica agent skills add --help` |
-| `agent skills list` | 890 | reads bindings, no side effect | `multica agent skills list --help` |
-| `agent env get` | 1024 | `GET /api/agents/{id}/env` (1034) | `multica agent env get --help` |
-| `agent env set` | 1059 | `PUT /api/agents/{id}/env` with full `custom_env` map (1079) | `multica agent env set --help` |
+| `agent skills set` = replace-all | 922 | `PUT /api/agents/{id}/skills` (940); `--skill-ids ''` clears all (928–931) | `orchestra agent skills set --help` |
+| `agent skills add` = additive | 947 | `POST /api/agents/{id}/skills/add` (968); requires ≥1 id (953–958) | `orchestra agent skills add --help` |
+| `agent skills list` | 890 | reads bindings, no side effect | `orchestra agent skills list --help` |
+| `agent env get` | 1024 | `GET /api/agents/{id}/env` (1034) | `orchestra agent env get --help` |
+| `agent env set` | 1059 | `PUT /api/agents/{id}/env` with full `custom_env` map (1079) | `orchestra agent env set --help` |
 
 ## Copy command — `server/cmd/multica/cmd_agent_copy.go`
 
 | Contract | Line | Behavior | Safe check |
 |---|---|---|---|
-| `agentCopyCmd` (`copy <source-agent-id>`) + flag registrar | 21, 47, 54 | Own file with its own `init()` so `cmd_agent.go` line refs stay stable; `registerAgentCopyFlags` is shared with the tests | `multica agent copy --help` |
+| `agentCopyCmd` (`copy <source-agent-id>`) + flag registrar | 21, 47, 54 | Own file with its own `init()` so `cmd_agent.go` line refs stay stable; `registerAgentCopyFlags` is shared with the tests | `orchestra agent copy --help` |
 | Reads source via `GET /api/agents/<id>` | 95 | Composes over existing endpoints — no dedicated copy API | read `runAgentCopy` |
-| Same-runtime vs cross-runtime rule | 114, 187 | `sameRuntime` copies `model`/`thinking_level`/`service_tier`; a different `--runtime-id` drops them and requires `--model` (empty allowed) | `multica agent copy --help` |
+| Same-runtime vs cross-runtime rule | 114, 187 | `sameRuntime` copies `model`/`thinking_level`/`service_tier`; a different `--runtime-id` drops them and requires `--model` (empty allowed) | `orchestra agent copy --help` |
 | Concurrency copy compatibility | `runAgentCopy`, `copiedAgentMaxConcurrentTasks` | Explicit `--max-concurrent-tasks` is validated before any request; valid source values are copied, while historical values outside 1–50 are omitted so create defaults to 6 | read the concurrency body assembly |
 | Skills copied in the create transaction | 239 | Source skill ids sent as `skill_ids`, bound in the same `POST /api/agents` tx (267); `--no-skills` opts out | read `runAgentCopy` |
-| Secrets never copied | 240–266 | `custom_env`/`mcp_config`/`runtime_config` set only from explicit secret-safe flags, never read from the source | `multica agent copy --help` |
+| Secrets never copied | 240–266 | `custom_env`/`mcp_config`/`runtime_config` set only from explicit secret-safe flags, never read from the source | `orchestra agent copy --help` |
 
 Note: the CLI no longer exposes `--from-template`. The agent-template backend
 still exists (registry `server/internal/agenttmpl/`, handler `agent_template.go`,
@@ -79,7 +79,7 @@ only.
 | Qwen Code managed-MCP injection | `pkg/agent/qwen.go` | Non-null `mcp_config` is written to a daemon-owned 0600 temporary JSON file and passed with `--mcp-config`; the file is removed after the process exits, while `null` preserves native inheritance. |
 | Random emoji avatar default | `agent_avatar.go` 11–32; `agent.go` 1127–1133 | Omitted, empty, or whitespace-only `avatar_url` becomes a cryptographically selected `emoji:<glyph>` sentinel; explicit values are preserved. The template handler uses the same helper at `agent_template.go` 458. |
 | `CreateAgent` insert params | `agent.go` create path | Persists avatar_url, runtime_config, instructions, custom_env, custom_args, model, thinking_level, service_tier, mcp_config, visibility, max_concurrent_tasks |
-| `UpdateAgent` rejects `custom_env` | 910–913 | if `custom_env` present in body → 400 "use PUT /api/agents/{id}/env (or `multica agent env set`)" |
+| `UpdateAgent` rejects `custom_env` | 910–913 | if `custom_env` present in body → 400 "use PUT /api/agents/{id}/env (or `orchestra agent env set`)" |
 | `UpdateAgent` persists / clears `mcp_config` | 944–948, 1060–1061 | Tri-state from the raw body: key omitted → no change; literal `null` → `ClearAgentMcpConfig`; object → replace. No 400 like `custom_env` — `mcp_config` IS updatable here |
 | `description` ≤ 255 on update too | 921–924 | same cap re-checked on update |
 

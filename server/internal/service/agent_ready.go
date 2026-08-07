@@ -13,17 +13,17 @@ import (
 //
 // err is non-nil only on DB lookup failure for the runtime row. Callers that
 // treat a transient DB error as "do not skip" (the autopilot admission gate)
-// should swallow it; callers that need a hard yes/no (the squad-leader
+// should swallow it; callers that need a hard yes/no (the crew-leader
 // pre-enqueue check in the handler) should fail closed.
 //
 // This is the single source of truth shared by:
 //   - service.shouldSkipDispatch (autopilot admission gate)
-//   - service.dispatchRunOnly    (squad-leader runtime check, MUL-2429)
-//   - handler.isSquadLeaderReady (issue-assign / comment-trigger path)
+//   - service.dispatchRunOnly    (crew-leader runtime check, MUL-2429)
+//   - handler.isCrewLeaderReady (issue-assign / comment-trigger path)
 //
 // Keeping these aligned matters because the three paths can otherwise drift
 // — e.g. one starts allowing "starting" runtimes while another doesn't, and
-// the bug only surfaces when a user assigns the same squad through two
+// the bug only surfaces when a user assigns the same crew through two
 // different entry points. Touch this function, all three paths move together.
 func AgentReadiness(ctx context.Context, q *db.Queries, agent db.Agent) (ready bool, reason string, err error) {
 	if agent.ArchivedAt.Valid {

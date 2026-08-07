@@ -10,7 +10,7 @@
  *   1. `@all` (pinned top, filtered by query)
  *   2. People
  *   3. Agents
- *   4. Squads (archived hidden)
+ *   4. Crews (archived hidden)
  *   5. Issues (server-side `api.searchIssues`, debounced 200ms; empty
  *      query → no issues section, matching web's mention-suggestion.tsx)
  *
@@ -28,14 +28,14 @@ import type {
   Agent,
   Issue,
   MemberWithUser,
-  Squad,
+  Crew,
 } from "@orchestra/core/types";
 import { Text } from "@/components/ui/text";
 import { ActorAvatar } from "@/components/ui/actor-avatar";
 import { StatusIcon } from "@/components/ui/status-icon";
 import { memberListOptions } from "@/data/queries/members";
 import { agentListOptions } from "@/data/queries/agents";
-import { squadListOptions } from "@/data/queries/squads";
+import { crewListOptions } from "@/data/queries/crews";
 import { api } from "@/data/api";
 import { useWorkspaceStore } from "@/data/workspace-store";
 import {
@@ -55,13 +55,13 @@ type Row =
   | { kind: "all" }
   | { kind: "member"; member: MemberWithUser }
   | { kind: "agent"; agent: Agent }
-  | { kind: "squad"; squad: Squad }
+  | { kind: "crew"; crew: Crew }
   | { kind: "issue"; issue: Issue };
 
 interface Props {
   query: string;
-  /** "comment" (default) renders @all + People + Agents + Squads + Issues.
-   *  "chat" hides the people-style sections (member / agent / squad /
+  /** "comment" (default) renders @all + People + Agents + Crews + Issues.
+   *  "chat" hides the people-style sections (member / agent / crew /
    *  @all) because chat is user ↔ single agent — mentioning a person
    *  there generates unintended notifications. Only Issues remain useful
    *  in chat as "reference this ticket for context". */
@@ -72,7 +72,7 @@ export function MentionPickerBody({ query, mode = "comment" }: Props) {
   const wsId = useWorkspaceStore((s) => s.currentWorkspaceId);
   const { data: members = [] } = useQuery(memberListOptions(wsId));
   const { data: agents = [] } = useQuery(agentListOptions(wsId));
-  const { data: squads = [] } = useQuery(squadListOptions(wsId));
+  const { data: crews = [] } = useQuery(crewListOptions(wsId));
   const runnableAgentIds = useMemo(
     () =>
       new Set(
@@ -125,7 +125,7 @@ export function MentionPickerBody({ query, mode = "comment" }: Props) {
     if (row.kind === "member")
       return isSelectedKey("member", row.member.user_id);
     if (row.kind === "agent") return isSelectedKey("agent", row.agent.id);
-    if (row.kind === "squad") return isSelectedKey("squad", row.squad.id);
+    if (row.kind === "crew") return isSelectedKey("crew", row.crew.id);
     return isSelectedKey("issue", row.issue.id);
   };
 
@@ -136,7 +136,7 @@ export function MentionPickerBody({ query, mode = "comment" }: Props) {
     const out: Row[] = [];
 
     // People-style sections only render in comment mode. Chat is single-
-    // agent; @张三 / @squad / @all there are noise + notify the wrong
+    // agent; @张三 / @crew / @all there are noise + notify the wrong
     // people. The Issues section IS useful in chat ("reference ticket
     // for context"), so it stays for both modes.
     if (mode === "comment") {
@@ -157,12 +157,12 @@ export function MentionPickerBody({ query, mode = "comment" }: Props) {
       if (agentRows.length > 0) {
         out.push({ kind: "section", label: "Agents" }, ...agentRows);
       }
-      const squadRows = [...squads]
+      const crewRows = [...crews]
         .filter((s) => !s.archived_at && matchName(s.name))
         .sort((a, b) => a.name.localeCompare(b.name))
-        .map((s): Row => ({ kind: "squad", squad: s }));
-      if (squadRows.length > 0) {
-        out.push({ kind: "section", label: "Squads" }, ...squadRows);
+        .map((s): Row => ({ kind: "crew", crew: s }));
+      if (crewRows.length > 0) {
+        out.push({ kind: "section", label: "Crews" }, ...crewRows);
       }
     }
 
@@ -173,7 +173,7 @@ export function MentionPickerBody({ query, mode = "comment" }: Props) {
       }
     }
     return out;
-  }, [mode, members, agents, squads, issueResults, query]);
+  }, [mode, members, agents, crews, issueResults, query]);
 
   const pick = (row: Row) => {
     let chip: MentionChipDraft | null = null;
@@ -186,8 +186,8 @@ export function MentionPickerBody({ query, mode = "comment" }: Props) {
       };
     else if (row.kind === "agent")
       chip = { type: "agent", id: row.agent.id, name: row.agent.name };
-    else if (row.kind === "squad")
-      chip = { type: "squad", id: row.squad.id, name: row.squad.name };
+    else if (row.kind === "crew")
+      chip = { type: "crew", id: row.crew.id, name: row.crew.name };
     else if (row.kind === "issue")
       chip = {
         type: "issue",
@@ -213,7 +213,7 @@ export function MentionPickerBody({ query, mode = "comment" }: Props) {
         if (row.kind === "all") return "all";
         if (row.kind === "member") return `m:${row.member.user_id}`;
         if (row.kind === "agent") return `a:${row.agent.id}`;
-        if (row.kind === "squad") return `s:${row.squad.id}`;
+        if (row.kind === "crew") return `s:${row.crew.id}`;
         return `i:${row.issue.id}`;
       }}
       renderItem={({ item }) => {
@@ -228,8 +228,8 @@ export function MentionPickerBody({ query, mode = "comment" }: Props) {
         }
         const needsRuntime =
           (item.kind === "agent" && !isAgentRuntimeBound(item.agent)) ||
-          (item.kind === "squad" &&
-            !runnableAgentIds.has(item.squad.leader_id));
+          (item.kind === "crew" &&
+            !runnableAgentIds.has(item.crew.leader_id));
         return (
           <Pressable
             disabled={needsRuntime}
@@ -254,8 +254,8 @@ export function MentionPickerBody({ query, mode = "comment" }: Props) {
               />
             ) : item.kind === "agent" ? (
               <ActorAvatar type="agent" id={item.agent.id} size={AVATAR_SIZE} />
-            ) : item.kind === "squad" ? (
-              <ActorAvatar type="squad" id={item.squad.id} size={AVATAR_SIZE} />
+            ) : item.kind === "crew" ? (
+              <ActorAvatar type="crew" id={item.crew.id} size={AVATAR_SIZE} />
             ) : (
               <View
                 className="items-center justify-center"
@@ -284,16 +284,16 @@ export function MentionPickerBody({ query, mode = "comment" }: Props) {
                     ? item.member.name
                     : item.kind === "agent"
                       ? item.agent.name
-                      : item.squad.name}
+                      : item.crew.name}
               </Text>
             )}
             {item.kind === "agent" ? (
               <Text className="text-sm text-muted-foreground">
                 {isAgentRuntimeBound(item.agent) ? "Agent" : "Needs runtime"}
               </Text>
-            ) : item.kind === "squad" ? (
+            ) : item.kind === "crew" ? (
               <Text className="text-sm text-muted-foreground">
-                {needsRuntime ? "Leader needs runtime" : "Squad"}
+                {needsRuntime ? "Leader needs runtime" : "Crew"}
               </Text>
             ) : null}
             {isSelected(item) ? (

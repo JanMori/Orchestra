@@ -37,32 +37,32 @@ multica update
 
 ```bash
 # One-command setup: configure, authenticate, and start the daemon
-multica setup
+orchestra setup
 
 # For self-hosted (local) deployments:
-multica setup self-host
+orchestra setup self-host
 ```
 
 Or step by step:
 
 ```bash
 # 1. Authenticate (opens browser for login)
-multica login
+orchestra login
 
 # 2. Start the agent daemon
-multica daemon start
+orchestra daemon start
 
 # 3. Done — agents in your watched workspaces can now execute tasks on your machine
 ```
 
-`multica login` automatically discovers all workspaces you belong to and adds them to the daemon watch list.
+`orchestra login` automatically discovers all workspaces you belong to and adds them to the daemon watch list.
 
 ## Authentication
 
 ### Browser Login
 
 ```bash
-multica login
+orchestra login
 ```
 
 Opens your browser for OAuth authentication, creates a 90-day personal access token, and auto-configures your workspaces.
@@ -70,7 +70,7 @@ Opens your browser for OAuth authentication, creates a 90-day personal access to
 ### Token Login
 
 ```bash
-multica login --token <mul_...>
+orchestra login --token <mul_...>
 ```
 
 Authenticate using a personal access token directly. Useful for headless environments. Pass `--token=` with an empty value to be prompted interactively (so the token never lands in shell history).
@@ -78,7 +78,7 @@ Authenticate using a personal access token directly. Useful for headless environ
 ### Check Status
 
 ```bash
-multica auth status
+orchestra auth status
 ```
 
 Shows your current server, user, and token validity.
@@ -86,7 +86,7 @@ Shows your current server, user, and token validity.
 ### Logout
 
 ```bash
-multica auth logout
+orchestra auth logout
 ```
 
 Removes the stored authentication token.
@@ -98,7 +98,7 @@ The daemon is the local agent runtime. It detects available AI CLIs on your mach
 ### Start
 
 ```bash
-multica daemon start
+orchestra daemon start
 ```
 
 By default, the daemon runs in the background and logs to `~/.multica/daemon.log`.
@@ -106,7 +106,7 @@ By default, the daemon runs in the background and logs to `~/.multica/daemon.log
 To run in the foreground (useful for debugging):
 
 ```bash
-multica daemon start --foreground
+orchestra daemon start --foreground
 ```
 
 #### Following a replaced binary
@@ -116,17 +116,17 @@ the `--version` output of the `multica` binary it would re-exec. When they diffe
 — `brew upgrade multica`, a re-download, a local `make build` — it waits for any
 running task to finish, then restarts into the new binary. A running task is
 never interrupted; if the daemon is busy the restart is deferred to the next
-check, and `multica daemon status` shows why it's still on the old version.
+check, and `orchestra daemon status` shows why it's still on the old version.
 
 This is separate from the GitHub self-update poller: disabling that does not stop
 the daemon from following a binary you installed yourself. To turn it off:
 
 ```bash
-MULTICA_DAEMON_AUTO_RELOAD=0 multica daemon start
+ORCHESTRA_DAEMON_AUTO_RELOAD=0 orchestra daemon start
 # or
-multica daemon start --no-auto-reload
+orchestra daemon start --no-auto-reload
 # or persist it
-multica config set disable_auto_reload true
+orchestra config set disable_auto_reload true
 ```
 
 Agent CLIs (codex, claude, ...) are handled differently: when one of them is
@@ -140,14 +140,14 @@ CLI's lifecycle.
 ### Stop
 
 ```bash
-multica daemon stop
+orchestra daemon stop
 ```
 
 ### Status
 
 ```bash
-multica daemon status
-multica daemon status --output json
+orchestra daemon status
+orchestra daemon status --output json
 ```
 
 Shows PID, uptime, detected agents, and watched workspaces.
@@ -155,9 +155,9 @@ Shows PID, uptime, detected agents, and watched workspaces.
 ### Logs
 
 ```bash
-multica daemon logs              # Last 50 lines
-multica daemon logs -f           # Follow (tail -f)
-multica daemon logs -n 100       # Last 100 lines
+orchestra daemon logs              # Last 50 lines
+orchestra daemon logs -f           # Follow (tail -f)
+orchestra daemon logs -n 100       # Last 100 lines
 ```
 
 ### Supported Agents
@@ -200,79 +200,79 @@ Daemon behavior is configured via flags or environment variables:
 
 | Setting | Flag | Env Variable | Default |
 |---------|------|--------------|---------|
-| Poll interval | `--poll-interval` | `MULTICA_DAEMON_POLL_INTERVAL` | `3s` |
-| Heartbeat interval | `--heartbeat-interval` | `MULTICA_DAEMON_HEARTBEAT_INTERVAL` | `15s` |
-| Agent timeout | `--agent-timeout` | `MULTICA_AGENT_TIMEOUT` | `0` (no cap; bounded by the watchdogs) |
-| Codex semantic inactivity timeout | `--codex-semantic-inactivity-timeout` | `MULTICA_CODEX_SEMANTIC_INACTIVITY_TIMEOUT` | `10m` |
-| OpenCode idle watchdog | — | `MULTICA_OPENCODE_IDLE_WATCHDOG` | `10m` (`0` falls back to the generic idle watchdog; cannot extend it) |
-| Max concurrent tasks | `--max-concurrent-tasks` | `MULTICA_DAEMON_MAX_CONCURRENT_TASKS` | `20` |
-| Daemon ID | `--daemon-id` | `MULTICA_DAEMON_ID` | hostname |
-| Device name | `--device-name` | `MULTICA_DAEMON_DEVICE_NAME` | hostname |
-| Runtime name | `--runtime-name` | `MULTICA_AGENT_RUNTIME_NAME` | `Local Agent` |
-| Workspaces root | — | `MULTICA_WORKSPACES_ROOT` | `~/multica_workspaces` |
-| GC enabled | — | `MULTICA_GC_ENABLED` | `true` (set `false`/`0` to disable) |
-| GC scan interval | — | `MULTICA_GC_INTERVAL` | `2h` |
-| GC TTL (done/cancelled issues) | — | `MULTICA_GC_TTL` | `24h` |
-| GC orphan TTL (no `.gc_meta.json`) | — | `MULTICA_GC_ORPHAN_TTL` | `72h` |
-| GC artifact TTL (open issues) | — | `MULTICA_GC_ARTIFACT_TTL` | `12h` (set `0` to disable) |
-| GC artifact patterns | — | `MULTICA_GC_ARTIFACT_PATTERNS` | `node_modules,.next,.turbo` |
-| GC repo cache TTL (`.repos`) | — | `MULTICA_GC_REPO_TTL` | `720h` (30d; set `0` to disable) |
+| Poll interval | `--poll-interval` | `ORCHESTRA_DAEMON_POLL_INTERVAL` | `3s` |
+| Heartbeat interval | `--heartbeat-interval` | `ORCHESTRA_DAEMON_HEARTBEAT_INTERVAL` | `15s` |
+| Agent timeout | `--agent-timeout` | `ORCHESTRA_AGENT_TIMEOUT` | `0` (no cap; bounded by the watchdogs) |
+| Codex semantic inactivity timeout | `--codex-semantic-inactivity-timeout` | `ORCHESTRA_CODEX_SEMANTIC_INACTIVITY_TIMEOUT` | `10m` |
+| OpenCode idle watchdog | — | `ORCHESTRA_OPENCODE_IDLE_WATCHDOG` | `10m` (`0` falls back to the generic idle watchdog; cannot extend it) |
+| Max concurrent tasks | `--max-concurrent-tasks` | `ORCHESTRA_DAEMON_MAX_CONCURRENT_TASKS` | `20` |
+| Daemon ID | `--daemon-id` | `ORCHESTRA_DAEMON_ID` | hostname |
+| Device name | `--device-name` | `ORCHESTRA_DAEMON_DEVICE_NAME` | hostname |
+| Runtime name | `--runtime-name` | `ORCHESTRA_AGENT_RUNTIME_NAME` | `Local Agent` |
+| Workspaces root | — | `ORCHESTRA_WORKSPACES_ROOT` | `~/multica_workspaces` |
+| GC enabled | — | `ORCHESTRA_GC_ENABLED` | `true` (set `false`/`0` to disable) |
+| GC scan interval | — | `ORCHESTRA_GC_INTERVAL` | `2h` |
+| GC TTL (done/cancelled issues) | — | `ORCHESTRA_GC_TTL` | `24h` |
+| GC orphan TTL (no `.gc_meta.json`) | — | `ORCHESTRA_GC_ORPHAN_TTL` | `72h` |
+| GC artifact TTL (open issues) | — | `ORCHESTRA_GC_ARTIFACT_TTL` | `12h` (set `0` to disable) |
+| GC artifact patterns | — | `ORCHESTRA_GC_ARTIFACT_PATTERNS` | `node_modules,.next,.turbo` |
+| GC repo cache TTL (`.repos`) | — | `ORCHESTRA_GC_REPO_TTL` | `720h` (30d; set `0` to disable) |
 
 #### Workspace garbage collection
 
-The daemon periodically scans `MULTICA_WORKSPACES_ROOT` and reclaims disk space in four modes:
+The daemon periodically scans `ORCHESTRA_WORKSPACES_ROOT` and reclaims disk space in four modes:
 
-- **Full task cleanup** — when an issue's status is `done` or `cancelled` and has been idle for `MULTICA_GC_TTL`, the entire task directory is removed.
-- **Orphan cleanup** — task directories with no `.gc_meta.json` (e.g. left over from a daemon crash) are removed once they exceed `MULTICA_GC_ORPHAN_TTL`.
-- **Artifact-only cleanup** — when a task has been completed for at least `MULTICA_GC_ARTIFACT_TTL` but the issue is still open, regenerable build outputs whose directory basename matches `MULTICA_GC_ARTIFACT_PATTERNS` are removed. The daemon also reclaims the exact managed path `codex-home/.sandbox-bin`; old task metadata without `completed_at` becomes eligible for this managed-only cleanup after its `.gc_meta.json` file has been idle for `MULTICA_GC_ORPHAN_TTL`. The rest of the task (source, `.git`, `output/`, `logs/`, `.gc_meta.json`, Codex auth/config/session state) is preserved so the agent can resume it.
+- **Full task cleanup** — when an issue's status is `done` or `cancelled` and has been idle for `ORCHESTRA_GC_TTL`, the entire task directory is removed.
+- **Orphan cleanup** — task directories with no `.gc_meta.json` (e.g. left over from a daemon crash) are removed once they exceed `ORCHESTRA_GC_ORPHAN_TTL`.
+- **Artifact-only cleanup** — when a task has been completed for at least `ORCHESTRA_GC_ARTIFACT_TTL` but the issue is still open, regenerable build outputs whose directory basename matches `ORCHESTRA_GC_ARTIFACT_PATTERNS` are removed. The daemon also reclaims the exact managed path `codex-home/.sandbox-bin`; old task metadata without `completed_at` becomes eligible for this managed-only cleanup after its `.gc_meta.json` file has been idle for `ORCHESTRA_GC_ORPHAN_TTL`. The rest of the task (source, `.git`, `output/`, `logs/`, `.gc_meta.json`, Codex auth/config/session state) is preserved so the agent can resume it.
 
-- **Repo cache eviction** — the bare git clones under `.repos/` are shared object stores: each task workdir is a `git worktree` off one of them rather than its own clone, so a task's `.git` is only a pointer file. They are evicted only when all of the following hold: the repo is no longer attached to any workspace this daemon watches, it has no worktrees left, and no task has created a worktree from it for `MULTICA_GC_REPO_TTL`. A cache created before this stamp existed is not treated as ancient — its clock starts at the first GC cycle that sees it, so upgrading does not wipe every cache. Evicting is safe by construction: the next task that needs the repo re-clones it on demand, so a wrong eviction costs a clone, not a failure.
+- **Repo cache eviction** — the bare git clones under `.repos/` are shared object stores: each task workdir is a `git worktree` off one of them rather than its own clone, so a task's `.git` is only a pointer file. They are evicted only when all of the following hold: the repo is no longer attached to any workspace this daemon watches, it has no worktrees left, and no task has created a worktree from it for `ORCHESTRA_GC_REPO_TTL`. A cache created before this stamp existed is not treated as ancient — its clock starts at the first GC cycle that sees it, so upgrading does not wipe every cache. Evicting is safe by construction: the next task that needs the repo re-clones it on demand, so a wrong eviction costs a clone, not a failure.
 
-Configured patterns are basename-only — entries containing `/` or `\` are silently dropped — and `.git` subtrees are never descended into. The managed Codex cache is matched by its exact relative path, so a repository's own `.sandbox-bin` is not removed unless an operator explicitly adds that basename to `MULTICA_GC_ARTIFACT_PATTERNS`. The default list (`node_modules`, `.next`, `.turbo`) is intentionally narrow; extend it per deployment if your repos consistently produce other regenerable directories (for example, `MULTICA_GC_ARTIFACT_PATTERNS=node_modules,.next,.turbo,target,__pycache__`). To disable artifact cleanup entirely, including the managed Codex cache, set `MULTICA_GC_ARTIFACT_TTL=0`.
+Configured patterns are basename-only — entries containing `/` or `\` are silently dropped — and `.git` subtrees are never descended into. The managed Codex cache is matched by its exact relative path, so a repository's own `.sandbox-bin` is not removed unless an operator explicitly adds that basename to `ORCHESTRA_GC_ARTIFACT_PATTERNS`. The default list (`node_modules`, `.next`, `.turbo`) is intentionally narrow; extend it per deployment if your repos consistently produce other regenerable directories (for example, `ORCHESTRA_GC_ARTIFACT_PATTERNS=node_modules,.next,.turbo,target,__pycache__`). To disable artifact cleanup entirely, including the managed Codex cache, set `ORCHESTRA_GC_ARTIFACT_TTL=0`.
 
-`multica daemon disk-usage` reports the `.repos` footprint on its own line rather than folding it into the per-task totals — every task in a workspace checks out from that shared cache, so attributing it to individual task directories would double-count it. Note that the repo cache is reclaimed on the schedule above and not by any per-issue status change, so it is normal for it to persist after every task directory is gone.
+`orchestra daemon disk-usage` reports the `.repos` footprint on its own line rather than folding it into the per-task totals — every task in a workspace checks out from that shared cache, so attributing it to individual task directories would double-count it. Note that the repo cache is reclaimed on the schedule above and not by any per-issue status change, so it is normal for it to persist after every task directory is gone.
 
 Agent-specific overrides:
 
 | Variable | Description |
 |----------|-------------|
-| `MULTICA_CLAUDE_PATH` | Custom path to the `claude` binary |
-| `MULTICA_CLAUDE_MODEL` | Override the Claude model used |
-| `MULTICA_CLAUDE_ARGS` | Default extra arguments for Claude Code runs |
-| `MULTICA_CODEX_PATH` | Custom path to the `codex` binary |
-| `MULTICA_CODEX_MODEL` | Override the Codex model used |
-| `MULTICA_CODEX_ARGS` | Default extra arguments for Codex runs |
-| `MULTICA_COPILOT_PATH` | Custom path to the `copilot` binary |
-| `MULTICA_COPILOT_MODEL` | Override the Copilot model used (note: GitHub Copilot routes models through your account entitlement, so this may not be honoured) |
-| `MULTICA_OPENCODE_PATH` | Custom path to the `opencode` binary |
-| `MULTICA_OPENCODE_MODEL` | Override the OpenCode model used |
-| `MULTICA_OPENCLAW_PATH` | Custom path to the `openclaw` binary |
-| `MULTICA_OPENCLAW_MODEL` | Override the OpenClaw model used |
-| `MULTICA_HERMES_PATH` | Custom path to the `hermes` binary |
-| `MULTICA_HERMES_MODEL` | Override the Hermes model used |
-| `MULTICA_GEMINI_PATH` | Custom path to the `gemini` binary |
-| `MULTICA_GEMINI_MODEL` | Override the Gemini model used |
-| `MULTICA_PI_PATH` | Custom path to the `pi` binary |
-| `MULTICA_PI_MODEL` | Override the Pi model used |
-| `MULTICA_CURSOR_PATH` | Custom path to the `cursor-agent` binary |
-| `MULTICA_CURSOR_MODEL` | Override the Cursor Agent model used |
-| `MULTICA_KIMI_PATH` | Custom path to the `kimi` binary |
-| `MULTICA_KIMI_MODEL` | Override the Kimi model used |
-| `MULTICA_REASONIX_PATH` | Custom path to the `reasonix` binary |
-| `MULTICA_REASONIX_MODEL` | Override the Reasonix model used |
-| `MULTICA_KIRO_PATH` | Custom path to the `kiro-cli` binary |
-| `MULTICA_KIRO_MODEL` | Override the Kiro model used |
-| `MULTICA_QODER_PATH` | Custom path to the `qodercli` binary |
-| `MULTICA_QODER_MODEL` | Override the Qoder model used |
-| `MULTICA_QODERCLICN_PATH` | Custom path to the `qoderclicn` binary |
-| `MULTICA_QODERCLICN_MODEL` | Override the Qoder CN model used |
-| `MULTICA_TRAECLI_PATH` | Custom path to the `traecli` binary |
-| `MULTICA_TRAECLI_MODEL` | Override the Trae model used (a model id from your logged-in traecli catalog, e.g. `Doubao-Seed-2.1-Pro`) |
-| `MULTICA_GROK_PATH` | Custom path to the `grok` binary (defaults to `grok` on PATH; often `~/.grok/bin/grok`) |
-| `MULTICA_GROK_MODEL` | Override the Grok model used (e.g. `grok-4.5`) |
-| `MULTICA_QWEN_PATH` | Custom path to the `qwen` binary |
-| `MULTICA_QWEN_MODEL` | Override the Qwen Code model used |
-| `MULTICA_QWEN_ARGS` | Daemon-wide extra Qwen arguments (POSIX shellword parsing; managed protocol flags are filtered) |
+| `ORCHESTRA_CLAUDE_PATH` | Custom path to the `claude` binary |
+| `ORCHESTRA_CLAUDE_MODEL` | Override the Claude model used |
+| `ORCHESTRA_CLAUDE_ARGS` | Default extra arguments for Claude Code runs |
+| `ORCHESTRA_CODEX_PATH` | Custom path to the `codex` binary |
+| `ORCHESTRA_CODEX_MODEL` | Override the Codex model used |
+| `ORCHESTRA_CODEX_ARGS` | Default extra arguments for Codex runs |
+| `ORCHESTRA_COPILOT_PATH` | Custom path to the `copilot` binary |
+| `ORCHESTRA_COPILOT_MODEL` | Override the Copilot model used (note: GitHub Copilot routes models through your account entitlement, so this may not be honoured) |
+| `ORCHESTRA_OPENCODE_PATH` | Custom path to the `opencode` binary |
+| `ORCHESTRA_OPENCODE_MODEL` | Override the OpenCode model used |
+| `ORCHESTRA_OPENCLAW_PATH` | Custom path to the `openclaw` binary |
+| `ORCHESTRA_OPENCLAW_MODEL` | Override the OpenClaw model used |
+| `ORCHESTRA_HERMES_PATH` | Custom path to the `hermes` binary |
+| `ORCHESTRA_HERMES_MODEL` | Override the Hermes model used |
+| `ORCHESTRA_GEMINI_PATH` | Custom path to the `gemini` binary |
+| `ORCHESTRA_GEMINI_MODEL` | Override the Gemini model used |
+| `ORCHESTRA_PI_PATH` | Custom path to the `pi` binary |
+| `ORCHESTRA_PI_MODEL` | Override the Pi model used |
+| `ORCHESTRA_CURSOR_PATH` | Custom path to the `cursor-agent` binary |
+| `ORCHESTRA_CURSOR_MODEL` | Override the Cursor Agent model used |
+| `ORCHESTRA_KIMI_PATH` | Custom path to the `kimi` binary |
+| `ORCHESTRA_KIMI_MODEL` | Override the Kimi model used |
+| `ORCHESTRA_REASONIX_PATH` | Custom path to the `reasonix` binary |
+| `ORCHESTRA_REASONIX_MODEL` | Override the Reasonix model used |
+| `ORCHESTRA_KIRO_PATH` | Custom path to the `kiro-cli` binary |
+| `ORCHESTRA_KIRO_MODEL` | Override the Kiro model used |
+| `ORCHESTRA_QODER_PATH` | Custom path to the `qodercli` binary |
+| `ORCHESTRA_QODER_MODEL` | Override the Qoder model used |
+| `ORCHESTRA_QODERCLICN_PATH` | Custom path to the `qoderclicn` binary |
+| `ORCHESTRA_QODERCLICN_MODEL` | Override the Qoder CN model used |
+| `ORCHESTRA_TRAECLI_PATH` | Custom path to the `traecli` binary |
+| `ORCHESTRA_TRAECLI_MODEL` | Override the Trae model used (a model id from your logged-in traecli catalog, e.g. `Doubao-Seed-2.1-Pro`) |
+| `ORCHESTRA_GROK_PATH` | Custom path to the `grok` binary (defaults to `grok` on PATH; often `~/.grok/bin/grok`) |
+| `ORCHESTRA_GROK_MODEL` | Override the Grok model used (e.g. `grok-4.5`) |
+| `ORCHESTRA_QWEN_PATH` | Custom path to the `qwen` binary |
+| `ORCHESTRA_QWEN_MODEL` | Override the Qwen Code model used |
+| `ORCHESTRA_QWEN_ARGS` | Daemon-wide extra Qwen arguments (POSIX shellword parsing; managed protocol flags are filtered) |
 
 If a previously generated `~/.multica/hooks` wrapper is first on `PATH` and calls the same command name again, the daemon skips that hooks directory during built-in agent discovery and records the real binary path behind it. If your interactive shell still recurses when you run `claude`, `codex`, or `hermes` manually, remove the hooks entry from your shell startup file or replace the wrapper body with an absolute `exec /path/to/real-binary "$@"`.
 
@@ -280,7 +280,7 @@ The daemon launches Qoder and Qoder CN as `qodercli --yolo --acp` and `qoderclic
 The daemon launches Qwen Code as `qwen -p <prompt> --output-format stream-json`. It writes the task brief to `QWEN.md`; when an agent has managed `mcp_config`, the daemon writes a 0600 per-run JSON file and passes it through `--mcp-config <path>`, then removes it after the process exits. A null config preserves Qwen Code native MCP settings.
 
 
-`MULTICA_CLAUDE_ARGS`, `MULTICA_CODEX_ARGS`, and `MULTICA_QWEN_ARGS` are parsed with POSIX shellword quoting, so values such as `--model "gpt-5.1 codex" --sandbox read-only` are split like a shell command line. Agent arguments are applied in this order: hardcoded Multica defaults, daemon-wide env defaults, then per-agent `custom_args` from the task.
+`ORCHESTRA_CLAUDE_ARGS`, `ORCHESTRA_CODEX_ARGS`, and `ORCHESTRA_QWEN_ARGS` are parsed with POSIX shellword quoting, so values such as `--model "gpt-5.1 codex" --sandbox read-only` are split like a shell command line. Agent arguments are applied in this order: hardcoded Multica defaults, daemon-wide env defaults, then per-agent `custom_args` from the task.
 
 ### Self-Hosted Server
 
@@ -288,25 +288,25 @@ When connecting to a self-hosted Multica instance, the easiest approach is:
 
 ```bash
 # One command — configures for localhost, authenticates, starts daemon
-multica setup self-host
+orchestra setup self-host
 
 # Or for on-premise with custom domains:
-multica setup self-host --server-url https://api.example.com --app-url https://app.example.com
+orchestra setup self-host --server-url https://api.example.com --app-url https://app.example.com
 ```
 
 Or configure manually:
 
 ```bash
 # Set URLs individually
-multica config set server_url http://localhost:8080
-multica config set app_url http://localhost:3000
+orchestra config set server_url http://localhost:8080
+orchestra config set app_url http://localhost:3000
 
 # For production with TLS:
-# multica config set server_url https://api.example.com
-# multica config set app_url https://app.example.com
+# orchestra config set server_url https://api.example.com
+# orchestra config set app_url https://app.example.com
 
-multica login
-multica daemon start
+orchestra login
+orchestra daemon start
 ```
 
 ### Profiles
@@ -315,13 +315,13 @@ Profiles let you run multiple daemons on the same machine — for example, one f
 
 ```bash
 # Set up a staging profile
-multica setup self-host --profile staging --server-url https://api-staging.example.com --app-url https://staging.example.com
+orchestra setup self-host --profile staging --server-url https://api-staging.example.com --app-url https://staging.example.com
 
 # Start its daemon
-multica daemon start --profile staging
+orchestra daemon start --profile staging
 
 # Default profile runs separately
-multica daemon start
+orchestra daemon start
 ```
 
 Each profile gets its own config directory (`~/.multica/profiles/<name>/`), daemon state, health port, and workspace root.
@@ -333,19 +333,19 @@ Each profile gets its own config directory (`~/.multica/profiles/<name>/`), daem
 Every command runs against a single workspace. The CLI resolves which one in this order (highest priority first):
 
 1. `--workspace-id <id>` flag on the command
-2. `MULTICA_WORKSPACE_ID` environment variable
-3. The default workspace stored in your current profile (set by `multica workspace switch` or `multica login`)
+2. `ORCHESTRA_WORKSPACE_ID` environment variable
+3. The default workspace stored in your current profile (set by `orchestra workspace switch` or `orchestra login`)
 
-`multica workspace switch <id|slug>` is the day-to-day way to change the default workspace. For scripting and headless setups where you don't want any stored state, prefer the `--workspace-id` flag or the env variable. `multica config set workspace_id <id>` is the low-level equivalent of `switch` (it writes the same setting but skips the access check).
+`orchestra workspace switch <id|slug>` is the day-to-day way to change the default workspace. For scripting and headless setups where you don't want any stored state, prefer the `--workspace-id` flag or the env variable. `orchestra config set workspace_id <id>` is the low-level equivalent of `switch` (it writes the same setting but skips the access check).
 
 If you need full isolation between organizations or accounts — separate tokens, separate daemons, separate config dirs — use `--profile <name>` instead. Each profile keeps its own default workspace.
 
 ### List Workspaces
 
 ```bash
-multica workspace list
-multica workspace list --full-id
-multica workspace list --output json
+orchestra workspace list
+orchestra workspace list --full-id
+orchestra workspace list --output json
 ```
 
 The current default workspace is marked with `*`. Table output shows short UUID prefixes — pass `--full-id` when you need the canonical UUIDs.
@@ -353,25 +353,25 @@ The current default workspace is marked with `*`. Table output shows short UUID 
 ### Switch Default Workspace
 
 ```bash
-multica workspace switch <workspace-id>
-multica workspace switch <slug>
+orchestra workspace switch <workspace-id>
+orchestra workspace switch <slug>
 ```
 
-Verifies you have access to the workspace, then sets it as the default for the current profile. Subsequent commands without `--workspace-id` and `MULTICA_WORKSPACE_ID` target this workspace. Pair `--profile` if you want to change a non-default profile's workspace.
+Verifies you have access to the workspace, then sets it as the default for the current profile. Subsequent commands without `--workspace-id` and `ORCHESTRA_WORKSPACE_ID` target this workspace. Pair `--profile` if you want to change a non-default profile's workspace.
 
 ### Get Details
 
 ```bash
-multica workspace get <workspace-id>
-multica workspace get <workspace-id> --output json
+orchestra workspace get <workspace-id>
+orchestra workspace get <workspace-id> --output json
 ```
 
-Passing no `<workspace-id>` resolves to the current default workspace, so `multica workspace get` doubles as "what workspace am I on?".
+Passing no `<workspace-id>` resolves to the current default workspace, so `orchestra workspace get` doubles as "what workspace am I on?".
 
 ### List Members
 
 ```bash
-multica workspace member list <workspace-id>
+orchestra workspace member list <workspace-id>
 ```
 
 ## Issues
@@ -379,14 +379,14 @@ multica workspace member list <workspace-id>
 ### List Issues
 
 ```bash
-multica issue list
-multica issue list --status in_progress
-multica issue list --priority urgent --assignee "Agent Name"
-multica issue list --assignee-id 5fb87ac7-23b5-4a7a-81fa-ed295a54545d
-multica issue list --full-id
-multica issue list --limit 20 --output json
-multica issue list --status todo --sort position       # board order (the default)
-multica issue list --sort created_at --direction desc  # newest first
+orchestra issue list
+orchestra issue list --status in_progress
+orchestra issue list --priority urgent --assignee "Agent Name"
+orchestra issue list --assignee-id 5fb87ac7-23b5-4a7a-81fa-ed295a54545d
+orchestra issue list --full-id
+orchestra issue list --limit 20 --output json
+orchestra issue list --status todo --sort position       # board order (the default)
+orchestra issue list --sort created_at --direction desc  # newest first
 ```
 
 Table output shows a routable issue `KEY` such as `MUL-123`; copy that key into follow-up commands like `issue get`, `issue comment list`, `issue status`, or `--parent`. Add `--full-id` when you need canonical UUIDs. Available filters: `--status`, `--priority`, `--assignee` / `--assignee-id`, `--project`, `--metadata`, `--limit`. Use `--assignee-id <uuid>` for unambiguous filtering when names overlap.
@@ -396,31 +396,31 @@ Results come back in board order (`position`, ascending) by default. Pass `--sor
 Use `--metadata key=value` (repeatable; combined with AND) to filter by per-issue metadata. The value is JSON-parsed: `true`/`false` become bool, numbers become numbers, anything else is a string. Wrap as `'"42"'` to force a string when the value would otherwise sniff as a number:
 
 ```bash
-multica issue list --metadata pipeline_status=waiting_review
-multica issue list --metadata pr_number=482 --metadata is_blocked=true
+orchestra issue list --metadata pipeline_status=waiting_review
+orchestra issue list --metadata pr_number=482 --metadata is_blocked=true
 ```
 
 ### Get Issue
 
 ```bash
-multica issue get <id>
-multica issue get <id> --output json
+orchestra issue get <id>
+orchestra issue get <id> --output json
 ```
 
 ### Create Issue
 
 ```bash
-multica issue create --title "Fix login bug" --description "..." --priority high --assignee "Lambda"
-multica issue create --title "Fix login bug" --assignee-id 5fb87ac7-23b5-4a7a-81fa-ed295a54545d
+orchestra issue create --title "Fix login bug" --description "..." --priority high --assignee "Lambda"
+orchestra issue create --title "Fix login bug" --assignee-id 5fb87ac7-23b5-4a7a-81fa-ed295a54545d
 ```
 
-Flags: `--title` (required), `--description`, `--status`, `--priority`, `--assignee` / `--assignee-id`, `--parent`, `--project`, `--due-date`. Pass `--assignee-id <uuid>` (mutually exclusive with `--assignee`) when scripting against the IDs returned by `multica workspace member list --output json` / `multica agent list --output json`.
+Flags: `--title` (required), `--description`, `--status`, `--priority`, `--assignee` / `--assignee-id`, `--parent`, `--project`, `--due-date`. Pass `--assignee-id <uuid>` (mutually exclusive with `--assignee`) when scripting against the IDs returned by `orchestra workspace member list --output json` / `orchestra agent list --output json`.
 
 ### Update Issue
 
 ```bash
-multica issue update <id> --title "New title" --priority urgent
-multica issue update <id> --position 4.5
+orchestra issue update <id> --title "New title" --priority urgent
+orchestra issue update <id> --position 4.5
 ```
 
 `--position` sets the raw ordering value within the board column (lower sorts first). For relative moves, `issue reorder` is easier because it works out the value for you.
@@ -430,10 +430,10 @@ multica issue update <id> --position 4.5
 Move an issue within its current status column. The new ordering value is computed the same way the board's drag-and-drop computes it, so the CLI and UI agree on where the issue lands.
 
 ```bash
-multica issue reorder <id> --top              # top of its status column
-multica issue reorder <id> --bottom           # bottom of its status column
-multica issue reorder <id> --before <other>   # directly above another issue in the same column
-multica issue reorder <id> --after  <other>   # directly below another issue in the same column
+orchestra issue reorder <id> --top              # top of its status column
+orchestra issue reorder <id> --bottom           # bottom of its status column
+orchestra issue reorder <id> --before <other>   # directly above another issue in the same column
+orchestra issue reorder <id> --after  <other>   # directly below another issue in the same column
 ```
 
 Pick exactly one of `--top`, `--bottom`, `--before`, or `--after`. Reorder stays inside the issue's current column, so `--before` / `--after` must name an issue in that same column. To move an issue to a different column, change its status first with `issue status`, then reorder within the new column.
@@ -441,9 +441,9 @@ Pick exactly one of `--top`, `--bottom`, `--before`, or `--after`. Reorder stays
 ### Assign Issue
 
 ```bash
-multica issue assign <id> --to "Lambda"
-multica issue assign <id> --to-id 5fb87ac7-23b5-4a7a-81fa-ed295a54545d
-multica issue assign <id> --unassign
+orchestra issue assign <id> --to "Lambda"
+orchestra issue assign <id> --to-id 5fb87ac7-23b5-4a7a-81fa-ed295a54545d
+orchestra issue assign <id> --unassign
 ```
 
 Pass `--to-id <uuid>` to assign by canonical UUID (mutually exclusive with `--to`); useful when names overlap across members and agents.
@@ -451,7 +451,7 @@ Pass `--to-id <uuid>` to assign by canonical UUID (mutually exclusive with `--to
 ### Change Status
 
 ```bash
-multica issue status <id> in_progress
+orchestra issue status <id> in_progress
 ```
 
 Valid statuses: `backlog`, `todo`, `in_progress`, `in_review`, `done`, `blocked`, `cancelled`.
@@ -462,49 +462,49 @@ Valid statuses: `backlog`, `todo`, `in_progress`, `in_review`, `done`, `blocked`
 # List comments — flat timeline, chronological. Hard cap of 2000 rows; on
 # long-running issues prefer one of the thread-aware reads below to keep
 # context windows tight.
-multica issue comment list <issue-id>
+orchestra issue comment list <issue-id>
 
 # Single thread (root + every descendant). Anchor may be the root itself
 # or any reply inside the thread — the server walks up to the root.
-multica issue comment list <issue-id> --thread <comment-id>
+orchestra issue comment list <issue-id> --thread <comment-id>
 
 # Single thread, capped to the N most recent replies. The thread root is
 # always included (even with --tail 0), so an agent landing on a long
 # thread keeps the "what is this about" context without dragging hundreds
 # of replies into its prompt.
-multica issue comment list <issue-id> --thread <comment-id> --tail 30
+orchestra issue comment list <issue-id> --thread <comment-id> --tail 30
 
 # Scroll older replies inside the same thread. --before / --before-id are
 # the reply cursor that the previous response emitted on stderr as
 # `Next reply cursor: --before <ts> --before-id <reply-id>`.
-multica issue comment list <issue-id> --thread <comment-id> --tail 30 \
+orchestra issue comment list <issue-id> --thread <comment-id> --tail 30 \
     --before <ts> --before-id <reply-id>
 
 # Most recently active threads (root + every descendant), grouped by
 # thread. Returns N complete conversational arcs, oldest-active first so
 # the freshest thread sits closest to "now" in an agent prompt.
-multica issue comment list <issue-id> --recent 10
+orchestra issue comment list <issue-id> --recent 10
 
 # Scroll older threads. Under --recent, --before / --before-id are a
 # THREAD cursor (thread last_activity_at + root id), emitted on stderr as
 # `Next thread cursor: --before <ts> --before-id <root-id>`.
-multica issue comment list <issue-id> --recent 10 \
+orchestra issue comment list <issue-id> --recent 10 \
     --before <ts> --before-id <root-id>
 
 # Incremental polling. Combines with --thread or --recent; filters out
 # replies created on or before <ts> from the page (the thread root is
 # exempt so the agent always gets context).
-multica issue comment list <issue-id> --thread <comment-id> --tail 30 \
+orchestra issue comment list <issue-id> --thread <comment-id> --tail 30 \
     --since <RFC3339-timestamp>
 
 # Add a comment
-multica issue comment add <issue-id> --content "Looks good, merging now"
+orchestra issue comment add <issue-id> --content "Looks good, merging now"
 
 # Reply to a specific comment
-multica issue comment add <issue-id> --parent <comment-id> --content "Thanks!"
+orchestra issue comment add <issue-id> --parent <comment-id> --content "Thanks!"
 
 # Delete a comment
-multica issue comment delete <comment-id>
+orchestra issue comment delete <comment-id>
 ```
 
 **`--before` / `--before-id` semantics depend on the paging mode**, by
@@ -538,42 +538,42 @@ The bar for writing is high: pin a value only when it is materially important to
 
 ```bash
 # List every key on an issue
-multica issue metadata list <issue-id>
+orchestra issue metadata list <issue-id>
 
 # Read a single key
-multica issue metadata get <issue-id> --key pipeline_status
+orchestra issue metadata get <issue-id> --key pipeline_status
 
 # Write a single key — value auto-typed (true/false → bool, numbers → number, else string)
-multica issue metadata set <issue-id> --key pipeline_status --value waiting_review
-multica issue metadata set <issue-id> --key pr_number --value 482
-multica issue metadata set <issue-id> --key is_blocked --value true
+orchestra issue metadata set <issue-id> --key pipeline_status --value waiting_review
+orchestra issue metadata set <issue-id> --key pr_number --value 482
+orchestra issue metadata set <issue-id> --key is_blocked --value true
 
 # Force a specific type when sniffing would pick the wrong one
-multica issue metadata set <issue-id> --key code --value 42 --type string
+orchestra issue metadata set <issue-id> --key code --value 42 --type string
 
 # Remove a key
-multica issue metadata delete <issue-id> --key pipeline_status
+orchestra issue metadata delete <issue-id> --key pipeline_status
 ```
 
-All writes are single-key atomic — concurrent agents writing different keys do not lose each other's updates. To query, use `multica issue list --metadata key=value` (see *List Issues* above).
+All writes are single-key atomic — concurrent agents writing different keys do not lose each other's updates. To query, use `orchestra issue list --metadata key=value` (see *List Issues* above).
 
 ### Subscribers
 
 ```bash
 # List subscribers of an issue
-multica issue subscriber list <issue-id>
+orchestra issue subscriber list <issue-id>
 
 # Subscribe yourself to an issue
-multica issue subscriber add <issue-id>
+orchestra issue subscriber add <issue-id>
 
 # Subscribe another member or agent by name
-multica issue subscriber add <issue-id> --user "Lambda"
+orchestra issue subscriber add <issue-id> --user "Lambda"
 
 # Unsubscribe yourself
-multica issue subscriber remove <issue-id>
+orchestra issue subscriber remove <issue-id>
 
 # Unsubscribe another member or agent
-multica issue subscriber remove <issue-id> --user "Lambda"
+orchestra issue subscriber remove <issue-id> --user "Lambda"
 ```
 
 Subscribers receive notifications about issue activity (new comments, status changes, etc.). Without `--user`, the command acts on the caller.
@@ -582,21 +582,21 @@ Subscribers receive notifications about issue activity (new comments, status cha
 
 ```bash
 # List all execution runs for an issue
-multica issue runs <issue-id>
-multica issue runs <issue-id> --full-id
-multica issue runs <issue-id> --output json
+orchestra issue runs <issue-id>
+orchestra issue runs <issue-id> --full-id
+orchestra issue runs <issue-id> --output json
 
 # View messages for a specific execution run
-multica issue run-messages <task-id>
-multica issue run-messages <short-task-id> --issue <issue-id>
-multica issue run-messages <task-id> --output json
+orchestra issue run-messages <task-id>
+orchestra issue run-messages <short-task-id> --issue <issue-id>
+orchestra issue run-messages <task-id> --output json
 
 # Incremental fetch (only messages after a given sequence number)
-multica issue run-messages <task-id> --since 42 --output json
+orchestra issue run-messages <task-id> --since 42 --output json
 
 # Aggregated token usage for an issue (sum across all its task runs)
-multica issue usage <issue-id>
-multica issue usage <issue-id> --output json
+orchestra issue usage <issue-id>
+orchestra issue usage <issue-id> --output json
 ```
 
 The `usage` command returns the aggregated token usage for an issue, summed across all of its task runs: input tokens, output tokens, cache read/write tokens, and the run count (`task_count`). It wraps `GET /api/issues/<id>/usage` — the same figures the issue detail view shows. Use `--output json` to feed billing/cost tooling.
@@ -611,9 +611,9 @@ belongs to a workspace and can optionally have a lead (member or agent).
 ### List Projects
 
 ```bash
-multica project list
-multica project list --status in_progress
-multica project list --output json
+orchestra project list
+orchestra project list --status in_progress
+orchestra project list --output json
 ```
 
 Available filters: `--status`.
@@ -621,14 +621,14 @@ Available filters: `--status`.
 ### Get Project
 
 ```bash
-multica project get <id>
-multica project get <id> --output json
+orchestra project get <id>
+orchestra project get <id> --output json
 ```
 
 ### Create Project
 
 ```bash
-multica project create --title "2026 Week 16 Sprint" --icon "🏃" --lead "Lambda"
+orchestra project create --title "2026 Week 16 Sprint" --icon "🏃" --lead "Lambda"
 ```
 
 Flags: `--title` (required), `--description`, `--status`, `--icon`, `--lead`, `--start-date`, `--due-date`. Dates are calendar days (`YYYY-MM-DD`).
@@ -636,9 +636,9 @@ Flags: `--title` (required), `--description`, `--status`, `--icon`, `--lead`, `-
 ### Update Project
 
 ```bash
-multica project update <id> --title "New title" --status in_progress
-multica project update <id> --lead "Lambda"
-multica project update <id> --due-date 2026-04-15
+orchestra project update <id> --title "New title" --status in_progress
+orchestra project update <id> --lead "Lambda"
+orchestra project update <id> --due-date 2026-04-15
 ```
 
 Flags: `--title`, `--description`, `--status`, `--icon`, `--lead`, `--start-date`, `--due-date`. For the date flags, pass an empty string (e.g. `--start-date ""`) to clear the date.
@@ -646,7 +646,7 @@ Flags: `--title`, `--description`, `--status`, `--icon`, `--lead`, `--start-date
 ### Change Status
 
 ```bash
-multica project status <id> in_progress
+orchestra project status <id> in_progress
 ```
 
 Valid statuses: `planned`, `in_progress`, `paused`, `completed`, `cancelled`.
@@ -654,7 +654,7 @@ Valid statuses: `planned`, `in_progress`, `paused`, `completed`, `cancelled`.
 ### Delete Project
 
 ```bash
-multica project delete <id>
+orchestra project delete <id>
 ```
 
 ### Associating Issues with Projects
@@ -663,35 +663,35 @@ Use the `--project` flag on `issue create` / `issue update` to attach an issue t
 project, or on `issue list` to filter issues by project:
 
 ```bash
-multica issue create --title "Login bug" --project <project-id>
-multica issue update <issue-id> --project <project-id>
-multica issue list --project <project-id>
+orchestra issue create --title "Login bug" --project <project-id>
+orchestra issue update <issue-id> --project <project-id>
+orchestra issue list --project <project-id>
 ```
 
 ## Setup
 
 ```bash
 # One-command setup for Multica Cloud: configure, authenticate, and start the daemon
-multica setup
+orchestra setup
 
 # For local self-hosted deployments
-multica setup self-host
+orchestra setup self-host
 
 # Custom ports
-multica setup self-host --port 9090 --frontend-port 4000
+orchestra setup self-host --port 9090 --frontend-port 4000
 
 # On-premise with custom domains
-multica setup self-host --server-url https://api.example.com --app-url https://app.example.com
+orchestra setup self-host --server-url https://api.example.com --app-url https://app.example.com
 ```
 
-`multica setup` configures the CLI, opens your browser for authentication, and starts the daemon — all in one step. Use `multica setup self-host` to connect to a self-hosted server instead of Multica Cloud.
+`orchestra setup` configures the CLI, opens your browser for authentication, and starts the daemon — all in one step. Use `orchestra setup self-host` to connect to a self-hosted server instead of Multica Cloud.
 
 ## Configuration
 
 ### View Config
 
 ```bash
-multica config show
+orchestra config show
 ```
 
 Shows config file path, server URL, app URL, and default workspace.
@@ -699,12 +699,12 @@ Shows config file path, server URL, app URL, and default workspace.
 ### Set Values
 
 ```bash
-multica config set server_url https://api.example.com
-multica config set app_url https://app.example.com
-multica config set workspace_id <workspace-id>
+orchestra config set server_url https://api.example.com
+orchestra config set app_url https://app.example.com
+orchestra config set workspace_id <workspace-id>
 ```
 
-`config set workspace_id <id>` is the low-level interface — it writes the value verbatim without checking that the workspace exists or that you have access. Prefer `multica workspace switch <id|slug>` for day-to-day workspace changes; it does both checks before saving.
+`config set workspace_id <id>` is the low-level interface — it writes the value verbatim without checking that the workspace exists or that you have access. Prefer `orchestra workspace switch <id|slug>` for day-to-day workspace changes; it does both checks before saving.
 
 ## Autopilot Commands
 
@@ -773,9 +773,9 @@ Only cron-based `schedule` triggers are currently exposed via the CLI. The data 
 ## Other Commands
 
 ```bash
-multica version              # Show CLI version and commit hash
+orchestra version              # Show CLI version and commit hash
 multica update               # Update to latest version
-multica agent list           # List agents in the current workspace
+orchestra agent list           # List agents in the current workspace
 ```
 
 ## Output Formats
@@ -786,8 +786,8 @@ Most commands support `--output` with two formats:
 - `json` — structured JSON (useful for scripting and automation)
 
 ```bash
-multica issue list --output json
-multica daemon status --output json
+orchestra issue list --output json
+orchestra daemon status --output json
 ```
 
 ## Error Messages
@@ -806,7 +806,7 @@ layer.) The underlying detail is still available on demand (see `--debug`).
   connection refused, TLS) and HTTP status failures (401/403/404/409/400·422/
   429/5xx) are each rendered as one clear sentence with a next step — for
   example a timeout suggests checking the network or raising
-  `MULTICA_HTTP_TIMEOUT`, and a 401 tells you to run `multica login`.
+  `ORCHESTRA_HTTP_TIMEOUT`, and a 401 tells you to run `orchestra login`.
 - **Server-provided validation messages are preserved.** For a 400/422 that
   carries a message from the server, that message is shown verbatim
   (`Invalid request: <server message>`); only when there is none do you get the
@@ -822,7 +822,7 @@ precedence order), messages switch to **Chinese**. No flag is needed; set the
 locale as usual:
 
 ```bash
-LANG=zh_CN.UTF-8 multica issue get MUL-9999   # 错误信息显示为中文
+LANG=zh_CN.UTF-8 orchestra issue get MUL-9999   # 错误信息显示为中文
 ```
 
 ### Exit codes
@@ -839,29 +839,29 @@ The process exit code is tiered so scripts can branch on the failure class:
 | `5` | validation (HTTP 400, 422) |
 
 ```bash
-multica issue get MUL-9999
+orchestra issue get MUL-9999
 if [ $? -eq 4 ]; then echo "no such issue"; fi
 ```
 
 ### Seeing the full detail (`--debug`)
 
-Pass the global `--debug` flag (or set `MULTICA_DEBUG=1`) to print the complete
+Pass the global `--debug` flag (or set `ORCHESTRA_DEBUG=1`) to print the complete
 original error chain — the internal verb chain, the request method/path/status,
 and the raw server body — underneath the friendly message. Use it when you need
 to file a bug or understand exactly what the server returned:
 
 ```bash
-multica issue list --debug
-MULTICA_DEBUG=1 multica issue update MUL-1234 --title "x"
+orchestra issue list --debug
+ORCHESTRA_DEBUG=1 orchestra issue update MUL-1234 --title "x"
 ```
 
 ### Request timeout
 
 API requests use a default timeout of 30 seconds. Override it with
-`MULTICA_HTTP_TIMEOUT` when you are on a slow network; it accepts a Go duration
+`ORCHESTRA_HTTP_TIMEOUT` when you are on a slow network; it accepts a Go duration
 (`45s`, `2m`) or a plain number of seconds (`45`). Command-level deadlines are
 always at least this value, so raising it takes effect across all commands.
 
 ```bash
-MULTICA_HTTP_TIMEOUT=60s multica issue list
+ORCHESTRA_HTTP_TIMEOUT=60s orchestra issue list
 ```

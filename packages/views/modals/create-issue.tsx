@@ -120,7 +120,7 @@ function CreateRunHint({
 }) {
   const { t } = useT("modals");
   const { getActorName } = useActorName();
-  const isAgentLike = assigneeType === "agent" || assigneeType === "squad";
+  const isAgentLike = assigneeType === "agent" || assigneeType === "crew";
   const preview = useIssueTriggerPreview({
     isCreate: true,
     assigneeType: assigneeType ?? null,
@@ -133,11 +133,11 @@ function CreateRunHint({
   // copy instead of flashing "parked" before the run preview lands.
   const ready = isAgentLike && !!assigneeId && !preview.isLoading;
   const willStart = preview.totalCount > 0;
-  const isSquad = assigneeType === "squad";
+  const isCrew = assigneeType === "crew";
   const triggerAgentId = preview.triggers[0]?.agent_id ?? assigneeId;
 
-  // Avatar + copy mirror the flow. A squad doesn't "work" — its leader
-  // evaluates and delegates — so the squad path keeps the squad as the subject
+  // Avatar + copy mirror the flow. A crew doesn't "work" — its leader
+  // evaluates and delegates — so the crew path keeps the crew as the subject
   // (avatar + name) and uses the leader-delegates copy. A single agent picks
   // the issue up directly; a parked issue shows whoever it was assigned to.
   let avatarType: string;
@@ -147,11 +147,11 @@ function CreateRunHint({
     avatarType = assigneeType ?? "agent";
     avatarId = assigneeId;
     text = t(($) => $.run_confirm.create_parked);
-  } else if (isSquad) {
-    avatarType = "squad";
+  } else if (isCrew) {
+    avatarType = "crew";
     avatarId = assigneeId;
-    text = t(($) => $.run_confirm.create_will_start_squad, {
-      name: getActorName("squad", assigneeId ?? ""),
+    text = t(($) => $.run_confirm.create_will_start_crew, {
+      name: getActorName("crew", assigneeId ?? ""),
     });
   } else {
     avatarType = "agent";
@@ -724,7 +724,7 @@ export function ManualCreatePanel({
     if (
       !draft.agent.actorId &&
       assigneeId &&
-      (assigneeType === "agent" || assigneeType === "squad")
+      (assigneeType === "agent" || assigneeType === "crew")
     ) {
       setAgent({ actorType: assigneeType, actorId: assigneeId });
     }

@@ -14,7 +14,7 @@ import { useCurrentWorkspace, useWorkspacePaths } from "@orchestra/core/paths";
 import { AgentProfileCard } from "../agents/components/agent-profile-card";
 import { AgentLivePeekCard } from "../agents/components/agent-live-peek-card";
 import { MemberProfileCard } from "../members/member-profile-card";
-import { SquadProfileCard } from "../squads/components/squad-profile-card";
+import { CrewProfileCard } from "../crews/components/crew-profile-card";
 import { availabilityConfig } from "../agents/presence";
 import { useNavigation } from "../navigation";
 
@@ -26,7 +26,7 @@ import { useNavigation } from "../navigation";
  *   pickers, list rows).
  * - `"live"` — live activity peek (workload, current issue, last activity).
  *   Used where the user already knows the identity and wants the live state,
- *   e.g. the squad members tab.
+ *   e.g. the crew members tab.
  *
  * Has no effect for non-agent actors (members always render the member card).
  */
@@ -88,7 +88,7 @@ export function ActorAvatar({
       avatarUrl={getActorAvatarUrl(actorType, actorId)}
       isAgent={actorType === "agent"}
       isSystem={actorType === "system"}
-      isSquad={actorType === "squad"}
+      isCrew={actorType === "crew"}
       size={size}
       className={className}
     />
@@ -109,14 +109,14 @@ export function ActorAvatar({
   );
   const shouldLinkToProfile =
     profileLink ??
-    (actorType === "member" || actorType === "agent" || actorType === "squad");
+    (actorType === "member" || actorType === "agent" || actorType === "crew");
   const profileHref = shouldLinkToProfile
     ? actorType === "member"
       ? paths.memberDetail(actorId)
       : actorType === "agent"
         ? paths.agentDetail(actorId)
-        : actorType === "squad"
-          ? paths.squadDetail(actorId)
+        : actorType === "crew"
+          ? paths.crewDetail(actorId)
           : null
     : null;
   const content = profileHref ? (
@@ -138,8 +138,8 @@ export function ActorAvatar({
   if (actorType === "member") {
     return <MemberAvatarHoverCard userId={actorId}>{content}</MemberAvatarHoverCard>;
   }
-  if (actorType === "squad") {
-    return <SquadAvatarHoverCard squadId={actorId}>{content}</SquadAvatarHoverCard>;
+  if (actorType === "crew") {
+    return <CrewAvatarHoverCard crewId={actorId}>{content}</CrewAvatarHoverCard>;
   }
   return content;
 }
@@ -258,15 +258,15 @@ function MemberAvatarHoverCard({
   );
 }
 
-function SquadAvatarHoverCard({
-  squadId,
+function CrewAvatarHoverCard({
+  crewId,
   children,
 }: {
-  squadId: string;
+  crewId: string;
   children: React.ReactNode;
 }) {
   return (
-    <ActorAvatarHoverCardShell content={<SquadProfileCard squadId={squadId} />}>
+    <ActorAvatarHoverCardShell content={<CrewProfileCard crewId={crewId} />}>
       {children}
     </ActorAvatarHoverCardShell>
   );

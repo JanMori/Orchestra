@@ -59,11 +59,11 @@ func TestBriefSurfaceDeliveryPolicy(t *testing.T) {
 	}{
 		// Issue surfaces: files ride the comment.
 		"comment": {
-			mustHave: []string{"`--attachment <path>` to `multica issue comment add`"},
+			mustHave: []string{"`--attachment <path>` to `orchestra issue comment add`"},
 			mustNot:  []string{"multica attachment upload"},
 		},
 		"assignment": {
-			mustHave: []string{"`--attachment <path>` to `multica issue comment add`"},
+			mustHave: []string{"`--attachment <path>` to `orchestra issue comment add`"},
 			mustNot:  []string{"multica attachment upload"},
 		},
 		// Direct chat is the ONLY surface where `attachment upload` works.
@@ -87,7 +87,7 @@ func TestBriefSurfaceDeliveryPolicy(t *testing.T) {
 			mustNot:  []string{"multica attachment upload"},
 		},
 		"quickcreate": {
-			mustHave: []string{"your stdout is text-only", "`multica issue create` call itself via `--attachment <path>`"},
+			mustHave: []string{"your stdout is text-only", "`orchestra issue create` call itself via `--attachment <path>`"},
 			mustNot:  []string{"multica attachment upload"},
 		},
 	}

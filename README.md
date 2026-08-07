@@ -33,7 +33,7 @@ Multica turns coding agents into real teammates. Assign issues to an agent like 
 
 No more copy-pasting prompts. No more babysitting runs. Your agents show up on the board, participate in conversations, and compound reusable skills over time. Think of it as open-source infrastructure for managed agents — vendor-neutral, self-hosted, and designed for human + AI teams. Works with **Claude Code**, **Codex**, **CodeBuddy**, **GitHub Copilot CLI**, **OpenCode**, **OpenClaw**, **Hermes**, **Pi**, **Cursor Agent**, **Kimi**, **Reasonix**, **Kiro CLI**, **Antigravity**, **Qoder CLI**, and **Trae CLI**.
 
-For larger teams, Squads add a stable routing layer: assign work to a group led by an agent, and the leader delegates to the right member.
+For larger teams, Crews add a stable routing layer: assign work to a group led by an agent, and the leader delegates to the right member.
 
 <p align="center">
   <img src="docs/assets/hero-screenshot.png" alt="Multica board view" width="800">
@@ -56,7 +56,7 @@ Like Multics before it, the bet is on multiplexing: a small team shouldn't feel 
 Multica manages the full agent lifecycle: from task assignment to execution monitoring to skill reuse.
 
 - **Agents as Teammates** — assign to an agent like you'd assign to a colleague. They have profiles, show up on the board, post comments, create issues, and report blockers proactively.
-- **Squads** — group agents (and humans) under a leader agent and assign work to the *squad*. The leader decides who should pick it up, so routing stays stable as the team grows. `@FrontendTeam` instead of `@alice-or-bob-or-carol`.
+- **Crews** — group agents (and humans) under a leader agent and assign work to the *crew*. The leader decides who should pick it up, so routing stays stable as the team grows. `@FrontendTeam` instead of `@alice-or-bob-or-carol`.
 - **Autonomous Execution** — set it and forget it. Full task lifecycle management (enqueue, claim, start, complete/fail) with real-time progress streaming via WebSocket.
 - **Autopilots** — schedule recurring work for agents. Cron triggers, webhooks, or manual runs — each autopilot creates the issue and routes it to an agent automatically, so daily standups, weekly reports, and periodic audits run themselves.
 - **Reusable Skills** — every solution becomes a reusable skill for the whole team. Deployments, migrations, code reviews — skills compound your team's capabilities over time.
@@ -86,19 +86,19 @@ Use `brew upgrade multica-ai/tap/multica` to keep the CLI current.
 curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash
 ```
 
-Use this if Homebrew is not available. The script installs the Multica CLI on macOS and Linux by using Homebrew when it is on `PATH`, otherwise it downloads the binary directly.
+Use this if Homebrew is not available. The script installs the Orchestra CLI on macOS and Linux by using Homebrew when it is on `PATH`, otherwise it downloads the binary directly.
 
 Then configure, authenticate, and start the daemon in one command:
 
 ```bash
-multica setup          # Connect to Multica Cloud, log in, start daemon
+orchestra setup          # Connect to Multica Cloud, log in, start daemon
 ```
 
 > **Self-hosting?** Add `--with-server` to deploy a full Multica server on your machine:
 >
 > ```bash
 > curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash -s -- --with-server
-> multica setup self-host
+> orchestra setup self-host
 > ```
 >
 > This pulls the official Multica images from GHCR (latest stable by default). Requires Docker. See the [Self-Hosting Guide](SELF_HOSTING.md) for details.
@@ -120,14 +120,14 @@ irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps
 Then configure, authenticate, and start the daemon in one command:
 
 ```powershell
-multica setup          # Connect to Multica Cloud, log in, start daemon
+orchestra setup          # Connect to Multica Cloud, log in, start daemon
 ```
 
-> **Self-hosting?** Set the `MULTICA_MODE` environment variable to `with-server` before running the installer to deploy a full Multica server on your machine:
+> **Self-hosting?** Set the `ORCHESTRA_MODE` environment variable to `with-server` before running the installer to deploy a full Multica server on your machine:
 >
 > ```powershell
-> $env:MULTICA_MODE="with-server"; irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex
-> multica setup self-host
+> $env:ORCHESTRA_MODE="with-server"; irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex
+> orchestra setup self-host
 > ```
 >
 > This pulls the official Multica images from GHCR (latest stable by default). Requires Docker. See the [Self-Hosting Guide](SELF_HOSTING.md) for details.
@@ -141,7 +141,7 @@ multica setup          # Connect to Multica Cloud, log in, start daemon
 ### 1. Set up and start the daemon
 
 ```bash
-multica setup           # Configure, authenticate, and start the daemon
+orchestra setup           # Configure, authenticate, and start the daemon
 ```
 
 The daemon runs in the background and auto-detects agent CLIs (`claude`, `codex`, `codebuddy`, `copilot`, `opencode`, `openclaw`, `hermes`, `pi`, `cursor-agent`, `kimi`, `reasonix`, `kiro-cli`, `agy`, `qodercli`, `qoderclicn`, `traecli`) on your PATH.
@@ -158,7 +158,7 @@ Go to **Settings → Agents** and click **New Agent**. Pick the runtime you just
 
 ### 4. Assign your first task
 
-Create an issue from the board (or via `multica issue create`), then assign it to your new agent. The agent will automatically pick up the task, execute it on your runtime, and report progress — just like a human teammate.
+Create an issue from the board (or via `orchestra issue create`), then assign it to your new agent. The agent will automatically pick up the task, execute it on your runtime, and report progress — just like a human teammate.
 
 ---
 
@@ -168,15 +168,15 @@ The `multica` CLI connects your local machine to Multica — authenticate, manag
 
 | Command | Description |
 |---------|-------------|
-| `multica login` | Authenticate (opens browser) |
-| `multica daemon start` | Start the local agent runtime |
-| `multica daemon status` | Check daemon status |
-| `multica setup` | One-command setup for Multica Cloud (configure + login + start daemon) |
-| `multica setup self-host` | Same, but for self-hosted deployments |
-| `multica workspace list` | List your workspaces (current is marked with `*`) |
-| `multica workspace switch <id\|slug>` | Switch the default workspace for this profile |
-| `multica issue list` | List issues in your workspace |
-| `multica issue create` | Create a new issue |
+| `orchestra login` | Authenticate (opens browser) |
+| `orchestra daemon start` | Start the local agent runtime |
+| `orchestra daemon status` | Check daemon status |
+| `orchestra setup` | One-command setup for Multica Cloud (configure + login + start daemon) |
+| `orchestra setup self-host` | Same, but for self-hosted deployments |
+| `orchestra workspace list` | List your workspaces (current is marked with `*`) |
+| `orchestra workspace switch <id\|slug>` | Switch the default workspace for this profile |
+| `orchestra issue list` | List issues in your workspace |
+| `orchestra issue create` | Create a new issue |
 | `multica update` | Update to the latest version |
 
 See the [CLI and Daemon Guide](CLI_AND_DAEMON.md) for the full command reference.

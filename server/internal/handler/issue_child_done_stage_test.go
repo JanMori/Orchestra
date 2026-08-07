@@ -179,7 +179,7 @@ func TestStageAdvanceInstruction(t *testing.T) {
 		if !strings.Contains(got, "next stage") {
 			t.Fatalf("expected create-next-stage guidance, got %q", got)
 		}
-		if !strings.Contains(got, "multica issue status "+parentID+" in_review") {
+		if !strings.Contains(got, "orchestra issue status "+parentID+" in_review") {
 			t.Fatalf("expected explicit in_review instruction for confirmed completion, got %q", got)
 		}
 	})

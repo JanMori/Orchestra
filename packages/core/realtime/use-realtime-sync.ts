@@ -600,7 +600,7 @@ function invalidateWorkspaceScopedQueries(qc: QueryClient): void {
     qc.invalidateQueries({ queryKey: inboxKeys.all(wsId) });
     qc.invalidateQueries({ queryKey: workspaceKeys.agents(wsId) });
     qc.invalidateQueries({ queryKey: workspaceKeys.members(wsId) });
-    qc.invalidateQueries({ queryKey: workspaceKeys.squads(wsId) });
+    qc.invalidateQueries({ queryKey: workspaceKeys.crews(wsId) });
     qc.invalidateQueries({ queryKey: workspaceKeys.skills(wsId) });
     qc.invalidateQueries({ queryKey: workspaceKeys.invitations(wsId) });
     qc.invalidateQueries({ queryKey: projectKeys.all(wsId) });
@@ -645,14 +645,14 @@ function invalidateWorkspaceScopedQueries(qc: QueryClient): void {
   qc.invalidateQueries({ queryKey: workspaceKeys.list() });
 }
 
-function invalidateSquadMemberStatusQueries(qc: QueryClient, wsId: string): void {
+function invalidateCrewMemberStatusQueries(qc: QueryClient, wsId: string): void {
   qc.invalidateQueries({
     predicate: (query) => {
       const key = query.queryKey;
       return (
         key[0] === "workspaces" &&
         key[1] === wsId &&
-        key[2] === "squads" &&
+        key[2] === "crews" &&
         key[4] === "members-status"
       );
     },
@@ -716,11 +716,11 @@ export function useRealtimeSync(
         if (wsId) {
           qc.invalidateQueries({ queryKey: workspaceKeys.agents(wsId) });
           qc.invalidateQueries({ queryKey: workspaceWorkingAgentsKeys.all(wsId) });
-          // Squad members status is derived per agent, so any agent
+          // Crew members status is derived per agent, so any agent
           // change (status flip, archive, runtime swap) needs to refresh the
-          // per-squad members-status cache without refetching the static squad
+          // per-crew members-status cache without refetching the static crew
           // list summary.
-          invalidateSquadMemberStatusQueries(qc, wsId);
+          invalidateCrewMemberStatusQueries(qc, wsId);
         }
       },
       member: () => {
@@ -743,11 +743,11 @@ export function useRealtimeSync(
         const wsId = getCurrentWsId();
         if (wsId) qc.invalidateQueries({ queryKey: projectKeys.all(wsId) });
       },
-      squad: () => {
+      crew: () => {
         const wsId = getCurrentWsId();
         if (wsId) {
-          qc.invalidateQueries({ queryKey: workspaceKeys.squads(wsId) });
-          // squad:deleted triggers assignee transfer — refresh issues too.
+          qc.invalidateQueries({ queryKey: workspaceKeys.crews(wsId) });
+          // crew:deleted triggers assignee transfer — refresh issues too.
           qc.invalidateQueries({ queryKey: issueKeys.all(wsId) });
         }
       },
@@ -776,8 +776,8 @@ export function useRealtimeSync(
           qc.invalidateQueries({ queryKey: runtimeKeys.all(wsId) });
           // Runtime online/offline transitions move the derived status
           // for every agent that hosts on this runtime, which shifts the
-          // working/idle/offline pill on the squad page.
-          invalidateSquadMemberStatusQueries(qc, wsId);
+          // working/idle/offline pill on the crew page.
+          invalidateCrewMemberStatusQueries(qc, wsId);
         }
       },
       autopilot: () => {
@@ -842,9 +842,9 @@ export function useRealtimeSync(
         // shape as the tasks invalidation above — any task lifecycle
         // event shifts the aggregated usage numbers.
         qc.invalidateQueries({ queryKey: ["issues", "usage"] });
-        // Squad members-status reads the same task lifecycle to flip
+        // Crew members-status reads the same task lifecycle to flip
         // working ↔ idle for each agent member.
-        invalidateSquadMemberStatusQueries(qc, wsId);
+        invalidateCrewMemberStatusQueries(qc, wsId);
         // Comment trigger previews answer "who would a send wake right
         // now" — the pending-task dedup guard makes that answer
         // queue-dependent, so any task lifecycle change must refresh an

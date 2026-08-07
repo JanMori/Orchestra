@@ -9,7 +9,7 @@ import { isAgentRuntimeBound } from "@orchestra/core/agents";
 import { canAssignAgentToIssue } from "@orchestra/core/permissions";
 import { useActorName } from "@orchestra/core/workspace/hooks";
 import { useWorkspaceId } from "@orchestra/core/hooks";
-import { memberListOptions, agentListOptions, squadListOptions, assigneeFrequencyOptions } from "@orchestra/core/workspace/queries";
+import { memberListOptions, agentListOptions, crewListOptions, assigneeFrequencyOptions } from "@orchestra/core/workspace/queries";
 import { ActorAvatar } from "../../../common/actor-avatar";
 import { DeferredPopup } from "../../../common/deferred-popup";
 import {
@@ -59,7 +59,7 @@ interface AssigneePickerProps {
 }
 
 /**
- * Mounting the real picker subscribes to members/agents/squads/frequency
+ * Mounting the real picker subscribes to members/agents/crews/frequency
  * queries — multiplied per board card / list row that cost froze tab
  * switches. Uncontrolled callers that bring their own trigger content get a
  * deferred lookalike trigger instead; the picker mounts on first interaction.
@@ -109,7 +109,7 @@ function AssigneePickerImpl({
   const wsId = useWorkspaceId();
   const { data: members = [] } = useQuery(memberListOptions(wsId));
   const { data: agents = [] } = useQuery(agentListOptions(wsId));
-  const { data: squads = [] } = useQuery(squadListOptions(wsId));
+  const { data: crews = [] } = useQuery(crewListOptions(wsId));
   const { data: frequency = [] } = useQuery(assigneeFrequencyOptions(wsId));
   const { getActorName } = useActorName();
 
@@ -134,9 +134,9 @@ function AssigneePickerImpl({
   const filteredAgents = agents
     .filter((a) => !a.archived_at && (a.name.toLowerCase().includes(query) || matchesPinyin(a.name, query)))
     .sort((a, b) => getFreq("agent", b.id) - getFreq("agent", a.id));
-  const filteredSquads = squads
+  const filteredCrews = crews
     .filter((s) => !s.archived_at && (s.name.toLowerCase().includes(query) || matchesPinyin(s.name, query)))
-    .sort((a, b) => getFreq("squad", b.id) - getFreq("squad", a.id));
+    .sort((a, b) => getFreq("crew", b.id) - getFreq("crew", a.id));
   const runnableAgentIds = new Set(
     agents
       .filter((agent) => !agent.archived_at && isAgentRuntimeBound(agent))
@@ -259,32 +259,32 @@ function AssigneePickerImpl({
         </PickerSection>
       )}
 
-      {/* Squads — group ownership; assigning to a squad routes the issue to
+      {/* Crews — group ownership; assigning to a crew routes the issue to
           its leader agent on the backend. */}
-      {filteredSquads.length > 0 && (
-        <PickerSection label={t(($) => $.pickers.assignee.squads_group)}>
-          {filteredSquads.map((s) => {
+      {filteredCrews.length > 0 && (
+        <PickerSection label={t(($) => $.pickers.assignee.crews_group)}>
+          {filteredCrews.map((s) => {
             const runtimeBound = runnableAgentIds.has(s.leader_id);
             return (
               <PickerItem
                 key={s.id}
-                selected={isSelected("squad", s.id)}
+                selected={isSelected("crew", s.id)}
                 disabled={!runtimeBound}
                 tooltip={
                   runtimeBound
                     ? undefined
-                    : t(($) => $.pickers.assignee.squad_runtime_required)
+                    : t(($) => $.pickers.assignee.crew_runtime_required)
                 }
                 onClick={() => {
                   if (!runtimeBound) return;
                   onUpdate({
-                    assignee_type: "squad",
+                    assignee_type: "crew",
                     assignee_id: s.id,
                   });
                   setOpen(false);
                 }}
               >
-                <ActorAvatar actorType="squad" actorId={s.id} size="sm" />
+                <ActorAvatar actorType="crew" actorId={s.id} size="sm" />
                 <span className="truncate">{s.name}</span>
               </PickerItem>
             );
@@ -294,7 +294,7 @@ function AssigneePickerImpl({
 
       {filteredMembers.length === 0 &&
         filteredAgents.length === 0 &&
-        filteredSquads.length === 0 &&
+        filteredCrews.length === 0 &&
         filter && <PickerEmpty />}
     </PropertyPicker>
   );

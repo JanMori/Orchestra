@@ -79,7 +79,7 @@ func TestHealthHandlerReportsCLIVersionAndActiveTaskCount(t *testing.T) {
 
 // TestHealthHandlerReportsDeferredReload covers the "while waiting to restart,
 // the reason and state are visible" criterion. When trySelfReload has confirmed
-// a multica version change but the daemon was busy at the barrier check, the
+// a orchestra version change but the daemon was busy at the barrier check, the
 // only way a user can tell why the daemon is still on the old version is this
 // field. It is omitempty, so an idle daemon must not emit the key at all.
 func TestHealthHandlerReportsDeferredReload(t *testing.T) {

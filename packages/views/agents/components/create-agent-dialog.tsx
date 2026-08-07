@@ -51,7 +51,7 @@ export function CreateAgentDialog({
   members,
   currentUserId,
   template,
-  squadId,
+  crewId,
   onClose,
   onCreate,
 }: {
@@ -68,11 +68,11 @@ export function CreateAgentDialog({
   // succeeds — they're not part of CreateAgentRequest.
   template?: Agent | null;
   // When set, every successful create is followed by
-  // addSquadMember(squadId, agent) so the new agent joins this squad.
-  // If the squad-join call fails the agent still exists and the dialog
+  // addCrewMember(crewId, agent) so the new agent joins this crew.
+  // If the crew-join call fails the agent still exists and the dialog
   // surfaces a warning toast — the user can add it manually from the
   // Members tab.
-  squadId?: string;
+  crewId?: string;
   onClose: () => void;
   // Returns the created Agent so the dialog can run a follow-up
   // setAgentSkills with the IDs the user picked in the form. Pre-skill-
@@ -178,29 +178,29 @@ export function CreateAgentDialog({
     selectedMemberIds.size === 0 &&
     templateTeamTargets.length === 0;
 
-  // Shared squad-join follow-up. Returns nothing — the caller has
+  // Shared crew-join follow-up. Returns nothing — the caller has
   // already shown its create-success toast; we only need to surface a
-  // warning when the agent landed but the squad-join failed. Cache
-  // invalidation for the squad's members list rides along so the
+  // warning when the agent landed but the crew-join failed. Cache
+  // invalidation for the crew's members list rides along so the
   // Members tab re-renders without a manual refetch.
-  const attachToSquad = async (agentId: string, displayName: string) => {
-    if (!squadId) return;
+  const attachToCrew = async (agentId: string, displayName: string) => {
+    if (!crewId) return;
     try {
-      await api.addSquadMember(squadId, {
+      await api.addCrewMember(crewId, {
         member_type: "agent",
         member_id: agentId,
       });
       if (wsId) {
         queryClient.invalidateQueries({
-          queryKey: [...workspaceKeys.squads(wsId), squadId, "members"],
+          queryKey: [...workspaceKeys.crews(wsId), crewId, "members"],
         });
         queryClient.invalidateQueries({
-          queryKey: [...workspaceKeys.squads(wsId), squadId],
+          queryKey: [...workspaceKeys.crews(wsId), crewId],
         });
       }
     } catch (err) {
       toast.warning(
-        t(($) => $.create_dialog.squad_join_failed_toast, {
+        t(($) => $.create_dialog.crew_join_failed_toast, {
           name: displayName,
           error: err instanceof Error ? err.message : "unknown error",
         }),
@@ -274,13 +274,13 @@ export function CreateAgentDialog({
         }
       }
       const createdAgent = await onCreate(data);
-      // Squad context: attach the agent after skills land so the
-      // squad's Members tab shows the agent with its skills already
+      // Crew context: attach the agent after skills land so the
+      // crew's Members tab shows the agent with its skills already
       // in place. Atomicity is best-effort by design (see plan in
       // MUL-2178) — a partial failure surfaces a warning toast and
       // the user can retry from the Add Member dialog.
-      if (createdAgent && squadId) {
-        await attachToSquad(createdAgent.id, createdAgent.name);
+      if (createdAgent && crewId) {
+        await attachToCrew(createdAgent.id, createdAgent.name);
       }
       onClose();
     } catch (err) {

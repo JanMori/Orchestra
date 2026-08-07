@@ -37,33 +37,6 @@ export function LandingFooter() {
             <p className="mt-4 max-w-[300px] text-body leading-[1.7] text-white/50 sm:text-body-lg">
               {t.footer.tagline}
             </p>
-            <div className="mt-4 flex items-center gap-3">
-              <Link
-                href={twitterUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="text-white/40 transition-colors hover:text-white"
-              >
-                <XMark className="size-4" />
-              </Link>
-              <Link
-                href={githubUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="text-white/40 transition-colors hover:text-white"
-              >
-                <GitHubMark className="size-4" />
-              </Link>
-              <Link
-                href={discordUrl}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Discord"
-                className="text-white/40 transition-colors hover:text-white"
-              >
-                <DiscordMark className="size-4" />
-              </Link>
-            </div>
             <div className="mt-6">
               <Link
                 href={ctaHref}

@@ -8,10 +8,10 @@ import { Callout } from "fumadocs-ui/components/callout";
 먼저 문제가 Multica 서비스, 데몬, 런타임, AI 코딩 도구 중 어느 계층에서 발생하는지 확인하세요. 다음 명령만으로도 첫 번째 유효한 오류를 찾을 수 있는 경우가 많습니다.
 
 ```bash
-multica version
-multica auth status
-multica daemon status --output json
-multica daemon logs --lines 100
+orchestra version
+orchestra auth status
+orchestra daemon status --output json
+orchestra daemon logs --lines 100
 ```
 
 자체 호스팅 인스턴스에서는 서비스를 직접 확인할 수도 있습니다.
@@ -28,9 +28,9 @@ curl -i https://api.example.com/readyz
 먼저 다음을 실행합니다.
 
 ```bash
-multica auth status
-multica daemon status --output json
-multica daemon logs --lines 100
+orchestra auth status
+orchestra daemon status --output json
+orchestra daemon logs --lines 100
 ```
 
 일반적인 원인은 다음과 같습니다.
@@ -44,14 +44,14 @@ multica daemon logs --lines 100
 다시 로그인하고 데몬을 다시 시작합니다.
 
 ```bash
-multica login
-multica daemon restart
+orchestra login
+orchestra daemon restart
 ```
 
-자체 호스팅 환경에서는 **실행 컴퓨터**에서 API의 `/health`도 요청해야 합니다. 서버 컴퓨터에서의 테스트만으로는 실행 컴퓨터 측 DNS, TLS, 방화벽 문제를 찾을 수 없습니다. 주소를 바꿔야 하면 `multica setup self-host`를 다시 실행하거나 현재 profile의 `server_url`을 확인하세요.
+자체 호스팅 환경에서는 **실행 컴퓨터**에서 API의 `/health`도 요청해야 합니다. 서버 컴퓨터에서의 테스트만으로는 실행 컴퓨터 측 DNS, TLS, 방화벽 문제를 찾을 수 없습니다. 주소를 바꿔야 하면 `orchestra setup self-host`를 다시 실행하거나 현재 profile의 `server_url`을 확인하세요.
 
 ```bash
-multica config show
+orchestra config show
 ```
 
 ## 이슈 실행이 시작되지 않음
@@ -70,18 +70,18 @@ multica config show
 에이전트 한 명은 기본적으로 실행 태스크를 최대 6개까지 동시에 실행하고 데몬 하나는 최대 20개까지 실행합니다. 상한에 도달하면 새 실행 태스크는 큐에 남아 기존 실행이 끝난 뒤 시작됩니다. 런타임이 오프라인이어도 실행 태스크는 계속 대기하며 2시간 넘게 수령되지 않을 때만 실패합니다.
 
 ```bash
-multica daemon status --output json
-multica agent get <agent-id>
-multica issue runs <issue-id>
+orchestra daemon status --output json
+orchestra agent get <agent-id>
+orchestra issue runs <issue-id>
 ```
 
-런타임 목록에 예상한 도구가 없다면 같은 시스템 계정과 `PATH`에서 도구가 실행되고 로그인되어 있는지 확인한 뒤 `multica daemon restart`를 실행합니다.
+런타임 목록에 예상한 도구가 없다면 같은 시스템 계정과 `PATH`에서 도구가 실행되고 로그인되어 있는지 확인한 뒤 `orchestra daemon restart`를 실행합니다.
 
 ### `waiting_local_directory` 상태
 
 다른 실행 중 태스크가 같은 로컬 디렉터리를 사용하고 있다는 뜻입니다. Multica는 두 에이전트가 같은 파일을 동시에 수정하지 않도록 디렉터리 잠금이 해제되기를 기다립니다.
 
-일반적으로 앞선 실행 태스크가 끝날 때까지 기다리면 됩니다. 앞선 태스크가 멈췄다면 해당 실행 로그에서 중지할 수 있고, 현재 에이전트에 다른 로컬 디렉터리를 선택할 수도 있습니다. 이 디렉터리 상호 배제는 데몬이 메모리에서 관리하며 디스크에 lock 파일을 쓰지 않습니다. 잠금 상태가 비정상이라고 의심되면 `multica daemon restart`를 실행해 해제하세요. 직접 삭제해야 할 파일은 없습니다.
+일반적으로 앞선 실행 태스크가 끝날 때까지 기다리면 됩니다. 앞선 태스크가 멈췄다면 해당 실행 로그에서 중지할 수 있고, 현재 에이전트에 다른 로컬 디렉터리를 선택할 수도 있습니다. 이 디렉터리 상호 배제는 데몬이 메모리에서 관리하며 디스크에 lock 파일을 쓰지 않습니다. 잠금 상태가 비정상이라고 의심되면 `orchestra daemon restart`를 실행해 해제하세요. 직접 삭제해야 할 파일은 없습니다.
 
 ## AI 코딩 도구 시작 실패
 
@@ -195,8 +195,8 @@ netstat -ano | findstr :8080       # Windows
 
 | 컴포넌트 | 확인 방법 |
 | --- | --- |
-| 백그라운드 데몬 | `multica daemon logs --lines 100` |
-| 데몬 로그 실시간 확인 | `multica daemon logs --follow` |
+| 백그라운드 데몬 | `orchestra daemon logs --lines 100` |
+| 데몬 로그 실시간 확인 | `orchestra daemon logs --follow` |
 | 기본 profile 로그 파일 | `~/.multica/daemon.log` |
 | 기본 profile 시작 또는 crash 로그 | `~/.multica/daemon.err.log` |
 | 이름 있는 profile | `~/.multica/profiles/<name>/` 아래의 해당 로그 |
@@ -206,8 +206,8 @@ netstat -ano | findstr :8080       # Windows
 데몬 시작 과정을 직접 확인해야 한다면 foreground에서 실행합니다.
 
 ```bash
-multica daemon stop
-multica daemon start --foreground
+orchestra daemon stop
+orchestra daemon start --foreground
 ```
 
 그래도 원인을 찾지 못하면 [GitHub Issues](https://github.com/multica-ai/multica/issues)에서 기존 문제를 검색하거나 새 이슈를 제출하세요.

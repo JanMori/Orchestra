@@ -321,7 +321,7 @@ Run the local daemon:
 make daemon
 ```
 
-The daemon authenticates using the CLI's stored token (`multica login`).
+The daemon authenticates using the CLI's stored token (`orchestra login`).
 It registers runtimes for all watched workspaces from the CLI config.
 
 ## Full-Stack Isolated Testing
@@ -388,7 +388,7 @@ done
 
 #### 2. Create a test user and token (automated auth)
 
-For deterministic local automation, set `MULTICA_DEV_VERIFICATION_CODE=888888`
+For deterministic local automation, set `ORCHESTRA_DEV_VERIFICATION_CODE=888888`
 in your env file before starting the backend:
 
 ```bash
@@ -493,7 +493,7 @@ This automatically:
 4. Connects to the local backend
 
 Login in the Desktop UI with `dev@localhost` and the generated code from the
-backend logs. If you set `MULTICA_DEV_VERIFICATION_CODE=888888` before starting
+backend logs. If you set `ORCHESTRA_DEV_VERIFICATION_CODE=888888` before starting
 the backend, you can use `888888` instead.
 
 If the backend runs on a non-default port (worktree), create

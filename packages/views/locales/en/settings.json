@@ -127,7 +127,7 @@
       "goProjects": { "label": "Go to Projects", "description": "Open the project list." },
       "goAutopilots": { "label": "Go to Autopilot", "description": "Open workspace automations." },
       "goAgents": { "label": "Go to Agents", "description": "Open the agent list." },
-      "goSquads": { "label": "Go to Squads", "description": "Open the squad list." },
+      "goCrews": { "label": "Go to Crews", "description": "Open the crew list." },
       "goUsage": { "label": "Go to Usage", "description": "Open usage analytics." },
       "goRuntimes": { "label": "Go to Runtimes", "description": "Open runtime configuration." },
       "goSkills": { "label": "Go to Skills", "description": "Open the skill library." },
@@ -358,7 +358,7 @@
   },
   "tokens": {
     "title": "API Tokens",
-    "description": "Personal access tokens allow the CLI and external integrations to authenticate with your account. Use one via multica login --token, or as a Bearer token when calling the API.",
+    "description": "Personal access tokens allow the CLI and external integrations to authenticate with your account. Use one via orchestra login --token, or as a Bearer token when calling the API.",
     "security_note": "A token grants full access to your account — treat it like a password.",
     "empty": "No API tokens yet. Create one above to get started.",
     "load_failed": "Could not load your API tokens. Reload the page to try again.",

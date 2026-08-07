@@ -378,7 +378,7 @@ func TestCompleteTask_ReconcilesAgentAuthoredMentionToCompletedAgent(t *testing.
 // boundary of MUL-4304 on an agent-assigned issue: an agent-authored comment
 // with NO explicit @mention (a plain reply / acknowledgement) must never earn a
 // follow-up, even though reconcile now considers agent comments. Only explicit
-// @agent/@squad mentions are replayed.
+// @agent/@crew mentions are replayed.
 func TestCompleteTask_DoesNotReconcilePlainAgentReply(t *testing.T) {
 	if testHandler == nil {
 		t.Skip("database not available")
@@ -443,22 +443,22 @@ func TestCompleteTask_DoesNotReconcilePlainAgentReply(t *testing.T) {
 	}
 }
 
-// TestCompleteTask_DoesNotReconcilePlainWorkerReplyOnSquadIssue is the MUL-4304
-// review must-fix #2 regression test. On a SQUAD-assigned issue,
+// TestCompleteTask_DoesNotReconcilePlainWorkerReplyOnCrewIssue is the MUL-4304
+// review must-fix #2 regression test. On a CREW-assigned issue,
 // computeCommentAgentTriggers routes a plain worker-agent reply (no mention) to
-// the squad leader via routeAssignedSquadLeaderFallback (Source = issue
+// the crew leader via routeAssignedCrewLeaderFallback (Source = issue
 // assignee) — that is the create-time leader→worker→leader coordination path.
 // Reconcile must NOT replay that fallback: it compensates ONLY explicit
-// @agent/@squad mentions (keepExplicitMentionTriggers). So when the squad leader
+// @agent/@crew mentions (keepExplicitMentionTriggers). So when the crew leader
 // completes a task and a worker's plain reply arrived during the run, no
 // completion-driven follow-up may be enqueued for the leader. Without the
 // explicit-mention filter this test enqueues 1 leader task and fails.
-func TestCompleteTask_DoesNotReconcilePlainWorkerReplyOnSquadIssue(t *testing.T) {
+func TestCompleteTask_DoesNotReconcilePlainWorkerReplyOnCrewIssue(t *testing.T) {
 	if testHandler == nil || testPool == nil {
 		t.Skip("database not available")
 	}
 	ctx := context.Background()
-	fx := newSquadCommentTriggerFixture(t)
+	fx := newCrewCommentTriggerFixture(t)
 	issueID := uuidToString(fx.Issue.ID)
 	t.Cleanup(func() {
 		testPool.Exec(context.Background(), `DELETE FROM agent_task_queue WHERE issue_id = $1`, issueID)
@@ -472,15 +472,15 @@ func TestCompleteTask_DoesNotReconcilePlainWorkerReplyOnSquadIssue(t *testing.T)
 	// A running leader task whose completion drives reconcile.
 	var leaderTaskID string
 	if err := testPool.QueryRow(ctx, `
-		INSERT INTO agent_task_queue (agent_id, runtime_id, issue_id, status, is_leader_task, squad_id, priority, created_at, started_at)
+		INSERT INTO agent_task_queue (agent_id, runtime_id, issue_id, status, is_leader_task, crew_id, priority, created_at, started_at)
 		VALUES ($1, $2, $3, 'running', TRUE, $4, 0, now() - interval '10 minutes', now() - interval '5 minutes')
 		RETURNING id
-	`, fx.LeaderID, leaderRuntimeID, issueID, fx.SquadID).Scan(&leaderTaskID); err != nil {
+	`, fx.LeaderID, leaderRuntimeID, issueID, fx.CrewID).Scan(&leaderTaskID); err != nil {
 		t.Fatalf("setup: leader task: %v", err)
 	}
 
 	// A plain worker-agent reply (no mention) posted during the leader's run.
-	// At create time this WOULD route to the leader via the squad-leader
+	// At create time this WOULD route to the leader via the crew-leader
 	// fallback; reconcile must not replay it.
 	if _, err := testPool.Exec(ctx, `
 		INSERT INTO comment (issue_id, workspace_id, author_type, author_id, content, type, created_at)
@@ -493,10 +493,10 @@ func TestCompleteTask_DoesNotReconcilePlainWorkerReplyOnSquadIssue(t *testing.T)
 		t.Fatalf("CompleteTask: expected 200, got %d: %s", w.Code, w.Body.String())
 	}
 
-	// The squad-leader fallback is a non-mention route, so reconcile must not
+	// The crew-leader fallback is a non-mention route, so reconcile must not
 	// enqueue any follow-up for the leader from a plain worker reply.
 	if n := pendingTaskCountForAgentIssue(t, issueID, fx.LeaderID); n != 0 {
-		t.Fatalf("plain worker reply must not reconcile-wake the squad leader, got %d leader task(s)", n)
+		t.Fatalf("plain worker reply must not reconcile-wake the crew leader, got %d leader task(s)", n)
 	}
 }
 

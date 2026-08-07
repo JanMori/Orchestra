@@ -45,7 +45,7 @@ import { FILTER_ITEM_CLASS, HoverCheck } from "../../common/hover-check";
 import { useT } from "../../i18n";
 
 // Composite "type:id" value for polymorphic actor filter dimensions, so the
-// string[] filter store can hold agent/squad/member references alike.
+// string[] filter store can hold agent/crew/member references alike.
 export function actorFilterValue(type: string, id: string): string {
   return `${type}:${id}`;
 }

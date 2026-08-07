@@ -37,7 +37,7 @@ Multica はファイルシステムのサンドボックスを提供しません
 
 - **タスクごとの作業ディレクトリ。** 各タスクは `~/multica_workspaces/` 配下に専用の workdir を持ち、同時実行のタスクが同じチェックアウトで衝突しません。
 - **タスクごとのエージェント状態。** Codex タスクはタスクスコープの `CODEX_HOME` を持ち、設定・セッション・スキルを保持するため、`~/.codex/` を汚しません。
-- **タスクスコープの API トークン。** タスクに渡される `MULTICA_TOKEN` はサーバー側でそのエージェントとタスクに紐づけられており、タスクが Multica API 上であなたや他のエージェントとして振る舞うことはできません。
+- **タスクスコープの API トークン。** タスクに渡される `ORCHESTRA_TOKEN` はサーバー側でそのエージェントとタスクに紐づけられており、タスクが Multica API 上であなたや他のエージェントとして振る舞うことはできません。
 
 ## 境界ではないもの
 
@@ -53,7 +53,7 @@ Linux では以前、Codex タスクは `workspace-write` サンドボックス�
 タスクがサンドボックスなしで起動すると、デーモンは warn レベルでログを出します:
 
 ```bash
-multica daemon logs --lines 200 | grep "codex sandbox"
+orchestra daemon logs --lines 200 | grep "codex sandbox"
 ```
 
 Codex の実効設定を確認するには、そのタスクの `CODEX_HOME` にある `config.toml` の管理ブロックを見てください。`# BEGIN multica-managed` と `# END multica-managed` に挟まれた部分は、実行のたびにデーモンが書き込みます。

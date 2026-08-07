@@ -8,10 +8,10 @@ import { Callout } from "fumadocs-ui/components/callout";
 First work out which layer the problem lives in: the Multica service, the daemon, the runtime, or the AI coding tool. These commands are usually enough to surface the first meaningful error:
 
 ```bash
-multica version
-multica auth status
-multica daemon status --output json
-multica daemon logs --lines 100
+orchestra version
+orchestra auth status
+orchestra daemon status --output json
+orchestra daemon logs --lines 100
 ```
 
 Self-hosted instances can also check the service directly:
@@ -28,9 +28,9 @@ curl -i https://api.example.com/readyz
 Run these first:
 
 ```bash
-multica auth status
-multica daemon status --output json
-multica daemon logs --lines 100
+orchestra auth status
+orchestra daemon status --output json
+orchestra daemon logs --lines 100
 ```
 
 Common causes include:
@@ -44,14 +44,14 @@ Common causes include:
 Sign in again and restart the daemon:
 
 ```bash
-multica login
-multica daemon restart
+orchestra login
+orchestra daemon restart
 ```
 
-Self-hosted deployments should also request the API's `/health` from the **executing computer** — testing on the server itself cannot expose DNS, TLS, or firewall problems on the executing computer's side. To change the address, rerun `multica setup self-host`, or check the current profile's `server_url`:
+Self-hosted deployments should also request the API's `/health` from the **executing computer** — testing on the server itself cannot expose DNS, TLS, or firewall problems on the executing computer's side. To change the address, rerun `orchestra setup self-host`, or check the current profile's `server_url`:
 
 ```bash
-multica config show
+orchestra config show
 ```
 
 ## Issue does not start executing
@@ -70,18 +70,18 @@ Open the issue's **execution log** and check the task's current status and what 
 An agent runs at most 6 tasks concurrently by default; a single daemon runs at most 20. At the limit, new tasks stay in the queue until a running one finishes. Tasks also keep queueing while the runtime is offline; they only fail after going unclaimed for more than 2 hours.
 
 ```bash
-multica daemon status --output json
-multica agent get <agent-id>
-multica issue runs <issue-id>
+orchestra daemon status --output json
+orchestra agent get <agent-id>
+orchestra issue runs <issue-id>
 ```
 
-If the runtime list is missing an expected tool, first confirm the tool runs and is signed in under the same system account and `PATH`, then run `multica daemon restart`.
+If the runtime list is missing an expected tool, first confirm the tool runs and is signed in under the same system account and `PATH`, then run `orchestra daemon restart`.
 
 ### `waiting_local_directory` status
 
 This means another in-flight task is using the same local directory. Multica waits for the directory lock to be released so two agents never modify the same files at once.
 
-Usually you just wait for the earlier task to finish. If it is stuck, stop it from its execution log, or pick a different local directory for the current agent. This directory mutex lives in the daemon's memory — no lock file is written to disk. If you suspect stale lock state, `multica daemon restart` releases it; there is nothing to delete manually.
+Usually you just wait for the earlier task to finish. If it is stuck, stop it from its execution log, or pick a different local directory for the current agent. This directory mutex lives in the daemon's memory — no lock file is written to disk. If you suspect stale lock state, `orchestra daemon restart` releases it; there is nothing to delete manually.
 
 ## AI coding tool fails to start
 
@@ -195,8 +195,8 @@ If it is another Multica checkout, run `make stop` in that directory first. Othe
 
 | Component | How to view |
 | --- | --- |
-| Background daemon | `multica daemon logs --lines 100` |
-| Follow daemon logs live | `multica daemon logs --follow` |
+| Background daemon | `orchestra daemon logs --lines 100` |
+| Follow daemon logs live | `orchestra daemon logs --follow` |
 | Default profile's log file | `~/.multica/daemon.log` |
 | Default profile's startup or crash log | `~/.multica/daemon.err.log` |
 | Named profiles | the matching logs under `~/.multica/profiles/<name>/` |
@@ -206,8 +206,8 @@ If it is another Multica checkout, run `make stop` in that directory first. Othe
 To observe the daemon's startup directly, run it in the foreground instead:
 
 ```bash
-multica daemon stop
-multica daemon start --foreground
+orchestra daemon stop
+orchestra daemon start --foreground
 ```
 
 If you still cannot pin it down, search existing issues or file a new one on [GitHub Issues](https://github.com/multica-ai/multica/issues).

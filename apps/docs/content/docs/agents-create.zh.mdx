@@ -113,7 +113,7 @@ Access 决定哪些成员可以运行这名智能体（分配、@提及或对话
 
 不要使用生产数据库的管理员密码或其他高价值长期凭据。
 
-`PATH`、`HOME` 和 `MULTICA_*` 等运行环境关键变量不能通过这里覆盖。
+`PATH`、`HOME` 和 `ORCHESTRA_*` 等运行环境关键变量不能通过这里覆盖。
 
 ## 自定义参数和 MCP
 
@@ -130,7 +130,7 @@ MCP 配置可能包含 token，保存与展示规则和环境变量相同。只�
 ## 使用 CLI 创建
 
 ```bash
-multica agent create \
+orchestra agent create \
   --name "Frontend Reviewer" \
   --runtime-id <runtime-id> \
   --description "审查前端 Pull Request" \
@@ -142,7 +142,7 @@ multica agent create \
 已有配置相近的智能体时，可以直接复制：
 
 ```bash
-multica agent copy <agent-id>
+orchestra agent copy <agent-id>
 ```
 
 默认复制到同一运行时；加 `--runtime-id` 换到其他运行时，必须同时指定 `--model`。环境变量、MCP 配置和 `runtime_config` 永不复制；运行时绑定本身会保留。完整参数见[使用 CLI](/cli)。

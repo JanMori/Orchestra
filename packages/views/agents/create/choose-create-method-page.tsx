@@ -6,7 +6,7 @@ import { cn } from "@orchestra/ui/lib/utils";
 import { useNavigation } from "../../navigation";
 import { useT } from "../../i18n";
 import { AgentCreateShell } from "./create-shell";
-import { withSquadParam } from "./squad-param";
+import { withCrewParam } from "./crew-param";
 
 /**
  * Entry route of agent creation: pick a method, then hand off to that method's
@@ -17,13 +17,13 @@ export function ChooseCreateMethodPage() {
   const { t } = useT("agents");
   const paths = useWorkspacePaths();
   const navigation = useNavigation();
-  const squadId = navigation.searchParams.get("squad");
+  const crewId = navigation.searchParams.get("crew");
 
   return (
     <AgentCreateShell
       title={
-        squadId
-          ? t(($) => $.creation_studio.squad_title)
+        crewId
+          ? t(($) => $.creation_studio.crew_title)
           : t(($) => $.creation_studio.title)
       }
       step={t(($) => $.creation_studio.step_choose)}
@@ -32,10 +32,10 @@ export function ChooseCreateMethodPage() {
       <main className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5 py-10">
         <CreateMethodChooser
           onBlank={() =>
-            navigation.push(withSquadParam(paths.newAgentManual(), squadId))
+            navigation.push(withCrewParam(paths.newAgentManual(), crewId))
           }
           onAI={() =>
-            navigation.push(withSquadParam(paths.newAgentAi(), squadId))
+            navigation.push(withCrewParam(paths.newAgentAi(), crewId))
           }
         />
       </main>

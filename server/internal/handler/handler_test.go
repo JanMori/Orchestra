@@ -3456,38 +3456,38 @@ func TestBatchBacklogToTodoByAgentTriggersAssignee(t *testing.T) {
 	}
 }
 
-// TestBacklogToTodoByAgentTriggersSquadLeader covers the squad branch of
+// TestBacklogToTodoByAgentTriggersCrewLeader covers the crew branch of
 // the backlog→active trigger when the actor is an agent: the leader agent
-// of a squad must wake when one of its squad-assigned backlog issues is
+// of a crew must wake when one of its crew-assigned backlog issues is
 // promoted by another agent (or by the leader itself acting from a task
 // on a different issue). The task-issue self-loop guard must allow this —
 // only a true same-issue self-loop should be suppressed.
-func TestBacklogToTodoByAgentTriggersSquadLeader(t *testing.T) {
+func TestBacklogToTodoByAgentTriggersCrewLeader(t *testing.T) {
 	if testHandler == nil {
 		t.Skip("database not available")
 	}
 	ctx := context.Background()
 
-	leaderAgent := createHandlerTestAgent(t, "Backlog Squad Leader", nil)
-	driverAgent := createHandlerTestAgent(t, "Backlog Squad Driver", nil)
+	leaderAgent := createHandlerTestAgent(t, "Backlog Crew Leader", nil)
+	driverAgent := createHandlerTestAgent(t, "Backlog Crew Driver", nil)
 	driverTask := createHandlerTestTaskForAgent(t, driverAgent)
 
-	var squadID string
+	var crewID string
 	if err := testPool.QueryRow(ctx, `
-		INSERT INTO squad (workspace_id, name, description, leader_id, creator_id)
+		INSERT INTO crew (workspace_id, name, description, leader_id, creator_id)
 		VALUES ($1, $2, '', $3, $4)
 		RETURNING id
-	`, testWorkspaceID, "Backlog Trigger Squad", leaderAgent, testUserID).Scan(&squadID); err != nil {
-		t.Fatalf("create squad: %v", err)
+	`, testWorkspaceID, "Backlog Trigger Crew", leaderAgent, testUserID).Scan(&crewID); err != nil {
+		t.Fatalf("create crew: %v", err)
 	}
-	t.Cleanup(func() { testPool.Exec(ctx, `DELETE FROM squad WHERE id = $1`, squadID) })
+	t.Cleanup(func() { testPool.Exec(ctx, `DELETE FROM crew WHERE id = $1`, crewID) })
 
 	w := httptest.NewRecorder()
 	req := newRequest("POST", "/api/issues?workspace_id="+testWorkspaceID, map[string]any{
-		"title":         "Squad backlog issue",
+		"title":         "Crew backlog issue",
 		"status":        "backlog",
-		"assignee_type": "squad",
-		"assignee_id":   squadID,
+		"assignee_type": "crew",
+		"assignee_id":   crewID,
 	})
 	testHandler.CreateIssue(w, req)
 	if w.Code != http.StatusCreated {
@@ -3501,7 +3501,7 @@ func TestBacklogToTodoByAgentTriggersSquadLeader(t *testing.T) {
 	})
 
 	// Driver agent (not the leader, task is on no specific issue) promotes
-	// the squad-assigned backlog issue. Squad leader must be enqueued.
+	// the crew-assigned backlog issue. Crew leader must be enqueued.
 	w = httptest.NewRecorder()
 	req = newRequest("PUT", "/api/issues/"+created.ID, map[string]any{"status": "todo"})
 	req = withURLParam(req, "id", created.ID)
@@ -3520,7 +3520,7 @@ func TestBacklogToTodoByAgentTriggersSquadLeader(t *testing.T) {
 		t.Fatalf("failed to count leader tasks: %v", err)
 	}
 	if leaderTasks != 1 {
-		t.Fatalf("expected exactly 1 squad-leader task after agent-driven backlog→todo on squad issue, got %d", leaderTasks)
+		t.Fatalf("expected exactly 1 crew-leader task after agent-driven backlog→todo on crew issue, got %d", leaderTasks)
 	}
 }
 

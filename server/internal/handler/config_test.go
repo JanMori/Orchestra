@@ -217,10 +217,10 @@ func TestGetConfigOmitsOfficialCloudDaemonSetup(t *testing.T) {
 // frontend is multica.ai, but the deployment does not set ORCHESTRA_PUBLIC_URL to
 // the api host. Previously this fell through to the same-origin branch and
 // emitted daemon_server_url=https://multica.ai, which the dialog turned into
-// `multica setup self-host --server-url https://multica.ai` — pointing the
+// `orchestra setup self-host --server-url https://multica.ai` — pointing the
 // daemon's backend at the frontend (no /health, no WebSocket proxy). The
 // official cloud must be recognised by its frontend host alone so the daemon
-// setup URLs are omitted and the dialog falls back to `multica setup`.
+// setup URLs are omitted and the dialog falls back to `orchestra setup`.
 func TestGetConfigOmitsCloudDaemonSetupWithoutPublicURL(t *testing.T) {
 	t.Setenv("ORCHESTRA_PUBLIC_URL", "")
 	t.Setenv("ORCHESTRA_APP_URL", "")

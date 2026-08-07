@@ -362,8 +362,8 @@ type AgentTaskResponse struct {
 	QuickCreateDueDate       string                 `json:"quick_create_due_date,omitempty"`       // explicit calendar due date selected in quick-create
 	QuickCreateAttachmentIDs []string               `json:"quick_create_attachment_ids,omitempty"` // attachment ids uploaded in the quick-create prompt and bound on issue create
 	HandoffNote              string                 `json:"handoff_note,omitempty"`                // assignment handoff instruction; rendered into the run's opening prompt + issue_context.md (omitempty so old daemons ignore it)
-	SquadID                  string                 `json:"squad_id,omitempty"`                    // for quick-create tasks where the picker was a squad; Agent is still the resolved leader
-	SquadName                string                 `json:"squad_name,omitempty"`                  // display name for the picker squad
+	CrewID                  string                 `json:"crew_id,omitempty"`                    // for quick-create tasks where the picker was a crew; Agent is still the resolved leader
+	CrewName                string                 `json:"crew_name,omitempty"`                  // display name for the picker crew
 	ParentIssueID            string                 `json:"parent_issue_id,omitempty"`             // for quick-create tasks opened from "Add sub issue" — UUID of the parent issue the new issue should be filed under
 	ParentIssueIdentifier    string                 `json:"parent_issue_identifier,omitempty"`     // human-readable identifier (e.g. MUL-123) of the quick-create parent issue, resolved on claim for prompt context
 	// RequestingUserName + RequestingUserProfileDescription mirror the user
@@ -1579,7 +1579,7 @@ func (h *Handler) UpdateAgent(w http.ResponseWriter, r *http.Request) {
 	// workspace owner/admin, denies agent actors, and writes a queryable
 	// audit row.
 	if _, ok := rawFields["custom_env"]; ok {
-		writeError(w, http.StatusBadRequest, "custom_env is no longer accepted on this endpoint; use PUT /api/agents/{id}/env (or `multica agent env set`)")
+		writeError(w, http.StatusBadRequest, "custom_env is no longer accepted on this endpoint; use PUT /api/agents/{id}/env (or `orchestra agent env set`)")
 		return
 	}
 
@@ -2424,7 +2424,7 @@ func (h *Handler) GetWorkspaceAgentActivity30d(w http.ResponseWriter, r *http.Re
 // (queued/dispatched/running/waiting_local_directory), which is the current
 // workload presence derives from, plus each agent's most recent OUTCOME task
 // (completed/failed only), which is no longer part of presence since #1823 and
-// only feeds the Squad hover card's "last activity" line. Cancelled tasks are
+// only feeds the Crew hover card's "last activity" line. Cancelled tasks are
 // excluded from the outcome half by design — cancel is a procedural signal
 // ("attempt aborted"), not an outcome, so it must not mask a prior failure.
 // Per-agent filtering happens in the front-end against this snapshot.

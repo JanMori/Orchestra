@@ -9,7 +9,7 @@ import { useNavigation } from "../../navigation";
 import { useT } from "../../i18n";
 import { BuilderWorkspace } from "./builder-workspace";
 import { AgentCreateChip, AgentCreateShell } from "./create-shell";
-import { withSquadParam } from "./squad-param";
+import { withCrewParam } from "./crew-param";
 
 /**
  * One creation conversation, addressed by its own session id.
@@ -24,7 +24,7 @@ export function AiBuilderSessionPage({ sessionId }: { sessionId: string }) {
   const wsId = useWorkspaceId();
   const paths = useWorkspacePaths();
   const navigation = useNavigation();
-  const squadId = navigation.searchParams.get("squad");
+  const crewId = navigation.searchParams.get("crew");
   // The runtime this conversation was just started on. It cannot be read back
   // for the first turn — a conversation joins the list only once it has a
   // message or a saved configuration — so the starting screen hands it over in
@@ -43,15 +43,15 @@ export function AiBuilderSessionPage({ sessionId }: { sessionId: string }) {
   // link that outlived it. Replace rather than push: the address no longer
   // resolves, so it must not stay on the stack for a back to land on.
   const leave = useCallback(
-    () => navigation.replace(withSquadParam(paths.newAgentAi(), squadId)),
-    [navigation, paths, squadId],
+    () => navigation.replace(withCrewParam(paths.newAgentAi(), crewId)),
+    [navigation, paths, crewId],
   );
 
   return (
     <AgentCreateShell
       title={
-        squadId
-          ? t(($) => $.creation_studio.squad_title)
+        crewId
+          ? t(($) => $.creation_studio.crew_title)
           : t(($) => $.creation_studio.title)
       }
       step={t(($) => $.creation_studio.step_ai)}
@@ -74,7 +74,7 @@ export function AiBuilderSessionPage({ sessionId }: { sessionId: string }) {
         // field.
         key={sessionId}
         sessionId={sessionId}
-        squadId={squadId}
+        crewId={crewId}
         session={session}
         sessionSettled={sessionSettled}
         fallbackRuntimeId={startedRuntimeId}

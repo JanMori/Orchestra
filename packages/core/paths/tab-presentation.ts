@@ -42,7 +42,7 @@ export type TabLabelKey =
   | "autopilot"
   | "agent"
   | "member"
-  | "squad"
+  | "crew"
   | "skill"
   | "machine"
   | "runtime"
@@ -101,7 +101,7 @@ function textOr(text: string | undefined | null, tabKey: TabLabelKey): TabTitleS
 const ACTOR_LABEL: Record<TabActorType, TabLabelKey> = {
   agent: "agent",
   member: "member",
-  squad: "squad",
+  crew: "crew",
 };
 
 // Extension → file-type icon. The preview URL only carries the filename, so the

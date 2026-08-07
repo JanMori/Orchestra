@@ -59,7 +59,7 @@ For English users, the fastest first path is Codex:
 5. Wait for Multica to pick it up. A running daemon re-checks for newly
    installed CLIs every couple of minutes, so no restart is normally needed.
    To apply it immediately:
-   multica daemon restart
+   orchestra daemon restart
    In the desktop app, open any local runtime and click Restart. Quitting and
    reopening the app is NOT enough — the daemon keeps running in the background.
 6. Return to Runtimes and refresh. You should see a Codex runtime online.
@@ -101,7 +101,7 @@ const zh = `欢迎来到 Multica。
 4. 首次启动后输入 /login,按提示完成 Kimi Code 或 API key 配置。
 5. 等 Multica 识别到它。运行中的守护进程每隔几分钟会重新检查一次新装的 CLI,通常不需要重启。
    想立刻生效:
-   multica daemon restart
+   orchestra daemon restart
    桌面端请打开任意一个本机 runtime 并点 Restart。退出再打开 app 是不够的 —— 守护进程会继续在后台运行。
 6. 回到 Runtimes 页面刷新。你应该能看到一个在线的 Kimi 运行时。
 7. 用这个运行时创建第一个智能体,再把一个任务分配给它,并把状态切到 todo。
@@ -142,7 +142,7 @@ runtime이 준비되기 전에는 다음을 해볼 수 있습니다:
 5. Multica가 인식할 때까지 기다립니다. 실행 중인 daemon은 몇 분마다 새로 설치된 CLI를
    다시 확인하므로 보통 재시작이 필요하지 않습니다.
    바로 적용하려면:
-   multica daemon restart
+   orchestra daemon restart
    데스크톱 앱에서는 아무 로컬 runtime을 열고 Restart를 누르세요. 앱을 종료하고 다시 여는
    것만으로는 충분하지 않습니다 — daemon은 백그라운드에서 계속 실행됩니다.
 6. Runtimes로 돌아가 새로고침합니다. Codex runtime이 online으로 보여야 합니다.
@@ -184,7 +184,7 @@ runtime が準備できる前に、次のことを試せます:
 5. Multica が認識するまで待ちます。動作中の daemon は数分ごとに新しくインストールされた
    CLI を再チェックするため、通常は再起動は不要です。
    すぐに反映したい場合:
-   multica daemon restart
+   orchestra daemon restart
    デスクトップアプリではローカル runtime を開いて Restart を押してください。アプリを終了して
    開き直すだけでは不十分です — daemon はバックグラウンドで動き続けます。
 6. Runtimes に戻って再読み込みします。Codex runtime が online と表示されるはずです。

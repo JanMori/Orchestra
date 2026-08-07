@@ -79,7 +79,7 @@ vi.mock("@orchestra/core/workspace/hooks", () => ({
     getAgentName: (agentId: string) =>
       agentNameByIdRef.current.get(agentId) ?? "Unknown Agent",
     getMemberName: () => "Unknown",
-    getSquadName: () => "Unknown Squad",
+    getCrewName: () => "Unknown Crew",
     getActorName: () => "Unknown",
     getActorInitials: () => "??",
     getActorAvatarUrl: () => null,

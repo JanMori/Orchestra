@@ -48,16 +48,16 @@ type fakeQuickCreate struct {
 	workspaceID pgtype.UUID
 	requesterID pgtype.UUID
 	agentID     pgtype.UUID
-	squadID     pgtype.UUID
+	crewID     pgtype.UUID
 	prompt      string
 }
 
-func (f *fakeQuickCreate) EnqueueQuickCreateTask(_ context.Context, workspaceID, requesterID, agentID, squadID pgtype.UUID, prompt, _, _ string, _, _ pgtype.UUID, _ []pgtype.UUID) (db.AgentTaskQueue, error) {
+func (f *fakeQuickCreate) EnqueueQuickCreateTask(_ context.Context, workspaceID, requesterID, agentID, crewID pgtype.UUID, prompt, _, _ string, _, _ pgtype.UUID, _ []pgtype.UUID) (db.AgentTaskQueue, error) {
 	f.calls++
 	f.workspaceID = workspaceID
 	f.requesterID = requesterID
 	f.agentID = agentID
-	f.squadID = squadID
+	f.crewID = crewID
 	f.prompt = prompt
 	return f.task, f.err
 }
@@ -151,8 +151,8 @@ func TestSlashHandle_EnqueuesQuickCreateAndAcks(t *testing.T) {
 	if tasks.requesterID != slashTestUUID(9) {
 		t.Errorf("quick-create requester is not the bound member")
 	}
-	if tasks.squadID.Valid {
-		t.Errorf("slash-command quick-create must not carry a squad id")
+	if tasks.crewID.Valid {
+		t.Errorf("slash-command quick-create must not carry a crew id")
 	}
 }
 

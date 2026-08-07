@@ -99,7 +99,7 @@ const BUNDLED_ICON_PATH = join(__dirname, "../../resources/icon.png").replace(
 // macOS/Linux GUI launches inherit a minimal PATH from launchd that omits
 // the user's shell config (~/.zshrc, Homebrew, nvm, ~/.local/bin, etc.).
 // Run the user's login shell once to recover the real PATH so the bundled
-// multica CLI can find agent binaries like claude/codex/opencode. Must run
+// orchestra CLI can find agent binaries like claude/codex/opencode. Must run
 // before any child_process.spawn / execFile call in the main process —
 // ES module imports are hoisted, so this block executes before createWindow
 // or any daemon-manager spawn.

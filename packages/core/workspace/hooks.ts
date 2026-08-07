@@ -2,14 +2,14 @@
 
 import { useCallback, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { Agent, MemberWithUser, Squad } from "../types";
+import type { Agent, MemberWithUser, Crew } from "../types";
 import { useWorkspaceId } from "../hooks";
-import { memberListOptions, agentListOptions, squadListOptions } from "./queries";
+import { memberListOptions, agentListOptions, crewListOptions } from "./queries";
 import { resolvePublicFileUrl } from "./avatar-url";
 
 // Stable empties for the still-loading directory queries. A fresh `= []`
 // default allocates a new array on every render while `data` is undefined,
-// which makes `useMemo(..., [members, agents, squads])` recompute
+// which makes `useMemo(..., [members, agents, crews])` recompute
 // `getActorName` on every render during cold load. Consumers that list
 // `getActorName` in their own memo deps (BoardView's `groups`, SwimLaneView's
 // `laneGroups`) then churn a fresh value each render, and the board/list
@@ -19,7 +19,7 @@ import { resolvePublicFileUrl } from "./avatar-url";
 // loading snapshot referentially stable.
 const EMPTY_MEMBERS: MemberWithUser[] = [];
 const EMPTY_AGENTS: Agent[] = [];
-const EMPTY_SQUADS: Squad[] = [];
+const EMPTY_CREWS: Crew[] = [];
 
 /**
  * Pure actor-name resolution over explicit directory snapshots. Async flows
@@ -31,15 +31,15 @@ const EMPTY_SQUADS: Squad[] = [];
 export function buildActorNameResolver(directories: {
   members: readonly { user_id: string; name: string }[];
   agents: readonly { id: string; name: string }[];
-  squads: readonly { id: string; name: string }[];
+  crews: readonly { id: string; name: string }[];
 }) {
   const memberNames = new Map(directories.members.map((m) => [m.user_id, m.name]));
   const agentNames = new Map(directories.agents.map((a) => [a.id, a.name]));
-  const squadNames = new Map(directories.squads.map((s) => [s.id, s.name]));
+  const crewNames = new Map(directories.crews.map((s) => [s.id, s.name]));
   return (type: string, id: string) => {
     if (type === "member") return memberNames.get(id) ?? "Unknown";
     if (type === "agent") return agentNames.get(id) ?? "Unknown Agent";
-    if (type === "squad") return squadNames.get(id) ?? "Unknown Squad";
+    if (type === "crew") return crewNames.get(id) ?? "Unknown Crew";
     if (type === "system") return "Multica";
     return "System";
   };
@@ -49,7 +49,7 @@ export function useActorName() {
   const wsId = useWorkspaceId();
   const { data: members = EMPTY_MEMBERS } = useQuery(memberListOptions(wsId));
   const { data: agents = EMPTY_AGENTS } = useQuery(agentListOptions(wsId));
-  const { data: squads = EMPTY_SQUADS } = useQuery(squadListOptions(wsId));
+  const { data: crews = EMPTY_CREWS } = useQuery(crewListOptions(wsId));
 
   const getMemberName = useCallback((userId: string) => {
     const m = members.find((m) => m.user_id === userId);
@@ -61,14 +61,14 @@ export function useActorName() {
     return a?.name ?? "Unknown Agent";
   }, [agents]);
 
-  const getSquadName = useCallback((squadId: string) => {
-    const s = squads.find((s) => s.id === squadId);
-    return s?.name ?? "Unknown Squad";
-  }, [squads]);
+  const getCrewName = useCallback((crewId: string) => {
+    const s = crews.find((s) => s.id === crewId);
+    return s?.name ?? "Unknown Crew";
+  }, [crews]);
 
   const getActorName = useMemo(
-    () => buildActorNameResolver({ members, agents, squads }),
-    [agents, members, squads],
+    () => buildActorNameResolver({ members, agents, crews }),
+    [agents, members, crews],
   );
 
   const getActorInitials = useCallback((type: string, id: string) => {
@@ -84,15 +84,15 @@ export function useActorName() {
   const getActorAvatarUrl = useCallback((type: string, id: string): string | null => {
     if (type === "member") return resolvePublicFileUrl(members.find((m) => m.user_id === id)?.avatar_url);
     if (type === "agent") return resolvePublicFileUrl(agents.find((a) => a.id === id)?.avatar_url);
-    if (type === "squad") return resolvePublicFileUrl(squads.find((s) => s.id === id)?.avatar_url);
+    if (type === "crew") return resolvePublicFileUrl(crews.find((s) => s.id === id)?.avatar_url);
     return null;
-  }, [agents, members, squads]);
+  }, [agents, members, crews]);
 
   return useMemo(
     () => ({
       getMemberName,
       getAgentName,
-      getSquadName,
+      getCrewName,
       getActorName,
       getActorInitials,
       getActorAvatarUrl,
@@ -103,7 +103,7 @@ export function useActorName() {
       getActorName,
       getAgentName,
       getMemberName,
-      getSquadName,
+      getCrewName,
     ],
   );
 }

@@ -48,7 +48,7 @@ function CallbackContent() {
     const nextUrl = sanitizeNextUrl(nextPart ? nextPart.slice(5) : null);
 
     // CLI callback params — carried across the Google OAuth round-trip so
-    // headless/WSL2 `multica login` can receive the JWT after browser-based
+    // headless/WSL2 `orchestra login` can receive the JWT after browser-based
     // Google auth completes.
     const cliCallbackPart = stateParts.find((p) => p.startsWith("cli_callback:"));
     const cliStatePart = stateParts.find((p) => p.startsWith("cli_state:"));

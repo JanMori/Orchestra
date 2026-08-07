@@ -50,7 +50,7 @@ Use this option when your deployment cannot reach the public internet or you alr
 
 STARTTLS is used automatically when advertised by the server. Port 465 (SMTPS / implicit TLS) is supported and auto-enables implicit TLS; set `SMTP_TLS=implicit` (aliases `smtps`, `ssl`) to force it on a non-standard port.
 
-> **Note:** If neither Resend nor SMTP is configured, generated verification codes are printed to backend logs — copy them from there to log in. A fixed local testing code (e.g. `888888`) is **opt-in only**: set `MULTICA_DEV_VERIFICATION_CODE=888888` in `.env` and keep `APP_ENV` non-production. The Docker self-host stack pins `APP_ENV=production`, so the shortcut is ignored there. **Never enable a fixed code on a publicly reachable instance.**
+> **Note:** If neither Resend nor SMTP is configured, generated verification codes are printed to backend logs — copy them from there to log in. A fixed local testing code (e.g. `888888`) is **opt-in only**: set `ORCHESTRA_DEV_VERIFICATION_CODE=888888` in `.env` and keep `APP_ENV` non-production. The Docker self-host stack pins `APP_ENV=production`, so the shortcut is ignored there. **Never enable a fixed code on a publicly reachable instance.**
 
 ### Google OAuth (Optional)
 
@@ -103,7 +103,7 @@ For file uploads and attachments, configure S3 and (optionally) CloudFront:
 
 #### Avatars on a private bucket
 
-User / agent / squad / workspace avatars are stored as the raw storage object
+User / agent / crew / workspace avatars are stored as the raw storage object
 URL. When the bucket is public — a public `CLOUDFRONT_DOMAIN`, or the default
 local-disk backend — that URL is served to clients unchanged.
 
@@ -168,33 +168,33 @@ These are configured on each user's machine, not on the server:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `MULTICA_SERVER_URL` | `ws://localhost:8080/ws` | WebSocket URL for daemon → server connection |
-| `MULTICA_APP_URL` | `http://localhost:3000` | Frontend URL for CLI login flow |
-| `MULTICA_DAEMON_POLL_INTERVAL` | `3s` | How often the daemon polls for tasks |
-| `MULTICA_DAEMON_HEARTBEAT_INTERVAL` | `15s` | Heartbeat frequency |
+| `ORCHESTRA_SERVER_URL` | `ws://localhost:8080/ws` | WebSocket URL for daemon → server connection |
+| `ORCHESTRA_APP_URL` | `http://localhost:3000` | Frontend URL for CLI login flow |
+| `ORCHESTRA_DAEMON_POLL_INTERVAL` | `3s` | How often the daemon polls for tasks |
+| `ORCHESTRA_DAEMON_HEARTBEAT_INTERVAL` | `15s` | Heartbeat frequency |
 
 Agent-specific overrides:
 
 | Variable | Description |
 |----------|-------------|
-| `MULTICA_CLAUDE_PATH` | Custom path to the `claude` binary |
-| `MULTICA_CLAUDE_MODEL` | Override the Claude model used |
-| `MULTICA_CODEX_PATH` | Custom path to the `codex` binary |
-| `MULTICA_CODEX_MODEL` | Override the Codex model used |
-| `MULTICA_COPILOT_PATH` | Custom path to the `copilot` (GitHub Copilot CLI) binary |
-| `MULTICA_COPILOT_MODEL` | Override the Copilot model used (note: GitHub Copilot routes models through your account entitlement, so this may not be honoured) |
-| `MULTICA_OPENCODE_PATH` | Custom path to the `opencode` binary |
-| `MULTICA_OPENCODE_MODEL` | Override the OpenCode model used |
-| `MULTICA_OPENCLAW_PATH` | Custom path to the `openclaw` binary |
-| `MULTICA_OPENCLAW_MODEL` | Override the OpenClaw model used |
-| `MULTICA_HERMES_PATH` | Custom path to the `hermes` binary |
-| `MULTICA_HERMES_MODEL` | Override the Hermes model used |
-| `MULTICA_PI_PATH` | Custom path to the `pi` binary |
-| `MULTICA_PI_MODEL` | Override the Pi model used |
-| `MULTICA_CURSOR_PATH` | Custom path to the `cursor-agent` binary |
-| `MULTICA_CURSOR_MODEL` | Override the Cursor Agent model used |
-| `MULTICA_GROK_PATH` | Custom path to the `grok` binary |
-| `MULTICA_GROK_MODEL` | Override the Grok model used (e.g. `grok-4.5`) |
+| `ORCHESTRA_CLAUDE_PATH` | Custom path to the `claude` binary |
+| `ORCHESTRA_CLAUDE_MODEL` | Override the Claude model used |
+| `ORCHESTRA_CODEX_PATH` | Custom path to the `codex` binary |
+| `ORCHESTRA_CODEX_MODEL` | Override the Codex model used |
+| `ORCHESTRA_COPILOT_PATH` | Custom path to the `copilot` (GitHub Copilot CLI) binary |
+| `ORCHESTRA_COPILOT_MODEL` | Override the Copilot model used (note: GitHub Copilot routes models through your account entitlement, so this may not be honoured) |
+| `ORCHESTRA_OPENCODE_PATH` | Custom path to the `opencode` binary |
+| `ORCHESTRA_OPENCODE_MODEL` | Override the OpenCode model used |
+| `ORCHESTRA_OPENCLAW_PATH` | Custom path to the `openclaw` binary |
+| `ORCHESTRA_OPENCLAW_MODEL` | Override the OpenClaw model used |
+| `ORCHESTRA_HERMES_PATH` | Custom path to the `hermes` binary |
+| `ORCHESTRA_HERMES_MODEL` | Override the Hermes model used |
+| `ORCHESTRA_PI_PATH` | Custom path to the `pi` binary |
+| `ORCHESTRA_PI_MODEL` | Override the Pi model used |
+| `ORCHESTRA_CURSOR_PATH` | Custom path to the `cursor-agent` binary |
+| `ORCHESTRA_CURSOR_MODEL` | Override the Cursor Agent model used |
+| `ORCHESTRA_GROK_PATH` | Custom path to the `grok` binary |
+| `ORCHESTRA_GROK_MODEL` | Override the Grok model used (e.g. `grok-4.5`) |
 
 ## Database Setup
 
@@ -559,5 +559,5 @@ docker compose -f docker-compose.selfhost.yml pull
 docker compose -f docker-compose.selfhost.yml up -d
 ```
 
-Pin `MULTICA_IMAGE_TAG` in `.env` to an exact release like `v0.2.4` if you want to stay on a specific version. Migrations run automatically on backend startup. They are idempotent — running them multiple times has no effect.
+Pin `ORCHESTRA_IMAGE_TAG` in `.env` to an exact release like `v0.2.4` if you want to stay on a specific version. Migrations run automatically on backend startup. They are idempotent — running them multiple times has no effect.
 If the selected GHCR tag has not been published yet, fall back to `docker compose -f docker-compose.selfhost.yml -f docker-compose.selfhost.build.yml up -d --build`.

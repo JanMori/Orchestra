@@ -12,9 +12,9 @@ allowed-tools: Bash(multica *)
 Projects are durable context containers. Resources attached to a project can affect future agent tasks.
 
 ```bash
-multica project list --output json
-multica project get <project-id> --output json
-multica project resource list <project-id> --output json
+orchestra project list --output json
+orchestra project get <project-id> --output json
+orchestra project resource list <project-id> --output json
 ```
 
 Project resources are mutated through project resource commands/endpoints. Issue
@@ -34,21 +34,21 @@ Common resource types:
 ## CLI
 
 ```bash
-multica project list --output json
-multica project get <project-id> --output json
-multica project create --title "<title>" --repo <github-url> --output json
-multica project create --title "<title>" --start-date 2026-03-01 --due-date 2026-03-31 --output json
-multica project update <project-id> --title "<title>" --output json
-multica project update <project-id> --due-date 2026-04-15 --output json
-multica project update <project-id> --start-date "" --output json   # clear the start date
-multica project status <project-id> in_progress --output json
-multica project resource list <project-id> --output json
-multica project resource add <project-id> --type github_repo --url <github-url> --output json
-multica project resource add <project-id> --type github_repo --url <github-url> --ref <branch-or-sha> --output json
-multica project resource add <project-id> --type local_directory --local-path <abs-path> --daemon-id <daemon-id> --output json
-multica project resource update <project-id> <resource-id> --url <new-github-url> --output json
-multica project resource update <project-id> <resource-id> --ref <branch-or-sha> --output json
-multica project resource remove <project-id> <resource-id> --output json
+orchestra project list --output json
+orchestra project get <project-id> --output json
+orchestra project create --title "<title>" --repo <github-url> --output json
+orchestra project create --title "<title>" --start-date 2026-03-01 --due-date 2026-03-31 --output json
+orchestra project update <project-id> --title "<title>" --output json
+orchestra project update <project-id> --due-date 2026-04-15 --output json
+orchestra project update <project-id> --start-date "" --output json   # clear the start date
+orchestra project status <project-id> in_progress --output json
+orchestra project resource list <project-id> --output json
+orchestra project resource add <project-id> --type github_repo --url <github-url> --output json
+orchestra project resource add <project-id> --type github_repo --url <github-url> --ref <branch-or-sha> --output json
+orchestra project resource add <project-id> --type local_directory --local-path <abs-path> --daemon-id <daemon-id> --output json
+orchestra project resource update <project-id> <resource-id> --url <new-github-url> --output json
+orchestra project resource update <project-id> <resource-id> --ref <branch-or-sha> --output json
+orchestra project resource remove <project-id> <resource-id> --output json
 ```
 
 For `github_repo`, non-JSON `--ref` sets `resource_ref.ref`, the default checkout branch/tag/SHA for future tasks in that project. JSON `--ref '<json>'` remains the escape hatch for full payloads or resource types not covered by shortcuts.
@@ -60,14 +60,14 @@ For `github_repo`, non-JSON `--ref` sets `resource_ref.ref`, the default checkou
 A project has no `MUL-123`-style identifier, so writing its title as prose
 produces dead text — there is nothing for the reader's client to autolink. Use
 the mention-link form instead, with the project UUID from
-`multica project list --output json`:
+`orchestra project list --output json`:
 
     [Roadmap](mention://project/<project-id>)
 
 Every client makes it navigable, with different presentation: web and desktop
 render a chip carrying the project's icon and current title, while mobile
 renders an ordinary link that opens the project on tap. Unlike `@agent` /
-`@squad`, it is a pure link: `util.MentionRe` does not even include `project`,
+`@crew`, it is a pure link: `util.MentionRe` does not even include `project`,
 so it enqueues nothing and notifies nobody — the same no-side-effect contract
 as an `issue` mention.
 
@@ -79,13 +79,13 @@ pasted URL is handed to the system browser and takes the reader out of the app.
 
 Add/update a project resource when the user asks for durable project context: "把这个 GitHub repo 绑到项目上", "以后都用这个 repo", "agent 总是拿不到这个项目的仓库", or "这个项目要在我的本地目录里跑".
 
-Project resources are durable and affect future tasks. `multica repo checkout`
+Project resources are durable and affect future tasks. `orchestra repo checkout`
 is task-local checkout state.
 
 ## Debugging wrong context
 
-1. `multica project get <project-id> --output json`.
-2. `multica project resource list <project-id> --output json`.
+1. `orchestra project get <project-id> --output json`.
+2. `orchestra project resource list <project-id> --output json`.
 3. Check `github_repo.resource_ref.url`, optional `ref`, `default_branch_hint`, and `local_directory.resource_ref.daemon_id`.
 4. Updating resources is a durable mutation. After an update, listing the
    resource is the verification path.

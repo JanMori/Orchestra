@@ -2,8 +2,8 @@
 -- BOTH mainland Feishu (open.feishu.cn / accounts.feishu.cn) and Lark
 -- international (open.larksuite.com / accounts.larksuite.com) at the same
 -- time. Before this column the open-platform host was a single
--- deployment-wide value (the MULTICA_LARK_HTTP_BASE_URL /
--- MULTICA_LARK_CALLBACK_BASE_URL env knobs, defaulting to open.feishu.cn),
+-- deployment-wide value (the ORCHESTRA_LARK_HTTP_BASE_URL /
+-- ORCHESTRA_LARK_CALLBACK_BASE_URL env knobs, defaulting to open.feishu.cn),
 -- so a given deployment could talk to only one cloud at a time.
 --
 -- The device-flow installer already auto-detects the tenant: Lark emits

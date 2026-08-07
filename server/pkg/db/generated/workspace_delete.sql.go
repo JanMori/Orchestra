@@ -179,8 +179,8 @@ ws_labels AS MATERIALIZED (
 ws_skills AS MATERIALIZED (
     SELECT id FROM skill WHERE workspace_id = $1
 ),
-ws_squads AS MATERIALIZED (
-    SELECT id FROM squad WHERE workspace_id = $1
+ws_crews AS MATERIALIZED (
+    SELECT id FROM crew WHERE workspace_id = $1
 ),
 ws_tasks AS MATERIALIZED (
     SELECT id
@@ -314,9 +314,9 @@ deleted_daemon_connections AS (
     DELETE FROM daemon_connection
     WHERE agent_id IN (SELECT id FROM ws_agents)
 ),
-deleted_squad_members AS (
-    DELETE FROM squad_member
-    WHERE squad_id IN (SELECT id FROM ws_squads)
+deleted_crew_members AS (
+    DELETE FROM crew_member
+    WHERE crew_id IN (SELECT id FROM ws_crews)
 ),
 deleted_project_resources AS (
     DELETE FROM project_resource WHERE workspace_id = $1
@@ -438,15 +438,15 @@ func (q *Queries) DeleteWorkspaceRuntimesAndProjects(ctx context.Context, worksp
 	return err
 }
 
-const deleteWorkspaceSquadsAndSkills = `-- name: DeleteWorkspaceSquadsAndSkills :exec
-WITH deleted_squads AS (
-    DELETE FROM squad WHERE squad.workspace_id = $1
+const deleteWorkspaceCrewsAndSkills = `-- name: DeleteWorkspaceCrewsAndSkills :exec
+WITH deleted_crews AS (
+    DELETE FROM crew WHERE crew.workspace_id = $1
 )
 DELETE FROM skill WHERE skill.workspace_id = $1
 `
 
-func (q *Queries) DeleteWorkspaceSquadsAndSkills(ctx context.Context, workspaceID pgtype.UUID) error {
-	_, err := q.db.Exec(ctx, deleteWorkspaceSquadsAndSkills, workspaceID)
+func (q *Queries) DeleteWorkspaceCrewsAndSkills(ctx context.Context, workspaceID pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteWorkspaceCrewsAndSkills, workspaceID)
 	return err
 }
 

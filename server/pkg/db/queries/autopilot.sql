@@ -88,7 +88,7 @@ WHERE id = $1;
 
 -- name: PauseAutopilotsByUnboundAgents :many
 -- A runtime delete is a persistent admission failure, not a per-tick event.
--- Pause direct-agent automations and squad automations whose leader was
+-- Pause direct-agent automations and crew automations whose leader was
 -- unbound, preserving the full configuration for an explicit resume after
 -- rebind. Restrict to active so repeated teardown/retry is idempotent.
 UPDATE autopilot a
@@ -99,10 +99,10 @@ WHERE a.status = 'active'
   AND (
     (a.assignee_type = 'agent' AND a.assignee_id = ANY(@agent_ids::uuid[]))
     OR (
-      a.assignee_type = 'squad'
+      a.assignee_type = 'crew'
       AND EXISTS (
         SELECT 1
-        FROM squad s
+        FROM crew s
         WHERE s.id = a.assignee_id
           AND s.leader_id = ANY(@agent_ids::uuid[])
       )
@@ -110,17 +110,17 @@ WHERE a.status = 'active'
   )
 RETURNING a.*;
 
--- name: PauseAutopilotsByUnrunnableSquad :many
--- Rotating a squad to an already-unbound leader has the same persistent
+-- name: PauseAutopilotsByUnrunnableCrew :many
+-- Rotating a crew to an already-unbound leader has the same persistent
 -- admission failure as Runtime teardown. Pause only automations assigned to
--- this squad; direct automations targeting that Agent are unrelated.
+-- this crew; direct automations targeting that Agent are unrelated.
 UPDATE autopilot
 SET status = 'paused',
     pause_reason = 'agent_runtime_required',
     updated_at = now()
 WHERE status = 'active'
-  AND assignee_type = 'squad'
-  AND assignee_id = @squad_id
+  AND assignee_type = 'crew'
+  AND assignee_id = @crew_id
 RETURNING *;
 
 -- name: UpdateAutopilotLastRunAt :exec
@@ -284,10 +284,10 @@ RETURNING *;
 -- =====================
 
 -- name: CreateAutopilotRun :one
--- squad_id is an attribution hook: set to the assignee squad when the
--- parent autopilot has assignee_type='squad', NULL otherwise. The executing
+-- crew_id is an attribution hook: set to the assignee crew when the
+-- parent autopilot has assignee_type='crew', NULL otherwise. The executing
 -- agent_id on agent_task_queue still records who actually ran the work
--- (the squad leader); squad_id lets reports group by squad without a join.
+-- (the crew leader); crew_id lets reports group by crew without a join.
 --
 -- planned_at carries the canonical UTC fire time for scheduled triggers
 -- (source='schedule'); it stays NULL for manual / webhook / api sources
@@ -296,11 +296,11 @@ RETURNING *;
 -- idempotency: a stale-steal retry at the same plan_time cannot create
 -- a second run for the same (trigger_id, planned_at) pair (MUL-3551).
 INSERT INTO autopilot_run (
-    autopilot_id, trigger_id, source, status, trigger_payload, squad_id, planned_at,
+    autopilot_id, trigger_id, source, status, trigger_payload, crew_id, planned_at,
     webhook_delivery_id
 ) VALUES (
     $1, sqlc.narg('trigger_id'), $2, $3, sqlc.narg('trigger_payload'),
-    sqlc.narg('squad_id'), sqlc.narg('planned_at'),
+    sqlc.narg('crew_id'), sqlc.narg('planned_at'),
     sqlc.narg('webhook_delivery_id')
 ) RETURNING *;
 

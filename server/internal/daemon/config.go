@@ -88,7 +88,7 @@ type Config struct {
 	LegacyDaemonIDs                []string // historical daemon_ids this machine may have registered under; reported at register time so the server can merge old runtime rows
 	DeviceName                     string
 	RuntimeName                    string
-	CLIVersion                     string                // multica CLI version (e.g. "0.1.13")
+	CLIVersion                     string                // orchestra CLI version (e.g. "0.1.13")
 	LaunchedBy                     string                // "desktop" when spawned by the Electron app, empty for standalone
 	Profile                        string                // profile name (empty = default)
 	Agents                         map[string]AgentEntry // keyed by provider: claude, codebuddy, codex, copilot, opencode, openclaw, hermes, pi, cursor, kimi, reasonix, kiro, antigravity, qoder, qoderclicn, traecli, grok, qwen, qwenpaw
@@ -545,7 +545,7 @@ func NormalizeServerBaseURL(raw string) (string, error) {
 // should treat as the workspaces root. Resolution order: explicit override >
 // ORCHESTRA_WORKSPACES_ROOT env > default ($HOME/multica_workspaces, or
 // $HOME/multica_workspaces_<profile> for a named profile). Read-only callers
-// (e.g. `multica daemon disk-usage`) use this directly so they pick the same
+// (e.g. `orchestra daemon disk-usage`) use this directly so they pick the same
 // directory the running daemon would have picked.
 func ResolveWorkspacesRoot(profile, override string) (string, error) {
 	root := strings.TrimSpace(os.Getenv("ORCHESTRA_WORKSPACES_ROOT"))

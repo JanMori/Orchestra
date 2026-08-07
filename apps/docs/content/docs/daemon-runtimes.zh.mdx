@@ -28,21 +28,21 @@ Multica 负责记录和协调工作，连接的电脑负责执行。电脑上的
 
 使用 Multica Desktop 时，应用会自动启动守护进程，不需要额外运行命令。
 
-使用 Web、远程电脑或无界面环境时，先[安装 Multica CLI](/cli)，再运行：
+使用 Web、远程电脑或无界面环境时，先[安装 Orchestra CLI](/cli)，再运行：
 
 ```bash
-multica daemon start
+orchestra daemon start
 ```
 
 守护进程默认在后台运行。常用命令如下：
 
 | 命令 | 作用 |
 | --- | --- |
-| `multica daemon status` | 查看守护进程和连接状态 |
-| `multica daemon logs -f` | 持续查看日志 |
-| `multica daemon restart` | 重启守护进程并重新检测本机工具 |
-| `multica daemon stop` | 停止守护进程 |
-| `multica daemon start --foreground` | 在当前终端中运行，便于调试 |
+| `orchestra daemon status` | 查看守护进程和连接状态 |
+| `orchestra daemon logs -f` | 持续查看日志 |
+| `orchestra daemon restart` | 重启守护进程并重新检测本机工具 |
+| `orchestra daemon stop` | 停止守护进程 |
+| `orchestra daemon start --foreground` | 在当前终端中运行，便于调试 |
 
 启动时，守护进程会检测 `PATH` 中受支持的 AI 编程工具，并为你有权连接的工作区注册运行时。如果一款工具刚刚安装或登录，重启守护进程即可重新检测。
 
@@ -69,7 +69,7 @@ multica daemon start
 
 一台守护进程默认最多同时执行 20 条 task；每个智能体默认最多同时执行 6 条。实际并发取两者中的较小值。
 
-达到上限后，新 task 会继续排队。你可以在智能体设置中调整单个智能体的并发数，也可以通过 `MULTICA_DAEMON_MAX_CONCURRENT_TASKS` 调整整台电脑的上限。并行执行会同时占用机器性能、工具账号额度和同一工作目录。
+达到上限后，新 task 会继续排队。你可以在智能体设置中调整单个智能体的并发数，也可以通过 `ORCHESTRA_DAEMON_MAX_CONCURRENT_TASKS` 调整整台电脑的上限。并行执行会同时占用机器性能、工具账号额度和同一工作目录。
 
 ## 私有与公开
 
@@ -114,11 +114,11 @@ multica runtime profile unset-path <profile-id>
 
 按以下顺序检查：
 
-1. 运行 `multica daemon status`，确认守护进程已经启动。
-2. 运行 `multica daemon logs -f`，查看登录、网络或工具检测错误。
+1. 运行 `orchestra daemon status`，确认守护进程已经启动。
+2. 运行 `orchestra daemon logs -f`，查看登录、网络或工具检测错误。
 3. 在同一运行环境中执行 `command -v <工具命令>`，确认守护进程能够找到它。
 4. 打开 Multica 的**运行时**页面，检查目标电脑和对应的 AI 编程工具是否显示在线。
-5. 工具刚安装、路径刚修改或配置刚更新时，运行 `multica daemon restart`。
+5. 工具刚安装、路径刚修改或配置刚更新时，运行 `orchestra daemon restart`。
 
 仍未解决时，参见[故障排查](/troubleshooting)。
 

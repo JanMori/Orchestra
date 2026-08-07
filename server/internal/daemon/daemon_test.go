@@ -736,7 +736,7 @@ func TestBuildPromptContainsIssueID(t *testing.T) {
 	// Prompt should contain the issue ID and CLI hint.
 	for _, want := range []string{
 		issueID,
-		"multica issue get",
+		"orchestra issue get",
 	} {
 		if !strings.Contains(prompt, want) {
 			t.Fatalf("prompt missing %q", want)
@@ -1009,7 +1009,7 @@ func TestBuildPromptAutopilotRunOnly(t *testing.T) {
 	// workflow section (execenv.AutopilotIssueCommandsGuard). MUL-5696 found
 	// that a second hand-maintained per-turn copy drifts, so the per-turn
 	// prompt must not restate it in any form.
-	if strings.Contains(prompt, "Do not run `multica issue get`") {
+	if strings.Contains(prompt, "Do not run `orchestra issue get`") {
 		t.Fatalf("autopilot prompt restates the issue-command boundary the brief owns (MUL-5696)\n---\n%s", prompt)
 	}
 	if strings.Contains(prompt, "Your assigned issue ID is:") {
@@ -1040,7 +1040,7 @@ func TestBuildPromptCommentTriggered(t *testing.T) {
 		commentContent,
 		"Focus on THIS comment",
 		commentID,
-		"multica issue comment add " + issueID + " --parent " + commentID,
+		"orchestra issue comment add " + issueID + " --parent " + commentID,
 		"do NOT reuse --parent values from previous turns",
 		// Silence-as-valid-exit for agent-to-agent loops depends on the
 		// reply command being framed conditionally rather than as a hard
@@ -1054,7 +1054,7 @@ func TestBuildPromptCommentTriggered(t *testing.T) {
 	}
 
 	// Should still contain CLI hint for fetching issue context.
-	if !strings.Contains(prompt, "multica issue get") {
+	if !strings.Contains(prompt, "orchestra issue get") {
 		t.Fatal("prompt missing CLI hint for issue context")
 	}
 }
@@ -1131,16 +1131,16 @@ func TestBuildPromptCommentTriggeredNoContent(t *testing.T) {
 		Agent:            &AgentData{Name: "Test"},
 	}, "claude")
 
-	if !strings.Contains(prompt, "multica issue get") {
+	if !strings.Contains(prompt, "orchestra issue get") {
 		t.Fatal("prompt missing CLI hint")
 	}
 }
 
-// TestBuildPromptSquadLeaderNoActionProhibition verifies that when a squad
+// TestBuildPromptCrewLeaderNoActionProhibition verifies that when a crew
 // leader is triggered by another agent's comment, the per-turn prompt
 // explicitly forbids posting a comment whose only purpose is to announce
 // no_action or "exiting silently". This is the fix for MUL-2168.
-func TestBuildPromptSquadLeaderNoActionProhibition(t *testing.T) {
+func TestBuildPromptCrewLeaderNoActionProhibition(t *testing.T) {
 	t.Parallel()
 
 	prompt := BuildPrompt(Task{
@@ -1151,21 +1151,21 @@ func TestBuildPromptSquadLeaderNoActionProhibition(t *testing.T) {
 		TriggerAuthorName:     "Worker",
 		Agent: &AgentData{
 			Name:         "Leader",
-			Instructions: "You lead the team.\n\n## Squad Operating Protocol\n\nYou are the LEADER.",
+			Instructions: "You lead the team.\n\n## Crew Operating Protocol\n\nYou are the LEADER.",
 		},
 	}, "claude")
 
 	for _, want := range []string{
-		"Squad leader no_action rule",
+		"Crew leader no_action rule",
 		"DO NOT post any comment",
-		"multica squad activity",
+		"orchestra crew activity",
 	} {
 		if !strings.Contains(prompt, want) {
-			t.Fatalf("squad leader prompt missing %q\n---\n%s", want, prompt)
+			t.Fatalf("crew leader prompt missing %q\n---\n%s", want, prompt)
 		}
 	}
 
-	// Non-squad-leader agent should NOT get the squad leader rule.
+	// Non-crew-leader agent should NOT get the crew leader rule.
 	nonLeaderPrompt := BuildPrompt(Task{
 		IssueID:               "issue-1",
 		TriggerCommentID:      "comment-1",
@@ -1178,8 +1178,8 @@ func TestBuildPromptSquadLeaderNoActionProhibition(t *testing.T) {
 		},
 	}, "claude")
 
-	if strings.Contains(nonLeaderPrompt, "Squad leader no_action rule") {
-		t.Fatalf("non-squad-leader prompt should NOT contain squad leader rule\n---\n%s", nonLeaderPrompt)
+	if strings.Contains(nonLeaderPrompt, "Crew leader no_action rule") {
+		t.Fatalf("non-crew-leader prompt should NOT contain crew leader rule\n---\n%s", nonLeaderPrompt)
 	}
 }
 
@@ -3301,7 +3301,7 @@ func TestEnsureRepoReadyRefreshesOnMiss(t *testing.T) {
 }
 
 // A project github_repo URL that the workspace itself does not bind must still
-// be allowed for `multica repo checkout` after registerTaskRepos runs. Without
+// be allowed for `orchestra repo checkout` after registerTaskRepos runs. Without
 // this, the new project-repos-override-workspace-repos behavior would surface
 // repos in the meta-skill that the agent then can't actually clone.
 func TestRegisterTaskReposAllowsProjectOnlyURL(t *testing.T) {

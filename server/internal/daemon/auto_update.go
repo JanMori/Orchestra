@@ -410,7 +410,7 @@ func (d *Daemon) trySelfReload(ctx context.Context) {
 	barrierReleased = true
 }
 
-// setReloadPending records that a multica version change is confirmed but the
+// setReloadPending records that a orchestra version change is confirmed but the
 // restart is waiting for the daemon to go idle. Purely diagnostic — surfaced on
 // /health and `daemon status` — and it gates nothing, so it can never park the
 // daemon the way a pending-state machine could.

@@ -33,7 +33,7 @@ import type {
   SearchIssuesResponse,
   SearchProjectsResponse,
   SendChatMessageResponse,
-  Squad,
+  Crew,
   TaskMessagePayload,
   User,
   Workspace,
@@ -678,11 +678,11 @@ export const RuntimeSchema: z.ZodType<RuntimeDevice> = z.object({
 export const RuntimeListSchema = z.array(RuntimeSchema).default([]);
 export const EMPTY_RUNTIME_LIST: RuntimeDevice[] = [];
 
-// Squad schema — fields mobile actually consumes for the @mention suggestion
+// Crew schema — fields mobile actually consumes for the @mention suggestion
 // bar (id, name, archived_at filter) plus identity/timestamp fields that are
-// safe to default. `.loose()` so the server can add squad fields without
+// safe to default. `.loose()` so the server can add crew fields without
 // breaking the parser.
-export const SquadSchema: z.ZodType<Squad> = z.object({
+export const CrewSchema: z.ZodType<Crew> = z.object({
   id: z.string(),
   workspace_id: z.string().default(""),
   name: z.string().default(""),
@@ -697,8 +697,8 @@ export const SquadSchema: z.ZodType<Squad> = z.object({
   archived_by: z.string().nullable().default(null),
 }).loose();
 
-export const SquadListSchema = z.array(SquadSchema).default([]);
-export const EMPTY_SQUAD_LIST: Squad[] = [];
+export const CrewListSchema = z.array(CrewSchema).default([]);
+export const EMPTY_CREW_LIST: Crew[] = [];
 
 // Single-issue fallback used by getIssue. Mobile reuses IssueSchema from core
 // for parsing; this sentinel lets parseWithFallback yield a structurally-

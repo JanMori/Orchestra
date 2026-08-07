@@ -143,7 +143,7 @@ function buildGroups(
   const order: Record<string, number> = {
     member: 0,
     agent: 1,
-    squad: 2,
+    crew: 2,
     none: 3,
   };
 
@@ -280,7 +280,7 @@ function BoardViewImpl({
           actorRef &&
           (actorRef.type === "member" ||
             actorRef.type === "agent" ||
-            actorRef.type === "squad")
+            actorRef.type === "crew")
             ? { type: actorRef.type, id: actorRef.id }
             : null;
         return [{
@@ -302,7 +302,7 @@ function BoardViewImpl({
     const order: Record<string, number> = {
       member: 0,
       agent: 1,
-      squad: 2,
+      crew: 2,
       none: 3,
     };
     return assigneeGroups

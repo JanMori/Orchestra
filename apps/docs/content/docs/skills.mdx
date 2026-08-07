@@ -32,7 +32,7 @@ Copying from a runtime takes a snapshot of the files at that moment. Later chang
 With the CLI, you can also import from a `.skill` or `.zip` file:
 
 ```bash
-multica skill import --file ./review-helper.skill
+orchestra skill import --file ./review-helper.skill
 ```
 
 If a skill with the same name already exists in the workspace, the import can stop, overwrite the existing content, save under a new name, or skip. Overwriting through import is limited to the skill's creator; a workspace `admin` who can edit the skill in the app still cannot overwrite it via import.
@@ -89,6 +89,6 @@ Skills imported from external sources may contain scripts, commands, or unsafe i
 
 ## Next steps
 
-- [Squads](/squads) — let a leader pick the right member for the work.
+- [Crews](/crews) — let a leader pick the right member for the work.
 - [Daemon and runtimes](/daemon-runtimes) — how skills reach the actual execution environment.
 - [AI coding tools comparison](/providers) — how different tools support skills.

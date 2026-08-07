@@ -28,21 +28,21 @@ Multica は作業の記録と調整を担い、接続されたコンピュータ
 
 Multica Desktop を使う場合、アプリがデーモンを自動的に起動するため、追加のコマンドは不要です。
 
-Web、リモートのコンピュータ、ヘッドレス環境では、先に [Multica CLI をインストール](/cli)してから実行します。
+Web、リモートのコンピュータ、ヘッドレス環境では、先に [Orchestra CLI をインストール](/cli)してから実行します。
 
 ```bash
-multica daemon start
+orchestra daemon start
 ```
 
 デーモンはデフォルトでバックグラウンドで動きます。よく使うコマンド:
 
 | コマンド | 役割 |
 | --- | --- |
-| `multica daemon status` | デーモンと接続の状態を表示する |
-| `multica daemon logs -f` | ログを追跡表示する |
-| `multica daemon restart` | デーモンを再起動し、ローカルツールを再検出する |
-| `multica daemon stop` | デーモンを停止する |
-| `multica daemon start --foreground` | デバッグ用に現在のターミナルで実行する |
+| `orchestra daemon status` | デーモンと接続の状態を表示する |
+| `orchestra daemon logs -f` | ログを追跡表示する |
+| `orchestra daemon restart` | デーモンを再起動し、ローカルツールを再検出する |
+| `orchestra daemon stop` | デーモンを停止する |
+| `orchestra daemon start --foreground` | デバッグ用に現在のターミナルで実行する |
 
 起動時、デーモンは `PATH` 上の対応する AI コーディングツールを検出し、あなたが接続を許可されているワークスペースにランタイムを登録します。ツールをインストールまたはログインした直後の場合は、デーモンを再起動すると再検出されます。
 
@@ -69,7 +69,7 @@ multica daemon start
 
 1 つのデーモンはデフォルトで最大 20 件のタスクを同時に実行します。各エージェントはデフォルトで最大 6 件です。実効的な同時実行数は両者の小さい方になります。
 
-上限に達すると、新しいタスクはキューで待ち続けます。個々のエージェントの同時実行数はエージェント設定で、マシン全体の上限は `MULTICA_DAEMON_MAX_CONCURRENT_TASKS` で調整できます。並列実行は、マシンの性能、ツールアカウントのクォータ、同じ作業ディレクトリを同時に取り合います。
+上限に達すると、新しいタスクはキューで待ち続けます。個々のエージェントの同時実行数はエージェント設定で、マシン全体の上限は `ORCHESTRA_DAEMON_MAX_CONCURRENT_TASKS` で調整できます。並列実行は、マシンの性能、ツールアカウントのクォータ、同じ作業ディレクトリを同時に取り合います。
 
 ## プライベートと公開
 
@@ -114,11 +114,11 @@ multica runtime profile unset-path <profile-id>
 
 次の順に確認します。
 
-1. `multica daemon status` を実行し、デーモンが起動していることを確認する。
-2. `multica daemon logs -f` を実行し、ログイン、ネットワーク、ツール検出のエラーを確認する。
+1. `orchestra daemon status` を実行し、デーモンが起動していることを確認する。
+2. `orchestra daemon logs -f` を実行し、ログイン、ネットワーク、ツール検出のエラーを確認する。
 3. 同じ実行環境で `command -v <ツールコマンド>` を実行し、デーモンがコマンドを見つけられることを確認する。
 4. Multica の**ランタイム**ページを開き、対象のコンピュータと対応する AI コーディングツールがオンラインと表示されているか確認する。
-5. ツールのインストール直後、パスの変更直後、プロファイルの更新直後は `multica daemon restart` を実行する。
+5. ツールのインストール直後、パスの変更直後、プロファイルの更新直後は `orchestra daemon restart` を実行する。
 
 それでも解決しない場合は[トラブルシューティング](/troubleshooting)を参照してください。
 

@@ -26,7 +26,7 @@ import {
   ChooseCreateMethodPage,
   ManualCreateAgentPage,
 } from "@orchestra/views/agents";
-import { SquadsPage, SquadDetailPage as SquadDetailPageView } from "@orchestra/views/squads/components";
+import { CrewsPage, CrewDetailPage as CrewDetailPageView } from "@orchestra/views/crews/components";
 import { InboxPage } from "@orchestra/views/inbox";
 import { ChatPage } from "@orchestra/views/chat";
 import { SettingsPage } from "@orchestra/views/settings";
@@ -214,11 +214,11 @@ export const appRoutes: RouteObject[] = [
             element: <MemberDetailPage />,
             handle: { title: "Member" },
           },
-          { path: "squads", element: <SquadsPage />, handle: { title: "Squads" } },
+          { path: "crews", element: <CrewsPage />, handle: { title: "Crews" } },
           {
-            path: "squads/:id",
-            element: <SquadDetailPageView />,
-            handle: { title: "Squad" },
+            path: "crews/:id",
+            element: <CrewDetailPageView />,
+            handle: { title: "Crew" },
           },
           { path: "inbox", element: <InboxPage />, handle: { title: "Inbox" } },
           { path: "chat", element: <ChatPage />, handle: { title: "Chat" } },

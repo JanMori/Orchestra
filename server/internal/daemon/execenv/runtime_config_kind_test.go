@@ -68,7 +68,7 @@ func TestBuildMetaSkillContentBriefContent(t *testing.T) {
 		AgentID:          "eve-1",
 	})
 
-	if !strings.Contains(out, "- `multica issue get <id> --output json` — full issue.\n") {
+	if !strings.Contains(out, "- `orchestra issue get <id> --output json` — full issue.\n") {
 		t.Errorf("brief is missing the `issue get` one-liner\n---\n%s", out)
 	}
 	if strings.Contains(out, "Get full issue details.") {
@@ -225,7 +225,7 @@ func TestSlimQuickCreateAvailableCommands(t *testing.T) {
 
 	for _, want := range []string{
 		"## Available Commands",
-		"multica issue create --title",
+		"orchestra issue create --title",
 		"`multica --help`",
 	} {
 		if !strings.Contains(out, want) {
@@ -234,18 +234,18 @@ func TestSlimQuickCreateAvailableCommands(t *testing.T) {
 	}
 
 	for _, banned := range []string{
-		"multica issue get <id>",
-		"multica issue comment list <issue-id>",
-		"multica issue update <id>",
-		"multica issue status <id> <status>",
-		"multica issue comment add <issue-id>",
-		"multica issue metadata list <issue-id>",
-		"multica issue metadata set <issue-id>",
-		"multica issue metadata delete <issue-id>",
-		"multica issue children <id>",
-		"multica repo checkout <url>",
-		"### Squad maintenance",
-		"multica squad member set-role",
+		"orchestra issue get <id>",
+		"orchestra issue comment list <issue-id>",
+		"orchestra issue update <id>",
+		"orchestra issue status <id> <status>",
+		"orchestra issue comment add <issue-id>",
+		"orchestra issue metadata list <issue-id>",
+		"orchestra issue metadata set <issue-id>",
+		"orchestra issue metadata delete <issue-id>",
+		"orchestra issue children <id>",
+		"orchestra repo checkout <url>",
+		"### Crew maintenance",
+		"orchestra crew member set-role",
 	} {
 		if strings.Contains(out, banned) {
 			t.Errorf("quick_create slim Available Commands should NOT advertise %q (hard guardrails forbid the call)", banned)

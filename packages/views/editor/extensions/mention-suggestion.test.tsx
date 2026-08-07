@@ -85,7 +85,7 @@ function fakeQc(data: {
       target_id: string | null;
     }>;
   }>;
-  squads?: Array<{
+  crews?: Array<{
     id: string;
     name: string;
     archived_at: string | null;
@@ -113,7 +113,7 @@ function fakeQc(data: {
         : [{ target_type: "workspace" as const, target_id: null }]),
   }));
   map.set(JSON.stringify(workspaceKeys.agents("ws-1")), agentsWithPermissions);
-  map.set(JSON.stringify(workspaceKeys.squads("ws-1")), data.squads ?? []);
+  map.set(JSON.stringify(workspaceKeys.crews("ws-1")), data.crews ?? []);
   const byStatus: ListIssuesCache["byStatus"] = {};
   for (const status of PAGINATED_STATUSES) {
     const bucket = (data.issues ?? []).filter((i) => i.status === status);
@@ -690,7 +690,7 @@ describe("createMentionSuggestion", () => {
     expect(screen.getByText("Roadmap")).toBeInTheDocument();
   });
 
-  it("includes squads with a runnable leader in the mention list", () => {
+  it("includes crews with a runnable leader in the mention list", () => {
     const qc = fakeQc({
       members: [{ user_id: "u1", name: "Alice", role: "member" }],
       agents: [
@@ -702,7 +702,7 @@ describe("createMentionSuggestion", () => {
           owner_id: null,
         },
       ],
-      squads: [
+      crews: [
         {
           id: "s1",
           name: "Jiayuan's Coding Team",
@@ -717,7 +717,7 @@ describe("createMentionSuggestion", () => {
         },
         {
           id: "s3",
-          name: "Archived Squad",
+          name: "Archived Crew",
           archived_at: "2026-01-01T00:00:00Z",
           leader_id: "leader-1",
         },
@@ -729,13 +729,13 @@ describe("createMentionSuggestion", () => {
     const result = config.items!(itemArgs(""));
 
     const items = result as MentionItem[];
-    expect(items.filter((i) => i.type === "squad")).toHaveLength(2);
-    expect(items.some((i) => i.type === "squad" && i.label === "Jiayuan's Coding Team")).toBe(true);
-    expect(items.some((i) => i.type === "squad" && i.label === "独立团")).toBe(true);
-    expect(items.some((i) => i.type === "squad" && i.label === "Archived Squad")).toBe(false);
+    expect(items.filter((i) => i.type === "crew")).toHaveLength(2);
+    expect(items.some((i) => i.type === "crew" && i.label === "Jiayuan's Coding Team")).toBe(true);
+    expect(items.some((i) => i.type === "crew" && i.label === "独立团")).toBe(true);
+    expect(items.some((i) => i.type === "crew" && i.label === "Archived Crew")).toBe(false);
   });
 
-  it("keeps a squad with an unbound leader discoverable but unselectable", () => {
+  it("keeps a crew with an unbound leader discoverable but unselectable", () => {
     const qc = fakeQc({
       agents: [
         {
@@ -748,10 +748,10 @@ describe("createMentionSuggestion", () => {
           owner_id: null,
         },
       ],
-      squads: [
+      crews: [
         {
           id: "s1",
-          name: "Unrunnable Squad",
+          name: "Unrunnable Crew",
           archived_at: null,
           leader_id: "leader-1",
         },
@@ -763,19 +763,19 @@ describe("createMentionSuggestion", () => {
 
     expect(items).toContainEqual(
       expect.objectContaining({
-        type: "squad",
+        type: "crew",
         id: "s1",
         disabledReason: "agent_runtime_required",
       }),
     );
   });
 
-  it("keeps squads discoverable while the agents cache is not ready", () => {
+  it("keeps crews discoverable while the agents cache is not ready", () => {
     const qc = fakeQc({
-      squads: [
+      crews: [
         {
           id: "s1",
-          name: "Cold Cache Squad",
+          name: "Cold Cache Crew",
           archived_at: null,
           leader_id: "leader-not-cached",
         },
@@ -784,13 +784,13 @@ describe("createMentionSuggestion", () => {
 
     const config = createMentionSuggestion(qc);
     const items = config.items!(itemArgs("")) as MentionItem[];
-    const squad = items.find((item) => item.type === "squad" && item.id === "s1");
+    const crew = items.find((item) => item.type === "crew" && item.id === "s1");
 
-    expect(squad).toBeDefined();
-    expect(squad?.disabledReason).toBeUndefined();
+    expect(crew).toBeDefined();
+    expect(crew?.disabledReason).toBeUndefined();
   });
 
-  it("keeps a squad with an archived leader discoverable", () => {
+  it("keeps a crew with an archived leader discoverable", () => {
     const qc = fakeQc({
       agents: [
         {
@@ -801,10 +801,10 @@ describe("createMentionSuggestion", () => {
           owner_id: null,
         },
       ],
-      squads: [
+      crews: [
         {
           id: "s1",
-          name: "Archived Leader Squad",
+          name: "Archived Leader Crew",
           archived_at: null,
           leader_id: "leader-1",
         },
@@ -813,16 +813,16 @@ describe("createMentionSuggestion", () => {
 
     const config = createMentionSuggestion(qc);
     const items = config.items!(itemArgs("")) as MentionItem[];
-    const squad = items.find((item) => item.type === "squad" && item.id === "s1");
+    const crew = items.find((item) => item.type === "crew" && item.id === "s1");
 
-    expect(squad).toBeDefined();
-    expect(squad?.disabledReason).toBeUndefined();
+    expect(crew).toBeDefined();
+    expect(crew?.disabledReason).toBeUndefined();
   });
 
-  it("returns no squads when the squads cache is empty (not yet fetched)", () => {
+  it("returns no crews when the crews cache is empty (not yet fetched)", () => {
     const qc = fakeQc({
       members: [{ user_id: "u1", name: "Alice", role: "member" }],
-      // squads not provided — simulates cache miss
+      // crews not provided — simulates cache miss
     });
     searchIssuesMock.mockReturnValue(new Promise(() => {}));
 
@@ -830,7 +830,7 @@ describe("createMentionSuggestion", () => {
     const result = config.items!(itemArgs(""));
 
     const items = result as MentionItem[];
-    expect(items.filter((i) => i.type === "squad")).toHaveLength(0);
+    expect(items.filter((i) => i.type === "crew")).toHaveLength(0);
   });
 
   it("matches Chinese names by full pinyin", () => {

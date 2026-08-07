@@ -37,7 +37,7 @@ Multica 不会替你做文件系统沙箱。如果守护进程跑在你的个人
 
 - **每任务独立工作目录。** 每个任务在 `~/multica_workspaces/` 下拥有独立 workdir，并发任务不会在同一份 checkout 上打架。
 - **每任务独立的智能体状态。** Codex 任务拥有任务级 `CODEX_HOME`，保存配置、会话与技能，不会污染你的 `~/.codex/`。
-- **任务级 API token。** 交给任务的 `MULTICA_TOKEN` 由服务端绑定到该智能体与该任务，因此任务无法通过 Multica API 以你或其他智能体的身份行事。
+- **任务级 API token。** 交给任务的 `ORCHESTRA_TOKEN` 由服务端绑定到该智能体与该任务，因此任务无法通过 Multica API 以你或其他智能体的身份行事。
 
 ## 不构成边界的部分
 
@@ -53,7 +53,7 @@ Multica 不会替你做文件系统沙箱。如果守护进程跑在你的个人
 任务以无沙箱方式启动时，守护进程会记录 warn 级日志：
 
 ```bash
-multica daemon logs --lines 200 | grep "codex sandbox"
+orchestra daemon logs --lines 200 | grep "codex sandbox"
 ```
 
 要确认 Codex 的实际生效配置，可以查看该任务 `CODEX_HOME` 下 `config.toml` 中的托管块——`# BEGIN multica-managed` 与 `# END multica-managed` 标记之间的内容由守护进程在每次运行时写入。

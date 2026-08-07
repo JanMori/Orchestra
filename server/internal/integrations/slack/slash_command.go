@@ -27,7 +27,7 @@ import (
 // itself. It takes the invoker's natural-language description as a prompt and
 // enqueues a quick-create task against the installation's agent — the very same
 // pipeline as the web "quick create" modal (TaskService.EnqueueQuickCreateTask).
-// The agent turns the prompt into a well-formed `multica issue create` in the
+// The agent turns the prompt into a well-formed `orchestra issue create` in the
 // background, so the issue gets a proper title + structured description instead
 // of the raw one-liner the user typed. Because creation is asynchronous, the
 // command replies with a PRIVATE (ephemeral) acknowledgement via the command's
@@ -66,7 +66,7 @@ type slashQueries interface {
 // command needs to hand the invoker's prompt to the agent. *service.TaskService
 // satisfies it; tests supply a fake.
 type quickCreateEnqueuer interface {
-	EnqueueQuickCreateTask(ctx context.Context, workspaceID, requesterID, agentID, squadID pgtype.UUID, prompt, priority, dueDate string, projectID, parentIssueID pgtype.UUID, attachmentIDs []pgtype.UUID) (db.AgentTaskQueue, error)
+	EnqueueQuickCreateTask(ctx context.Context, workspaceID, requesterID, agentID, crewID pgtype.UUID, prompt, priority, dueDate string, projectID, parentIssueID pgtype.UUID, attachmentIDs []pgtype.UUID) (db.AgentTaskQueue, error)
 }
 
 // SlashCommandProcessor handles the Slack `/issue` slash command end to end.
@@ -182,14 +182,14 @@ func (p *SlashCommandProcessor) process(ctx context.Context, cmd slack.SlashComm
 	// Hand the raw natural-language prompt to the installation's agent as a
 	// quick-create task; the agent authors the well-formed issue in the
 	// background and attributes it to the bound member. No project / parent /
-	// attachments and no squad routing — the slash command targets the
+	// attachments and no crew routing — the slash command targets the
 	// installation's own agent directly.
 	if _, err := p.tasks.EnqueueQuickCreateTask(
 		ctx,
 		inst.WorkspaceID,
 		userID,
 		inst.AgentID,
-		pgtype.UUID{}, // no squad — dispatch straight to the installation agent
+		pgtype.UUID{}, // no crew — dispatch straight to the installation agent
 		prompt,
 		"",            // no explicit priority
 		"",            // no explicit due date

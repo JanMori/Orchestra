@@ -413,7 +413,7 @@ func TestPrepareWithRepoContext(t *testing.T) {
 	}
 	s := string(content)
 	for _, want := range []string{
-		"multica repo checkout",
+		"orchestra repo checkout",
 		"https://github.com/org/backend",
 		"[--ref <branch-or-sha>]",
 		"https://github.com/org/frontend",
@@ -543,7 +543,7 @@ func TestWriteContextFilesAutopilotRunOnly(t *testing.T) {
 			t.Errorf("autopilot context missing %q\n---\n%s", want, s)
 		}
 	}
-	if strings.Contains(s, "Run `multica issue get") {
+	if strings.Contains(s, "Run `orchestra issue get") {
 		t.Errorf("autopilot context should not contain issue get workflow\n---\n%s", s)
 	}
 }
@@ -939,8 +939,8 @@ func TestInjectRuntimeConfigClaude(t *testing.T) {
 	s := string(content)
 	for _, want := range []string{
 		"Multica Agent Runtime",
-		"multica issue get",
-		"multica issue comment list",
+		"orchestra issue get",
+		"orchestra issue comment list",
 		// Skills are listed by on-disk slug: that is the directory
 		// writeSkillFiles creates and the only identifier the model can
 		// actually invoke (MUL-5529).
@@ -1066,29 +1066,29 @@ func TestInjectRuntimeConfigAvailableCommandsCoreOnly(t *testing.T) {
 		"## Available Commands",
 		"core agent loop and common issue create/update tasks",
 		"`multica <command> --help`",
-		"multica issue get <id> --output json",
-		"multica issue comment list <issue-id>",
-		"multica issue create --title",
-		"multica issue update <id>",
+		"orchestra issue get <id> --output json",
+		"orchestra issue comment list <issue-id>",
+		"orchestra issue create --title",
+		"orchestra issue update <id>",
 		"--description-file <path>",
 		"--parent \"\"",
-		"multica repo checkout <url>",
-		"multica issue status <id> <status>",
-		"multica issue comment add <issue-id>",
-		"multica issue comment add --help",
+		"orchestra repo checkout <url>",
+		"orchestra issue status <id> <status>",
+		"orchestra issue comment add <issue-id>",
+		"orchestra issue comment add --help",
 	} {
 		if !strings.Contains(s, want) {
 			t.Errorf("AGENTS.md missing core command/help text %q\n---\n%s", want, s)
 		}
 	}
 
-	// Squad maintenance is squad-leader surface and is gated on that (MUL-5442):
-	// an agent leading no squad has no squad whose roles it could change.
-	if strings.Contains(s, "### Squad maintenance") {
-		t.Errorf("non-leader brief must not carry the squad maintenance block\n---\n%s", s)
+	// Crew maintenance is crew-leader surface and is gated on that (MUL-5442):
+	// an agent leading no crew has no crew whose roles it could change.
+	if strings.Contains(s, "### Crew maintenance") {
+		t.Errorf("non-leader brief must not carry the crew maintenance block\n---\n%s", s)
 	}
 	leaderDir := t.TempDir()
-	if _, err := InjectRuntimeConfig(leaderDir, "codex", TaskContextForEnv{IssueID: "issue-1", IsSquadLeader: true}); err != nil {
+	if _, err := InjectRuntimeConfig(leaderDir, "codex", TaskContextForEnv{IssueID: "issue-1", IsCrewLeader: true}); err != nil {
 		t.Fatalf("InjectRuntimeConfig failed: %v", err)
 	}
 	leader, err := os.ReadFile(filepath.Join(leaderDir, "AGENTS.md"))
@@ -1096,38 +1096,38 @@ func TestInjectRuntimeConfigAvailableCommandsCoreOnly(t *testing.T) {
 		t.Fatalf("failed to read leader AGENTS.md: %v", err)
 	}
 	for _, want := range []string{
-		"### Squad maintenance",
-		"multica squad member set-role <squad-id>",
+		"### Crew maintenance",
+		"orchestra crew member set-role <crew-id>",
 	} {
 		if !strings.Contains(string(leader), want) {
-			t.Errorf("squad-leader AGENTS.md missing %q\n---\n%s", want, leader)
+			t.Errorf("crew-leader AGENTS.md missing %q\n---\n%s", want, leader)
 		}
 	}
 
 	for _, banned := range []string{
-		"multica issue list [--status",
-		"multica issue label list",
-		"multica issue subscriber list",
+		"orchestra issue list [--status",
+		"orchestra issue label list",
+		"orchestra issue subscriber list",
 		"multica label list",
-		"multica workspace member list",
-		"multica agent list",
-		"multica squad list",
-		"multica issue runs",
-		"multica issue run-messages",
+		"orchestra workspace member list",
+		"orchestra agent list",
+		"orchestra crew list",
+		"orchestra issue runs",
+		"orchestra issue run-messages",
 		"multica attachment download",
 		"multica autopilot list",
 		"multica autopilot create",
 		"multica autopilot update",
 		"multica autopilot trigger",
 		"multica autopilot delete",
-		"multica project get",
-		"multica project resource list",
-		"multica issue assign",
-		"multica issue label add",
-		"multica issue label remove",
-		"multica issue subscriber add",
-		"multica issue subscriber remove",
-		"multica issue comment delete",
+		"orchestra project get",
+		"orchestra project resource list",
+		"orchestra issue assign",
+		"orchestra issue label add",
+		"orchestra issue label remove",
+		"orchestra issue subscriber add",
+		"orchestra issue subscriber remove",
+		"orchestra issue comment delete",
 		"multica label create",
 	} {
 		if strings.Contains(s, banned) {
@@ -1180,8 +1180,8 @@ func TestInjectRuntimeConfigNoSkills(t *testing.T) {
 	}
 
 	s := string(content)
-	if !strings.Contains(s, "multica issue get") {
-		t.Error("should reference multica CLI even without skills")
+	if !strings.Contains(s, "orchestra issue get") {
+		t.Error("should reference orchestra CLI even without skills")
 	}
 	if strings.Contains(s, "## Skills") {
 		t.Error("should not have Skills section when there are no skills")
@@ -1868,7 +1868,7 @@ func TestPrepareWithRepoContextOpencode(t *testing.T) {
 	}
 	s := string(content)
 	for _, want := range []string{
-		"multica repo checkout",
+		"orchestra repo checkout",
 		"https://github.com/org/backend",
 	} {
 		if !strings.Contains(s, want) {
@@ -1910,13 +1910,13 @@ func TestInjectRuntimeConfigRequiresExplicitCommentPost(t *testing.T) {
 			}
 			s := string(data)
 
-			// The workflow must contain an explicit `multica issue comment add`
+			// The workflow must contain an explicit `orchestra issue comment add`
 			// invocation for this issue — not just a prose mention of posting.
 			mustContain := []string{
 				// MUL-5442 cross-channel dedup: the brief states the loop shape; the
 				// ready-to-run commands with real ids live in the per-turn message.
 				// Pin the command NAME and the flag mnemonics, not full templates.
-				"post it with `multica issue comment add` using",
+				"post it with `orchestra issue comment add` using",
 				"mandatory",
 			}
 			for _, want := range mustContain {
@@ -1929,7 +1929,7 @@ func TestInjectRuntimeConfigRequiresExplicitCommentPost(t *testing.T) {
 			// output is not user-visible. This is the second line of defense
 			// in case the agent skips past the workflow steps.
 			for _, want := range []string{
-				"Final results MUST be delivered via `multica issue comment add`",
+				"Final results MUST be delivered via `orchestra issue comment add`",
 				"does NOT see your terminal output",
 			} {
 				if !strings.Contains(s, want) {
@@ -2018,7 +2018,7 @@ func TestInjectRuntimeConfigCommentGuardrailIsProviderAgnostic(t *testing.T) {
 // `--content-stdin` rule was kept for years to defend against backtick / `$()`
 // substitution in the body (MUL-2904), but the heredoc/flag boundary turned out
 // to be its own structural bug: when a model wrapped extra flags around the
-// heredoc on `multica issue create`, the flags were silently swallowed into
+// heredoc on `orchestra issue create`, the flags were silently swallowed into
 // stdin (OXY-78, OXY-76). The file path defeats both classes — the body never
 // reaches the shell, and all flags live on one shell-token line — and converges
 // the Linux/macOS template with the long-standing Windows file-only path.
@@ -2197,8 +2197,8 @@ func TestInjectRuntimeConfigAutopilotRunOnlyNoIssueWorkflow(t *testing.T) {
 	}
 
 	for _, absent := range []string{
-		"Run `multica issue get",
-		"Final results MUST be delivered via `multica issue comment add`",
+		"Run `orchestra issue get",
+		"Final results MUST be delivered via `orchestra issue comment add`",
 	} {
 		if strings.Contains(s, absent) {
 			t.Errorf("autopilot runtime config should not contain %q\n---\n%s", absent, s)
@@ -3322,7 +3322,7 @@ func TestEnsureCodexSandboxConfigDarwinFallsBack(t *testing.T) {
 
 // TestEnsureCodexSandboxConfigWindowsFallsBack pins MUL-4957: when a Windows
 // user has not opted into a native Codex sandbox, Codex cannot enforce
-// workspace-write and rejects mutation commands (e.g. `multica issue create`)
+// workspace-write and rejects mutation commands (e.g. `orchestra issue create`)
 // "by policy". The daemon therefore defaults Windows to danger-full-access and
 // emits no workspace-write keys.
 func TestEnsureCodexSandboxConfigWindowsFallsBack(t *testing.T) {
@@ -5022,19 +5022,19 @@ func TestInjectRuntimeConfigMentionLoopHardening(t *testing.T) {
 	})
 }
 
-// TestInjectRuntimeConfigSquadLeaderCommentTriggeredNoAction verifies that
-// when IsSquadLeader is true and the task is comment-triggered, the generated
+// TestInjectRuntimeConfigCrewLeaderCommentTriggeredNoAction verifies that
+// when IsCrewLeader is true and the task is comment-triggered, the generated
 // CLAUDE.md explicitly forbids posting comments that merely announce no_action.
-// This is the fix for MUL-2168 — squad leaders were posting "Exiting silently"
+// This is the fix for MUL-2168 — crew leaders were posting "Exiting silently"
 // comments because the comment-triggered path lacked the prohibition.
-func TestInjectRuntimeConfigSquadLeaderCommentTriggeredNoAction(t *testing.T) {
+func TestInjectRuntimeConfigCrewLeaderCommentTriggeredNoAction(t *testing.T) {
 	t.Parallel()
 
 	dir := t.TempDir()
 	ctx := TaskContextForEnv{
 		IssueID:          "issue-1",
 		TriggerCommentID: "comment-1",
-		IsSquadLeader:    true,
+		IsCrewLeader:    true,
 	}
 	if _, err := InjectRuntimeConfig(dir, "claude", ctx); err != nil {
 		t.Fatalf("InjectRuntimeConfig failed: %v", err)
@@ -5045,28 +5045,28 @@ func TestInjectRuntimeConfigSquadLeaderCommentTriggeredNoAction(t *testing.T) {
 	}
 	s := string(data)
 
-	// The comment-triggered workflow must contain the squad leader no_action rule.
+	// The comment-triggered workflow must contain the crew leader no_action rule.
 	for _, want := range []string{
-		"Squad leader rule",
+		"Crew leader rule",
 		"DO NOT post any comment",
-		"multica squad activity",
+		"orchestra crew activity",
 	} {
 		if !strings.Contains(s, want) {
-			t.Errorf("squad leader comment-triggered CLAUDE.md missing %q", want)
+			t.Errorf("crew leader comment-triggered CLAUDE.md missing %q", want)
 		}
 	}
 
 	// The Output section must use strong prohibition language.
 	if !strings.Contains(s, "you MUST exit without posting any comment") {
-		t.Errorf("Output section missing strong prohibition for squad leader no_action")
+		t.Errorf("Output section missing strong prohibition for crew leader no_action")
 	}
 
-	// Non-squad-leader should NOT have the squad leader rule in comment-triggered path.
+	// Non-crew-leader should NOT have the crew leader rule in comment-triggered path.
 	dir2 := t.TempDir()
 	ctx2 := TaskContextForEnv{
 		IssueID:          "issue-1",
 		TriggerCommentID: "comment-1",
-		IsSquadLeader:    false,
+		IsCrewLeader:    false,
 	}
 	if _, err := InjectRuntimeConfig(dir2, "claude", ctx2); err != nil {
 		t.Fatalf("InjectRuntimeConfig failed: %v", err)
@@ -5076,8 +5076,8 @@ func TestInjectRuntimeConfigSquadLeaderCommentTriggeredNoAction(t *testing.T) {
 		t.Fatalf("read CLAUDE.md: %v", err)
 	}
 	s2 := string(data2)
-	if strings.Contains(s2, "Squad leader rule") {
-		t.Errorf("non-squad-leader CLAUDE.md should NOT contain squad leader rule")
+	if strings.Contains(s2, "Crew leader rule") {
+		t.Errorf("non-crew-leader CLAUDE.md should NOT contain crew leader rule")
 	}
 }
 
@@ -5466,7 +5466,7 @@ func TestInjectRuntimeConfigBriefOmitsResumedThreadAnchor(t *testing.T) {
 		"No other new comments on this issue since your last run",
 		"If your reply depends on thread context",
 		"do not rely only on resumed session memory",
-		"multica issue comment list " + issueID + " --thread thread-root-1 --tail 30 --output json",
+		"orchestra issue comment list " + issueID + " --thread thread-root-1 --tail 30 --output json",
 	} {
 		if !strings.Contains(hint, want) {
 			t.Errorf("resumed hint missing %q\n---\n%s", want, hint)
@@ -5519,7 +5519,7 @@ func TestInjectRuntimeConfigAssignmentTriggerScansRootsFirst(t *testing.T) {
 		}
 	}
 	for _, banned := range []string{
-		"multica issue comment list issue-1 --output json",
+		"orchestra issue comment list issue-1 --output json",
 		"read the full comment history",
 		"read the full history page-by-page",
 		"`--recent` is a way to read the full history",
@@ -5582,7 +5582,7 @@ func TestInjectRuntimeConfigCatchUpScansRootsFirst(t *testing.T) {
 
 	// The workflow steps must not hand the agent a ready-to-paste bulk read;
 	// that is what made the mandatory step pull whole histories.
-	if strings.Contains(s, "multica issue comment list issue-1 --recent") {
+	if strings.Contains(s, "orchestra issue comment list issue-1 --recent") {
 		t.Errorf("workflow steps must not present an issue-scoped --recent command\n---\n%s", s)
 	}
 	// The saturation warning belongs to the flag reference, which introduces
@@ -5621,9 +5621,9 @@ func TestInjectRuntimeConfigIssueMetadataSectionScope(t *testing.T) {
 	// CLI when an agent decides to read or write metadata outside the
 	// numbered workflow.
 	coreDiscoveryLines := []string{
-		"multica issue metadata list <issue-id>",
-		"multica issue metadata set <issue-id> --key <k> --value <v> [--type string|number|bool]",
-		"multica issue metadata delete <issue-id> --key <k>",
+		"orchestra issue metadata list <issue-id>",
+		"orchestra issue metadata set <issue-id> --key <k> --value <v> [--type string|number|bool]",
+		"orchestra issue metadata delete <issue-id> --key <k>",
 	}
 
 	type wantSection struct {
@@ -5652,12 +5652,12 @@ func TestInjectRuntimeConfigIssueMetadataSectionScope(t *testing.T) {
 			// state (owner decision on MUL-5442), not a vocabulary the
 			// platform curates in every brief.
 			"never secrets or long content",
-			"multica issue metadata delete",
+			"orchestra issue metadata delete",
 			"the `multica-working-on-issues` skill",
 		},
 	}
 	withoutSection := wantSection{
-		// We can't simply require `multica issue metadata list` absent
+		// We can't simply require `orchestra issue metadata list` absent
 		// because the Available Commands → Core discovery line is
 		// global (it uses `<issue-id>` placeholder text). What MUST be
 		// absent is the semantic section itself plus the workflow-step
@@ -5695,7 +5695,7 @@ func TestInjectRuntimeConfigIssueMetadataSectionScope(t *testing.T) {
 			provider: "claude",
 			filename: "CLAUDE.md",
 			workflowStepPresent: []string{
-				"Read the metadata bag (`multica issue metadata list`)",
+				"Read the metadata bag (`orchestra issue metadata list`)",
 				// Platform failure semantics, not tool mechanics: a failed
 				// metadata read must never block the main task (MUL-5442
 				// stage-1 review).
@@ -5708,8 +5708,8 @@ func TestInjectRuntimeConfigIssueMetadataSectionScope(t *testing.T) {
 				// Exit step must show both write and delete, not just
 				// "set" — stale-key cleanup is the half that keeps
 				// metadata from rotting.
-				"multica issue metadata set",
-				"multica issue metadata delete",
+				"orchestra issue metadata set",
+				"orchestra issue metadata delete",
 				"Before exiting",
 			},
 			want: withSection,
@@ -5720,11 +5720,11 @@ func TestInjectRuntimeConfigIssueMetadataSectionScope(t *testing.T) {
 			provider: "claude",
 			filename: "CLAUDE.md",
 			workflowStepPresent: []string{
-				"Read the metadata bag (`multica issue metadata list`)",
+				"Read the metadata bag (`orchestra issue metadata list`)",
 				"What to look for: `## Issue Metadata`",
 				"the bar in `## Issue Metadata`",
-				"multica issue metadata set",
-				"multica issue metadata delete",
+				"orchestra issue metadata set",
+				"orchestra issue metadata delete",
 				"Before exiting",
 			},
 			want: withSection,
@@ -5840,7 +5840,7 @@ func TestInjectRuntimeConfigIssueMetadataCodexFormattingUnchanged(t *testing.T) 
 		if !strings.Contains(s, "## Issue Metadata") {
 			t.Fatalf("Issue Metadata section missing\n---\n%s", s)
 		}
-		if !strings.Contains(s, "Read the metadata bag (`multica issue metadata list`)") {
+		if !strings.Contains(s, "Read the metadata bag (`orchestra issue metadata list`)") {
 			t.Fatalf("metadata list step missing\n---\n%s", s)
 		}
 		// ...AND the post-#4182 file-first rule is still emitted on Linux.

@@ -18,7 +18,7 @@ import type { IssueAssigneeType, UpdateIssueRequest } from "@orchestra/core/type
 import { useUpdateIssue, useBatchUpdateIssues } from "@orchestra/core/issues/mutations";
 import { useActorName } from "@orchestra/core/workspace/hooks";
 import { useWorkspaceId } from "@orchestra/core/hooks";
-import { agentListOptions, squadListOptions } from "@orchestra/core/workspace/queries";
+import { agentListOptions, crewListOptions } from "@orchestra/core/workspace/queries";
 import { runtimeListOptions, readRuntimeCliVersion, handoffSupported } from "@orchestra/core/runtimes";
 import { useShortcut, shortcutMatchesEvent, isPlainShortcut } from "@orchestra/core/shortcuts";
 import { isImeComposing } from "@orchestra/core/utils";
@@ -47,7 +47,7 @@ function boldName(text: string): ReactNode {
 
 interface RunConfirmData {
   issueIds?: string[];
-  // Assign is the only mode: agent/squad assignment is the sole issue write that
+  // Assign is the only mode: agent/crew assignment is the sole issue write that
   // needs the pre-trigger confirmation. Batch status changes apply directly now
   // (MUL-4155), so there is no "status" mode.
   mode?: "assign";
@@ -97,26 +97,26 @@ export function RunConfirmModal({
   const batchUpdate = useBatchUpdateIssues();
 
   // Handoff-support verdict, resolved entirely from warm client caches
-  // (useWorkspacePresencePrefetch keeps agents / squads / runtimes hot), so the
+  // (useWorkspacePresencePrefetch keeps agents / crews / runtimes hot), so the
   // note box settles on the first frame with no round-trip — the same shape as
   // the quick-create version gate. An agent assignee targets its own runtime; a
-  // squad targets its leader's, which the squad list gives us directly, so both
+  // crew targets its leader's, which the crew list gives us directly, so both
   // are knowable locally. `null` means "cannot tell" (assignee not in cache
   // yet, or no runtime bound) and leaves the box enabled: the note is a soft
   // gate, and a spurious warning is worse than a note an old daemon drops.
   const wsId = useWorkspaceId();
   const { data: agents = [] } = useQuery({ ...agentListOptions(wsId), enabled: !!wsId });
   const { data: runtimes = [] } = useQuery({ ...runtimeListOptions(wsId), enabled: !!wsId });
-  const { data: squads = [] } = useQuery({ ...squadListOptions(wsId), enabled: !!wsId });
+  const { data: crews = [] } = useQuery({ ...crewListOptions(wsId), enabled: !!wsId });
   const localHandoff = useMemo<boolean | null>(() => {
     if (!d.assigneeId) return null;
     let agentId: string | undefined;
     if (d.assigneeType === "agent") {
       agentId = d.assigneeId;
-    } else if (d.assigneeType === "squad") {
-      // A squad run is executed by its leader, so the leader's runtime is the
+    } else if (d.assigneeType === "crew") {
+      // A crew run is executed by its leader, so the leader's runtime is the
       // one that has to render the note.
-      agentId = squads.find((s) => s.id === d.assigneeId)?.leader_id;
+      agentId = crews.find((s) => s.id === d.assigneeId)?.leader_id;
     }
     if (!agentId) return null;
     const agent = agents.find((a) => a.id === agentId);
@@ -124,7 +124,7 @@ export function RunConfirmModal({
     const runtime = runtimes.find((r) => r.id === agent.runtime_id);
     if (!runtime) return null;
     return handoffSupported(readRuntimeCliVersion(runtime.metadata));
-  }, [d.assigneeType, d.assigneeId, agents, runtimes, squads]);
+  }, [d.assigneeType, d.assigneeId, agents, runtimes, crews]);
 
   // Soft gate: an old runtime can't render the note. Disable the box but let
   // the assignment proceed (MUL-3375 §6.3).
@@ -138,11 +138,11 @@ export function RunConfirmModal({
     return { ...base, ...extra };
   };
 
-  // The copy names whoever the issue is handed to; for a squad that is the
-  // squad itself, since its leader deciding who works is an internal detail.
+  // The copy names whoever the issue is handed to; for a crew that is the
+  // crew itself, since its leader deciding who works is an internal detail.
   const assigneeName =
     d.assigneeName ??
-    getActorName(d.assigneeType === "squad" ? "squad" : "agent", d.assigneeId ?? "");
+    getActorName(d.assigneeType === "crew" ? "crew" : "agent", d.assigneeId ?? "");
 
   const submit = async (suppressRun: boolean) => {
     if (issueIds.length === 0 || submitting) return;

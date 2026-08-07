@@ -397,7 +397,7 @@ export function useIssueSurfaceController({
           ...(scope.actorKind === "members"
             ? { assignee_types: ["member" as const] }
             : scope.actorKind === "agents"
-              ? { assignee_types: ["agent" as const, "squad" as const] }
+              ? { assignee_types: ["agent" as const, "crew" as const] }
               : {}),
         };
         break;

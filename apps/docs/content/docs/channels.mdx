@@ -66,8 +66,8 @@ After disconnecting, the Bot stops receiving new messages. Existing Multica conv
 A self-hosted deployment must configure a 32-byte encryption key for each platform before Multica opens its connection entry point:
 
 ```dotenv
-MULTICA_LARK_SECRET_KEY=<base64-encoded 32-byte key>
-MULTICA_SLACK_SECRET_KEY=<base64-encoded 32-byte key>
+ORCHESTRA_LARK_SECRET_KEY=<base64-encoded 32-byte key>
+ORCHESTRA_SLACK_SECRET_KEY=<base64-encoded 32-byte key>
 ```
 
 These keys encrypt stored Bot credentials. See [Environment variables](/environment-variables) for how to generate, store, and rotate them. Multica Cloud already has this configured.

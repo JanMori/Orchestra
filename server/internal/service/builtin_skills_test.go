@@ -127,7 +127,7 @@ func TestBuiltinSkillsFrontmatterIsStrictYAML(t *testing.T) {
 
 // TestMentioningSkillFollowsContractFrontmatter locks the reference template:
 // the mentioning skill is a context-triggered platform-contract skill, so it
-// must declare user-invocable:false and fence itself to the multica CLI. New
+// must declare user-invocable:false and fence itself to the orchestra CLI. New
 // contract skills should copy this shape.
 func TestMentioningSkillFollowsContractFrontmatter(t *testing.T) {
 	skill, ok := findSkill(t, "multica-mentioning")
@@ -219,14 +219,14 @@ func TestWorkingOnIssuesSkillCoversIssueLoopContracts(t *testing.T) {
 		t.Errorf("user-invocable = %q, want false (issue workflow guidance triggers from context)", got)
 	}
 	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(multica *)") {
-		t.Errorf("allowed-tools = %q, want access to the Multica CLI", got)
+		t.Errorf("allowed-tools = %q, want access to the Orchestra CLI", got)
 	}
 
 	// Contract anchors only — exact file:line citations live in the skill's
 	// references/source-map.md, not here, so a downstream main merge that
 	// shifts a line cannot rot this test into pinning a stale lie.
 	mustContain := []string{
-		"multica issue pull-requests <issue-id> --output json",
+		"orchestra issue pull-requests <issue-id> --output json",
 		"Default for code-changing issue work",
 		"open or update a PR before posting the final Multica issue comment",
 		"This is a default, not",
@@ -245,7 +245,7 @@ func TestWorkingOnIssuesSkillCoversIssueLoopContracts(t *testing.T) {
 		"`todo` starts work now, `backlog` parks it",
 		"`--stage <N>`",
 		"when a whole stage finishes",
-		"multica issue status <child-id> todo",
+		"orchestra issue status <child-id> todo",
 		// MUL-5442: the brief's Issue Metadata section defers the full
 		// write discipline here. Every relocated ban is anchored
 		// individually — both defining categories AND each example —
@@ -277,10 +277,10 @@ func TestWorkingOnIssuesSkillCoversIssueLoopContracts(t *testing.T) {
 		"scratchpad for run state",
 		"(`pr_url`, `waiting_on`",
 		"Start from the trigger, not from memory",
-		"multica issue get <issue-id> --output json",
-		"multica issue metadata list <issue-id> --output json",
-		"multica issue comment list <issue-id> --thread <trigger-comment-id>",
-		"multica issue comment add <issue-id> --parent <trigger-comment-id>",
+		"orchestra issue get <issue-id> --output json",
+		"orchestra issue metadata list <issue-id> --output json",
+		"orchestra issue comment list <issue-id> --thread <trigger-comment-id>",
+		"orchestra issue comment add <issue-id> --parent <trigger-comment-id>",
 	}
 	for _, forbidden := range mustNotContain {
 		if strings.Contains(body, forbidden) {
@@ -304,11 +304,11 @@ func TestSkillImportingSkillCoversWorkspaceImportContracts(t *testing.T) {
 		t.Errorf("user-invocable = %q, want false (skill import guidance triggers from context)", got)
 	}
 	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(multica *)") {
-		t.Errorf("allowed-tools = %q, want access to the Multica CLI", got)
+		t.Errorf("allowed-tools = %q, want access to the Orchestra CLI", got)
 	}
 
 	mustContain := []string{
-		"multica skill import --url <url> --output json",
+		"orchestra skill import --url <url> --output json",
 		"/api/skills/import",
 		"clawhub.ai",
 		"skills.sh",
@@ -326,10 +326,10 @@ func TestSkillImportingSkillCoversWorkspaceImportContracts(t *testing.T) {
 		"id",
 		"name",
 		"legacy",
-		"multica skill list --output json",
+		"orchestra skill list --output json",
 		"npx skills add",
-		"multica agent skills add <agent-id> --skill-ids <skill-id> --output json",
-		"multica agent skills list <agent-id> --output json",
+		"orchestra agent skills add <agent-id> --skill-ids <skill-id> --output json",
+		"orchestra agent skills list <agent-id> --output json",
 		"replace-all",
 		"`set` is the replacement path",
 		"references/skill-importing-source-map.md",
@@ -341,7 +341,7 @@ func TestSkillImportingSkillCoversWorkspaceImportContracts(t *testing.T) {
 	}
 
 	mustNotContain := []string{
-		"multica agent skills set <agent-id> --skill-ids <skill-id>",
+		"orchestra agent skills set <agent-id> --skill-ids <skill-id>",
 		"merge the new skill id with the existing ids",
 	}
 	for _, forbidden := range mustNotContain {
@@ -366,7 +366,7 @@ func TestCreatingAgentsSkillCoversAgentCreationContracts(t *testing.T) {
 		t.Errorf("user-invocable = %q, want false (agent creation guidance triggers from context)", got)
 	}
 	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(multica *)") {
-		t.Errorf("allowed-tools = %q, want access to the Multica CLI", got)
+		t.Errorf("allowed-tools = %q, want access to the Orchestra CLI", got)
 	}
 
 	mustContain := []string{
@@ -374,14 +374,14 @@ func TestCreatingAgentsSkillCoversAgentCreationContracts(t *testing.T) {
 		"`description` is a catalog summary",
 		"`instructions` is the runtime behavior contract",
 		"`avatar_url` → a random `emoji:<glyph>`",
-		"multica agent create --name <name> --runtime-id <runtime-id>",
+		"orchestra agent create --name <name> --runtime-id <runtime-id>",
 		"`model` is a first-class persisted column",
 		"custom_env",
 		"--custom-env-stdin",
 		"--custom-env-file",
-		"multica agent skills add <agent-id> --skill-ids <skill-id> --output json",
-		"multica agent skills list <agent-id> --output json",
-		"multica agent get <agent-id> --output json",
+		"orchestra agent skills add <agent-id> --skill-ids <skill-id> --output json",
+		"orchestra agent skills list <agent-id> --output json",
+		"orchestra agent get <agent-id> --output json",
 		"255",
 		"references/creating-agents-source-map.md",
 	}
@@ -414,28 +414,28 @@ func TestCreatingAgentsSkillCoversAgentCreationContracts(t *testing.T) {
 	}
 }
 
-func TestSquadsSkillCoversLeaderRoutingContract(t *testing.T) {
-	skill, ok := findSkill(t, "multica-squads")
+func TestCrewsSkillCoversLeaderRoutingContract(t *testing.T) {
+	skill, ok := findSkill(t, "multica-crews")
 	if !ok {
 		return
 	}
 	fm, body, _ := splitFrontmatter(skill.Content)
 
 	if got := strings.TrimSpace(fm["user-invocable"]); got != "false" {
-		t.Errorf("user-invocable = %q, want false (squad guidance triggers from context)", got)
+		t.Errorf("user-invocable = %q, want false (crew guidance triggers from context)", got)
 	}
 	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(multica *)") {
-		t.Errorf("allowed-tools = %q, want access to the Multica CLI", got)
+		t.Errorf("allowed-tools = %q, want access to the Orchestra CLI", got)
 	}
 
 	mustContain := []string{
-		"A squad is not an agent",
-		"squad's `leader_id` agent",
-		"squad members are not automatically fanned out",
-		"multica squad member set-role",
-		"mention://squad/<squad-id>",
-		"recording squad activity",
-		"references/squad-source-map.md",
+		"A crew is not an agent",
+		"crew's `leader_id` agent",
+		"crew members are not automatically fanned out",
+		"orchestra crew member set-role",
+		"mention://crew/<crew-id>",
+		"recording crew activity",
+		"references/crew-source-map.md",
 		// The debugging quick-start must stay a bounded two-step read
 		// (MUL-5442): a roots-only scan alone never returns reply bodies,
 		// where mention triggers and failure reasons usually live — and it
@@ -446,7 +446,7 @@ func TestSquadsSkillCoversLeaderRoutingContract(t *testing.T) {
 	}
 	for _, want := range mustContain {
 		if !strings.Contains(body, want) {
-			t.Errorf("squads skill missing %q", want)
+			t.Errorf("crews skill missing %q", want)
 		}
 	}
 
@@ -455,16 +455,16 @@ func TestSquadsSkillCoversLeaderRoutingContract(t *testing.T) {
 	// `issue comment list` in the CLI section; both shapes contradict the
 	// brief's "two bounded reads, never one bulk pull" doctrine.
 	for _, banned := range []string{
-		"multica issue comment list <issue-id> --output json",
+		"orchestra issue comment list <issue-id> --output json",
 		"--recent 10",
 	} {
 		if strings.Contains(body, banned) {
-			t.Errorf("squads skill carries the unbounded comment read %q (MUL-5696)", banned)
+			t.Errorf("crews skill carries the unbounded comment read %q (MUL-5696)", banned)
 		}
 	}
 
-	if !skillHasFile(skill, "references/squad-source-map.md") {
-		t.Errorf("squads skill missing supporting file references/squad-source-map.md")
+	if !skillHasFile(skill, "references/crew-source-map.md") {
+		t.Errorf("crews skill missing supporting file references/crew-source-map.md")
 	}
 }
 
@@ -479,7 +479,7 @@ func TestAutopilotsSkillCoversDispatchAndSideEffects(t *testing.T) {
 		t.Errorf("user-invocable = %q, want false", got)
 	}
 	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(multica *)") {
-		t.Errorf("allowed-tools = %q, want access to the Multica CLI", got)
+		t.Errorf("allowed-tools = %q, want access to the Orchestra CLI", got)
 	}
 
 	mustContain := []string{
@@ -491,7 +491,7 @@ func TestAutopilotsSkillCoversDispatchAndSideEffects(t *testing.T) {
 		"Do not run `trigger`",
 		"webhook tokens",
 		"{{date}}",
-		"squad's leader agent",
+		"crew's leader agent",
 		"references/autopilots-source-map.md",
 	}
 	for _, want := range mustContain {
@@ -515,14 +515,14 @@ func TestRuntimesAndReposSkillCoversClaimAndCheckoutChain(t *testing.T) {
 		t.Errorf("user-invocable = %q, want false", got)
 	}
 	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(multica *)") {
-		t.Errorf("allowed-tools = %q, want access to the Multica CLI", got)
+		t.Errorf("allowed-tools = %q, want access to the Orchestra CLI", got)
 	}
 
 	mustContain := []string{
 		"agent_task_queue",
 		"daemon polls/claims the task",
 		"multica runtime list --output json",
-		"multica repo checkout <url>",
+		"orchestra repo checkout <url>",
 		"ORCHESTRA_DAEMON_PORT",
 		"resource_ref.ref",
 		"github_repo",
@@ -551,16 +551,16 @@ func TestProjectsAndResourcesSkillCoversDurableContext(t *testing.T) {
 		t.Errorf("user-invocable = %q, want false", got)
 	}
 	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(multica *)") {
-		t.Errorf("allowed-tools = %q, want access to the Multica CLI", got)
+		t.Errorf("allowed-tools = %q, want access to the Orchestra CLI", got)
 	}
 
 	mustContain := []string{
 		"Projects are durable context containers",
 		".multica/project/resources.json",
-		"multica project resource list <project-id> --output json",
-		"multica project resource add <project-id> --type github_repo --url <github-url> --output json",
-		"multica project resource add <project-id> --type github_repo --url <github-url> --ref <branch-or-sha> --output json",
-		"multica project resource add <project-id> --type local_directory",
+		"orchestra project resource list <project-id> --output json",
+		"orchestra project resource add <project-id> --type github_repo --url <github-url> --output json",
+		"orchestra project resource add <project-id> --type github_repo --url <github-url> --ref <branch-or-sha> --output json",
+		"orchestra project resource add <project-id> --type local_directory",
 		"Project resources are durable and affect future tasks",
 		"github_repo.resource_ref.url",
 		"resource_ref.ref",

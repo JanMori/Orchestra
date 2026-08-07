@@ -27,17 +27,17 @@ Agents execute work on the computers you connect. Open **Configure → Runtimes*
 
   ```bash
   curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash
-  multica setup
+  orchestra setup
   ```
 
   **Windows PowerShell**
 
   ```powershell
   irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex
-  multica setup
+  orchestra setup
   ```
 
-  `multica setup` opens a browser to complete sign-in, then leaves the daemon running in the background. Once the daemon is online, the dialog usually detects the computer within a minute.
+  `orchestra setup` opens a browser to complete sign-in, then leaves the daemon running in the background. Once the daemon is online, the dialog usually detects the computer within a minute.
 
 **Success check**: an online computer appears in the runtime list.
 
@@ -82,8 +82,8 @@ After submitting, open the issue: the execution log shows the run status, and th
 
 | Symptom | Check first |
 |---|---|
-| No runtime found | Confirm the AI coding tool is installed and runs in a terminal. On Desktop, click **Refresh**; on the CLI path, rerun `multica setup`. |
-| Runtime shows offline | Keep Desktop open; on the CLI path, run `multica daemon status`, and `multica daemon start` if it is not running. |
+| No runtime found | Confirm the AI coding tool is installed and runs in a terminal. On Desktop, click **Refresh**; on the CLI path, rerun `orchestra setup`. |
+| Runtime shows offline | Keep Desktop open; on the CLI path, run `orchestra daemon status`, and `orchestra daemon start` if it is not running. |
 | Issue stays queued | Confirm the runtime the agent uses is online. When a runtime hits its concurrency limit, new tasks keep queueing. |
 
 For more cases, see [Troubleshooting](/troubleshooting).

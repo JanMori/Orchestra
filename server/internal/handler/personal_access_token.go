@@ -18,7 +18,7 @@ import (
 // eligible for an in-place renewal. The daemon polls every ~3 days, so a 7-day
 // threshold guarantees at least one renewal attempt while the token still has
 // ≥ 4 days of validity left — enough margin to absorb a transient network
-// failure before the user actually has to re-run `multica login`.
+// failure before the user actually has to re-run `orchestra login`.
 const PATRenewThreshold = 7 * 24 * time.Hour
 
 // PATRenewExtension is how far into the future a renewed PAT's expires_at is

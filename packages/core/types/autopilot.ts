@@ -3,10 +3,10 @@ export type AutopilotStatus = "active" | "paused" | "archived";
 export type AutopilotExecutionMode = "create_issue" | "run_only";
 
 // `assignee_type` selects which polymorphic actor backs the autopilot:
-// "agent" → assignee_id references agent(id); "squad" → assignee_id references
-// squad(id) and dispatch resolves to squad.leader_id at run time (MUL-2429,
+// "agent" → assignee_id references agent(id); "crew" → assignee_id references
+// crew(id) and dispatch resolves to crew.leader_id at run time (MUL-2429,
 // Path A). Older servers omit this field — callers should default to "agent".
-export type AutopilotAssigneeType = "agent" | "squad";
+export type AutopilotAssigneeType = "agent" | "crew";
 
 export type AutopilotTriggerKind = "schedule" | "webhook" | "api";
 
@@ -101,7 +101,7 @@ export interface AutopilotTrigger {
   // "/api/webhooks/autopilots/{token}"). Optional so older servers can be
   // talked to gracefully.
   webhook_path?: string | null;
-  // webhook_url is only present when MULTICA_PUBLIC_URL is configured
+  // webhook_url is only present when ORCHESTRA_PUBLIC_URL is configured
   // server-side. Clients fall back to composing from getBaseUrl/origin +
   // webhook_path when this is missing.
   webhook_url?: string | null;

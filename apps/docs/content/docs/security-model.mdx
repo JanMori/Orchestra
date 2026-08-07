@@ -37,7 +37,7 @@ These are real, but they are conveniences and blast-radius reduction — not a s
 
 - **Per-task working directory.** Each task gets its own workdir under `~/multica_workspaces/`, so concurrent tasks do not collide on the same checkout.
 - **Per-task agent state.** Codex tasks get a task-scoped `CODEX_HOME` holding config, sessions, and skills, so per-task settings do not pollute your `~/.codex/`.
-- **Task-scoped API tokens.** The `MULTICA_TOKEN` handed to a task is bound to that agent and that task by the server, so a task cannot act as you or as another agent through the Multica API.
+- **Task-scoped API tokens.** The `ORCHESTRA_TOKEN` handed to a task is bound to that agent and that task by the server, so a task cannot act as you or as another agent through the Multica API.
 
 ## What is not a boundary
 
@@ -53,7 +53,7 @@ On Linux, Codex tasks previously ran under the `workspace-write` sandbox with a 
 The daemon logs the effective sandbox mode at warn level when a task starts unsandboxed:
 
 ```bash
-multica daemon logs --lines 200 | grep "codex sandbox"
+orchestra daemon logs --lines 200 | grep "codex sandbox"
 ```
 
 To confirm the effective Codex configuration, read the managed block in the task's `config.toml` under the task's `CODEX_HOME` — the section between the `# BEGIN multica-managed` and `# END multica-managed` markers is written by the daemon on every run.

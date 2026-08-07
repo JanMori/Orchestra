@@ -127,7 +127,7 @@
       "goProjects": { "label": "前往项目", "description": "打开项目列表。" },
       "goAutopilots": { "label": "前往自动化", "description": "打开工作区自动化。" },
       "goAgents": { "label": "前往智能体", "description": "打开智能体列表。" },
-      "goSquads": { "label": "前往小队", "description": "打开小队列表。" },
+      "goCrews": { "label": "前往小组", "description": "打开小组列表。" },
       "goUsage": { "label": "前往用量", "description": "打开用量分析。" },
       "goRuntimes": { "label": "前往运行时", "description": "打开运行时配置。" },
       "goSkills": { "label": "前往 Skills", "description": "打开 skill 库。" },
@@ -357,7 +357,7 @@
   },
   "tokens": {
     "title": "API Token",
-    "description": "个人访问 token 让 CLI 和外部集成可以代表你的账号进行身份验证。可通过 multica login --token 使用，或在调用 API 时作为 Bearer token 发送。",
+    "description": "个人访问 token 让 CLI 和外部集成可以代表你的账号进行身份验证。可通过 orchestra login --token 使用，或在调用 API 时作为 Bearer token 发送。",
     "security_note": "Token 拥有你账号的完整访问权限，请像密码一样妥善保管。",
     "empty": "还没有 API token。在上方创建一个即可开始使用。",
     "load_failed": "无法加载 API token，请刷新页面重试。",

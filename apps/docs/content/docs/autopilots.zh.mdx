@@ -15,7 +15,7 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 - **名称**：说明这条自动化负责什么；
 - **Runbook**：智能体每次运行时读取的目标、背景、约束和步骤；
-- **执行方**：一个智能体或小队；
+- **执行方**：一个智能体或小组；
 - **关联项目**：可选，让自动创建的 issue 进入指定项目；
 - **输出模式**：创建 issue，或仅运行；
 - **订阅者**：自动创建 issue 后需要收到通知的成员；
@@ -61,7 +61,7 @@ Cron 不包含秒，时区使用 `Asia/Shanghai` 这样的 IANA 名称。保存�
 添加 Webhook 触发器后，Multica 会生成一个唯一 URL。向它发送 JSON 对象或数组，即可触发自动化：
 
 ```bash
-curl -X POST "$MULTICA_WEBHOOK_URL" \
+curl -X POST "$ORCHESTRA_WEBHOOK_URL" \
   -H "Content-Type: application/json" \
   -H "Idempotency-Key: demo-001" \
   -d '{"event":"build.completed","eventPayload":{"status":"success"}}'

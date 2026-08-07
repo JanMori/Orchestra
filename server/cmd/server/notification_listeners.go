@@ -519,7 +519,7 @@ func notifyMentionedMembers(
 	recipientIDs := map[string]bool{}
 
 	hasAll := false
-	var squadIDs []string
+	var crewIDs []string
 	for _, m := range mentions {
 		if m.Type == "all" {
 			hasAll = true
@@ -528,22 +528,22 @@ func notifyMentionedMembers(
 		if m.Type == "member" {
 			recipientIDs[m.ID] = true
 		}
-		if m.Type == "squad" {
-			squadIDs = append(squadIDs, m.ID)
+		if m.Type == "crew" {
+			crewIDs = append(crewIDs, m.ID)
 		}
 	}
 
-	// Expand each @squad mention to its human members. Agent members of a
-	// squad are reached via comment-trigger / assignment paths, not the
+	// Expand each @crew mention to its human members. Agent members of a
+	// crew are reached via comment-trigger / assignment paths, not the
 	// mention-inbox path, so we only seed member-typed recipients here.
-	for _, sid := range squadIDs {
-		squadUUID, err := util.ParseUUID(sid)
+	for _, sid := range crewIDs {
+		crewUUID, err := util.ParseUUID(sid)
 		if err != nil {
 			continue
 		}
-		members, err := queries.ListSquadMembers(context.Background(), squadUUID)
+		members, err := queries.ListCrewMembers(context.Background(), crewUUID)
 		if err != nil {
-			slog.Error("failed to list squad members for @squad mention", "squad_id", sid, "error", err)
+			slog.Error("failed to list crew members for @crew mention", "crew_id", sid, "error", err)
 			continue
 		}
 		for _, sm := range members {

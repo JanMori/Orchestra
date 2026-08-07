@@ -67,20 +67,20 @@ Get-Command <command>
 
 把 `<command>` 换成表格中的命令，例如 `claude`、`codex` 或 `cursor-agent`。第一条命令返回可执行文件路径。
 
-如果终端能够找到工具，但 Desktop 或后台守护进程找不到，通常是两者使用的 `PATH` 不同。可以重启应用，或通过对应的 `MULTICA_<PROVIDER>_PATH` 环境变量指定绝对路径；完整配置见[环境变量](/environment-variables#守护进程配置)。
+如果终端能够找到工具，但 Desktop 或后台守护进程找不到，通常是两者使用的 `PATH` 不同。可以重启应用，或通过对应的 `ORCHESTRA_<PROVIDER>_PATH` 环境变量指定绝对路径；完整配置见[环境变量](/environment-variables#守护进程配置)。
 
 ## 4. 重新检测并确认上线
 
 使用 CLI 启动守护进程：
 
 ```bash
-multica daemon start
+orchestra daemon start
 ```
 
 如果守护进程已经运行，安装新工具后重新启动：
 
 ```bash
-multica daemon restart
+orchestra daemon restart
 ```
 
 使用 Multica Desktop 时，退出并重新打开应用即可。
@@ -97,7 +97,7 @@ multica daemon restart
 
 1. 在终端运行工具本身，确认安装和登录都已完成。
 2. 用 `command -v` 或 `Get-Command` 检查实际命令名和路径。
-3. 运行 `multica daemon logs -f`，查看版本、路径或认证错误。
+3. 运行 `orchestra daemon logs -f`，查看版本、路径或认证错误。
 4. 重启守护进程，让它重新读取当前环境。
 5. 回到**运行时**页面，确认电脑和工具都已上线。
 

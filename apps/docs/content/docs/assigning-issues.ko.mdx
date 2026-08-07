@@ -66,14 +66,14 @@ Multica가 에이전트의 [실행 태스크](/tasks)를 만듭니다. 온라인
 ## CLI 사용
 
 ```bash
-multica issue assign MUL-42 --to "Agent name"
-multica issue assign MUL-42 --unassign
+orchestra issue assign MUL-42 --to "Agent name"
+orchestra issue assign MUL-42 --unassign
 ```
 
-스크립트에서는 `--to-id <uuid>`를 사용하면 이름이 같은 객체를 잘못 매칭하는 일을 피할 수 있습니다. UUID는 `multica agent list --output json` 또는 `multica workspace member list --output json`으로 확인합니다.
+스크립트에서는 `--to-id <uuid>`를 사용하면 이름이 같은 객체를 잘못 매칭하는 일을 피할 수 있습니다. UUID는 `orchestra agent list --output json` 또는 `orchestra workspace member list --output json`으로 확인합니다.
 
 ## 다음 단계
 
 - [댓글에서 에이전트 @멘션하기](/mentioning-agents) — 담당자를 바꾸지 않고 새 문제를 처리합니다.
 - [실행 태스크](/tasks) — 큐 대기, 재시도, 중지 규칙을 확인합니다.
-- [스쿼드](/squads) — 리더가 여러 에이전트를 조율하게 합니다.
+- [스쿼드](/crews) — 리더가 여러 에이전트를 조율하게 합니다.

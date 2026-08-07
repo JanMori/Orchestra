@@ -128,7 +128,7 @@ type AgentTaskQueue struct {
 	InitiatorUserID       pgtype.UUID        `json:"initiator_user_id"`
 	HandoffNote           pgtype.Text        `json:"handoff_note"`
 	PrepareLeaseExpiresAt pgtype.Timestamptz `json:"prepare_lease_expires_at"`
-	SquadID               pgtype.UUID        `json:"squad_id"`
+	CrewID               pgtype.UUID        `json:"crew_id"`
 	// Per-task MCP servers computed at dispatch time, merged on top of agent.mcp_config. Currently used by Composio integration to inject the initiator user's session URL. Cleared after task completes via trg_clear_runtime_mcp_overlay.
 	RuntimeMcpOverlay   []byte             `json:"runtime_mcp_overlay"`
 	EscalationForTaskID pgtype.UUID        `json:"escalation_for_task_id"`
@@ -238,7 +238,7 @@ type AutopilotRun struct {
 	TriggerPayload    []byte             `json:"trigger_payload"`
 	Result            []byte             `json:"result"`
 	CreatedAt         pgtype.Timestamptz `json:"created_at"`
-	SquadID           pgtype.UUID        `json:"squad_id"`
+	CrewID           pgtype.UUID        `json:"crew_id"`
 	PlannedAt         pgtype.Timestamptz `json:"planned_at"`
 	WebhookDeliveryID pgtype.UUID        `json:"webhook_delivery_id"`
 }
@@ -934,7 +934,7 @@ type SkillToLabel struct {
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
-type Squad struct {
+type Crew struct {
 	ID           pgtype.UUID        `json:"id"`
 	WorkspaceID  pgtype.UUID        `json:"workspace_id"`
 	Name         string             `json:"name"`
@@ -949,9 +949,9 @@ type Squad struct {
 	Instructions string             `json:"instructions"`
 }
 
-type SquadMember struct {
+type CrewMember struct {
 	ID         pgtype.UUID        `json:"id"`
-	SquadID    pgtype.UUID        `json:"squad_id"`
+	CrewID    pgtype.UUID        `json:"crew_id"`
 	MemberType string             `json:"member_type"`
 	MemberID   pgtype.UUID        `json:"member_id"`
 	Role       string             `json:"role"`

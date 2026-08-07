@@ -107,7 +107,7 @@ func (h *Handler) resolveIssueTableGroup(w http.ResponseWriter, r *http.Request,
 			groupSortExpr: `LOWER(COALESCE(CASE split_part(group_value, ':', 1)
   WHEN 'member' THEN (SELECT u.name FROM "user" u WHERE u.id = split_part(group_value, ':', 2)::uuid)
   WHEN 'agent' THEN (SELECT a.name FROM agent a WHERE a.workspace_id = $1 AND a.id = split_part(group_value, ':', 2)::uuid)
-  WHEN 'squad' THEN (SELECT s.name FROM squad s WHERE s.workspace_id = $1 AND s.id = split_part(group_value, ':', 2)::uuid)
+  WHEN 'crew' THEN (SELECT s.name FROM crew s WHERE s.workspace_id = $1 AND s.id = split_part(group_value, ':', 2)::uuid)
 END, ''))`,
 		}, true
 	case "project":
@@ -261,7 +261,7 @@ func (group resolvedIssueTableGroup) orderExpression(addArg func(any) string) st
 	case "status":
 		return "CASE group_value WHEN 'backlog' THEN 0 WHEN 'todo' THEN 1 WHEN 'in_progress' THEN 2 WHEN 'in_review' THEN 3 WHEN 'done' THEN 4 WHEN 'blocked' THEN 5 WHEN 'cancelled' THEN 6 ELSE 7 END"
 	case "assignee":
-		return "CASE split_part(group_value, ':', 1) WHEN 'member' THEN 0 WHEN 'agent' THEN 1 WHEN 'squad' THEN 2 ELSE 3 END"
+		return "CASE split_part(group_value, ':', 1) WHEN 'member' THEN 0 WHEN 'agent' THEN 1 WHEN 'crew' THEN 2 ELSE 3 END"
 	case "project":
 		return "CASE WHEN group_value = '__no_project__' THEN 0 ELSE 1 END"
 	case "parent":

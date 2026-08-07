@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { api } from "../api";
-import type { Agent, Squad, Workspace } from "../types";
+import type { Agent, Crew, Workspace } from "../types";
 
 export const workspaceKeys = {
   all: (wsId: string) => ["workspaces", wsId] as const,
@@ -9,12 +9,12 @@ export const workspaceKeys = {
   invitations: (wsId: string) => ["workspaces", wsId, "invitations"] as const,
   myInvitations: () => ["invitations", "mine"] as const,
   agents: (wsId: string) => ["workspaces", wsId, "agents"] as const,
-  squads: (wsId: string) => ["workspaces", wsId, "squads"] as const,
-  // Per-squad member status. Lives under the workspace key tree so
+  crews: (wsId: string) => ["workspaces", wsId, "crews"] as const,
+  // Per-crew member status. Lives under the workspace key tree so
   // workspace switches naturally drop the cache, and so a broad
-  // `["workspaces", wsId, "squads"]` invalidation covers it.
-  squadMemberStatus: (wsId: string, squadId: string) =>
-    ["workspaces", wsId, "squads", squadId, "members-status"] as const,
+  // `["workspaces", wsId, "crews"]` invalidation covers it.
+  crewMemberStatus: (wsId: string, crewId: string) =>
+    ["workspaces", wsId, "crews", crewId, "members-status"] as const,
   skills: (wsId: string) => ["workspaces", wsId, "skills"] as const,
   assigneeFrequency: (wsId: string) => ["workspaces", wsId, "assignee-frequency"] as const,
 };
@@ -49,23 +49,23 @@ export function agentListOptions(wsId: string) {
   });
 }
 
-export function squadListOptions(wsId: string) {
-  return queryOptions<Squad[]>({
-    queryKey: workspaceKeys.squads(wsId),
-    queryFn: () => api.listSquads(),
+export function crewListOptions(wsId: string) {
+  return queryOptions<Crew[]>({
+    queryKey: workspaceKeys.crews(wsId),
+    queryFn: () => api.listCrews(),
     enabled: !!wsId,
   });
 }
 
-// Per-squad members status snapshot. The freshness signal is the WS task /
+// Per-crew members status snapshot. The freshness signal is the WS task /
 // agent / runtime invalidation wired in use-realtime-sync (which broadly
-// invalidates `["workspaces", wsId, "squads"]`); the staleTime is a
+// invalidates `["workspaces", wsId, "crews"]`); the staleTime is a
 // tab-focus safety net.
-export function squadMemberStatusOptions(wsId: string, squadId: string) {
+export function crewMemberStatusOptions(wsId: string, crewId: string) {
   return queryOptions({
-    queryKey: workspaceKeys.squadMemberStatus(wsId, squadId),
-    queryFn: () => api.getSquadMemberStatus(squadId),
-    enabled: !!wsId && !!squadId,
+    queryKey: workspaceKeys.crewMemberStatus(wsId, crewId),
+    queryFn: () => api.getCrewMemberStatus(crewId),
+    enabled: !!wsId && !!crewId,
     staleTime: 30 * 1000,
     refetchOnWindowFocus: true,
   });

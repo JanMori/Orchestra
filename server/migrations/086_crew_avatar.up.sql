@@ -1,0 +1,1 @@
+ALTER TABLE crew ADD COLUMN avatar_url TEXT;

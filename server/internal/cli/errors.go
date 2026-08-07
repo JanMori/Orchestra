@@ -304,8 +304,8 @@ var kindMessages = map[ErrorKind][2]string{
 		"无法访问 Multica 服务器。请检查网络连接。",
 	},
 	KindAuthRequired: {
-		"Your session has expired or you are not signed in. Run `multica login` to sign in again. On a self-hosted or non-OAuth setup, ask your administrator for valid credentials.",
-		"登录已过期或尚未登录。请运行 `multica login` 重新登录。自托管或非 OAuth 场景请联系管理员获取有效凭证。",
+		"Your session has expired or you are not signed in. Run `orchestra login` to sign in again. On a self-hosted or non-OAuth setup, ask your administrator for valid credentials.",
+		"登录已过期或尚未登录。请运行 `orchestra login` 重新登录。自托管或非 OAuth 场景请联系管理员获取有效凭证。",
 	},
 	KindForbidden: {
 		"You do not have permission to access this resource. Check that you are in the right workspace, or ask an administrator to grant access.",

@@ -1,0 +1,1 @@
+ALTER TABLE crew ADD COLUMN instructions TEXT NOT NULL DEFAULT '';

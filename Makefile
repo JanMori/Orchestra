@@ -12,7 +12,7 @@ POSTGRES_DB ?= multica
 POSTGRES_USER ?= multica
 POSTGRES_PASSWORD ?= multica
 POSTGRES_PORT ?= 5432
-PORT := $(or $(BACKEND_PORT),$(API_PORT),$(SERVER_PORT),$(PORT),7080)
+PORT := $(or $(BACKEND_PORT),$(API_PORT),$(SERVER_PORT),$(PORT),7081)
 ifeq ($(origin ORCHESTRA_PUBLIC_URL), undefined)
 ORCHESTRA_PUBLIC_URL := http://localhost:$(PORT)
 endif
@@ -258,13 +258,13 @@ server: ## Run only the Go server for the current checkout
 	cd server && go run ./cmd/server
 
 daemon: ## Restart the local agent daemon using the CLI's stored auth/session
-	@$(MAKE) multica ORCHESTRA_ARGS="daemon restart --profile local"
+	@$(MAKE) orchestra ORCHESTRA_ARGS="daemon restart --profile local"
 
-cli: ## Run the multica CLI with ARGS or ORCHESTRA_ARGS from source
-	@$(MAKE) multica ORCHESTRA_ARGS="$(ORCHESTRA_ARGS)"
+cli: ## Run the orchestra CLI with ARGS or ORCHESTRA_ARGS from source
+	@$(MAKE) orchestra ORCHESTRA_ARGS="$(ORCHESTRA_ARGS)"
 
-multica: ## Run the multica CLI entrypoint directly from the Go source tree
-	cd server && go run -ldflags "-X main.version=$(VERSION) -X main.commit=$(COMMIT) -X main.date=$(DATE)" ./cmd/multica $(ORCHESTRA_ARGS)
+orchestra: ## Run the orchestra CLI entrypoint directly from the Go source tree
+	cd server && go run -ldflags "-X main.version=$(VERSION) -X main.commit=$(COMMIT) -X main.date=$(DATE)" ./cmd/orchestra $(ORCHESTRA_ARGS)
 
 VERSION ?= $(shell git describe --tags --match 'v[0-9]*' --always --dirty 2>/dev/null || echo dev)
 COMMIT  ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo unknown)
@@ -272,7 +272,7 @@ DATE    ?= $(shell date -u '+%Y-%m-%dT%H:%M:%SZ')
 
 build: ## Build the server, CLI, and migrate binaries into server/bin
 	cd server && go build -ldflags "-X main.version=$(VERSION) -X main.commit=$(COMMIT)" -o bin/server ./cmd/server
-	cd server && go build -ldflags "-X main.version=$(VERSION) -X main.commit=$(COMMIT) -X main.date=$(DATE)" -o bin/multica ./cmd/multica
+	cd server && go build -ldflags "-X main.version=$(VERSION) -X main.commit=$(COMMIT) -X main.date=$(DATE)" -o bin/orchestra ./cmd/orchestra
 	cd server && go build -o bin/migrate ./cmd/migrate
 
 test: ## Run Go tests after ensuring the target DB exists and migrations are applied

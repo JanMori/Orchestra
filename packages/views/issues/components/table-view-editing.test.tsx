@@ -214,7 +214,7 @@ describe("TableView cell editors under data refresh", () => {
       listProperties: async () => ({ properties: [] }),
       listMembers: async () => [],
       listAgents: async () => [],
-      listSquads: async () => [],
+      listCrews: async () => [],
       getAssigneeFrequency: async () => [],
       listIssueTableRows: async () => ({
         query_fingerprint: "test",

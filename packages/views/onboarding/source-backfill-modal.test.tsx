@@ -203,7 +203,7 @@ describe("SourceBackfillModal", () => {
     expect(mockListIssues).not.toHaveBeenCalled();
   });
 
-  it("counts done issues assigned to agents or squads in the current workspace", async () => {
+  it("counts done issues assigned to agents or crews in the current workspace", async () => {
     setUser({
       id: "u1",
       onboarded_at: "2026-01-01T00:00:00Z",
@@ -214,7 +214,7 @@ describe("SourceBackfillModal", () => {
       expect(mockListIssues).toHaveBeenCalledWith({
         workspace_id: "ws-1",
         statuses: ["done"],
-        assignee_types: ["agent", "squad"],
+        assignee_types: ["agent", "crew"],
         limit: 1,
       });
     });

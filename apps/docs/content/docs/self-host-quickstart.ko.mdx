@@ -33,7 +33,7 @@ docker compose version
 
 Multica는 Compose v2인 `docker compose`를 사용합니다. 이전 `docker-compose` v1은 지원하지 않습니다.
 
-실행 컴퓨터에는 Claude Code, Codex, Cursor 같은 [AI 코딩 도구](/providers)가 하나 이상 설치되어 로그인된 상태여야 합니다. Multica CLI는 5단계에서 설치합니다.
+실행 컴퓨터에는 Claude Code, Codex, Cursor 같은 [AI 코딩 도구](/providers)가 하나 이상 설치되어 로그인된 상태여야 합니다. Orchestra CLI는 5단계에서 설치합니다.
 
 ## 1. Multica 시작
 
@@ -48,7 +48,7 @@ make selfhost
 처음 실행할 때 `make selfhost`가 다음 작업을 수행합니다.
 
 1. `.env.example`에서 `.env` 생성
-2. `JWT_SECRET`, PostgreSQL 비밀번호, `MULTICA_VCS_SECRET_KEY`(자체 호스팅 Git 연동 암호화 키)를 임의 생성
+2. `JWT_SECRET`, PostgreSQL 비밀번호, `ORCHESTRA_VCS_SECRET_KEY`(자체 호스팅 Git 연동 암호화 키)를 임의 생성
 3. PostgreSQL, Multica backend, Multica frontend 이미지 pull
 4. persistent data volume 생성 및 세 컨테이너 시작
 5. backend가 health check에 응답할 때까지 대기
@@ -85,7 +85,7 @@ Backend 컨테이너는 시작할 때마다 데이터베이스 migration을 먼�
 
 ### 로컬에서 접근
 
-[http://localhost:3000](http://localhost:3000)을 바로 엽니다. 이후 `multica setup self-host`를 실행할 때도 URL을 전달할 필요가 없습니다.
+[http://localhost:3000](http://localhost:3000)을 바로 엽니다. 이후 `orchestra setup self-host`를 실행할 때도 URL을 전달할 필요가 없습니다.
 
 ### 원격에서 접근
 
@@ -100,8 +100,8 @@ Docker Compose는 기본적으로 `3000`과 `8080`을 `127.0.0.1`에만 bind합�
 
 ```bash
 FRONTEND_ORIGIN=https://app.example.com
-MULTICA_APP_URL=https://app.example.com
-MULTICA_PUBLIC_URL=https://api.example.com
+ORCHESTRA_APP_URL=https://app.example.com
+ORCHESTRA_PUBLIC_URL=https://api.example.com
 ```
 
 이 설정에서는 모든 브라우저 트래픽이 app 도메인을 거치고 cookie가 도메인을 넘지 않으므로 `COOKIE_DOMAIN`을 설정할 필요가 없습니다. 브라우저에서 api 도메인에 직접 접근하게 바꾼다면 반드시 설정해야 합니다. [환경 변수](/environment-variables)를 참고하세요.
@@ -162,7 +162,7 @@ docker compose -f docker-compose.selfhost.yml logs backend \
 인증 코드를 입력하고 첫 워크스페이스를 만듭니다. Resend 또는 SMTP를 설정하면 이메일로 인증 코드가 전달되므로 멤버가 컨테이너 로그를 읽을 필요가 없습니다. 자세한 내용은 [로그인 및 가입 설정](/auth-setup)을 참고하세요.
 
 <Callout type="warning">
-자체 호스팅 환경은 기본적으로 `APP_ENV=production`을 사용하므로 고정 인증 코드가 활성화되지 않습니다. 공개 인터넷 인스턴스에 `MULTICA_DEV_VERIFICATION_CODE`를 설정하지 마세요.
+자체 호스팅 환경은 기본적으로 `APP_ENV=production`을 사용하므로 고정 인증 코드가 활성화되지 않습니다. 공개 인터넷 인스턴스에 `ORCHESTRA_DEV_VERIFICATION_CODE`를 설정하지 마세요.
 </Callout>
 
 ## 5. 실행 컴퓨터 연결
@@ -173,7 +173,7 @@ docker compose -f docker-compose.selfhost.yml logs backend \
 작업은 데몬을 실행하는 사용자의 모든 권한으로 동작하며, 그 사용자가 읽고 쓸 수 있는 모든 것에 접근할 수 있습니다. 개인 계정 대신 전용 Unix 사용자, 컨테이너, 또는 VM에서 데몬을 실행하세요. [보안 모델](/security-model)을 참고하세요.
 </Callout>
 
-먼저 Multica CLI를 설치합니다.
+먼저 Orchestra CLI를 설치합니다.
 
 **macOS / Linux**
 
@@ -190,13 +190,13 @@ irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps
 Multica 서비스가 같은 컴퓨터에 있다면 다음을 실행합니다.
 
 ```bash
-multica setup self-host
+orchestra setup self-host
 ```
 
 Multica 서비스가 다른 컴퓨터에 있다면 앞에서 설정한 두 주소를 전달합니다.
 
 ```bash
-multica setup self-host \
+orchestra setup self-host \
   --server-url https://api.example.com \
   --app-url https://app.example.com
 ```
@@ -206,7 +206,7 @@ multica setup self-host \
 연결 상태를 확인합니다.
 
 ```bash
-multica daemon status
+orchestra daemon status
 ```
 
 정상적인 출력에는 다음 내용이 표시됩니다.
@@ -270,11 +270,11 @@ docker compose -f docker-compose.selfhost.yml up -d
 실제로 어떤 버전이 뜰지는 `docker compose pull`이 결정합니다. 이 명령이 GHCR에 해당 태그가 지금 어떤 이미지를 가리키는지 물어보기 때문입니다. 그래서 몇 달 묵은 checkout에서도 오늘자 `latest` 이미지를 받을 수 있고, 반대로 `git pull`만 해서는 이미지를 받아 컨테이너를 다시 만들기 전까지 아무것도 바뀌지 않습니다.
 
 <Callout type="warning">
-**`MULTICA_IMAGE_TAG`를 고정해 뒀다면 두 방법 모두 업그레이드되지 않습니다.** 두 이미지 모두 `${MULTICA_IMAGE_TAG:-latest}`로 해석되며(`docker-compose.selfhost.yml:42`, `:125`), `.env.example`에는 `MULTICA_IMAGE_TAG=latest`가 들어 있습니다. `.env`에서 특정 릴리스로 고정해 뒀다면 `pull`은 같은 태그를 다시 받아올 뿐이라 예전 버전에 그대로 머무릅니다 — 오류도, 경고도 없습니다. 업그레이드 전에 확인하세요.
+**`ORCHESTRA_IMAGE_TAG`를 고정해 뒀다면 두 방법 모두 업그레이드되지 않습니다.** 두 이미지 모두 `${ORCHESTRA_IMAGE_TAG:-latest}`로 해석되며(`docker-compose.selfhost.yml:42`, `:125`), `.env.example`에는 `ORCHESTRA_IMAGE_TAG=latest`가 들어 있습니다. `.env`에서 특정 릴리스로 고정해 뒀다면 `pull`은 같은 태그를 다시 받아올 뿐이라 예전 버전에 그대로 머무릅니다 — 오류도, 경고도 없습니다. 업그레이드 전에 확인하세요.
 
 ```bash
-grep MULTICA_IMAGE_TAG .env
-# MULTICA_IMAGE_TAG=v0.4.5   ← 고정됨: 먼저 latest(또는 원하는 릴리스)로 수정
+grep ORCHESTRA_IMAGE_TAG .env
+# ORCHESTRA_IMAGE_TAG=v0.4.5   ← 고정됨: 먼저 latest(또는 원하는 릴리스)로 수정
 ```
 </Callout>
 
@@ -322,7 +322,7 @@ HTTP 200이면서 두 검사가 모두 `ok`가 아니라면 새 버전이 migrat
 
 Helm은 자체 업그레이드 경로가 있습니다. values 파일에서 `images.backend.tag` / `images.frontend.tag`를 원하는 릴리스로 설정한 뒤 `helm upgrade`를 실행하세요. 태그가 바뀌면 파드 스펙이 바뀌므로 Kubernetes가 새 이미지를 받아 Deployment를 롤아웃합니다 — 이것이 확실한 경로입니다.
 
-`kubectl -n multica rollout restart`는 그 자체로는 업그레이드가 **아닙니다**. 차트는 `pullPolicy: IfNotPresent`로 배포되므로(`deploy/helm/multica/values.yaml`), 해당 태그를 이미 캐시한 노드는 예전 이미지를 재사용하고 restart를 해도 아무것도 바뀌지 않습니다 — `MULTICA_IMAGE_TAG` 고정과 같은 부류의 함정입니다. 부동 태그로 이 방식을 쓰려면 먼저 `images.backend.pullPolicy` / `images.frontend.pullPolicy`를 `Always`로 설정하세요. 저장소의 [Self-hosting guide](https://github.com/multica-ai/multica/blob/main/SELF_HOSTING.md#kubernetes-deployment-alternative)를 참고하세요.
+`kubectl -n multica rollout restart`는 그 자체로는 업그레이드가 **아닙니다**. 차트는 `pullPolicy: IfNotPresent`로 배포되므로(`deploy/helm/multica/values.yaml`), 해당 태그를 이미 캐시한 노드는 예전 이미지를 재사용하고 restart를 해도 아무것도 바뀌지 않습니다 — `ORCHESTRA_IMAGE_TAG` 고정과 같은 부류의 함정입니다. 부동 태그로 이 방식을 쓰려면 먼저 `images.backend.pullPolicy` / `images.frontend.pullPolicy`를 `Always`로 설정하세요. 저장소의 [Self-hosting guide](https://github.com/multica-ai/multica/blob/main/SELF_HOSTING.md#kubernetes-deployment-alternative)를 참고하세요.
 
 <Callout type="warning">
 `docker compose down`은 `pgdata`와 `backend_uploads`를 유지합니다. `-v`를 추가하면 데이터베이스를 포함한 이 data volume이 삭제됩니다. 인스턴스를 비우려는 것이 확실하지 않다면 `docker compose down -v`를 실행하지 마세요.
@@ -335,8 +335,8 @@ Helm은 자체 업그레이드 경로가 있습니다. values 파일에서 `imag
 | `/readyz`가 `ok`를 반환하지 않음 | `docker compose -f docker-compose.selfhost.yml logs backend postgres`를 실행합니다. |
 | 인증 코드를 받지 못함 | 인증 코드를 한 번 요청한 뒤 backend 로그에서 `Verification code`를 찾습니다. |
 | `setup self-host`에 server 접근 불가가 표시됨 | 실행 컴퓨터에서 `https://api.example.com/health`를 요청해 DNS, TLS, reverse proxy에 모두 접근할 수 있는지 확인합니다. |
-| 데몬의 `Agents`가 비어 있음 | AI 코딩 도구가 `PATH`에 있고 로그인되어 있는지 확인한 뒤 `multica daemon restart`를 실행합니다. |
-| 이슈가 계속 큐에서 기다림 | `multica daemon status`를 실행해 데몬이 실행 중이며 워크스페이스에 연결되었는지 확인합니다. |
+| 데몬의 `Agents`가 비어 있음 | AI 코딩 도구가 `PATH`에 있고 로그인되어 있는지 확인한 뒤 `orchestra daemon restart`를 실행합니다. |
+| 이슈가 계속 큐에서 기다림 | `orchestra daemon status`를 실행해 데몬이 실행 중이며 워크스페이스에 연결되었는지 확인합니다. |
 
 더 많은 경우는 [문제 해결](/troubleshooting)을 참고하세요.
 

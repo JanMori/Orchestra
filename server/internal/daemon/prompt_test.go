@@ -26,7 +26,7 @@ func TestBuildQuickCreatePromptRules(t *testing.T) {
 		"verbal routing wrappers about creating the issue",
 		"pure conversational fillers",
 		// cc routing must survive: mention link stays in description so the
-		// auto-subscribe path fires (multica issue create has no --subscriber flag)
+		// auto-subscribe path fires (orchestra issue create has no --subscriber flag)
 		"CC exception",
 		"auto-subscribes members",
 		// context section is conditional and must not be an apology log
@@ -36,7 +36,7 @@ func TestBuildQuickCreatePromptRules(t *testing.T) {
 		// use custom issue prefixes, so a successful issue creation should
 		// not look failed merely because the identifier does not match one
 		// fixed prefix.
-		"multica issue create --output json",
+		"orchestra issue create --output json",
 		"JSON response",
 		"identifier",
 		"Do not scrape human output",
@@ -63,19 +63,19 @@ func TestBuildQuickCreatePromptRules(t *testing.T) {
 	}
 }
 
-// TestBuildQuickCreatePromptAssigneeIncludesSquads locks in the MUL-2165
+// TestBuildQuickCreatePromptAssigneeIncludesCrews locks in the MUL-2165
 // fix: the assignee-resolution rules must tell the agent to consult the
-// squad list alongside members and agents. Before this, a quick-create
-// input like "assign to <SquadName>" silently fell through to
-// "Unrecognized assignee" because squads were never queried.
-func TestBuildQuickCreatePromptAssigneeIncludesSquads(t *testing.T) {
+// crew list alongside members and agents. Before this, a quick-create
+// input like "assign to <CrewName>" silently fell through to
+// "Unrecognized assignee" because crews were never queried.
+func TestBuildQuickCreatePromptAssigneeIncludesCrews(t *testing.T) {
 	out := buildQuickCreatePrompt(Task{QuickCreatePrompt: "fix the login button color"})
 	mustContain := []string{
-		"multica squad list",
-		"Squads are first-class assignees",
+		"orchestra crew list",
+		"Crews are first-class assignees",
 		"Treat bare @-routing as an assignee directive",
 		"让 @独立团 review 这个 PR",
-		"pass the squad's `id` as `--assignee-id`",
+		"pass the crew's `id` as `--assignee-id`",
 	}
 	for _, s := range mustContain {
 		if !strings.Contains(out, s) {
@@ -84,48 +84,48 @@ func TestBuildQuickCreatePromptAssigneeIncludesSquads(t *testing.T) {
 	}
 }
 
-// TestBuildQuickCreatePromptSquadDefaultsToSquad locks in the MUL-2203
-// fix: when the picker was a squad, the task runs on the squad's leader
+// TestBuildQuickCreatePromptCrewDefaultsToCrew locks in the MUL-2203
+// fix: when the picker was a crew, the task runs on the crew's leader
 // agent, but the default assignee for issues created by this run must
-// point at the SQUAD's UUID — not the leader agent's UUID. The previous
-// "default to YOURSELF" instruction made squad-created issues land under
-// the leader, hiding them from the squad's delegation flow.
-func TestBuildQuickCreatePromptSquadDefaultsToSquad(t *testing.T) {
+// point at the CREW's UUID — not the leader agent's UUID. The previous
+// "default to YOURSELF" instruction made crew-created issues land under
+// the leader, hiding them from the crew's delegation flow.
+func TestBuildQuickCreatePromptCrewDefaultsToCrew(t *testing.T) {
 	const (
-		squadID   = "aaaa1111-2222-3333-4444-555555555555"
-		squadName = "独立团"
+		crewID   = "aaaa1111-2222-3333-4444-555555555555"
+		crewName = "独立团"
 		leaderID  = "bbbb1111-2222-3333-4444-666666666666"
 	)
 	out := buildQuickCreatePrompt(Task{
 		QuickCreatePrompt: "fix the login button color",
 		Agent:             &AgentData{ID: leaderID, Name: "leader-agent"},
-		SquadID:           squadID,
-		SquadName:         squadName,
+		CrewID:           crewID,
+		CrewName:         crewName,
 	})
 
-	// The default-assignee instruction must point at the squad UUID.
-	if !strings.Contains(out, "--assignee-id \""+squadID+"\"") {
-		t.Errorf("buildQuickCreatePrompt with SquadID must default to the squad's UUID, got:\n%s", out)
+	// The default-assignee instruction must point at the crew UUID.
+	if !strings.Contains(out, "--assignee-id \""+crewID+"\"") {
+		t.Errorf("buildQuickCreatePrompt with CrewID must default to the crew's UUID, got:\n%s", out)
 	}
 	// And it must NOT tell the agent to default to itself (the leader).
 	if strings.Contains(out, "--assignee-id \""+leaderID+"\"") {
-		t.Errorf("buildQuickCreatePrompt with SquadID must NOT default to the leader agent's UUID, got:\n%s", out)
+		t.Errorf("buildQuickCreatePrompt with CrewID must NOT default to the leader agent's UUID, got:\n%s", out)
 	}
-	// The squad name should appear in the instruction so the agent has
+	// The crew name should appear in the instruction so the agent has
 	// human-readable context for the routing decision.
-	if !strings.Contains(out, squadName) {
-		t.Errorf("buildQuickCreatePrompt with SquadID should mention the squad name %q, got:\n%s", squadName, out)
+	if !strings.Contains(out, crewName) {
+		t.Errorf("buildQuickCreatePrompt with CrewID should mention the crew name %q, got:\n%s", crewName, out)
 	}
-	// And the prompt must explicitly call out the squad-vs-leader rule
+	// And the prompt must explicitly call out the crew-vs-leader rule
 	// so the agent does not silently regress to "default to YOURSELF".
 	mustContain := []string{
-		"picker SQUAD",
-		"running on the squad's behalf",
+		"picker CREW",
+		"running on the crew's behalf",
 		"do not assign it to your own agent UUID",
 	}
 	for _, s := range mustContain {
 		if !strings.Contains(out, s) {
-			t.Errorf("buildQuickCreatePrompt with SquadID missing %q\n--- output ---\n%s", s, out)
+			t.Errorf("buildQuickCreatePrompt with CrewID missing %q\n--- output ---\n%s", s, out)
 		}
 	}
 }
@@ -235,14 +235,14 @@ func TestBuildQuickCreatePromptParentPinning(t *testing.T) {
 	}
 }
 
-// TestBuildPromptSquadLeaderNoActionForMemberTrigger verifies that the
-// squad leader no_action prohibition is injected in the per-turn prompt
+// TestBuildPromptCrewLeaderNoActionForMemberTrigger verifies that the
+// crew leader no_action prohibition is injected in the per-turn prompt
 // regardless of whether the triggering comment was posted by an agent or
 // a member. This was the root cause of the "LGTM is a pure acknowledgment
 // — no reply needed. Exiting silently." noise comment: the prohibition
 // only fired for agent-triggered comments, so member-triggered ones
 // (like "LGTM") bypassed it.
-func TestBuildPromptSquadLeaderNoActionForMemberTrigger(t *testing.T) {
+func TestBuildPromptCrewLeaderNoActionForMemberTrigger(t *testing.T) {
 	task := Task{
 		IssueID:               "issue-123",
 		TriggerCommentID:      "comment-456",
@@ -250,21 +250,21 @@ func TestBuildPromptSquadLeaderNoActionForMemberTrigger(t *testing.T) {
 		TriggerAuthorType:     "member",
 		TriggerAuthorName:     "Bohan",
 		Agent: &AgentData{
-			Instructions: "Some instructions\n\n## Squad Operating Protocol\n\nYou are the LEADER...",
+			Instructions: "Some instructions\n\n## Crew Operating Protocol\n\nYou are the LEADER...",
 		},
 	}
 	out := BuildPrompt(task, "claude")
-	if !strings.Contains(out, "Squad leader no_action rule") {
-		t.Errorf("buildCommentPrompt must inject squad leader no_action rule for member-triggered comments, got:\n%s", out)
+	if !strings.Contains(out, "Crew leader no_action rule") {
+		t.Errorf("buildCommentPrompt must inject crew leader no_action rule for member-triggered comments, got:\n%s", out)
 	}
 	if !strings.Contains(out, "DO NOT post any comment") {
-		t.Errorf("buildCommentPrompt must contain DO NOT post prohibition for member-triggered squad leader, got:\n%s", out)
+		t.Errorf("buildCommentPrompt must contain DO NOT post prohibition for member-triggered crew leader, got:\n%s", out)
 	}
 }
 
-// TestBuildPromptSquadLeaderNoActionForAgentTrigger verifies the rule also
+// TestBuildPromptCrewLeaderNoActionForAgentTrigger verifies the rule also
 // fires for agent-triggered comments (the original path that already worked).
-func TestBuildPromptSquadLeaderNoActionForAgentTrigger(t *testing.T) {
+func TestBuildPromptCrewLeaderNoActionForAgentTrigger(t *testing.T) {
 	task := Task{
 		IssueID:               "issue-123",
 		TriggerCommentID:      "comment-456",
@@ -272,12 +272,12 @@ func TestBuildPromptSquadLeaderNoActionForAgentTrigger(t *testing.T) {
 		TriggerAuthorType:     "agent",
 		TriggerAuthorName:     "deploy-boy",
 		Agent: &AgentData{
-			Instructions: "Some instructions\n\n## Squad Operating Protocol\n\nYou are the LEADER...",
+			Instructions: "Some instructions\n\n## Crew Operating Protocol\n\nYou are the LEADER...",
 		},
 	}
 	out := BuildPrompt(task, "claude")
-	if !strings.Contains(out, "Squad leader no_action rule") {
-		t.Errorf("buildCommentPrompt must inject squad leader no_action rule for agent-triggered comments, got:\n%s", out)
+	if !strings.Contains(out, "Crew leader no_action rule") {
+		t.Errorf("buildCommentPrompt must inject crew leader no_action rule for agent-triggered comments, got:\n%s", out)
 	}
 }
 
@@ -685,7 +685,7 @@ func TestBuildChatPromptSlashSkills(t *testing.T) {
 func TestBuildPromptDefaultScansRootsFirst(t *testing.T) {
 	out := BuildPrompt(Task{IssueID: "issue-default-1"}, "claude")
 	for _, s := range []string{
-		"multica issue comment list issue-default-1 --roots-only --summary --output json",
+		"orchestra issue comment list issue-default-1 --roots-only --summary --output json",
 		"--since",
 	} {
 		if !strings.Contains(out, s) {
@@ -718,14 +718,14 @@ func TestBuildPromptDefaultScansRootsFirst(t *testing.T) {
 	if strings.Contains(out, "If you need comment history") {
 		t.Errorf("default BuildPrompt still carries the legacy 'If you need' soft phrasing that conflicts with the mandatory workflow\n--- output ---\n%s", out)
 	}
-	if strings.Contains(out, "multica issue comment list issue-default-1 --output json") {
+	if strings.Contains(out, "orchestra issue comment list issue-default-1 --output json") {
 		t.Errorf("default BuildPrompt still presents the unbounded flat read as the assignment catch-up command\n--- output ---\n%s", out)
 	}
 }
 
-// TestBuildPromptNonSquadLeaderNoRule verifies that non-squad-leader agents
-// do NOT get the squad leader no_action rule injected.
-func TestBuildPromptNonSquadLeaderNoRule(t *testing.T) {
+// TestBuildPromptNonCrewLeaderNoRule verifies that non-crew-leader agents
+// do NOT get the crew leader no_action rule injected.
+func TestBuildPromptNonCrewLeaderNoRule(t *testing.T) {
 	task := Task{
 		IssueID:               "issue-123",
 		TriggerCommentID:      "comment-456",
@@ -733,12 +733,12 @@ func TestBuildPromptNonSquadLeaderNoRule(t *testing.T) {
 		TriggerAuthorType:     "member",
 		TriggerAuthorName:     "Bohan",
 		Agent: &AgentData{
-			Instructions: "Some instructions without the squad marker",
+			Instructions: "Some instructions without the crew marker",
 		},
 	}
 	out := BuildPrompt(task, "claude")
-	if strings.Contains(out, "Squad leader no_action rule") {
-		t.Errorf("buildCommentPrompt must NOT inject squad leader no_action rule for non-squad-leader agents, got:\n%s", out)
+	if strings.Contains(out, "Crew leader no_action rule") {
+		t.Errorf("buildCommentPrompt must NOT inject crew leader no_action rule for non-crew-leader agents, got:\n%s", out)
 	}
 }
 
@@ -772,7 +772,7 @@ func TestBuildPromptNewCommentsHint(t *testing.T) {
 		t.Errorf("hint must discourage blindly reading every new comment, got:\n%s", out)
 	}
 	// Parent thread first: the --thread <trigger> read is the prioritized action.
-	if !strings.Contains(out, "multica issue comment list "+issueID+" --thread thread-root-1 --since "+since+" --output json") {
+	if !strings.Contains(out, "orchestra issue comment list "+issueID+" --thread thread-root-1 --since "+since+" --output json") {
 		t.Errorf("hint must point at the triggering (parent) thread --since read first, got:\n%s", out)
 	}
 	if !strings.Contains(out, "--tail 30") {
@@ -784,7 +784,7 @@ func TestBuildPromptNewCommentsHint(t *testing.T) {
 	if !strings.Contains(out, "rerun it without `--thread` for the issue-wide catch-up") {
 		t.Errorf("hint must keep the issue-wide catch-up fallback, got:\n%s", out)
 	}
-	if strings.Contains(out, "multica issue comment list "+issueID+" --since "+since+" --output json") {
+	if strings.Contains(out, "orchestra issue comment list "+issueID+" --since "+since+" --output json") {
 		t.Errorf("warm hint must not render a second full issue-wide command (MUL-5721 OPT-1), got:\n%s", out)
 	}
 	// The old cursor-heavy paragraph must be gone.
@@ -812,7 +812,7 @@ func TestBuildPromptColdStartThreadRead(t *testing.T) {
 	if strings.Contains(out, "new comment(s) since your last run") {
 		t.Errorf("no since-delta hint should render on cold start, got:\n%s", out)
 	}
-	if !strings.Contains(out, "multica issue comment list "+issueID+" --thread thread-root-1 --tail 30 --output json") {
+	if !strings.Contains(out, "orchestra issue comment list "+issueID+" --thread thread-root-1 --tail 30 --output json") {
 		t.Errorf("cold start must point at the triggering thread read, got:\n%s", out)
 	}
 	// MUL-5372: cross-thread background is a cheap roots scan. The hint names
@@ -824,7 +824,7 @@ func TestBuildPromptColdStartThreadRead(t *testing.T) {
 	if !strings.Contains(out, "Rerun with `--roots-only --summary` replacing `--thread ... --tail 30`") {
 		t.Errorf("cold start should offer the cheap roots scan for cross-thread background, got:\n%s", out)
 	}
-	if strings.Contains(out, "multica issue comment list "+issueID+" --roots-only --summary --output json") {
+	if strings.Contains(out, "orchestra issue comment list "+issueID+" --roots-only --summary --output json") {
 		t.Errorf("cold hint must not render a second full command for the roots scan (MUL-5721 OPT-1), got:\n%s", out)
 	}
 	if strings.Contains(out, "--recent") {
@@ -855,7 +855,7 @@ func TestBuildPromptResumedNoDeltaDoesNotForceThreadRead(t *testing.T) {
 		"No other new comments on this issue since your last run",
 		"If your reply depends on thread context",
 		"do not rely only on resumed session memory",
-		"multica issue comment list " + issueID + " --thread thread-root-1 --tail 30 --output json",
+		"orchestra issue comment list " + issueID + " --thread thread-root-1 --tail 30 --output json",
 	} {
 		if !strings.Contains(out, want) {
 			t.Errorf("resumed/no-delta prompt missing %q\n--- output ---\n%s", want, out)
@@ -947,7 +947,7 @@ func TestBuildCommentPromptCoalescedIDsOnlyFallback(t *testing.T) {
 		task.NewCommentsSince = "2026-08-03T06:00:00Z"
 		out := BuildPrompt(task, "claude")
 
-		want := "multica issue comment list issue-fallback-1 --since 2026-08-03T06:00:00Z --output json"
+		want := "orchestra issue comment list issue-fallback-1 --since 2026-08-03T06:00:00Z --output json"
 		if !strings.Contains(out, want) {
 			t.Errorf("id-only fallback should prefetch the window with %q, got:\n%s", want, out)
 		}
@@ -1000,7 +1000,7 @@ func assertBoundedIDOnlyFallback(t *testing.T, out string) {
 	// id is reachable without knowing its thread; paging keeps it reachable even
 	// when it is older than the tail window.
 	for _, want := range []string{
-		"multica issue comment list issue-fallback-1 --thread <comment-id> --tail 30 --output json",
+		"orchestra issue comment list issue-fallback-1 --thread <comment-id> --tail 30 --output json",
 		"accepts a reply id",
 		"Next reply cursor",
 		"--before-id",

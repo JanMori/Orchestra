@@ -66,7 +66,7 @@ export function useIssueActions(issue: Issue | null): UseIssueActionsResult {
   const updateField = useCallback(
     (updates: Partial<UpdateIssueRequest>) => {
       if (!issueId) return;
-      // Assigning to an agent/squad may start a run. Route through the
+      // Assigning to an agent/crew may start a run. Route through the
       // pre-trigger confirm modal (preview + optional handoff note + "暂不开始"),
       // which applies the change itself — the four entry points share this one
       // backend-driven flow instead of guessing (MUL-3375). Every other field
@@ -77,7 +77,7 @@ export function useIssueActions(issue: Issue | null): UseIssueActionsResult {
       // an empty "won't start" box with a single Apply button. Apply directly,
       // matching the batch backlog short-circuit in BatchActionToolbar.
       if (
-        (updates.assignee_type === "agent" || updates.assignee_type === "squad") &&
+        (updates.assignee_type === "agent" || updates.assignee_type === "crew") &&
         updates.assignee_id &&
         issueStatus !== "backlog"
       ) {

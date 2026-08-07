@@ -37,7 +37,7 @@ Multica는 파일 시스템 샌드박스를 제공하지 않습니다. 데몬을
 
 - **작업별 작업 디렉터리.** 각 작업은 `~/multica_workspaces/` 아래에 전용 workdir를 가지므로 동시 실행 작업이 같은 체크아웃에서 충돌하지 않습니다.
 - **작업별 에이전트 상태.** Codex 작업은 설정, 세션, 스킬을 담는 작업 범위 `CODEX_HOME`을 가지므로 `~/.codex/`를 오염시키지 않습니다.
-- **작업 범위 API 토큰.** 작업에 전달되는 `MULTICA_TOKEN`은 서버가 해당 에이전트와 작업에 바인딩하므로, 작업이 Multica API에서 사용자나 다른 에이전트로 행세할 수 없습니다.
+- **작업 범위 API 토큰.** 작업에 전달되는 `ORCHESTRA_TOKEN`은 서버가 해당 에이전트와 작업에 바인딩하므로, 작업이 Multica API에서 사용자나 다른 에이전트로 행세할 수 없습니다.
 
 ## 경계가 아닌 것
 
@@ -53,7 +53,7 @@ Linux에서 Codex 작업은 이전에 `workspace-write` 샌드박스와 작업�
 작업이 샌드박스 없이 시작되면 데몬이 warn 레벨 로그를 남깁니다:
 
 ```bash
-multica daemon logs --lines 200 | grep "codex sandbox"
+orchestra daemon logs --lines 200 | grep "codex sandbox"
 ```
 
 Codex의 실제 적용 설정을 확인하려면 해당 작업의 `CODEX_HOME` 아래 `config.toml`에 있는 관리 블록을 보세요. `# BEGIN multica-managed`와 `# END multica-managed` 사이의 내용은 실행할 때마다 데몬이 작성합니다.

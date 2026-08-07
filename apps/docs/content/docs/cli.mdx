@@ -1,11 +1,11 @@
 ---
 title: Using the CLI
-description: Install and log in to the Multica CLI, and manage workspaces, issues, agents, and runtimes from the terminal.
+description: Install and log in to the Orchestra CLI, and manage workspaces, issues, agents, and runtimes from the terminal.
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-The Multica CLI both connects local runtimes and manages workspaces, issues, agents, and automations from the terminal. This page covers the common paths; the flags your installed version supports are always defined by each command's own `--help`.
+The Orchestra CLI both connects local runtimes and manages workspaces, issues, agents, and automations from the terminal. This page covers the common paths; the flags your installed version supports are always defined by each command's own `--help`.
 
 ## Installation
 
@@ -30,7 +30,7 @@ irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps
 Confirm the install:
 
 ```bash
-multica version
+orchestra version
 ```
 
 ## First connection
@@ -38,13 +38,13 @@ multica version
 Connect to Multica Cloud:
 
 ```bash
-multica setup
+orchestra setup
 ```
 
 Connect to a self-hosted instance:
 
 ```bash
-multica setup self-host \
+orchestra setup self-host \
   --server-url https://api.example.com \
   --app-url https://app.example.com
 ```
@@ -52,14 +52,14 @@ multica setup self-host \
 `setup` saves the server address, opens a browser to complete sign-in, and starts the daemon. When it finishes, check:
 
 ```bash
-multica auth status
-multica daemon status
+orchestra auth status
+orchestra daemon status
 ```
 
-If you only need to sign in again without overwriting other configuration, run `multica login`. On a machine without a browser, create a personal access token in the web settings first, then enter it with:
+If you only need to sign in again without overwriting other configuration, run `orchestra login`. On a machine without a browser, create a personal access token in the web settings first, then enter it with:
 
 ```bash
-multica login --token
+orchestra login --token
 ```
 
 The command prompts you to paste the token in the terminal, keeping the full value out of shell history.
@@ -69,72 +69,72 @@ The command prompts you to paste the token in the terminal, keeping the full val
 List workspaces and switch the default:
 
 ```bash
-multica workspace list
-multica workspace switch <slug>
+orchestra workspace list
+orchestra workspace switch <slug>
 ```
 
-Subsequent commands use this workspace. A single command can override it with `--workspace-id`, or you can set `MULTICA_WORKSPACE_ID`.
+Subsequent commands use this workspace. A single command can override it with `--workspace-id`, or you can set `ORCHESTRA_WORKSPACE_ID`.
 
 Invite members:
 
 ```bash
-multica workspace member invite teammate@example.com
-multica workspace member invite admin@example.com --role admin
+orchestra workspace member invite teammate@example.com
+orchestra workspace member invite admin@example.com --role admin
 ```
 
 ## Common issue operations
 
 ```bash
 # View and search
-multica issue list
-multica issue get MUL-123
-multica issue search "login failure"
+orchestra issue list
+orchestra issue get MUL-123
+orchestra issue search "login failure"
 
 # Create and update
-multica issue create --title "Fix login failure"
-multica issue status MUL-123 in_progress
-multica issue assign MUL-123 --to "Backend Agent"
+orchestra issue create --title "Fix login failure"
+orchestra issue status MUL-123 in_progress
+orchestra issue assign MUL-123 --to "Backend Agent"
 
 # Comments and runs
-multica issue comment list MUL-123
-multica issue comment add MUL-123 --content "Check the regression tests first"
-multica issue runs MUL-123
+orchestra issue comment list MUL-123
+orchestra issue comment add MUL-123 --content "Check the regression tests first"
+orchestra issue runs MUL-123
 ```
 
 Read long descriptions or comments from stdin to avoid dealing with newlines and quoting:
 
 ```bash
-multica issue create --title "Upgrade notes" --description-stdin < notes.md
-multica issue comment add MUL-123 --content-stdin < review.md
+orchestra issue create --title "Upgrade notes" --description-stdin < notes.md
+orchestra issue comment add MUL-123 --content-stdin < review.md
 ```
 
 View the messages of a single run, or stop a task:
 
 ```bash
-multica issue run-messages <task-id> --issue MUL-123
-multica issue cancel-task <task-id> --issue MUL-123
+orchestra issue run-messages <task-id> --issue MUL-123
+orchestra issue cancel-task <task-id> --issue MUL-123
 ```
 
 ## Agents and skills
 
 ```bash
-multica agent list
-multica agent get <agent-id>
-multica agent create --help
-multica agent update <agent-id> --help
+orchestra agent list
+orchestra agent get <agent-id>
+orchestra agent create --help
+orchestra agent update <agent-id> --help
 
-multica skill list
-multica skill get <skill-id>
-multica skill import --url <skill-url>
-multica agent skills add <agent-id> --skill-ids <skill-id>
+orchestra skill list
+orchestra skill get <skill-id>
+orchestra skill import --url <skill-url>
+orchestra agent skills add <agent-id> --skill-ids <skill-id>
 ```
 
 When an import hits a skill with the same name, the default is to stop without modifying existing content. Pick by intent:
 
 ```bash
-multica skill import --url <skill-url> --on-conflict overwrite
-multica skill import --url <skill-url> --on-conflict rename
-multica skill import --url <skill-url> --on-conflict skip
+orchestra skill import --url <skill-url> --on-conflict overwrite
+orchestra skill import --url <skill-url> --on-conflict rename
+orchestra skill import --url <skill-url> --on-conflict skip
 ```
 
 `overwrite` is only allowed for the skill's creator and preserves the original ID and agent bindings.
@@ -142,11 +142,11 @@ multica skill import --url <skill-url> --on-conflict skip
 ## Daemon and runtimes
 
 ```bash
-multica daemon start
-multica daemon stop
-multica daemon restart
-multica daemon status --output json
-multica daemon logs --follow
+orchestra daemon start
+orchestra daemon stop
+orchestra daemon restart
+orchestra daemon status --output json
+orchestra daemon logs --follow
 
 multica runtime list
 multica runtime rename <runtime-id> "Office Mac"
@@ -165,7 +165,7 @@ See [Daemon and runtimes](/daemon-runtimes) for how it works and for custom prof
 | `issue` | Create, update, assign, and search issues; manage comments, subscribers, labels, properties, and runs |
 | `project` | Manage projects and their resources |
 | `label`, `property` | Manage workspace labels and custom properties |
-| `agent`, `skill`, `squad` | Manage agents, skills, and squads |
+| `agent`, `skill`, `crew` | Manage agents, skills, and crews |
 | `autopilot` | Manage automations, triggers, and run history |
 | `workspace` | Create, view, and switch workspaces, and invite members |
 | `repo` | Manage workspace repositories and check them out locally |
@@ -187,8 +187,8 @@ Issues use keys like `MUL-123` or full UUIDs; short UUID prefixes are not accept
 Many commands support structured output:
 
 ```bash
-multica issue list --output json
-multica agent list --output json
+orchestra issue list --output json
+orchestra agent list --output json
 ```
 
 Scripts should use JSON output rather than parsing the terminal-oriented tables. The output formats and pagination flags each command supports are defined by `multica <command> --help`.
@@ -198,18 +198,18 @@ Scripts should use JSON output rather than parsing the terminal-oriented tables.
 The default configuration lives in `~/.multica/config.json`. Use `--profile <name>` to isolate a separate set of server address, token, default workspace, and daemon state:
 
 ```bash
-multica setup self-host --profile staging \
+orchestra setup self-host --profile staging \
   --server-url https://api.staging.example.com \
   --app-url https://app.staging.example.com
 
-multica issue list --profile staging
+orchestra issue list --profile staging
 ```
 
 Named profiles live in `~/.multica/profiles/<name>/config.json`. Inspect the current values:
 
 ```bash
-multica config show
-multica config show --profile staging
+orchestra config show
+orchestra config show --profile staging
 ```
 
 <Callout type="warning">
@@ -228,7 +228,7 @@ The tables below cover every current top-level command, grouped the way the CLI 
 | | `get <id>` | Show a single issue | |
 | | `create` | Create an issue | `--title` (required), `--description` / `--description-stdin` / `--description-file`, `--status`, `--priority`, `--assignee`, `--parent`, `--stage`, `--project`, `--start-date`, `--due-date`, `--attachment` (repeatable) |
 | | `update <id>` | Update issue fields | Same fields as `create`, plus `--position` |
-| | `assign <id>` | Assign or unassign | `--to` (fuzzy name match against members, agents, and squads), `--to-id`, `--unassign` |
+| | `assign <id>` | Assign or unassign | `--to` (fuzzy name match against members, agents, and crews), `--to-id`, `--unassign` |
 | | `status <id> <status>` | Change status | |
 | | `reorder <id>` | Move within a column | |
 | | `search <query>` | Search issues | `--limit`, `--include-closed` |
@@ -266,8 +266,8 @@ The tables below cover every current top-level command, grouped the way the CLI 
 | | `import` | Import a skill from a URL or local file | `--url` / `--file`, `--on-conflict` (`fail`, `overwrite`, `rename`, `skip`; default `fail`) |
 | | `search <query>` | Search skills | |
 | | `files list/upsert/delete <skill-id>` | Manage the files inside a skill | |
-| `squad` | `list/get/create/update/delete` | Manage squads (`delete` archives) | |
-| | `member list/add/set-role/remove` | Manage squad members | |
+| `crew` | `list/get/create/update/delete` | Manage crews (`delete` archives) | |
+| | `member list/add/set-role/remove` | Manage crew members | |
 | | `activity <issue-id> <outcome>` | Record a leader evaluation | |
 | `chat` | `history`, `thread [id]` | Read the external chat session an agent is currently handling | `--limit`, `--before` |
 
@@ -275,7 +275,7 @@ The tables below cover every current top-level command, grouped the way the CLI 
 
 | Command | Subcommand | Purpose | Key flags |
 | --- | --- | --- | --- |
-| `daemon` | `start` | Start the local daemon | `--foreground`, `--device-name`, `--runtime-name`, `--poll-interval`, `--heartbeat-interval`, `--agent-timeout` (`0` means no limit), `--max-concurrent-tasks`, `--no-auto-update`; each has a matching `MULTICA_*` environment variable |
+| `daemon` | `start` | Start the local daemon | `--foreground`, `--device-name`, `--runtime-name`, `--poll-interval`, `--heartbeat-interval`, `--agent-timeout` (`0` means no limit), `--max-concurrent-tasks`, `--no-auto-update`; each has a matching `ORCHESTRA_*` environment variable |
 | | `stop` / `status` / `restart` | Stop, check status, restart (`restart` takes the same flags as `start`) | |
 | | `logs` | View daemon logs | `--follow`, `--lines` |
 | | `disk-usage` | View local disk usage | `--by-workspace`, `--by-task`, `--top` |

@@ -79,13 +79,13 @@ describe("ConnectRemoteDialog", () => {
   it("uses cloud setup commands by default", () => {
     const { baseElement } = renderDialog();
 
-    expect(baseElement).toHaveTextContent("multica setup");
-    expect(baseElement).not.toHaveTextContent("multica setup self-host");
+    expect(baseElement).toHaveTextContent("orchestra setup");
+    expect(baseElement).not.toHaveTextContent("orchestra setup self-host");
     expect(baseElement).toHaveTextContent(
-      "multica config set server_url https://api.multica.ai",
+      "orchestra config set server_url http://localhost:7081",
     );
     expect(baseElement).toHaveTextContent(
-      "multica config set app_url https://multica.ai",
+      "orchestra config set app_url http://localhost:5001",
     );
   });
 
@@ -96,13 +96,13 @@ describe("ConnectRemoteDialog", () => {
     });
 
     expect(baseElement).toHaveTextContent(
-      "multica setup self-host --server-url https://api.example.com --app-url https://app.example.com",
+      "orchestra setup self-host --server-url https://api.example.com --app-url https://app.example.com",
     );
     expect(baseElement).toHaveTextContent(
-      "multica config set server_url https://api.example.com",
+      "orchestra config set server_url https://api.example.com",
     );
     expect(baseElement).toHaveTextContent(
-      "multica config set app_url https://app.example.com",
+      "orchestra config set app_url https://app.example.com",
     );
   });
 
@@ -110,7 +110,7 @@ describe("ConnectRemoteDialog", () => {
     const { baseElement } = renderDialog();
 
     const setupCode = Array.from(baseElement.querySelectorAll("code")).find((node) =>
-      node.textContent?.includes("multica setup"),
+      node.textContent?.includes("orchestra setup"),
     );
 
     expect(setupCode).toHaveClass(...ligatureClasses);
@@ -120,7 +120,7 @@ describe("ConnectRemoteDialog", () => {
     const { baseElement } = renderDialog();
 
     const tokenCode = Array.from(baseElement.querySelectorAll("code")).find((node) =>
-      node.textContent?.includes("multica login --token <YOUR_TOKEN>"),
+      node.textContent?.includes("orchestra login --token <YOUR_TOKEN>"),
     );
 
     expect(tokenCode).toHaveClass(...ligatureClasses);
@@ -129,7 +129,7 @@ describe("ConnectRemoteDialog", () => {
   it("transitions from setup instructions to the connected state", async () => {
     const { baseElement } = renderDialog();
 
-    expect(baseElement).toHaveTextContent("multica setup");
+    expect(baseElement).toHaveTextContent("orchestra setup");
     act(() => {
       wsEventState.handler?.({ runtime_id: "rt-test" });
     });
@@ -140,6 +140,6 @@ describe("ConnectRemoteDialog", () => {
         screen.getByRole("button", { name: "Create an agent" }),
       ).toBeInTheDocument();
     });
-    expect(baseElement).not.toHaveTextContent("multica setup");
+    expect(baseElement).not.toHaveTextContent("orchestra setup");
   });
 });

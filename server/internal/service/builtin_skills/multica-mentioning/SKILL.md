@@ -1,6 +1,6 @@
 ---
 name: multica-mentioning
-description: "Use when an issue comment needs to @mention someone — link to a person, trigger another agent, hand work to a squad, or broadcast with @all. Whether to mention at all is covered by the runtime brief, not here."
+description: "Use when an issue comment needs to @mention someone — link to a person, trigger another agent, hand work to a crew, or broadcast with @all. Whether to mention at all is covered by the runtime brief, not here."
 user-invocable: false
 allowed-tools: Bash(multica *)
 ---
@@ -26,7 +26,7 @@ The parser (`util.MentionRe` in `server/internal/util/mention.go`) accepts
 exactly four `<type>` values plus the `all` sentinel, and the `<id>` group
 accepts only hex characters and dashes, OR the literal string `all`:
 
-    (member|agent|squad|issue|all)/([0-9a-fA-F-]+|all)
+    (member|agent|crew|issue|all)/([0-9a-fA-F-]+|all)
 
 So the link target is a real entity UUID (or `all`), never a display name. The
 label between the brackets is free text — that is where the human-readable name
@@ -45,9 +45,9 @@ this document is about the four types (plus `all`) the parser does recognize.
 
 A name is not a UUID. Look the UUID up first, from the matching list command:
 
-- a person → `multica workspace member list --output json` → use `user_id`
-- an agent → `multica agent list --output json` → use `id`
-- a squad  → `multica squad list --output json` → use `id`
+- a person → `orchestra workspace member list --output json` → use `user_id`
+- an agent → `orchestra agent list --output json` → use `id`
+- a crew  → `orchestra crew list --output json` → use `id`
 
 For a person the mention id is the `user_id`, NOT the membership-row id — the
 backend's own roster formatter uses `user_id` for member mentions. Match by
@@ -62,14 +62,14 @@ match, or the link resolves to the wrong entity (or to nothing).
 | To…                  | type     | uuid from       | What the backend does                                    |
 | -------------------- | -------- | --------------- | -------------------------------------------------------- |
 | trigger an agent     | `agent`  | agent.id        | enqueues a run for that agent (`EnqueueTaskForMention`)  |
-| hand work to a squad | `squad`  | squad.id        | resolves the squad's `leader_id` and enqueues a run for the LEADER agent |
+| hand work to a crew | `crew`  | crew.id        | resolves the crew's `leader_id` and enqueues a run for the LEADER agent |
 | link a person        | `member` | member.user_id  | renders a link; enqueues NOTHING — no agent run          |
 | reference an issue   | `issue`  | issue.id        | renders a link; enqueues NOTHING — always safe           |
 
 The mention trigger set is computed by `computeMentionedAgentCommentTriggers`
 (`server/internal/handler/comment.go`); the comment path folds that result into
 `computeCommentAgentTriggers` and enqueues it via `enqueueCommentAgentTriggers`.
-It acts on two types only: the `squad` branch resolves the squad and adds its
+It acts on two types only: the `crew` branch resolves the crew and adds its
 leader to the trigger set; everything that is not `agent` after that is skipped
 (`if m.Type != "agent" { continue }`), then the `agent` branch adds that agent.
 A `member` or `issue` mention reaches neither branch, so it enqueues no task.
@@ -77,7 +77,7 @@ A `member` or `issue` mention reaches neither branch, so it enqueues no task.
 A `member` mention therefore does NOT make a person "run", and this skill does
 NOT claim it delivers a notification through the Go comment handler — there is
 no such code path in that handler (see the source map). What is verified is the
-contract above: only `agent` and `squad` mentions enqueue work.
+contract above: only `agent` and `crew` mentions enqueue work.
 
 ## Preview and per-comment suppression
 
@@ -112,7 +112,7 @@ on-comment trigger (and the other implicit routing fallbacks — thread parent /
 conversation owner). Use `@all` to announce, not to request work from the
 assignee.
 
-`@all` only suppresses those IMPLICIT routes. An EXPLICIT `@agent` / `@squad`
+`@all` only suppresses those IMPLICIT routes. An EXPLICIT `@agent` / `@crew`
 mention in the same comment still fires normally (MUL-5411): a comment reading
 `[@all](mention://all/all) heads up — [@Preflight](mention://agent/<uuid>)
 please take this` enqueues Preflight and nobody else. Explicit mentions win over
@@ -141,12 +141,12 @@ read. Read that array after posting — it is the only place any of this shows u
   agent in another workspace and the reason must not confirm that it exists.
   **So when you see `invocation_not_allowed`, check the UUID against the live
   roster BEFORE you touch any visibility or invocation setting** (MUL-5548);
-  `multica squad member list <squad-id> --output json` returns the `member_id`
+  `orchestra crew member list <crew-id> --output json` returns the `member_id`
   to build the mention from. An id that matches the pattern but is NOT a valid
   UUID at all (`mention://agent/-`) is rejected by the id parser and blocked
   with `target_unavailable` instead — a non-UUID names no entity anywhere, so
   it conceals nothing. Neither case is ever an error response.
-- **An already-pending task.** Even a correct `@agent`/`@squad` starts no second
+- **An already-pending task.** Even a correct `@agent`/`@crew` starts no second
   run when the target already has a pending task on this issue
   (`HasPendingTaskForIssueAndAgent`). This is a fold, not a drop: the comment
   merges into that task and the outcome is `coalesced` (same reviewed head) or
@@ -155,31 +155,31 @@ read. Read that array after posting — it is the only place any of this shows u
   from the same comment being edited, because save cancels those old tasks
   before it re-computes triggers. It is still comment-scoped, not an agent-wide
   bypass.
-- **An archived agent, or one with no runtime bound** (likewise a squad whose
+- **An archived agent, or one with no runtime bound** (likewise a crew whose
   leader is): blocked with `target_unavailable` and `runtime_offline`
   respectively. Both are checked only AFTER the invoke gate, so a caller who may
   not invoke the target never learns its state.
 - **A private agent you cannot invoke:** blocked — the mention path gates on
-  `canInvokeAgent` for both `@agent` and `@squad`. That is the *run* gate, not
+  `canInvokeAgent` for both `@agent` and `@crew`. That is the *run* gate, not
   the *see* gate: since MUL-3963 a workspace admin who can open a private agent
   in the UI still may not trigger it, so being able to view the target says
-  nothing about being able to mention it. (The `canEnqueueSquadLeader` wrapper
-  is the squad assignment/promote path, not this one; the child-done wake is
-  ungated — see the multica-squads skill.)
+  nothing about being able to mention it. (The `canEnqueueCrewLeader` wrapper
+  is the crew assignment/promote path, not this one; the child-done wake is
+  ungated — see the multica-crews skill.)
 
 One nuance for automation (MUL-4857): when an UNATTRIBUTED autopilot run (a
 schedule/webhook dispatch has no human originator, so the A2A gate has no human
 to key on) delegates by `@mention` while working on the issue that autopilot
 created, the invoke gate falls back to the **autopilot creator** as the effective
 invoking user — the same principal that admitted the first dispatch. So a mid-run
-`@agent` / `@squad` delegation fires exactly when the autopilot creator could
+`@agent` / `@crew` delegation fires exactly when the autopilot creator could
 invoke that target (owner / `public_to` match), and stays skipped otherwise. It
 is authorization only — the enqueued run's originator/attribution is unchanged.
 This fallback is bound to verified task lineage: it applies only when the
 delegating run's own task is the one working on that autopilot issue (author ==
 task agent, `task.issue_id` == this issue), so a run doing work elsewhere can
 never borrow another autopilot creator's authority by commenting on its issue.
-The same authority carries the plain assigned-squad-leader wake (a worker's
+The same authority carries the plain assigned-crew-leader wake (a worker's
 result comment on the autopilot issue can still wake the leader), and it survives
 a busy target: if the mentioned agent is already running, the delegation is
 replayed at that run's completion under the same authority, so it is never lost.
@@ -201,7 +201,7 @@ Incorrect: `[@Alice](mention://member/Alice) please review`
   pattern does not match, the link is silently dead.
 
 Correct:
-  1. `multica workspace member list --output json`  → Alice's `user_id` = 7f3a…
+  1. `orchestra workspace member list --output json`  → Alice's `user_id` = 7f3a…
   2. `[@Alice](mention://member/7f3a…) please review`
      → a real `user_id` parses; the link renders and resolves to Alice.
 

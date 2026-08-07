@@ -281,17 +281,17 @@ require_consistent() {
 # PORT is the value to edit, so editing it must move the published port and the
 # probe together. Fails on the old recipe, which probed 9100 while Compose
 # published 8080.
-run_recipe selfhost 's/^PORT=7080/PORT=9100/' '' '' >/dev/null
+run_recipe selfhost 's/^PORT=7081/PORT=9100/' '' '' >/dev/null
 require_consistent 'PORT edited in .env' 9100
 
 # BACKEND_PORT remains an alias that overrides PORT.
-run_recipe selfhost 's/^# BACKEND_PORT=7080/BACKEND_PORT=9200/' '' '' >/dev/null
+run_recipe selfhost 's/^# BACKEND_PORT=7081/BACKEND_PORT=9200/' '' '' >/dev/null
 require_consistent 'BACKEND_PORT alias in .env' 9200
 
 # A make command-line override must not desync the probe from Compose. Fails on
 # the old recipe, which probed 8080 while Compose published 9100.
-run_recipe selfhost 's/^# BACKEND_PORT=7080/BACKEND_PORT=9100/' '' 'PORT=7080' >/dev/null
-require_consistent 'make PORT=7080 over BACKEND_PORT=9100' 9100
+run_recipe selfhost 's/^# BACKEND_PORT=7081/BACKEND_PORT=9100/' '' 'PORT=7081' >/dev/null
+require_consistent 'make PORT=7081 over BACKEND_PORT=9100' 9100
 
 # With no alias pinned in .env, an alias from the environment survives make's
 # include and takes effect end to end.
@@ -301,30 +301,41 @@ require_consistent 'BACKEND_PORT from the environment' 9300
 # The env file stays authoritative for values it does set, so an environment
 # PORT loses to it — and the probe must follow whatever Compose then published.
 run_recipe selfhost '' 'PORT=9500' '' >/dev/null
-require_consistent 'PORT from the environment is overridden by .env' 7080
+require_consistent 'PORT from the environment is overridden by .env' 7081
 
-# Defaults stay 7080/5000.
-run_recipe selfhost '' '' '' >/dev/null
-require_consistent 'defaults' 7080
-if [ "$(published_port frontend)" != "5000" ]; then
-  echo "default frontend host port should be 5000, got $(published_port frontend)"
+# Defaults stay 7081/5001.
+if [ "$(published_port backend)" != "7081" ]; then
+  echo "default backend host port should be 7081, got $(published_port backend)"
+  exit 1
+fi
+if [ "$(published_port frontend)" != "5001" ]; then
+  echo "default frontend host port should be 5001, got $(published_port frontend)"
   exit 1
 fi
 
-# selfhost-build resolves the port the same way.
-run_recipe selfhost-build 's/^PORT=7080/PORT=9400/' '' '' >/dev/null
-require_consistent 'selfhost-build with PORT edited' 9400
+# Blank/commented-out environment overrides fall back to the default ports.
+sed -i.bak \
+  -e 's/^PORT=.*/PORT=/' \
+  -e 's/^FRONTEND_PORT=.*/FRONTEND_PORT=/' \
+  "$tmp_env"
 
-# Every alias at once: BACKEND_PORT wins, and the probe follows it.
+if [ "$(published_port backend)" != "7081" ]; then
+  echo "an empty PORT in .env must fall back to 7081, got $(published_port backend)"
+  exit 1
+fi
+if [ "$(published_port frontend)" != "5001" ]; then
+  echo "an empty FRONTEND_PORT in .env must fall back to 5001, got $(published_port frontend)"
+  exit 1
+fi
 run_recipe selfhost \
-  's/^PORT=7080/PORT=9000/;s/^# BACKEND_PORT=7080/BACKEND_PORT=8000/;s/^# API_PORT=7080/API_PORT=7000/;s/^# SERVER_PORT=7080/SERVER_PORT=6000/' \
+  's/^PORT=7081/PORT=9000/;s/^# BACKEND_PORT=7081/BACKEND_PORT=8000/;s/^# API_PORT=7081/API_PORT=7000/;s/^# SERVER_PORT=7081/SERVER_PORT=6000/' \
   '' '' >/dev/null
 require_consistent 'every alias set at once' 8000
 
 # A higher-priority alias in the env file beats a lower-priority one from the
 # shell.
 run_recipe selfhost \
-  's/^PORT=7080/PORT=8000/;s/^# BACKEND_PORT=7080/BACKEND_PORT=8000/' \
+  's/^PORT=7081/PORT=8000/;s/^# BACKEND_PORT=7081/BACKEND_PORT=8000/' \
   'API_PORT=7000' '' >/dev/null
 require_consistent 'env-file BACKEND_PORT over shell API_PORT' 8000
 
@@ -337,16 +348,16 @@ require_consistent 'env-file BACKEND_PORT over shell API_PORT' 8000
 # ---------------------------------------------------------------------------
 
 # Command-line high-priority alias over a low-priority alias in the env file.
-run_recipe selfhost 's/^# API_PORT=7080/API_PORT=7000/' '' 'BACKEND_PORT=9000' >/dev/null
+run_recipe selfhost 's/^# API_PORT=7081/API_PORT=7000/' '' 'BACKEND_PORT=9000' >/dev/null
 require_consistent 'command-line BACKEND_PORT over env-file API_PORT' 9000
 
 # Env-file high-priority alias over a low-priority alias on the command line.
-run_recipe selfhost 's/^# BACKEND_PORT=7080/BACKEND_PORT=9100/' '' 'SERVER_PORT=6000' >/dev/null
+run_recipe selfhost 's/^# BACKEND_PORT=7081/BACKEND_PORT=9100/' '' 'SERVER_PORT=6000' >/dev/null
 require_consistent 'env-file BACKEND_PORT over command-line SERVER_PORT' 9100
 
 # An explicit empty value on the command line drops out of the chain.
 run_recipe selfhost '' '' 'BACKEND_PORT=' >/dev/null
-require_consistent 'command-line BACKEND_PORT= falls through to PORT' 7080
+require_consistent 'command-line BACKEND_PORT= falls through to PORT' 7081
 
 # ---------------------------------------------------------------------------
 # Explicit empty assignments in the env file
@@ -357,15 +368,15 @@ require_consistent 'command-line BACKEND_PORT= falls through to PORT' 7080
 # way, so the two agree.
 # ---------------------------------------------------------------------------
 
-run_recipe selfhost 's/^# BACKEND_PORT=7080/BACKEND_PORT=/' 'BACKEND_PORT=9000' '' >/dev/null
-require_consistent 'empty BACKEND_PORT in .env over shell BACKEND_PORT' 7080
+run_recipe selfhost 's/^# BACKEND_PORT=7081/BACKEND_PORT=/' 'BACKEND_PORT=9000' '' >/dev/null
+require_consistent 'empty BACKEND_PORT in .env over shell BACKEND_PORT' 7081
 
-run_recipe selfhost 's/^PORT=7080/PORT=/;s/^# BACKEND_PORT=7080/BACKEND_PORT=/' 'PORT=9000' '' >/dev/null
-require_consistent 'every chain variable emptied in .env' 7080
+run_recipe selfhost 's/^PORT=7081/PORT=/;s/^# BACKEND_PORT=7081/BACKEND_PORT=/' 'PORT=9000' '' >/dev/null
+require_consistent 'every chain variable emptied in .env' 7081
 
-run_recipe selfhost 's/^FRONTEND_PORT=5000/FRONTEND_PORT=/' 'FRONTEND_PORT=3100' '' >/dev/null
-if [ "$(published_port frontend)" != "5000" ]; then
-  echo "an empty FRONTEND_PORT in .env must fall back to 5000, got $(published_port frontend)"
+run_recipe selfhost 's/^FRONTEND_PORT=5001/FRONTEND_PORT=/' 'FRONTEND_PORT=3100' '' >/dev/null
+if [ "$(published_port frontend)" != "5001" ]; then
+  echo "an empty FRONTEND_PORT in .env must fall back to 5001, got $(published_port frontend)"
   exit 1
 fi
 
@@ -464,22 +475,22 @@ while IFS='|' read -r case_label case_mutation case_ambient case_backend case_fr
     exit 1
   fi
 done <<'CASES'
-defaults|||7080|5000
-PORT only|s/^PORT=7080/PORT=9100/||9100|5000
-SERVER_PORT overrides PORT|s/^# SERVER_PORT=7080/SERVER_PORT=9200/||9200|5000
-API_PORT overrides SERVER_PORT|s/^# API_PORT=7080/API_PORT=9300/;s/^# SERVER_PORT=7080/SERVER_PORT=9200/||9300|5000
-BACKEND_PORT overrides all|s/^# BACKEND_PORT=7080/BACKEND_PORT=9400/;s/^# API_PORT=7080/API_PORT=9300/;s/^# SERVER_PORT=7080/SERVER_PORT=9200/||9400|5000
-ambient PORT beats the env file|s/^PORT=7080/PORT=9100/|PORT=9500|9500|5000
-ambient BACKEND_PORT beats the env file|s/^PORT=7080/PORT=9100/|BACKEND_PORT=9600|9600|5000
-ambient API_PORT beats the env file|s/^PORT=7080/PORT=9100/|API_PORT=9700|9700|5000
-ambient SERVER_PORT beats the env file|s/^PORT=7080/PORT=9100/|SERVER_PORT=9800|9800|5000
-ambient FRONTEND_PORT beats the env file|s/^FRONTEND_PORT=5000/FRONTEND_PORT=3100/|FRONTEND_PORT=3200|7080|3200
+defaults|||7081|5001
+PORT only|s/^PORT=7081/PORT=9100/||9100|5001
+SERVER_PORT overrides PORT|s/^# SERVER_PORT=7081/SERVER_PORT=9200/||9200|5001
+API_PORT overrides SERVER_PORT|s/^# API_PORT=7081/API_PORT=9300/;s/^# SERVER_PORT=7081/SERVER_PORT=9200/||9300|5001
+BACKEND_PORT overrides all|s/^# BACKEND_PORT=7081/BACKEND_PORT=9400/;s/^# API_PORT=7081/API_PORT=9300/;s/^# SERVER_PORT=7081/SERVER_PORT=9200/||9400|5001
+ambient PORT beats the env file|s/^PORT=7081/PORT=9100/|PORT=9500|9500|5001
+ambient BACKEND_PORT beats the env file|s/^PORT=7081/PORT=9100/|BACKEND_PORT=9600|9600|5001
+ambient API_PORT beats the env file|s/^PORT=7081/PORT=9100/|API_PORT=9700|9700|5001
+ambient SERVER_PORT beats the env file|s/^PORT=7081/PORT=9100/|SERVER_PORT=9800|9800|5001
+ambient FRONTEND_PORT beats the env file|s/^FRONTEND_PORT=5001/FRONTEND_PORT=3100/|FRONTEND_PORT=3200|7081|3200
 CASES
 
 # An env-file alias beats the same alias from the environment, and the probe
 # follows whatever Compose published either way.
 for shadowed_alias in BACKEND_PORT API_PORT SERVER_PORT; do
-  run_recipe selfhost "s/^# ${shadowed_alias}=7080/${shadowed_alias}=9700/" \
+  run_recipe selfhost "s/^# ${shadowed_alias}=7081/${shadowed_alias}=9700/" \
     "${shadowed_alias}=9600" '' >/dev/null
   require_consistent "env-file ${shadowed_alias} over the same shell variable" 9700
 done

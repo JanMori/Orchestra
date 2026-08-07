@@ -756,7 +756,7 @@ type runtimeTeardownResult struct {
 //     is just as much the user's data. System agents are excluded — they are
 //     invisible infrastructure with no rebind affordance, so they are deleted in
 //     step 5 as before.
-//  2. Pause active Autopilots assigned directly to those agents or to squads
+//  2. Pause active Autopilots assigned directly to those agents or to crews
 //     they lead. The automation config stays intact and the persisted reason
 //     explains that rebinding the Agent is the recovery path.
 //  3. Cancel the non-terminal tasks of this runtime AND of the agents we just

@@ -115,22 +115,22 @@ if ($null -ne $failureResult) {
 # 3. End to end: the probed URL and the printed URLs are the published ports
 # ---------------------------------------------------------------------------
 $cases = @(
-    @{ Label = "defaults"; Env = @{}; Mutation = $null; Backend = "7080"; Frontend = "5000" }
-    @{ Label = "env-file PORT"; Env = @{}; Mutation = @{ PORT = "9100" }; Backend = "9100"; Frontend = "5000" }
-    @{ Label = "env-file BACKEND_PORT"; Env = @{}; Mutation = @{ BACKEND_PORT = "9200" }; Backend = "9200"; Frontend = "5000" }
-    @{ Label = "env-file API_PORT"; Env = @{}; Mutation = @{ API_PORT = "9300" }; Backend = "9300"; Frontend = "5000" }
-    @{ Label = "env-file SERVER_PORT"; Env = @{}; Mutation = @{ SERVER_PORT = "9400" }; Backend = "9400"; Frontend = "5000" }
-    @{ Label = "env-file FRONTEND_PORT"; Env = @{}; Mutation = @{ FRONTEND_PORT = "3100" }; Backend = "7080"; Frontend = "3100" }
-    @{ Label = "ambient PORT beats .env"; Env = @{ PORT = "9500" }; Mutation = @{ PORT = "9100" }; Backend = "9500"; Frontend = "5000" }
-    @{ Label = "ambient BACKEND_PORT beats .env"; Env = @{ BACKEND_PORT = "9600" }; Mutation = @{ PORT = "9100" }; Backend = "9600"; Frontend = "5000" }
-    @{ Label = "ambient API_PORT beats .env"; Env = @{ API_PORT = "9700" }; Mutation = @{ PORT = "9100" }; Backend = "9700"; Frontend = "5000" }
-    @{ Label = "ambient SERVER_PORT beats .env"; Env = @{ SERVER_PORT = "9800" }; Mutation = @{ PORT = "9100" }; Backend = "9800"; Frontend = "5000" }
-    @{ Label = "ambient FRONTEND_PORT beats .env"; Env = @{ FRONTEND_PORT = "3200" }; Mutation = @{ FRONTEND_PORT = "3100" }; Backend = "7080"; Frontend = "3200" }
+    @{ Label = "defaults"; Env = @{}; Mutation = $null; Backend = "7081"; Frontend = "5001" }
+    @{ Label = "env-file PORT"; Env = @{}; Mutation = @{ PORT = "9100" }; Backend = "9100"; Frontend = "5001" }
+    @{ Label = "env-file BACKEND_PORT"; Env = @{}; Mutation = @{ BACKEND_PORT = "9200" }; Backend = "9200"; Frontend = "5001" }
+    @{ Label = "env-file API_PORT"; Env = @{}; Mutation = @{ API_PORT = "9300" }; Backend = "9300"; Frontend = "5001" }
+    @{ Label = "env-file SERVER_PORT"; Env = @{}; Mutation = @{ SERVER_PORT = "9400" }; Backend = "9400"; Frontend = "5001" }
+    @{ Label = "env-file FRONTEND_PORT"; Env = @{}; Mutation = @{ FRONTEND_PORT = "3100" }; Backend = "7081"; Frontend = "3100" }
+    @{ Label = "ambient PORT beats .env"; Env = @{ PORT = "9500" }; Mutation = @{ PORT = "9100" }; Backend = "9500"; Frontend = "5001" }
+    @{ Label = "ambient BACKEND_PORT beats .env"; Env = @{ BACKEND_PORT = "9600" }; Mutation = @{ PORT = "9100" }; Backend = "9600"; Frontend = "5001" }
+    @{ Label = "ambient API_PORT beats .env"; Env = @{ API_PORT = "9700" }; Mutation = @{ PORT = "9100" }; Backend = "9700"; Frontend = "5001" }
+    @{ Label = "ambient SERVER_PORT beats .env"; Env = @{ SERVER_PORT = "9800" }; Mutation = @{ PORT = "9100" }; Backend = "9800"; Frontend = "5001" }
+    @{ Label = "ambient FRONTEND_PORT beats .env"; Env = @{ FRONTEND_PORT = "3200" }; Mutation = @{ FRONTEND_PORT = "3100" }; Backend = "7081"; Frontend = "3200" }
     # An explicitly empty higher-priority alias contributes no port, so the chain
     # continues. Expressed through .env because whether an *ambient* empty value
     # survives into a child process is platform-dependent; the Bash suite covers
     # the ambient-empty case on POSIX.
-    @{ Label = "env-file empty BACKEND_PORT falls back"; Env = @{}; Mutation = @{ BACKEND_PORT = ""; PORT = "9100" }; Backend = "9100"; Frontend = "5000" }
+    @{ Label = "env-file empty BACKEND_PORT falls back"; Env = @{}; Mutation = @{ BACKEND_PORT = ""; PORT = "9100" }; Backend = "9100"; Frontend = "5001" }
 )
 
 $runnerScript = Join-Path ([System.IO.Path]::GetTempPath()) "multica-install-ps1-case.ps1"
@@ -180,13 +180,13 @@ function Get-StubBackendPort {
         $value = Resolve-ComposeValue -Key $key
         if (-not [string]::IsNullOrEmpty($value)) { return $value }
     }
-    return "7080"
+    return "7081"
 }
 
 function Get-StubFrontendPort {
     $value = Resolve-ComposeValue -Key "FRONTEND_PORT"
     if (-not [string]::IsNullOrEmpty($value)) { return $value }
-    return "5000"
+    return "5001"
 }
 
 # Stand in for the external commands the installer shells out to.
@@ -231,11 +231,11 @@ foreach ($case in $cases) {
     New-Item -ItemType Directory -Path (Join-Path $workDir ".git") -Force | Out-Null
 
     $envLines = @(
-        "PORT=7080"
-        "# BACKEND_PORT=7080"
-        "# API_PORT=7080"
-        "# SERVER_PORT=7080"
-        "FRONTEND_PORT=5000"
+        "PORT=7081"
+        "# BACKEND_PORT=7081"
+        "# API_PORT=7081"
+        "# SERVER_PORT=7081"
+        "FRONTEND_PORT=5001"
         "JWT_SECRET=change-me-in-production"
         "POSTGRES_PASSWORD=multica"
     )

@@ -32,7 +32,7 @@ Skill 是工作区中可以复用的一组工作方法。它以 `SKILL.md` 为�
 使用 CLI 时，也可以从 `.skill` 或 `.zip` 文件导入：
 
 ```bash
-multica skill import --file ./review-helper.skill
+orchestra skill import --file ./review-helper.skill
 ```
 
 导入时如果工作区已经存在同名 skill，可以停止导入、覆盖原内容、使用新名称保存，或跳过。通过导入覆盖仅限该 skill 的创建者本人；工作区 `admin` 即使可以在应用内编辑它，也不能用导入的方式覆盖。
@@ -89,6 +89,6 @@ scripts/check.sh
 
 ## 接下来
 
-- [小队](/squads) — 让 leader 根据工作内容选择合适的成员。
+- [小组](/crews) — 让 leader 根据工作内容选择合适的成员。
 - [守护进程与运行时](/daemon-runtimes) — 了解 skill 如何进入实际执行环境。
 - [AI 编程工具对照](/providers) — 查看不同工具对 skill 的支持方式。

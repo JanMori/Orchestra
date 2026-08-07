@@ -90,7 +90,7 @@ export function buildIssueSurfaceQueryPlan(
         const queryFilter: MyIssuesFilter =
           scope.actorKind === "members"
             ? { assignee_types: ["member"] }
-            : { assignee_types: ["agent", "squad"] };
+            : { assignee_types: ["agent", "crew"] };
         return {
           kind: "scoped",
           scopeKey,

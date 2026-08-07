@@ -433,7 +433,7 @@ type Daemon struct {
 	updating       atomic.Bool  // prevents concurrent update attempts
 	activeTasks    atomic.Int64 // number of tasks currently in handleTask; exposed via /health
 	ready          atomic.Bool  // false until preflight completes; gates /health status (starting -> running)
-	// reloadPendingReason explains why a confirmed multica version change hasn't
+	// reloadPendingReason explains why a confirmed orchestra version change hasn't
 	// restarted the daemon yet (a task was running at the barrier check). Set
 	// and cleared by trySelfReload, read by /health. Diagnostic only.
 	reloadPendingReason atomic.Pointer[string]
@@ -1738,9 +1738,9 @@ func (d *Daemon) resolveAuth() error {
 		return fmt.Errorf("load CLI config: %w", err)
 	}
 	if cfg.Token == "" {
-		loginHint := "'multica login'"
+		loginHint := "'orchestra login'"
 		if d.cfg.Profile != "" {
-			loginHint = fmt.Sprintf("'multica login --profile %s'", d.cfg.Profile)
+			loginHint = fmt.Sprintf("'orchestra login --profile %s'", d.cfg.Profile)
 		}
 		d.logger.Warn("not authenticated — run " + loginHint + " to authenticate, then restart the daemon")
 		return fmt.Errorf("not authenticated: run %s first", loginHint)
@@ -2616,7 +2616,7 @@ func (d *Daemon) workspaceCoAuthoredByEnabled(workspaceID string) bool {
 //
 // It's safe to call with the workspace's own repos — duplicates are
 // idempotent. Called from runTask before the agent spawns so
-// `multica repo checkout` accepts project-only URLs without an extra round
+// `orchestra repo checkout` accepts project-only URLs without an extra round
 // trip back to GetWorkspaceRepos (which doesn't carry project resources).
 func (d *Daemon) registerTaskRepos(workspaceID, taskID string, repos []RepoData) {
 	if len(repos) == 0 {
@@ -3017,7 +3017,7 @@ const DefaultTokenRenewalInterval = 3 * 24 * time.Hour
 // preflightAuth runs the two auth-sensitive startup steps in their
 // required order: a synchronous PAT renewal first, then the initial
 // workspace sync. The order matters — running tryRenewToken before any
-// other API call is what surfaces a user-actionable "run multica login"
+// other API call is what surfaces a user-actionable "run orchestra login"
 // WARN when the PAT is already revoked or expired. If we let the
 // workspace sync go first, its 401 would short-circuit Run before the
 // renewal loop's first tick ever fires, and the operator would see only
@@ -3073,9 +3073,9 @@ func (d *Daemon) tryRenewToken(ctx context.Context) {
 	resp, err := d.client.RenewToken(reqCtx)
 	if err != nil {
 		if isUnauthorizedError(err) {
-			loginHint := "'multica login'"
+			loginHint := "'orchestra login'"
 			if d.cfg.Profile != "" {
-				loginHint = fmt.Sprintf("'multica login --profile %s'", d.cfg.Profile)
+				loginHint = fmt.Sprintf("'orchestra login --profile %s'", d.cfg.Profile)
 			}
 			d.logger.Warn("auth token rejected by server — run "+loginHint+" to re-authenticate, then restart the daemon", "error", err)
 			return
@@ -5129,7 +5129,7 @@ func gateResumeToReusedWorkdir(task *Task, taskCtx *execenv.TaskContextForEnv, e
 }
 
 // shouldReusePriorWorkdir keeps the local_directory lock invariant without
-// forcing every squad-leader follow-up onto a fresh provider session. Worker
+// forcing every crew-leader follow-up onto a fresh provider session. Worker
 // tasks already expose their current local-directory assignment, so their
 // existing reuse behavior remains unchanged. Leader tasks intentionally skip
 // that assignment and its lock; they may therefore reuse only directories
@@ -5546,7 +5546,7 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot i
 	// claimed task belongs to a project with github_repo resources the server
 	// has already narrowed it to project repos only. Make sure those URLs are
 	// in the per-workspace allowlist and the local cache, otherwise
-	// `multica repo checkout` would reject project-only URLs that aren't also
+	// `orchestra repo checkout` would reject project-only URLs that aren't also
 	// bound at the workspace level.
 	d.registerTaskRepos(task.WorkspaceID, task.ID, task.Repos)
 	defer d.clearTaskRepoRefs(task.WorkspaceID, task.ID)
@@ -5604,7 +5604,7 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot i
 
 	// Prepare isolated execution environment.
 	// Repos are passed as metadata only — the agent checks them out on demand
-	// via `multica repo checkout <url>`.
+	// via `orchestra repo checkout <url>`.
 	taskCtx := execenv.TaskContextForEnv{
 		IssueID:             task.IssueID,
 		TriggerCommentID:    task.TriggerCommentID,
@@ -5638,7 +5638,7 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot i
 		AutopilotTriggerPayload:          strings.TrimSpace(string(task.AutopilotTriggerPayload)),
 		QuickCreatePrompt:                task.QuickCreatePrompt,
 		HandoffNote:                      task.HandoffNote,
-		IsSquadLeader:                    strings.Contains(instructions, "## Squad Operating Protocol"),
+		IsCrewLeader:                    strings.Contains(instructions, "## Crew Operating Protocol"),
 		RequestingUserName:               task.RequestingUserName,
 		RequestingUserProfileDescription: task.RequestingUserProfileDescription,
 		InitiatorType:                    task.InitiatorType,
@@ -5912,7 +5912,7 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot i
 	prompt := BuildPrompt(task, provider)
 
 	// Pass task-scoped auth credentials and context so the spawned agent CLI
-	// can call the Multica API and the local daemon (e.g. `multica repo checkout`).
+	// can call the Multica API and the local daemon (e.g. `orchestra repo checkout`).
 	// ORCHESTRA_TASK_SLOT is allocated from the daemon-wide concurrency pool, not
 	// per-agent. When one daemon hosts multiple agents, slots index shared
 	// daemon-level resources such as GPUs.
@@ -5946,7 +5946,7 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot i
 	if task.AutopilotID != "" {
 		agentEnv["ORCHESTRA_AUTOPILOT_ID"] = task.AutopilotID
 	}
-	// Quick-create marker — when set, the multica CLI's `issue create`
+	// Quick-create marker — when set, the orchestra CLI's `issue create`
 	// command stamps the new issue with origin_type=quick_create +
 	// origin_id=<task_id> so the completion handler can find it
 	// deterministically (see GetIssueByOrigin).
@@ -5960,7 +5960,7 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot i
 			}
 		}
 	}
-	// Ensure the multica CLI is on PATH inside the agent's environment.
+	// Ensure the orchestra CLI is on PATH inside the agent's environment.
 	// Some runtimes (e.g. Codex) run in an isolated sandbox that may not
 	// inherit the daemon's PATH. Prepend the directory of the running
 	// multica binary so that `multica` commands in the agent always resolve.
@@ -6185,7 +6185,7 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot i
 	// identity/persona + skills + project context) so the backend prepends the
 	// same payload that file-based runtimes pick up from disk. Without this,
 	// these providers silently miss the workflow section and never call
-	// `multica issue status` / `multica issue comment add`, leaving issues
+	// `orchestra issue status` / `orchestra issue comment add`, leaving issues
 	// stuck in `todo`.
 	//
 	// Hermes and Kiro are intentionally excluded: their ACP sessions start in

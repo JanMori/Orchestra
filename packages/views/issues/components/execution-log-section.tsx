@@ -430,7 +430,7 @@ function PastRow({ task, issueId }: { task: AgentTask; issueId: string }) {
   // task.id targets this specific row's agent — without it, the rerun
   // endpoint would fall back to the issue's current assignee and the
   // wrong agent would fire on rows whose agent has since been displaced
-  // (e.g. reassignment, squad worker, or a one-off @-mention agent).
+  // (e.g. reassignment, crew worker, or a one-off @-mention agent).
   const canRetry = task.status === "failed" || task.status === "cancelled";
 
   const handleRetry = async () => {

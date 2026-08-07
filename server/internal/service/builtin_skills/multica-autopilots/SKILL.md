@@ -21,7 +21,7 @@ Do not run `trigger`, `delete`, `trigger-delete`, or `trigger-rotate-url` to tes
 
 ## Core model
 
-An autopilot is not an agent. It is a rule that dispatches work to an agent, or to a squad's leader agent.
+An autopilot is not an agent. It is a rule that dispatches work to an agent, or to a crew's leader agent.
 
 The chain is: trigger fires (`schedule`, `webhook`, or `manual`) -> `autopilot_run` row -> `execution_mode` decides output -> assignee readiness check -> issue/task execution -> run status sync. Webhooks have a durable admission step in front: HTTP ingress stores a queued `webhook_delivery`, synchronously creates or reuses its idempotent run, and returns `200` with `status=accepted|skipped` plus `run_id`; a database-leased worker then resumes accepted runs and owns recoverable issue/task dispatch.
 
@@ -57,8 +57,8 @@ For "why didn't it run":
 
 1. `multica autopilot get <id> --output json` — status, mode, assignee, triggers.
 2. `multica autopilot runs <id> --output json` — run status and failure reason.
-3. If assigned to a squad, inspect the squad: `multica squad get <squad-id> --output json`; execution goes to the leader.
-4. Inspect the target agent/runtime: `multica agent get <agent-id> --output json` and `multica runtime list --output json`.
+3. If assigned to a crew, inspect the crew: `orchestra crew get <crew-id> --output json`; execution goes to the leader.
+4. Inspect the target agent/runtime: `orchestra agent get <agent-id> --output json` and `multica runtime list --output json`.
 5. For webhooks, inspect delivery status: `queued` means the worker has not completed dispatch; `failed` carries the worker error. A provider retry with the same `X-GitHub-Delivery` / `Idempotency-Key` reuses the original delivery.
 6. For `create_issue`, inspect the created issue if the run records one.
 

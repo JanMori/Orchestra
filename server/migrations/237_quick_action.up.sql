@@ -4,7 +4,7 @@
 -- on an existing issue. Clicking one renders `prompt` server-side and posts a
 -- `quick_action` comment carrying the target's mention markup, which then runs
 -- through the existing comment -> mention -> task trigger path. There is no
--- separate dispatch engine: permission (canInvokeAgent), attribution, squad
+-- separate dispatch engine: permission (canInvokeAgent), attribution, crew
 -- leader routing, the execution log, and pending-task coalescing are all
 -- inherited from that path by construction.
 --
@@ -37,8 +37,8 @@ CREATE TABLE quick_action (
     name TEXT NOT NULL,
     description TEXT NOT NULL DEFAULT '',
     -- Mirrors autopilot's polymorphic assignee: 'agent' -> agent(id),
-    -- 'squad' -> squad(id), resolved to squad.leader_id at run time.
-    assignee_type TEXT NOT NULL CHECK (assignee_type IN ('agent', 'squad')),
+    -- 'crew' -> crew(id), resolved to crew.leader_id at run time.
+    assignee_type TEXT NOT NULL CHECK (assignee_type IN ('agent', 'crew')),
     assignee_id UUID NOT NULL,
     -- Stored and sent VERBATIM. No interpolation of any kind: every variable
     -- we considered ({{issue.title}}, {{issue.identifier}}, {{issue.url}},

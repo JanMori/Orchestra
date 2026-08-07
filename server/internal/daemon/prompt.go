@@ -123,22 +123,22 @@ func buildPromptBody(task Task, provider string) string {
 		b.WriteString("You were handed this issue with a handoff note. Treat it as the assigner's scoping instruction for this run; follow it before doing anything broader, and do not reply to it as if it were a comment:\n\n")
 		fmt.Fprintf(&b, "> %s\n\n", task.HandoffNote)
 	}
-	fmt.Fprintf(&b, "Start by running `multica issue get %s --output json` to understand your task, then complete it.\n", task.IssueID)
-	fmt.Fprintf(&b, "For comment history, follow the rule in your runtime workflow file (assignment-triggered tasks treat the read as mandatory). Scan the threads first with `multica issue comment list %s --roots-only --summary --output json`, then expand only what matters with `--thread <thread-id> --tail 30`. For `--since` incremental polling, pagination, and folding, see `multica issue comment list --help`.\n", task.IssueID)
+	fmt.Fprintf(&b, "Start by running `orchestra issue get %s --output json` to understand your task, then complete it.\n", task.IssueID)
+	fmt.Fprintf(&b, "For comment history, follow the rule in your runtime workflow file (assignment-triggered tasks treat the read as mandatory). Scan the threads first with `orchestra issue comment list %s --roots-only --summary --output json`, then expand only what matters with `--thread <thread-id> --tail 30`. For `--since` incremental polling, pagination, and folding, see `orchestra issue comment list --help`.\n", task.IssueID)
 	return b.String()
 }
 
 // buildQuickCreatePrompt constructs a prompt for quick-create tasks. The
 // user typed a single natural-language sentence in the create-issue modal;
-// the agent's job is to translate it into one `multica issue create` CLI
+// the agent's job is to translate it into one `orchestra issue create` CLI
 // invocation, using its judgment to decide whether fetching referenced URLs
 // would produce a better issue. No issue exists yet, so the agent must NOT
-// call `multica issue get` or attempt to comment — there's nothing to read
+// call `orchestra issue get` or attempt to comment — there's nothing to read
 // or reply to.
 func buildQuickCreatePrompt(task Task) string {
 	var b strings.Builder
 	b.WriteString("You are running as a quick-create assistant for a Multica workspace.\n\n")
-	b.WriteString("A user captured the following input via the quick-create modal. There is NO existing issue. Your job is to create a well-formed issue from this input with a single `multica issue create` command.\n\n")
+	b.WriteString("A user captured the following input via the quick-create modal. There is NO existing issue. Your job is to create a well-formed issue from this input with a single `orchestra issue create` command.\n\n")
 	fmt.Fprintf(&b, "User input:\n> %s\n\n", task.QuickCreatePrompt)
 
 	b.WriteString("Field rules:\n\n")
@@ -149,7 +149,7 @@ func buildQuickCreatePrompt(task Task) string {
 	// description — the core optimization
 	b.WriteString("- **description**: The description is the executing agent's primary context. Aim for high fidelity — they should grasp the user's intent as if they had read the raw input themselves. Use a two-section structure:\n\n")
 	b.WriteString("  1. **User request** — Faithfully restate what the user wants in their own words. Preserve specific names, identifiers, file paths, code snippets, and technical terms verbatim. Strip non-spec material before writing it (this is removal, not paraphrasing): verbal routing wrappers about creating the issue or routing it (e.g. \"create an issue\", \"分配给 X\", \"让 @X 处理\") and pure conversational fillers (e.g. \"对吧？\"). When in doubt, keep it.\n\n")
-	b.WriteString("     CC exception: `multica issue create` has no `--subscriber` flag, and the platform auto-subscribes members whose `[@Name](mention://member/<uuid>)` link appears in the description. When the user wrote \"cc @Y\", strip the verbal \"cc\" wrapper from the User request body and append a final `CC: <mention link(s)>` line to the description so the cc routing still fires.\n\n")
+	b.WriteString("     CC exception: `orchestra issue create` has no `--subscriber` flag, and the platform auto-subscribes members whose `[@Name](mention://member/<uuid>)` link appears in the description. When the user wrote \"cc @Y\", strip the verbal \"cc\" wrapper from the User request body and append a final `CC: <mention link(s)>` line to the description so the cc routing still fires.\n\n")
 	b.WriteString("  2. **Context** — include ONLY when the input cited external resources AND you successfully fetched them AND they produced verifiable facts worth recording. Summarize facts only (e.g. \"PR #45 changes auth to JWT\"), not interpretation or unsolicited reference implementations. If you have nothing factual to add, omit the section entirely — never use it as an apology log for resources you could not fetch.\n\n")
 	b.WriteString("  Hard rules: never invent requirements, implementation details, or acceptance criteria the user did not express; never reduce multi-sentence input to a single vague sentence; never echo the title.\n\n")
 	b.WriteString("  Passing the description: a short, single-line body with no code, quotes, backticks, `$()`, or other special characters may go inline via `--description \"...\"`. Anything multi-line, or containing code snippets / file paths / quotes / backticks / `$()` / special characters, or otherwise long — which quick-create descriptions usually are — MUST be written to `./description.md` and passed with `--description-file ./description.md`; passing rich text inline lets the shell rewrite or truncate it (MUL-2904). That file MUST live inside your current working directory (e.g. `./description.md`) — never `/tmp` or any machine-shared path, where a different run may have left a stale file that would silently become this issue's description. If the file write fails for any reason, stop and fix it; never run `--description-file` against a file whose write did not succeed.\n\n")
@@ -163,8 +163,8 @@ func buildQuickCreatePrompt(task Task) string {
 
 	// assignee
 	b.WriteString("- **assignee**:\n")
-	b.WriteString("    - When the user names someone (\"assign to X\" / \"@X\"), call `multica workspace member list --output json`, `multica agent list --output json`, and `multica squad list --output json` and find the matching entity by display name. Squads are first-class assignees too — a squad name (e.g. \"Super Human\") routes work to the squad leader, who then delegates. On a clean unambiguous match, prefer `--assignee-id <uuid>` using the `user_id` (member) or `id` (agent or squad) from that JSON — UUID matching is exact and robust to name collisions in workspaces with overlapping names. `--assignee <name>` (fuzzy) is acceptable as a fallback when names are unambiguous. On no match or ambiguous match, do NOT pass either flag — instead append a final line to the description: `Unrecognized assignee: X`.\n")
-	b.WriteString("    - Treat bare @-routing as an assignee directive even when the user did not write the English word \"assign\". This includes Chinese imperatives like `让 @独立团 review 这个 PR`, `给 @X 处理`, or `交给 @X`; strip the leading `@`/`＠` before matching display names. Do not keep that routing wrapper or `@Name` in the description unless it is a true CC-style notification rather than ownership. If the matched entity is a squad, pass the squad's `id` as `--assignee-id`, not the leader agent's id.\n")
+	b.WriteString("    - When the user names someone (\"assign to X\" / \"@X\"), call `orchestra workspace member list --output json`, `orchestra agent list --output json`, and `orchestra crew list --output json` and find the matching entity by display name. Crews are first-class assignees too — a crew name (e.g. \"Super Human\") routes work to the crew leader, who then delegates. On a clean unambiguous match, prefer `--assignee-id <uuid>` using the `user_id` (member) or `id` (agent or crew) from that JSON — UUID matching is exact and robust to name collisions in workspaces with overlapping names. `--assignee <name>` (fuzzy) is acceptable as a fallback when names are unambiguous. On no match or ambiguous match, do NOT pass either flag — instead append a final line to the description: `Unrecognized assignee: X`.\n")
+	b.WriteString("    - Treat bare @-routing as an assignee directive even when the user did not write the English word \"assign\". This includes Chinese imperatives like `让 @独立团 review 这个 PR`, `给 @X 处理`, or `交给 @X`; strip the leading `@`/`＠` before matching display names. Do not keep that routing wrapper or `@Name` in the description unless it is a true CC-style notification rather than ownership. If the matched entity is a crew, pass the crew's `id` as `--assignee-id`, not the leader agent's id.\n")
 	agentID := ""
 	agentName := ""
 	if task.Agent != nil {
@@ -172,15 +172,15 @@ func buildQuickCreatePrompt(task Task) string {
 		agentName = task.Agent.Name
 	}
 	switch {
-	case task.SquadID != "":
-		// The user opened quick-create with a SQUAD selected. The task
-		// runs on the squad's leader agent, but the squad is the expected
-		// owner — assigning to the leader would mask the squad's
-		// delegation flow. Always point the default at the squad UUID.
-		if task.SquadName != "" {
-			fmt.Fprintf(&b, "    - When the user did NOT name an assignee, default to the picker SQUAD %q: pass `--assignee-id %q` (the squad's UUID). The user opened quick-create with the squad selected; you (the leader agent) are running on the squad's behalf, so the squad — not you — is the expected owner. Never leave the issue unassigned, and do not assign it to your own agent UUID.\n\n", task.SquadName, task.SquadID)
+	case task.CrewID != "":
+		// The user opened quick-create with a CREW selected. The task
+		// runs on the crew's leader agent, but the crew is the expected
+		// owner — assigning to the leader would mask the crew's
+		// delegation flow. Always point the default at the crew UUID.
+		if task.CrewName != "" {
+			fmt.Fprintf(&b, "    - When the user did NOT name an assignee, default to the picker CREW %q: pass `--assignee-id %q` (the crew's UUID). The user opened quick-create with the crew selected; you (the leader agent) are running on the crew's behalf, so the crew — not you — is the expected owner. Never leave the issue unassigned, and do not assign it to your own agent UUID.\n\n", task.CrewName, task.CrewID)
 		} else {
-			fmt.Fprintf(&b, "    - When the user did NOT name an assignee, default to the picker SQUAD: pass `--assignee-id %q` (the squad's UUID). The user opened quick-create with the squad selected; you (the leader agent) are running on the squad's behalf, so the squad — not you — is the expected owner. Never leave the issue unassigned, and do not assign it to your own agent UUID.\n\n", task.SquadID)
+			fmt.Fprintf(&b, "    - When the user did NOT name an assignee, default to the picker CREW: pass `--assignee-id %q` (the crew's UUID). The user opened quick-create with the crew selected; you (the leader agent) are running on the crew's behalf, so the crew — not you — is the expected owner. Never leave the issue unassigned, and do not assign it to your own agent UUID.\n\n", task.CrewID)
 		}
 	case agentID != "":
 		fmt.Fprintf(&b, "    - When the user did NOT name an assignee, default to YOURSELF: pass `--assignee-id %q` (your agent UUID). The picker agent is the expected owner because the user opened quick-create with you selected — never leave the issue unassigned. Use the UUID flag, not `--assignee <name>`, so the assignment is unambiguous even when other agents share part of your name.\n\n", agentID)
@@ -224,10 +224,10 @@ func buildQuickCreatePrompt(task Task) string {
 
 	// output format
 	b.WriteString("Output format:\n")
-	b.WriteString("- Run exactly one `multica issue create --output json` invocation. Do not retry for any reason — even on non-zero exit. The issue may already exist; another attempt would create a duplicate.\n")
+	b.WriteString("- Run exactly one `orchestra issue create --output json` invocation. Do not retry for any reason — even on non-zero exit. The issue may already exist; another attempt would create a duplicate.\n")
 	b.WriteString("- Parse the JSON response to read the created issue's `identifier` (preferred) or `id` (fallback). Do not scrape human output and do not assume any workspace issue prefix such as `MUL-`; workspaces can use custom prefixes.\n")
 	b.WriteString("- After success, print exactly one line: `Created <identifier-or-id>: <title>` and exit. No commentary, no follow-up tool calls.\n")
-	b.WriteString("- Do NOT call `multica issue get` or `multica issue comment add` — there is no issue to query or comment on.\n")
+	b.WriteString("- Do NOT call `orchestra issue get` or `orchestra issue comment add` — there is no issue to query or comment on.\n")
 	b.WriteString("- On CLI error or JSON parse error, exit with the error as the only output. The platform writes a failure notification automatically.\n")
 	return b.String()
 }
@@ -293,7 +293,7 @@ func buildCommentPrompt(task Task, provider string) string {
 				b.WriteString(":\n")
 				fmt.Fprintf(&b, "  > %s\n", strings.ReplaceAll(strings.TrimSpace(cc.Content), "\n", "\n  > "))
 			}
-			fmt.Fprintf(&b, "\nIf you need the surrounding discussion for any of them, fetch its thread with `multica issue comment list %s --thread <thread-id> --tail 30 --output json` using the thread id shown above.\n\n", task.IssueID)
+			fmt.Fprintf(&b, "\nIf you need the surrounding discussion for any of them, fetch its thread with `orchestra issue comment list %s --thread <thread-id> --tail 30 --output json` using the thread id shown above.\n\n", task.IssueID)
 		} else if len(task.CoalescedCommentIDs) > 0 {
 			// MUL-5442: this fallback used to send the agent at `--recent 30`.
 			// That flag caps THREADS, not comments, and every returned thread
@@ -324,20 +324,20 @@ func buildCommentPrompt(task Task, provider string) string {
 			fmt.Fprintf(&b, "This run also covers %d earlier comment(s) posted before it started — you must read and address every one of them, not just the one above: %s. They may be in DIFFERENT threads, so do not assume they share the triggering thread.\n\n",
 				len(task.CoalescedCommentIDs), strings.Join(task.CoalescedCommentIDs, ", "))
 			if task.NewCommentsSince != "" {
-				fmt.Fprintf(&b, "Start with `multica issue comment list %s --since %s --output json`. Treat that as a candidate window, not a guarantee — it also carries unrelated comments, and a retried run can carry ids older than the window. Check every id above against the result.\n\n",
+				fmt.Fprintf(&b, "Start with `orchestra issue comment list %s --since %s --output json`. Treat that as a candidate window, not a guarantee — it also carries unrelated comments, and a retried run can carry ids older than the window. Check every id above against the result.\n\n",
 					task.IssueID, task.NewCommentsSince)
 			}
-			fmt.Fprintf(&b, "Fetch each id you still need directly: `multica issue comment list %s --thread <comment-id> --tail 30 --output json`. `--thread` accepts a reply id, not just a thread root, so you do not need to know which thread the comment lives in. If it is older than those 30 replies, page back with the `Next reply cursor` values (`--before` / `--before-id`) until it appears. Do not finish this turn until every id above is accounted for.\n\n",
+			fmt.Fprintf(&b, "Fetch each id you still need directly: `orchestra issue comment list %s --thread <comment-id> --tail 30 --output json`. `--thread` accepts a reply id, not just a thread root, so you do not need to know which thread the comment lives in. If it is older than those 30 replies, page back with the `Next reply cursor` values (`--before` / `--before-id`) until it appears. Do not finish this turn until every id above is accounted for.\n\n",
 				task.IssueID)
 		}
 		if task.TriggerAuthorType == "agent" {
 			b.WriteString("⚠️ The triggering comment was posted by another agent. Decide whether a reply is warranted. If you produced actual work this turn (investigated, fixed something, answered a real question), post the result as a normal reply — that is NOT a noise comment, and the standard rule that final results must be delivered via comment still applies. If the triggering comment was a pure acknowledgment, thanks, or sign-off AND you produced no work this turn, do NOT reply — and do NOT post a comment saying 'No reply needed' or similar. Simply exit with no output. Silence is the preferred way to end agent-to-agent threads. If you do reply, do not @mention the other agent as a sign-off (that re-triggers them and starts a loop).\n\n")
 		}
-		if task.Agent != nil && strings.Contains(task.Agent.Instructions, "## Squad Operating Protocol") {
-			fmt.Fprintf(&b, "⚠️ **Squad leader no_action rule:** If you decide no action is needed, call `multica squad activity %s no_action --reason \"...\"` and EXIT. DO NOT post any comment — not even one that says \"no action needed\" or \"exiting silently\". The squad activity call records your decision; a comment is redundant noise.\n\n", task.IssueID)
+		if task.Agent != nil && strings.Contains(task.Agent.Instructions, "## Crew Operating Protocol") {
+			fmt.Fprintf(&b, "⚠️ **Crew leader no_action rule:** If you decide no action is needed, call `orchestra crew activity %s no_action --reason \"...\"` and EXIT. DO NOT post any comment — not even one that says \"no action needed\" or \"exiting silently\". The crew activity call records your decision; a comment is redundant noise.\n\n", task.IssueID)
 		}
 	}
-	fmt.Fprintf(&b, "Start by running `multica issue get %s --output json` to understand your task, then decide how to proceed.\n\n", task.IssueID)
+	fmt.Fprintf(&b, "Start by running `orchestra issue get %s --output json` to understand your task, then decide how to proceed.\n\n", task.IssueID)
 	// Comment-reading pointer. Warm path with new comments: issue-wide
 	// since-delta count, but steer the agent to read the triggering thread
 	// first. Warm resumed path with no new comments: the trigger is already
@@ -351,7 +351,7 @@ func buildCommentPrompt(task Task, provider string) string {
 	} else if cold := execenv.BuildColdCommentsHint(task.IssueID, task.TriggerCommentID, task.TriggerThreadID); cold != "" {
 		b.WriteString(cold)
 	} else {
-		fmt.Fprintf(&b, "Read the discussion: scan with `multica issue comment list %s --roots-only --summary --output json`, then expand what matters with `--thread <thread-id> --tail 30`.\n\n", task.IssueID)
+		fmt.Fprintf(&b, "Read the discussion: scan with `orchestra issue comment list %s --roots-only --summary --output json`, then expand what matters with `--thread <thread-id> --tail 30`.\n\n", task.IssueID)
 	}
 	// Reply routing. When this run coalesced comments spanning MORE THAN ONE
 	// root thread, answer each thread in its own thread instead of dumping one
@@ -545,7 +545,7 @@ func buildChatPrompt(task Task) string {
 			}
 		}
 		b.WriteString("Use `multica attachment download <id>` to fetch each file locally before referring to it.\n")
-		b.WriteString("When creating an issue that should preserve one of these attachments, pass `--attachment-id <id>` to `multica issue create` in addition to keeping the attachment markdown inline.\n")
+		b.WriteString("When creating an issue that should preserve one of these attachments, pass `--attachment-id <id>` to `orchestra issue create` in addition to keeping the attachment markdown inline.\n")
 	}
 	// Outbound attachments: how the agent puts an image/file INTO its reply.
 	// Web/mobile chat only — for IM-channel chats the reply is delivered to

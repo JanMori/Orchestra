@@ -126,8 +126,8 @@ export function DaemonSettingsTab() {
             This device&apos;s daemon runs outside the app — for example inside
             WSL2 — so the app can&apos;t start or stop it. Start or stop it from
             that environment with{" "}
-            <code className="font-mono text-caption">multica daemon start</code> /{" "}
-            <code className="font-mono text-caption">multica daemon stop</code>.
+            <code className="font-mono text-caption">orchestra daemon start</code> /{" "}
+            <code className="font-mono text-caption">orchestra daemon stop</code>.
           </p>
         </div>
       )}
@@ -161,8 +161,8 @@ export function DaemonSettingsTab() {
             cliInstalled === null
               ? "Checking…"
               : cliInstalled
-                ? "multica CLI is installed and available in PATH."
-                : "multica CLI not found. Install it to enable daemon management."
+                ? "orchestra CLI is installed and available in PATH."
+                : "orchestra CLI not found. Install it to enable daemon management."
           }
         >
           {cliInstalled === false && (

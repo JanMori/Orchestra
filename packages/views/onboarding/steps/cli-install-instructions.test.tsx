@@ -20,6 +20,6 @@ describe("CliInstallInstructions", () => {
       </I18nProvider>,
     );
 
-    expect(screen.getByText("multica setup")).toHaveClass(...ligatureClasses);
+    expect(screen.getByText("orchestra setup")).toHaveClass(...ligatureClasses);
   });
 });

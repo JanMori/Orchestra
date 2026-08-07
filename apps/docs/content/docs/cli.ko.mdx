@@ -1,11 +1,11 @@
 ---
 title: CLI 사용
-description: Multica CLI를 설치하고 로그인해 터미널에서 워크스페이스, 이슈, 에이전트, 런타임을 관리합니다.
+description: Orchestra CLI를 설치하고 로그인해 터미널에서 워크스페이스, 이슈, 에이전트, 런타임을 관리합니다.
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-Multica CLI는 로컬 런타임을 연결할 뿐 아니라 터미널에서 워크스페이스, 이슈, 에이전트, 자동화를 관리할 수 있습니다. 이 페이지에서는 자주 사용하는 경로를 설명합니다. 현재 버전에서 지원하는 인수는 항상 명령 자체의 `--help`를 기준으로 확인하세요.
+Orchestra CLI는 로컬 런타임을 연결할 뿐 아니라 터미널에서 워크스페이스, 이슈, 에이전트, 자동화를 관리할 수 있습니다. 이 페이지에서는 자주 사용하는 경로를 설명합니다. 현재 버전에서 지원하는 인수는 항상 명령 자체의 `--help`를 기준으로 확인하세요.
 
 ## 설치
 
@@ -30,7 +30,7 @@ irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps
 설치 성공 여부를 확인합니다.
 
 ```bash
-multica version
+orchestra version
 ```
 
 ## 처음 연결
@@ -38,13 +38,13 @@ multica version
 Multica Cloud 연결:
 
 ```bash
-multica setup
+orchestra setup
 ```
 
 자체 호스팅 인스턴스 연결:
 
 ```bash
-multica setup self-host \
+orchestra setup self-host \
   --server-url https://api.example.com \
   --app-url https://app.example.com
 ```
@@ -52,14 +52,14 @@ multica setup self-host \
 `setup`은 서비스 주소를 저장하고 브라우저를 열어 로그인을 완료한 뒤 데몬을 시작합니다. 완료 후 다음을 확인하세요.
 
 ```bash
-multica auth status
-multica daemon status
+orchestra auth status
+orchestra daemon status
 ```
 
-다른 설정을 덮어쓰지 않고 로그인만 다시 하려면 `multica login`을 실행합니다. 브라우저가 없는 환경에서는 Web 설정에서 개인 액세스 토큰을 먼저 만든 뒤 다음을 입력합니다.
+다른 설정을 덮어쓰지 않고 로그인만 다시 하려면 `orchestra login`을 실행합니다. 브라우저가 없는 환경에서는 Web 설정에서 개인 액세스 토큰을 먼저 만든 뒤 다음을 입력합니다.
 
 ```bash
-multica login --token
+orchestra login --token
 ```
 
 명령이 터미널에서 token 붙여넣기를 요청하므로 전체 값이 shell history에 남지 않습니다.
@@ -69,72 +69,72 @@ multica login --token
 기본 워크스페이스를 나열하고 전환합니다.
 
 ```bash
-multica workspace list
-multica workspace switch <slug>
+orchestra workspace list
+orchestra workspace switch <slug>
 ```
 
-이후 명령은 이 워크스페이스를 사용합니다. 한 번의 명령에서 `--workspace-id`로 임시 덮어쓸 수 있고 `MULTICA_WORKSPACE_ID`를 설정할 수도 있습니다.
+이후 명령은 이 워크스페이스를 사용합니다. 한 번의 명령에서 `--workspace-id`로 임시 덮어쓸 수 있고 `ORCHESTRA_WORKSPACE_ID`를 설정할 수도 있습니다.
 
 멤버 초대:
 
 ```bash
-multica workspace member invite teammate@example.com
-multica workspace member invite admin@example.com --role admin
+orchestra workspace member invite teammate@example.com
+orchestra workspace member invite admin@example.com --role admin
 ```
 
 ## 자주 사용하는 이슈 작업
 
 ```bash
 # 확인 및 검색
-multica issue list
-multica issue get MUL-123
-multica issue search "로그인 실패"
+orchestra issue list
+orchestra issue get MUL-123
+orchestra issue search "로그인 실패"
 
 # 생성 및 수정
-multica issue create --title "로그인 실패 수정"
-multica issue status MUL-123 in_progress
-multica issue assign MUL-123 --to "Backend Agent"
+orchestra issue create --title "로그인 실패 수정"
+orchestra issue status MUL-123 in_progress
+orchestra issue assign MUL-123 --to "Backend Agent"
 
 # 댓글 및 실행 기록
-multica issue comment list MUL-123
-multica issue comment add MUL-123 --content "회귀 테스트를 먼저 확인해 주세요"
-multica issue runs MUL-123
+orchestra issue comment list MUL-123
+orchestra issue comment add MUL-123 --content "회귀 테스트를 먼저 확인해 주세요"
+orchestra issue runs MUL-123
 ```
 
 긴 설명이나 댓글은 stdin에서 읽어 줄바꿈과 따옴표 처리를 피할 수 있습니다.
 
 ```bash
-multica issue create --title "업그레이드 안내" --description-stdin < notes.md
-multica issue comment add MUL-123 --content-stdin < review.md
+orchestra issue create --title "업그레이드 안내" --description-stdin < notes.md
+orchestra issue comment add MUL-123 --content-stdin < review.md
 ```
 
 특정 실행의 메시지를 확인하거나 태스크를 중지합니다.
 
 ```bash
-multica issue run-messages <task-id> --issue MUL-123
-multica issue cancel-task <task-id> --issue MUL-123
+orchestra issue run-messages <task-id> --issue MUL-123
+orchestra issue cancel-task <task-id> --issue MUL-123
 ```
 
 ## 에이전트와 스킬
 
 ```bash
-multica agent list
-multica agent get <agent-id>
-multica agent create --help
-multica agent update <agent-id> --help
+orchestra agent list
+orchestra agent get <agent-id>
+orchestra agent create --help
+orchestra agent update <agent-id> --help
 
-multica skill list
-multica skill get <skill-id>
-multica skill import --url <skill-url>
-multica agent skills add <agent-id> --skill-ids <skill-id>
+orchestra skill list
+orchestra skill get <skill-id>
+orchestra skill import --url <skill-url>
+orchestra agent skills add <agent-id> --skill-ids <skill-id>
 ```
 
 가져올 때 같은 이름의 스킬이 있으면 기본적으로 중지하고 기존 내용을 수정하지 않습니다. 의도에 맞는 방식을 선택하세요.
 
 ```bash
-multica skill import --url <skill-url> --on-conflict overwrite
-multica skill import --url <skill-url> --on-conflict rename
-multica skill import --url <skill-url> --on-conflict skip
+orchestra skill import --url <skill-url> --on-conflict overwrite
+orchestra skill import --url <skill-url> --on-conflict rename
+orchestra skill import --url <skill-url> --on-conflict skip
 ```
 
 `overwrite`는 스킬 생성자만 사용할 수 있으며 기존 ID와 에이전트 연결을 유지합니다.
@@ -142,11 +142,11 @@ multica skill import --url <skill-url> --on-conflict skip
 ## 데몬과 런타임
 
 ```bash
-multica daemon start
-multica daemon stop
-multica daemon restart
-multica daemon status --output json
-multica daemon logs --follow
+orchestra daemon start
+orchestra daemon stop
+orchestra daemon restart
+orchestra daemon status --output json
+orchestra daemon logs --follow
 
 multica runtime list
 multica runtime rename <runtime-id> "Office Mac"
@@ -165,7 +165,7 @@ multica runtime activity <runtime-id>
 | `issue` | 이슈 생성, 업데이트, 할당, 검색. 댓글, 구독, 라벨, 속성, 실행 기록 관리 |
 | `project` | 프로젝트와 프로젝트 리소스 관리 |
 | `label`, `property` | 워크스페이스 라벨과 사용자 지정 속성 관리 |
-| `agent`, `skill`, `squad` | 에이전트, 스킬, 스쿼드 관리 |
+| `agent`, `skill`, `crew` | 에이전트, 스킬, 스쿼드 관리 |
 | `autopilot` | 자동화, 트리거, 실행 기록 관리 |
 | `workspace` | 워크스페이스 생성, 확인, 전환 및 멤버 초대 |
 | `repo` | 워크스페이스 저장소 관리 및 로컬 checkout |
@@ -187,8 +187,8 @@ multica runtime activity <runtime-id>
 많은 명령이 구조화 출력을 지원합니다.
 
 ```bash
-multica issue list --output json
-multica agent list --output json
+orchestra issue list --output json
+orchestra agent list --output json
 ```
 
 스크립트에서는 터미널용 표를 parsing하지 말고 JSON 출력을 사용하세요. 각 명령이 지원하는 출력 형식과 pagination 인수는 `multica <command> --help`를 기준으로 확인합니다.
@@ -198,18 +198,18 @@ multica agent list --output json
 기본 설정은 `~/.multica/config.json`에 저장됩니다. `--profile <name>`을 사용하면 별도의 서비스 주소, token, 기본 워크스페이스, 데몬 상태를 격리할 수 있습니다.
 
 ```bash
-multica setup self-host --profile staging \
+orchestra setup self-host --profile staging \
   --server-url https://api.staging.example.com \
   --app-url https://app.staging.example.com
 
-multica issue list --profile staging
+orchestra issue list --profile staging
 ```
 
 이름 있는 profile은 `~/.multica/profiles/<name>/config.json`에 저장됩니다. 현재 값을 확인합니다.
 
 ```bash
-multica config show
-multica config show --profile staging
+orchestra config show
+orchestra config show --profile staging
 ```
 
 <Callout type="warning">
@@ -266,7 +266,7 @@ CLI 설정 파일에는 사용자를 대신해 Multica에 접근할 수 있는 t
 | | `import` | URL 또는 로컬 파일에서 스킬 가져오기 | `--url` / `--file`, `--on-conflict`(`fail`, `overwrite`, `rename`, `skip`, 기본 `fail`) |
 | | `search <query>` | 스킬 검색 | |
 | | `files list/upsert/delete <skill-id>` | 스킬 내부 파일 관리 | |
-| `squad` | `list/get/create/update/delete` | 스쿼드 관리(`delete`는 보관) | |
+| `crew` | `list/get/create/update/delete` | 스쿼드 관리(`delete`는 보관) | |
 | | `member list/add/set-role/remove` | 스쿼드 멤버 관리 | |
 | | `activity <issue-id> <outcome>` | 리더 평가 기록 | |
 | `chat` | `history`, `thread [id]` | 에이전트가 현재 처리 중인 외부 채팅 대화 읽기 | `--limit`, `--before` |
@@ -275,7 +275,7 @@ CLI 설정 파일에는 사용자를 대신해 Multica에 접근할 수 있는 t
 
 | 명령 | 하위 명령 | 용도 | 주요 flag |
 | --- | --- | --- | --- |
-| `daemon` | `start` | 로컬 데몬 시작 | `--foreground`, `--device-name`, `--runtime-name`, `--poll-interval`, `--heartbeat-interval`, `--agent-timeout`(`0`은 상한 없음), `--max-concurrent-tasks`, `--no-auto-update`. 모두 대응하는 `MULTICA_*` 환경 변수가 있음 |
+| `daemon` | `start` | 로컬 데몬 시작 | `--foreground`, `--device-name`, `--runtime-name`, `--poll-interval`, `--heartbeat-interval`, `--agent-timeout`(`0`은 상한 없음), `--max-concurrent-tasks`, `--no-auto-update`. 모두 대응하는 `ORCHESTRA_*` 환경 변수가 있음 |
 | | `stop` / `status` / `restart` | 중지, 상태 확인, 다시 시작(`restart`와 `start`의 flag가 같음) | |
 | | `logs` | 데몬 로그 확인 | `--follow`, `--lines` |
 | | `disk-usage` | 로컬 디스크 사용량 확인 | `--by-workspace`, `--by-task`, `--top` |

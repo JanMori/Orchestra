@@ -1,4 +1,4 @@
-# Multica CLI — Installation Guide for AI Agents
+# Orchestra CLI — Installation Guide for AI Agents
 
 > **Audience:** This document is designed for AI agents (Claude Code, Codex, etc.) to read and execute step-by-step. Each step includes the exact shell commands to run, expected outcomes, and error handling.
 
@@ -7,17 +7,17 @@
 Give this instruction to your AI agent:
 
 ```
-Fetch https://github.com/multica-ai/multica/blob/main/CLI_INSTALL.md and follow the instructions to install Multica CLI, log in, and start the daemon on this machine.
+Fetch https://github.com/multica-ai/multica/blob/main/CLI_INSTALL.md and follow the instructions to install Orchestra CLI, log in, and start the daemon on this machine.
 ```
 
 ---
 
-## Step 1: Check if Multica CLI is already installed
+## Step 1: Check if Orchestra CLI is already installed
 
 Run:
 
 ```bash
-multica version
+orchestra version
 ```
 
 - **If it prints a version string** (e.g. `multica v0.x.x`): skip to **Step 3**.
@@ -25,7 +25,7 @@ multica version
 
 ---
 
-## Step 2: Install the Multica CLI
+## Step 2: Install the Orchestra CLI
 
 > **Windows users:** Skip to [Option C: Windows (PowerShell)](#option-c-windows-powershell) below.
 
@@ -46,7 +46,7 @@ brew install multica-ai/tap/multica
 Then verify:
 
 ```bash
-multica version
+orchestra version
 ```
 
 If the version prints successfully, skip to **Step 3**.
@@ -77,7 +77,7 @@ LATEST=$(curl -sI https://github.com/multica-ai/multica/releases/latest | grep -
 
 # Download and extract
 VERSION="${LATEST#v}"
-curl -sL "https://github.com/multica-ai/multica/releases/download/${LATEST}/multica-cli-${VERSION}-${OS}-${ARCH}.tar.gz" -o /tmp/multica.tar.gz
+curl -sL "https://github.com/multica-ai/multica/releases/download/${LATEST}/orchestra-cli-${VERSION}-${OS}-${ARCH}.tar.gz" -o /tmp/multica.tar.gz
 tar -xzf /tmp/multica.tar.gz -C /tmp multica
 sudo mv /tmp/multica /usr/local/bin/multica
 rm /tmp/multica.tar.gz
@@ -86,7 +86,7 @@ rm /tmp/multica.tar.gz
 Verify:
 
 ```bash
-multica version
+orchestra version
 ```
 
 **If this fails:**
@@ -107,7 +107,7 @@ This downloads the latest Windows binary from GitHub Releases, installs it to `%
 Verify:
 
 ```powershell
-multica version
+orchestra version
 ```
 
 **If this fails:**
@@ -122,7 +122,7 @@ multica version
 Run:
 
 ```bash
-multica login
+orchestra login
 ```
 
 **Important:** This command opens a browser window for OAuth authentication. Tell the user:
@@ -134,14 +134,14 @@ Wait for the command to complete. It will automatically discover and watch all w
 Verify:
 
 ```bash
-multica auth status
+orchestra auth status
 ```
 
 Expected output should show the authenticated user and server URL.
 
 **If login fails:**
-- If no browser is available (headless environment), the user can generate a Personal Access Token at `https://multica.ai/settings?tab=tokens` and run: `multica login --token <mul_...>` (use `--token=` with an empty value to be prompted interactively).
-- If the server URL needs to be customized: `multica config set server_url <url>` before logging in.
+- If no browser is available (headless environment), the user can generate a Personal Access Token at `https://multica.ai/settings?tab=tokens` and run: `orchestra login --token <mul_...>` (use `--token=` with an empty value to be prompted interactively).
+- If the server URL needs to be customized: `orchestra config set server_url <url>` before logging in.
 
 ---
 
@@ -150,26 +150,26 @@ Expected output should show the authenticated user and server URL.
 First, check if the daemon is already running:
 
 ```bash
-multica daemon status
+orchestra daemon status
 ```
 
 - **If status is "running"**: skip to **Step 5**.
 - **If status is "stopped"**: start it:
 
 ```bash
-multica daemon start
+orchestra daemon start
 ```
 
 Wait 3 seconds, then verify:
 
 ```bash
-multica daemon status
+orchestra daemon status
 ```
 
 Expected output should show `running` status with detected agents (e.g. `claude`, `codex`, `copilot`, `opencode`, `openclaw`, `hermes`, `pi`, `cursor-agent`, `grok`).
 
 **If daemon fails to start:**
-- Check logs: `multica daemon logs`
+- Check logs: `orchestra daemon logs`
 - If a port conflict occurs, the daemon may already be running under a different profile.
 - If no agents are detected, ensure at least one AI CLI (`claude`, `codex`, `copilot`, `opencode`, `openclaw`, `hermes`, `pi`, `cursor-agent`, or `grok`) is installed and on the `$PATH`.
 
@@ -180,7 +180,7 @@ Expected output should show `running` status with detected agents (e.g. `claude`
 Run:
 
 ```bash
-multica daemon status
+orchestra daemon status
 ```
 
 Confirm:
@@ -190,7 +190,7 @@ Confirm:
 
 If the agents list is empty, tell the user:
 
-> "The Multica daemon is running but no AI agent CLIs were detected. Please install at least one supported CLI (`claude`, `codex`, `copilot`, `opencode`, `openclaw`, `hermes`, `pi`, `cursor-agent`, or `grok`), then restart the daemon with `multica daemon stop && multica daemon start`."
+> "The Multica daemon is running but no AI agent CLIs were detected. Please install at least one supported CLI (`claude`, `codex`, `copilot`, `opencode`, `openclaw`, `hermes`, `pi`, `cursor-agent`, or `grok`), then restart the daemon with `orchestra daemon stop && orchestra daemon start`."
 
 ---
 
@@ -198,4 +198,4 @@ If the agents list is empty, tell the user:
 
 When all steps are complete, inform the user:
 
-> "Multica CLI is installed and the daemon is running. Agents in your workspaces can now execute tasks on this machine. You can manage workspaces with `multica workspace list` and view daemon logs with `multica daemon logs -f`."
+> "Orchestra CLI is installed and the daemon is running. Agents in your workspaces can now execute tasks on this machine. You can manage workspaces with `orchestra workspace list` and view daemon logs with `orchestra daemon logs -f`."

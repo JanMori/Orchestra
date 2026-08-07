@@ -32,7 +32,7 @@ import { Callout } from "fumadocs-ui/components/callout";
 CLI에서는 `.skill` 또는 `.zip` 파일에서도 가져올 수 있습니다.
 
 ```bash
-multica skill import --file ./review-helper.skill
+orchestra skill import --file ./review-helper.skill
 ```
 
 가져올 때 워크스페이스에 같은 이름의 스킬이 이미 있으면 가져오기를 중단하거나, 기존 내용을 덮어쓰거나, 새 이름으로 저장하거나, 건너뛸 수 있습니다. 가져오기를 통한 덮어쓰기는 해당 스킬의 생성자만 할 수 있습니다. 워크스페이스 `admin`이 앱 안에서 수정할 수 있더라도 가져오기로는 덮어쓸 수 없습니다.
@@ -89,6 +89,6 @@ scripts/check.sh
 
 ## 다음 단계
 
-- [스쿼드](/squads) — 리더가 작업 내용에 따라 적합한 멤버를 선택하게 합니다.
+- [스쿼드](/crews) — 리더가 작업 내용에 따라 적합한 멤버를 선택하게 합니다.
 - [데몬과 런타임](/daemon-runtimes) — 스킬이 실제 실행 환경에 들어가는 방식을 알아봅니다.
 - [AI 코딩 도구 비교](/providers) — 도구별 스킬 지원 방식을 확인합니다.

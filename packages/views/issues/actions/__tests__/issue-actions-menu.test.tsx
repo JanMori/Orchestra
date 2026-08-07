@@ -48,8 +48,8 @@ vi.mock("@orchestra/core/workspace/queries", () => ({
     queryKey: ["workspaces", "ws-1", "agents"],
     queryFn: () => Promise.resolve([]),
   }),
-  squadListOptions: () => ({
-    queryKey: ["workspaces", "ws-1", "squads"],
+  crewListOptions: () => ({
+    queryKey: ["workspaces", "ws-1", "crews"],
     queryFn: () => Promise.resolve([]),
   }),
   assigneeFrequencyOptions: () => ({

@@ -36,7 +36,7 @@ const {
   mockGetShareableUrl,
   mockMembers,
   mockAgents,
-  mockSquads,
+  mockCrews,
   mockOpenModal,
   mockToastSuccess,
   mockClipboardWrite,
@@ -74,7 +74,7 @@ const {
       avatar_url: string | null;
     }>,
   },
-  mockSquads: {
+  mockCrews: {
     current: [] as Array<{
       id: string;
       name: string;
@@ -112,8 +112,8 @@ vi.mock("../common/actor-avatar", () => ({
         ? mockMembers.current.find((m) => m.user_id === actorId)?.name
         : actorType === "agent"
           ? mockAgents.current.find((a) => a.id === actorId)?.name
-          : actorType === "squad"
-            ? mockSquads.current.find((s) => s.id === actorId)?.name
+          : actorType === "crew"
+            ? mockCrews.current.find((s) => s.id === actorId)?.name
             : undefined;
     return (
       <span
@@ -176,7 +176,7 @@ vi.mock("@orchestra/core/paths", async (importOriginal) => ({
     issueDetail: (id: string) => `/ws-test/issues/${id}`,
     memberDetail: (id: string) => `/ws-test/members/${id}`,
     agentDetail: (id: string) => `/ws-test/agents/${id}`,
-    squadDetail: (id: string) => `/ws-test/squads/${id}`,
+    crewDetail: (id: string) => `/ws-test/crews/${id}`,
     projectDetail: (id: string) => `/ws-test/projects/${id}`,
   }),
 }));
@@ -193,7 +193,7 @@ vi.mock("@orchestra/core/issues/queries", () => ({
 vi.mock("@orchestra/core/workspace/queries", () => ({
   memberListOptions: () => ({ queryKey: ["workspaces", "ws-test", "members"] }),
   agentListOptions: () => ({ queryKey: ["workspaces", "ws-test", "agents"] }),
-  squadListOptions: () => ({ queryKey: ["workspaces", "ws-test", "squads"] }),
+  crewListOptions: () => ({ queryKey: ["workspaces", "ws-test", "crews"] }),
 }));
 
 vi.mock("@orchestra/core/modals", () => ({
@@ -220,8 +220,8 @@ vi.mock("@tanstack/react-query", () => ({
     if (key[0] === "workspaces" && key[2] === "agents") {
       return { data: mockAgents.current };
     }
-    if (key[0] === "workspaces" && key[2] === "squads") {
-      return { data: mockSquads.current };
+    if (key[0] === "workspaces" && key[2] === "crews") {
+      return { data: mockCrews.current };
     }
     if (opts.enabled === false) return { data: undefined };
     return { data: resolveIssue(key) };
@@ -260,7 +260,7 @@ describe("SearchCommand", () => {
     mockRecentItems.current = [];
     mockAllIssues.current = [];
     mockAgents.current = [];
-    mockSquads.current = [];
+    mockCrews.current = [];
     mockSetTheme.mockReset();
     mockTheme.current = "system";
     mockPathname.current = "/ws-test/issues";

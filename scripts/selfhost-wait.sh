@@ -50,8 +50,8 @@ compose_host_port() {
   esac
 }
 
-backend_port=$(compose_host_port backend 8080 "${BACKEND_PORT:-${API_PORT:-${SERVER_PORT:-${PORT:-7080}}}}")
-frontend_port=$(compose_host_port frontend 3000 "${FRONTEND_PORT:-5000}")
+backend_port=$(compose_host_port backend 8080 "${BACKEND_PORT:-${API_PORT:-${SERVER_PORT:-${PORT:-7081}}}}")
+frontend_port=$(compose_host_port frontend 3000 "${FRONTEND_PORT:-5001}")
 
 backend_url="http://localhost:${backend_port}"
 frontend_url="http://localhost:${frontend_port}"
@@ -93,4 +93,4 @@ echo "        or read the generated code from backend logs when Resend is unset.
 echo ""
 echo "Next — install the CLI and connect your machine:"
 echo "  brew install orchestra-ai/tap/multica"
-echo "  multica setup self-host"
+echo "  orchestra setup self-host"

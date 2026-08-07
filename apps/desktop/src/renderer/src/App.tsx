@@ -128,7 +128,7 @@ function AppContent() {
     : null;
 
   // Tell the main process which backend URL we talk to, so daemon-manager
-  // can pick the matching CLI profile (server_url from ~/.multica config).
+  // can pick the matching CLI profile (server_url from ~/.orchestra config).
   useEffect(() => {
     if (!runtimeConfig) return;
     window.daemonAPI.setTargetApiUrl(runtimeConfig.apiUrl);

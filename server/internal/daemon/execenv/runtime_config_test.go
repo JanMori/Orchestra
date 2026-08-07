@@ -97,13 +97,13 @@ func TestBriefHasNoParentNotificationGuidance(t *testing.T) {
 			// Old "do it yourself" framing (PR #2918).
 			"## Parent / Sub-issue Protocol",
 			"**Tell the parent when you finish a child.**",
-			"multica issue comment add <parent-id>",
+			"orchestra issue comment add <parent-id>",
 			"with NO `--parent`",
 			"link the child as `[MUL-",
 			"`@mention` the parent's assignee",
 			"`mention://agent/<id>`",
 			"`mention://member/<id>`",
-			"`mention://squad/<id>`",
+			"`mention://crew/<id>`",
 			// Intermediate "do NOT do it yourself" framing (PR #3055
 			// before Bohan's call) — also out per product direction.
 			"**Do NOT post your own parent-notification comment.**",
@@ -117,7 +117,7 @@ func TestBriefHasNoParentNotificationGuidance(t *testing.T) {
 			// come back either.
 			"| Parent assignee | Parent status |",
 			"The same agent as yourself",
-			"| Member or squad |",
+			"| Member or crew |",
 			"### A. Notify the parent",
 			"### B. Choose",
 			"When this issue has `parent_issue_id`:",
@@ -128,7 +128,7 @@ func TestBriefHasNoParentNotificationGuidance(t *testing.T) {
 			// The protocol must no longer emit a placeholder
 			// `<this-issue-id>` status flip — the workflow above owns
 			// that command with the real issue id substituted.
-			"`multica issue status <this-issue-id> in_review`",
+			"`orchestra issue status <this-issue-id> in_review`",
 			// Non-existent CLI form Elon's earlier review flagged.
 			"issue list --parent",
 		} {
@@ -141,7 +141,7 @@ func TestBriefHasNoParentNotificationGuidance(t *testing.T) {
 
 // Comment-triggered briefs must NOT carry any unconditional status-flip
 // command targeting the current issue. Previous revisions had a
-// dedicated protocol step that wrote `multica issue status <this-issue-id> in_review`;
+// dedicated protocol step that wrote `orchestra issue status <this-issue-id> in_review`;
 // the comment-triggered workflow rule "Do NOT change the issue status
 // unless the comment explicitly asks for it" must remain the source of
 // truth (Elon's blocking review on PR #2918).
@@ -153,7 +153,7 @@ func TestCommentTriggeredProtocolDoesNotForceInReview(t *testing.T) {
 	}
 	out := buildMetaSkillContent("claude", ctx)
 
-	if strings.Contains(out, "`multica issue status <this-issue-id> in_review`") {
+	if strings.Contains(out, "`orchestra issue status <this-issue-id> in_review`") {
 		t.Errorf("comment-triggered brief must not contain a placeholder `<this-issue-id> in_review` flip — that conflicts with the comment-triggered \"do not change status unless asked\" rule")
 	}
 
@@ -162,43 +162,43 @@ func TestCommentTriggeredProtocolDoesNotForceInReview(t *testing.T) {
 		t.Errorf("expected the comment-triggered workflow guardrail %q to be present", guardrail)
 	}
 
-	// For an ordinary agent the guardrail is absolute — the squad-leader
+	// For an ordinary agent the guardrail is absolute — the crew-leader
 	// carve-out below must not leak into this path.
 	if strings.Contains(out, "Own the parent issue status") {
-		t.Errorf("ordinary-agent comment brief must not reference the squad status grant:\n%s", out)
+		t.Errorf("ordinary-agent comment brief must not reference the crew status grant:\n%s", out)
 	}
 }
 
-// A squad leader on a comment-triggered turn gets the same guardrail plus a
-// named exception. Without it the guardrail and the Squad Operating Protocol's
+// A crew leader on a comment-triggered turn gets the same guardrail plus a
+// named exception. Without it the guardrail and the Crew Operating Protocol's
 // "Own the parent issue status" responsibility contradict each other on the
 // @mention-dispatch shape, where the member's delivery comment never asks for
 // a status change and no child-done system comment exists to ask on its
 // behalf — so the parent would sit in in_progress forever.
-func TestCommentTriggeredSquadLeaderDefersToStatusOwnershipGrant(t *testing.T) {
+func TestCommentTriggeredCrewLeaderDefersToStatusOwnershipGrant(t *testing.T) {
 	t.Parallel()
 	out := buildMetaSkillContent("claude", TaskContextForEnv{
 		IssueID:          "55555555-6666-7777-8888-999999999999",
 		TriggerCommentID: "66666666-7777-8888-9999-aaaaaaaaaaaa",
-		IsSquadLeader:    true,
+		IsCrewLeader:    true,
 	})
 
 	for _, want := range []string{
 		"Do NOT change the issue status unless the comment explicitly asks for it",
-		`Squad Operating Protocol's "Own the parent issue status"`,
-		"only appears when this issue is assigned to your squad",
+		`Crew Operating Protocol's "Own the parent issue status"`,
+		"only appears when this issue is assigned to your crew",
 		"without waiting to be asked",
 		"When it is absent, the rule above is absolute.",
 	} {
 		if !strings.Contains(out, want) {
-			t.Errorf("squad-leader comment brief missing %q\n---\n%s", want, out)
+			t.Errorf("crew-leader comment brief missing %q\n---\n%s", want, out)
 		}
 	}
 
 	// The unqualified sentence must be gone: its presence alongside the grant
 	// is the contradiction this branch exists to remove.
 	if strings.Contains(out, "explicitly asks for it\n") {
-		t.Errorf("squad-leader comment brief still ends the guardrail unqualified\n---\n%s", out)
+		t.Errorf("crew-leader comment brief still ends the guardrail unqualified\n---\n%s", out)
 	}
 }
 
@@ -258,7 +258,7 @@ func TestColdCommentsHintPointsAtTriggeringThread(t *testing.T) {
 	if strings.Contains(hint, "new comment(s) since your last run") {
 		t.Errorf("no since-delta hint should render on cold start, got:\n%s", hint)
 	}
-	if !strings.Contains(hint, "multica issue comment list "+issueID+" --thread thread-root-1 --tail 30 --output json") {
+	if !strings.Contains(hint, "orchestra issue comment list "+issueID+" --thread thread-root-1 --tail 30 --output json") {
 		t.Errorf("cold start must point at the triggering thread read, got:\n%s", hint)
 	}
 	if strings.Contains(buildMetaSkillContent("claude", TaskContextForEnv{IssueID: issueID, TriggerCommentID: "trigger-1", TriggerThreadID: "thread-root-1"}), "thread-root-1") {
@@ -277,7 +277,7 @@ func TestResumedCommentsHintSkipsDefaultThreadRead(t *testing.T) {
 		"No other new comments on this issue since your last run",
 		"If your reply depends on thread context",
 		"do not rely only on resumed session memory",
-		"multica issue comment list " + issueID + " --thread thread-root-1 --tail 30 --output json",
+		"orchestra issue comment list " + issueID + " --thread thread-root-1 --tail 30 --output json",
 	} {
 		if !strings.Contains(hint, want) {
 			t.Errorf("resumed/no-delta hint missing %q\n--- output ---\n%s", want, hint)
@@ -355,13 +355,13 @@ func TestIssueWorkflowHonorsAgentIdentity(t *testing.T) {
 		// MUL-5442: the forbids-clause is stated once on the Ownership-mode
 		// header instead of once per status bullet.
 		"skip any status call below that your Agent Identity forbids",
-		"Before step 4, run `multica issue status <issue-id> in_progress`.",
+		"Before step 4, run `orchestra issue status <issue-id> in_progress`.",
 		"Complete the task within your Agent Identity boundaries",
 		// Step 4 keeps only what the enumeration cannot express: a
 		// delegation-only role stops once the delegation is delivered.
 		"If your role is delegation-only, perform the allowed delegation work and stop once that outcome is delivered",
-		"When done, run `multica issue status <issue-id> in_review`.",
-		"If blocked, run `multica issue status <issue-id> blocked`, and post a comment explaining the blocker unless your Agent Identity forbids issue comments.",
+		"When done, run `orchestra issue status <issue-id> in_review`.",
+		"If blocked, run `orchestra issue status <issue-id> blocked`, and post a comment explaining the blocker unless your Agent Identity forbids issue comments.",
 	} {
 		if !strings.Contains(out, want) {
 			t.Errorf("issue brief missing identity-bound workflow text %q\n---\n%s", want, out)
@@ -369,9 +369,9 @@ func TestIssueWorkflowHonorsAgentIdentity(t *testing.T) {
 	}
 
 	for _, banned := range []string{
-		"4. Run `multica issue status " + issueID + " in_progress`\n",
+		"4. Run `orchestra issue status " + issueID + " in_progress`\n",
 		"5. Follow your Skills and Agent Identity to complete the task (write code, investigate, etc.)",
-		"8. When done, run `multica issue status " + issueID + " in_review`\n",
+		"8. When done, run `orchestra issue status " + issueID + " in_review`\n",
 	} {
 		if strings.Contains(out, banned) {
 			t.Errorf("issue brief still contains unconditional legacy workflow text %q\n---\n%s", banned, out)
@@ -379,18 +379,18 @@ func TestIssueWorkflowHonorsAgentIdentity(t *testing.T) {
 	}
 }
 
-// Squad-leader briefs must open the parent with in_progress, but must not
+// Crew-leader briefs must open the parent with in_progress, but must not
 // treat the first dispatch turn as completion (no unconditional in_review).
-func TestSquadLeaderIssueWorkflowKeepsParentInProgress(t *testing.T) {
+func TestCrewLeaderIssueWorkflowKeepsParentInProgress(t *testing.T) {
 	t.Parallel()
 	const issueID = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
 	out := buildMetaSkillContent("claude", TaskContextForEnv{
 		IssueID:       issueID,
-		IsSquadLeader: true,
+		IsCrewLeader: true,
 	})
 
 	for _, want := range []string{
-		"Before step 4, run `multica issue status <issue-id> in_progress`.",
+		"Before step 4, run `orchestra issue status <issue-id> in_progress`.",
 		"After this initial dispatch, leave the parent issue `in_progress`",
 		// The guest-leader contract test (handler side) bans any runnable
 		// in_review command shape from reaching a guest — the dispatch rule
@@ -399,12 +399,12 @@ func TestSquadLeaderIssueWorkflowKeepsParentInProgress(t *testing.T) {
 		"only then, if the overall goal is met, move the parent to `in_review`",
 	} {
 		if !strings.Contains(out, want) {
-			t.Errorf("squad-leader issue brief missing %q\n---\n%s", want, out)
+			t.Errorf("crew-leader issue brief missing %q\n---\n%s", want, out)
 		}
 	}
 
-	if strings.Contains(out, "When done, run `multica issue status <issue-id> in_review`") {
-		t.Errorf("squad-leader issue brief must not contain the ordinary-agent completion step\n---\n%s", out)
+	if strings.Contains(out, "When done, run `orchestra issue status <issue-id> in_review`") {
+		t.Errorf("crew-leader issue brief must not contain the ordinary-agent completion step\n---\n%s", out)
 	}
 }
 
@@ -461,9 +461,9 @@ func TestChatOutputDoesNotRequireIssueComment(t *testing.T) {
 	}
 
 	for _, banned := range []string{
-		"Final results MUST be delivered via `multica issue comment add`",
+		"Final results MUST be delivered via `orchestra issue comment add`",
 		"The user does NOT see your terminal output",
-		"do not call `multica issue comment add`",
+		"do not call `orchestra issue comment add`",
 		"unless the user explicitly asks",
 	} {
 		if strings.Contains(out, banned) {

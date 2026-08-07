@@ -16,14 +16,14 @@ DATABASE_URL=postgres://user:password@postgres:5432/multica?sslmode=require
 JWT_SECRET=<long-random-secret>
 APP_ENV=production
 FRONTEND_ORIGIN=https://multica.example.com
-MULTICA_APP_URL=https://multica.example.com
-MULTICA_PUBLIC_URL=https://api.multica.example.com
+ORCHESTRA_APP_URL=https://multica.example.com
+ORCHESTRA_PUBLIC_URL=https://api.multica.example.com
 ```
 
 さらにメールサービスを 1 つ選ぶ必要があります。選ばない場合、認証コードと招待はサーバーログに書き込まれるだけです。
 
 <Callout type="warning">
-プロダクションでデフォルトの `JWT_SECRET` を使わないでください。`MULTICA_DEV_VERIFICATION_CODE` も設定しないでください。
+プロダクションでデフォルトの `JWT_SECRET` を使わないでください。`ORCHESTRA_DEV_VERIFICATION_CODE` も設定しないでください。
 </Callout>
 
 ## API とデータベース
@@ -38,7 +38,7 @@ MULTICA_PUBLIC_URL=https://api.multica.example.com
 | `APP_ENV` | 空 | プロダクションでは `production` を設定 |
 | `AUTH_TOKEN_TTL` | `720h`（30 日） | ブラウザ JWT と cookie の有効期間。Go duration または正の整数秒を受け付けます |
 | `LOG_LEVEL` | アプリのデフォルト | ログレベル |
-| `MULTICA_SHUTDOWN_HOLD_DURATION` | `0` | 終了シグナル受信後、グレースフルシャットダウンを開始するまでの待機時間 |
+| `ORCHESTRA_SHUTDOWN_HOLD_DURATION` | `0` | 終了シグナル受信後、グレースフルシャットダウンを開始するまでの待機時間 |
 
 Kubernetes で shutdown hold を設定する場合、`terminationGracePeriodSeconds` は hold と実際のシャットダウンにかかる時間の合計より大きくしてください。
 
@@ -47,8 +47,8 @@ Kubernetes で shutdown hold を設定する場合、`terminationGracePeriodSeco
 | 変数 | デフォルト | 説明 |
 |---|---|---|
 | `FRONTEND_ORIGIN` | 空 | ユーザーがアクセスするフロントエンドの origin。CORS、cookie、招待リンクに使われます |
-| `MULTICA_APP_URL` | `FRONTEND_ORIGIN` にフォールバック | ユーザーが到達できる Web アドレス。CLI ログインとアカウント連携リンクが使います |
-| `MULTICA_PUBLIC_URL` | 空 | 公開 API アドレス。webhook URL とランタイム接続案内に使われます |
+| `ORCHESTRA_APP_URL` | `FRONTEND_ORIGIN` にフォールバック | ユーザーが到達できる Web アドレス。CLI ログインとアカウント連携リンクが使います |
+| `ORCHESTRA_PUBLIC_URL` | 空 | 公開 API アドレス。webhook URL とランタイム接続案内に使われます |
 | `CORS_ALLOWED_ORIGINS` | 空 | 追加で許可する HTTP origin。カンマ区切り |
 | `ALLOWED_ORIGINS` | CORS / フロントエンド設定にフォールバック | WebSocket origin の許可リスト。カンマ区切り |
 | `COOKIE_DOMAIN` | 空 | フロントエンドと API の host が異なり、ブラウザが API ドメインへ直接アクセスする場合は必須。単一ドメイン構成では空のまま |
@@ -99,7 +99,7 @@ Kubernetes で shutdown hold を設定する場合、`terminationGracePeriodSeco
 | `ALLOWED_EMAILS` | 空 | 登録を許可する完全なメールアドレス。カンマ区切り |
 | `ALLOWED_EMAIL_DOMAINS` | 空 | 登録を許可するメールドメイン。カンマ区切り |
 | `DISABLE_WORKSPACE_CREATION` | `false` | すべてのユーザーのワークスペース新規作成を禁止。owner/admin の例外はありません |
-| `MULTICA_DEV_VERIFICATION_CODE` | 空 | 非 production 環境で使う固定 6 桁のテスト認証コード |
+| `ORCHESTRA_DEV_VERIFICATION_CODE` | 空 | 非 production 環境で使う固定 6 桁のテスト認証コード |
 
 allowlist の正確な判定順序は[ログインとサインアップ](/auth-setup#サインアップ制限)を参照してください。
 
@@ -147,7 +147,7 @@ allowlist の正確な判定順序は[ログインとサインアップ](/auth-s
 | `RATE_LIMIT_AUTH` | `5` | 認証コード送信または Google ログイン開始の、IP あたり毎分の回数 |
 | `RATE_LIMIT_AUTH_VERIFY` | `20` | 認証コード検証の、IP あたり毎分の回数 |
 | `RATE_LIMIT_TRUSTED_PROXIES` | 空 | `X-Forwarded-For` の提供を許可するプロキシ CIDR。カンマ区切り |
-| `MULTICA_TRUSTED_PROXIES` | 空 | オートパイロット webhook とリアルタイム接続が使う信頼済みプロキシ CIDR |
+| `ORCHESTRA_TRUSTED_PROXIES` | 空 | オートパイロット webhook とリアルタイム接続が使う信頼済みプロキシ CIDR |
 
 リバースプロキシ配下のデプロイでは、実際のプロキシのネットワーク範囲を設定してください。すべての送信元を無条件に信頼してはいけません。クライアントが転送元 IP を偽装できてしまいます。
 
@@ -161,13 +161,13 @@ allowlist の正確な判定順序は[ログインとサインアップ](/auth-s
 | GitHub | `GITHUB_WEBHOOK_SECRET` | Webhook HMAC と接続 state の署名シークレット |
 | GitHub | `GITHUB_APP_ID` | PR カードの CI ステータス・マージ可否と「GitHub から選択」リポジトリに必要です |
 | GitHub | `GITHUB_APP_PRIVATE_KEY` | App ID と対になる完全な PEM 秘密鍵。用途は同上 |
-| Lark | `MULTICA_LARK_SECRET_KEY` | base64 エンコードされた 32 バイトの資格情報暗号化キー |
-| Slack | `MULTICA_SLACK_SECRET_KEY` | base64 エンコードされた 32 バイトの token 暗号化キー |
+| Lark | `ORCHESTRA_LARK_SECRET_KEY` | base64 エンコードされた 32 バイトの資格情報暗号化キー |
+| Slack | `ORCHESTRA_SLACK_SECRET_KEY` | base64 エンコードされた 32 バイトの token 暗号化キー |
 | Composio | `COMPOSIO_API_KEY` | Composio ツール接続を有効化 |
-| Composio | `COMPOSIO_CALLBACK_BASE_URL` | コールバック API アドレス。`MULTICA_PUBLIC_URL` にフォールバック可能 |
+| Composio | `COMPOSIO_CALLBACK_BASE_URL` | コールバック API アドレス。`ORCHESTRA_PUBLIC_URL` にフォールバック可能 |
 | Composio | `COMPOSIO_STATE_SECRET` | OAuth state の署名シークレット。`JWT_SECRET` から派生可能 |
-| セルフホスト Git | `MULTICA_VCS_INTEGRATION_ENABLED` | Forgejo/Gitea/GitLab 連携のスイッチ。compose ではデフォルトで有効 |
-| セルフホスト Git | `MULTICA_VCS_SECRET_KEY` | base64 エンコードされた 32 バイトの暗号化キー（`openssl rand -base64 32`）。未設定の場合、この機能全体が利用できません |
+| セルフホスト Git | `ORCHESTRA_VCS_INTEGRATION_ENABLED` | Forgejo/Gitea/GitLab 連携のスイッチ。compose ではデフォルトで有効 |
+| セルフホスト Git | `ORCHESTRA_VCS_SECRET_KEY` | base64 エンコードされた 32 バイトの暗号化キー（`openssl rand -base64 32`）。未設定の場合、この機能全体が利用できません |
 
 `GITHUB_APP_ID` と秘密鍵を設定しなくても、PR の関連付け・ミラー・マージによる done への遷移は通常どおり動きますが、カードに CI とマージ可否のステータスが表示されず、「GitHub から選択」のリポジトリ入口も無効になります。
 
@@ -179,9 +179,9 @@ allowlist の正確な判定順序は[ログインとサインアップ](/auth-s
 
 | 変数 | デフォルト | 説明 |
 |---|---|---|
-| `MULTICA_LLM_API_KEY` | 空 | OpenAI 互換の API key |
-| `MULTICA_LLM_BASE_URL` | 空 | OpenAI 互換の endpoint |
-| `MULTICA_LLM_DEFAULT_MODEL` | `gpt-5.6-luna` | リクエストがモデルを指定しない場合に使用 |
+| `ORCHESTRA_LLM_API_KEY` | 空 | OpenAI 互換の API key |
+| `ORCHESTRA_LLM_BASE_URL` | 空 | OpenAI 互換の endpoint |
+| `ORCHESTRA_LLM_DEFAULT_MODEL` | `gpt-5.6-luna` | リクエストがモデルを指定しない場合に使用 |
 
 API key と base URL の両方が空の場合、サーバーサイド LLM 生成は無効になり、呼び出し側はローカルのフォールバックロジックを使います。
 
@@ -191,29 +191,29 @@ API key と base URL の両方が空の場合、サーバーサイド LLM 生成
 
 | 変数 | デフォルト | 説明 |
 |---|---|---|
-| `MULTICA_SERVER_URL` | `ws://localhost:8080/ws` | Multica API / WebSocket アドレス。`http(s)` も受け付けます |
-| `MULTICA_DAEMON_DEVICE_NAME` | ホスト名 | ランタイム一覧に表示されるデバイス名 |
-| `MULTICA_AGENT_RUNTIME_NAME` | `Local Agent` | ランタイムの表示名 |
-| `MULTICA_DAEMON_POLL_INTERVAL` | `30s` | ウェイクイベントがないときのタスクポーリング間隔 |
-| `MULTICA_DAEMON_HEARTBEAT_INTERVAL` | `15s` | ハートビート間隔 |
-| `MULTICA_DAEMON_MAX_CONCURRENT_TASKS` | `20` | デーモン 1 つあたりの同時実行タスク上限 |
-| `MULTICA_AGENT_TIMEOUT` | `0` | 1 回の実行の絶対時間上限。`0` は上限なし |
-| `MULTICA_AGENT_IDLE_WATCHDOG` | `30m` | 出力もツール実行もない状態の静穏上限 |
-| `MULTICA_AGENT_TOOL_WATCHDOG` | `2h` | 単一のツール呼び出しが静穏なままでいられる上限 |
-| `MULTICA_OPENCODE_IDLE_WATCHDOG` | `10m` | OpenCode 専用の静穏しきい値 |
-| `MULTICA_CODEX_SEMANTIC_INACTIVITY_TIMEOUT` | `10m` | Codex のセマンティック静穏しきい値 |
-| `MULTICA_CODEX_HANDSHAKE_TIMEOUT` | `30s` | Codex app-server 起動ハンドシェイクの上限 |
-| `MULTICA_DAEMON_AUTO_UPDATE` | Cloud は `true`、セルフホストは `false` | CLI の更新を自動でチェックして適用するか |
-| `MULTICA_DAEMON_AUTO_UPDATE_INTERVAL` | `6h` | 更新チェックの間隔 |
-| `MULTICA_DAEMON_AUTO_RELOAD` | `true` | 帯域外で置き換えられた `multica` バイナリ（`brew upgrade`、再ダウンロード、ローカルビルド）へ再起動して追従するかどうか。`MULTICA_DAEMON_AUTO_UPDATE` とは独立 |
-| `MULTICA_WORKSPACES_ROOT` | `~/multica_workspaces` | タスク作業ディレクトリのルート |
-| `MULTICA_KEEP_ENV_AFTER_TASK` | `false` | デバッグ用にタスクディレクトリを保持 |
+| `ORCHESTRA_SERVER_URL` | `ws://localhost:8080/ws` | Multica API / WebSocket アドレス。`http(s)` も受け付けます |
+| `ORCHESTRA_DAEMON_DEVICE_NAME` | ホスト名 | ランタイム一覧に表示されるデバイス名 |
+| `ORCHESTRA_AGENT_RUNTIME_NAME` | `Local Agent` | ランタイムの表示名 |
+| `ORCHESTRA_DAEMON_POLL_INTERVAL` | `30s` | ウェイクイベントがないときのタスクポーリング間隔 |
+| `ORCHESTRA_DAEMON_HEARTBEAT_INTERVAL` | `15s` | ハートビート間隔 |
+| `ORCHESTRA_DAEMON_MAX_CONCURRENT_TASKS` | `20` | デーモン 1 つあたりの同時実行タスク上限 |
+| `ORCHESTRA_AGENT_TIMEOUT` | `0` | 1 回の実行の絶対時間上限。`0` は上限なし |
+| `ORCHESTRA_AGENT_IDLE_WATCHDOG` | `30m` | 出力もツール実行もない状態の静穏上限 |
+| `ORCHESTRA_AGENT_TOOL_WATCHDOG` | `2h` | 単一のツール呼び出しが静穏なままでいられる上限 |
+| `ORCHESTRA_OPENCODE_IDLE_WATCHDOG` | `10m` | OpenCode 専用の静穏しきい値 |
+| `ORCHESTRA_CODEX_SEMANTIC_INACTIVITY_TIMEOUT` | `10m` | Codex のセマンティック静穏しきい値 |
+| `ORCHESTRA_CODEX_HANDSHAKE_TIMEOUT` | `30s` | Codex app-server 起動ハンドシェイクの上限 |
+| `ORCHESTRA_DAEMON_AUTO_UPDATE` | Cloud は `true`、セルフホストは `false` | CLI の更新を自動でチェックして適用するか |
+| `ORCHESTRA_DAEMON_AUTO_UPDATE_INTERVAL` | `6h` | 更新チェックの間隔 |
+| `ORCHESTRA_DAEMON_AUTO_RELOAD` | `true` | 帯域外で置き換えられた `multica` バイナリ（`brew upgrade`、再ダウンロード、ローカルビルド）へ再起動して追従するかどうか。`ORCHESTRA_DAEMON_AUTO_UPDATE` とは独立 |
+| `ORCHESTRA_WORKSPACES_ROOT` | `~/multica_workspaces` | タスク作業ディレクトリのルート |
+| `ORCHESTRA_KEEP_ENV_AFTER_TASK` | `false` | デバッグ用にタスクディレクトリを保持 |
 
-各 AI コーディングツールは `MULTICA_<PROVIDER>_PATH` と `MULTICA_<PROVIDER>_MODEL` でコマンドパスとデフォルトモデルを上書きできます。マシン全体のデフォルト引数 `MULTICA_<PROVIDER>_ARGS` は、現在 Claude Code、Codex、CodeBuddy、Qwen Code の 4 ツールに対応しています。対応する変数は `MULTICA_CLAUDE_ARGS`、`MULTICA_CODEX_ARGS`、`MULTICA_CODEBUDDY_ARGS`、`MULTICA_QWEN_ARGS` です。例:
+各 AI コーディングツールは `ORCHESTRA_<PROVIDER>_PATH` と `ORCHESTRA_<PROVIDER>_MODEL` でコマンドパスとデフォルトモデルを上書きできます。マシン全体のデフォルト引数 `ORCHESTRA_<PROVIDER>_ARGS` は、現在 Claude Code、Codex、CodeBuddy、Qwen Code の 4 ツールに対応しています。対応する変数は `ORCHESTRA_CLAUDE_ARGS`、`ORCHESTRA_CODEX_ARGS`、`ORCHESTRA_CODEBUDDY_ARGS`、`ORCHESTRA_QWEN_ARGS` です。例:
 
 ```dotenv
-MULTICA_CLAUDE_PATH=/opt/bin/claude
-MULTICA_CLAUDE_ARGS=--max-turns 40
+ORCHESTRA_CLAUDE_PATH=/opt/bin/claude
+ORCHESTRA_CLAUDE_ARGS=--max-turns 40
 ```
 
 優先順位はコマンドラインフラグ → 環境変数 → `~/.multica/config.json` → 組み込みデフォルトです。watchdog の動作は[デーモンとランタイム](/daemon-runtimes)を参照してください。
@@ -223,8 +223,8 @@ MULTICA_CLAUDE_ARGS=--max-turns 40
 デーモン側のよく使う設定は、シェルの環境変数に頼らず `~/.multica/config.json` に書き込むこともできます。名前付きプロファイルの設定ファイルは `~/.multica/profiles/<name>/config.json` にあります:
 
 ```bash
-multica config set poll_interval 10s
-multica config show
+orchestra config set poll_interval 10s
+orchestra config show
 ```
 
 サポートされるキー:
@@ -249,7 +249,7 @@ multica config show
 値のルール:
 
 - duration 系のキーは正の Go duration（`10s`、`2h` など）を受け付け、`0s` と負の値は拒否されます。唯一の例外は `agent_timeout` で、`0s` は有効な値として実行時間上限を明示的に無効化します。
-- 空文字列を渡すと永続化された値がクリアされ、環境変数または組み込みデフォルトに戻ります。例: `multica config set poll_interval ""`。
+- 空文字列を渡すと永続化された値がクリアされ、環境変数または組み込みデフォルトに戻ります。例: `orchestra config set poll_interval ""`。
 - `max_concurrent_tasks` には非負の整数が必要です。
 
 ## 可観測性と分析

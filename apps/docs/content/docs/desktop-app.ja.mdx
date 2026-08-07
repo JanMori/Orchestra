@@ -30,10 +30,10 @@ Multica Desktop は macOS、Windows、Linux で利用できます。Web 版と�
 | Windows | `.exe` |
 | Linux | `.AppImage`、`.deb` または `.rpm` |
 
-インストール後、Web 版と同じメールアドレスでサインインします。サインインすると、Desktop は内蔵の Multica CLI を起動し、マシンにすでにインストールされている AI コーディングツールを検出します。
+インストール後、Web 版と同じメールアドレスでサインインします。サインインすると、Desktop は内蔵の Orchestra CLI を起動し、マシンにすでにインストールされている AI コーディングツールを検出します。
 
 <Callout type="info">
-Desktop に内蔵された CLI は、アプリが管理するランタイム専用です。ターミナルで `multica issue` などのコマンドも実行したい場合は、[クイックスタートのステップ 2](/cloud-quickstart#2-コンピュータを接続する)に従って CLI を別途インストールしてください。
+Desktop に内蔵された CLI は、アプリが管理するランタイム専用です。ターミナルで `orchestra issue` などのコマンドも実行したい場合は、[クイックスタートのステップ 2](/cloud-quickstart#2-コンピュータを接続する)に従って CLI を別途インストールしてください。
 </Callout>
 
 ## デスクトップタブ
@@ -156,7 +156,7 @@ C:\Users\<ユーザー名>\AppData\Local\Programs\@multicadesktop\resources\app.
 **自分で検証できます** — 各 GitHub リリースには、すべての CLI アーカイブを網羅した `checksums.txt` が公開されています。
 
 ```powershell
-Get-FileHash .\multica-cli-<version>-windows-amd64.zip -Algorithm SHA256
+Get-FileHash .\orchestra-cli-<version>-windows-amd64.zip -Algorithm SHA256
 ```
 
 出力されたハッシュを、[最新リリース](https://github.com/multica-ai/multica/releases/latest)の `checksums.txt` の該当行と照合してください。

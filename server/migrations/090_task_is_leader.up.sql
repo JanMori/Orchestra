@@ -1,7 +1,7 @@
--- agent_task_queue.is_leader_task marks a task as enqueued in the squad-leader
--- role. The squad-leader self-trigger guard previously skipped a comment
--- whenever its author equalled `squad.LeaderID`, which mis-fired for an agent
--- that is simultaneously a leader and a worker of the same squad: a comment
+-- agent_task_queue.is_leader_task marks a task as enqueued in the crew-leader
+-- role. The crew-leader self-trigger guard previously skipped a comment
+-- whenever its author equalled `crew.LeaderID`, which mis-fired for an agent
+-- that is simultaneously a leader and a worker of the same crew: a comment
 -- posted by the agent in its worker role never woke its leader role. The
 -- guard now consults the agent's most recent task on the issue and skips
 -- only when that task was itself a leader task.

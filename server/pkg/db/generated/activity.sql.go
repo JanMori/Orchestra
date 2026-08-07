@@ -118,27 +118,27 @@ func (q *Queries) GetActivity(ctx context.Context, id pgtype.UUID) (ActivityLog,
 	return i, err
 }
 
-const hasSquadLeaderNoActionEvaluationForTask = `-- name: HasSquadLeaderNoActionEvaluationForTask :one
+const hasCrewLeaderNoActionEvaluationForTask = `-- name: HasCrewLeaderNoActionEvaluationForTask :one
 SELECT EXISTS (
   SELECT 1
   FROM activity_log
   WHERE issue_id = $1
     AND actor_type = 'agent'
     AND actor_id = $2
-    AND action = 'squad_leader_evaluated'
+    AND action = 'crew_leader_evaluated'
     AND details->>'outcome' = 'no_action'
     AND details->>'task_id' = $3::text
 ) AS exists
 `
 
-type HasSquadLeaderNoActionEvaluationForTaskParams struct {
+type HasCrewLeaderNoActionEvaluationForTaskParams struct {
 	IssueID pgtype.UUID `json:"issue_id"`
 	AgentID pgtype.UUID `json:"agent_id"`
 	TaskID  string      `json:"task_id"`
 }
 
-func (q *Queries) HasSquadLeaderNoActionEvaluationForTask(ctx context.Context, arg HasSquadLeaderNoActionEvaluationForTaskParams) (bool, error) {
-	row := q.db.QueryRow(ctx, hasSquadLeaderNoActionEvaluationForTask, arg.IssueID, arg.AgentID, arg.TaskID)
+func (q *Queries) HasCrewLeaderNoActionEvaluationForTask(ctx context.Context, arg HasCrewLeaderNoActionEvaluationForTaskParams) (bool, error) {
+	row := q.db.QueryRow(ctx, hasCrewLeaderNoActionEvaluationForTask, arg.IssueID, arg.AgentID, arg.TaskID)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err

@@ -139,7 +139,7 @@ export function createKoDict(allowSignup: boolean): LandingDict {
         {
           title: "CLI 설치하고 내 컴퓨터 연결하기",
           description:
-            "`multica setup`을 실행하면 로그인, 데몬 실행, 지원 코딩 도구 스캔까지 차례대로 안내합니다. 이미 설치된 도구는 자동으로 런타임에 등록됩니다.",
+            "`orchestra setup`을 실행하면 로그인, 데몬 실행, 지원 코딩 도구 스캔까지 차례대로 안내합니다. 이미 설치된 도구는 자동으로 런타임에 등록됩니다.",
         },
         {
           title: "첫 에이전트 만들기",
@@ -241,9 +241,6 @@ export function createKoDict(allowSignup: boolean): LandingDict {
           label: "리소스",
           links: [
             { label: "문서", href: "/docs/ko" },
-            { label: "API", href: githubUrl },
-            { label: "X (Twitter)", href: "https://x.com/OrchestraAI" },
-            { label: "Discord", href: discordUrl },
           ],
         },
         company: {
@@ -252,7 +249,6 @@ export function createKoDict(allowSignup: boolean): LandingDict {
             { label: "소개", href: "/about" },
             { label: "오픈소스", href: "#open-source" },
             { label: "영업팀 문의", href: "/contact-sales" },
-            { label: "GitHub", href: githubUrl },
           ],
         },
       },
@@ -963,7 +959,7 @@ export function createKoDict(allowSignup: boolean): LandingDict {
             "런타임이 오프라인이어도, Autopilot의 '태스크 생성' 실행이 실행 목록에 계속 표시됩니다.",
             "본문이 첨부·블록·rich_text에만 있는 Slack 알림 카드(Grafana, Incoming Webhook 등)를 폴백 문구 대신 첨부 본문에서 읽습니다.",
             "Codex 에이전트 작업이 작업 홈에서 데몬의 Codex 모델 카탈로그를 다시 볼 수 있습니다. (커뮤니티 보고)",
-            "레거시 `/squads/…`, `/usage` 웹 경로가 404 대신 현재 대응 페이지로 리다이렉트됩니다.",
+            "레거시 `/crews/…`, `/usage` 웹 경로가 404 대신 현재 대응 페이지로 리다이렉트됩니다.",
             "데스크톱 앱의 저장 대화상자가 `download.txt`로 폴백하지 않고 실제 첨부 파일명을 사용합니다. (커뮤니티 기여)",
             "스쿼드 협업: 리더가 mention으로 디스패치한 워커 에이전트가 완료 댓글을 HTTP API로 게시할 때, 프라이빗 스쿼드 리더가 정확히 깨어나며, 리더 → 워커 → 리더 루프가 첫 홉에서 멈추지 않습니다.",
             "호스트의 Claude CLI가 `--effort` 플래그 이전 버전이어도 작업이 하드 실패하지 않고, 데몬이 effort 플래그를 경고와 함께 제거하고 기본 실행으로 폴백합니다.",
@@ -1021,7 +1017,7 @@ export function createKoDict(allowSignup: boolean): LandingDict {
             "Slack 채팅 에이전트가 채널 히스토리 조회 과정을 서술하지 않고, 조용히 읽은 뒤 답변만 회신합니다.",
             "셀프호스트의 로컬 디스크 구성에서 첨부 미리보기(PDF / HTML)가 다시 열립니다. (커뮤니티 보고)",
             "Cursor와 Kiro 런타임 완료 시 트랜스크립트가 복구되어 최종 결과가 유실되지 않습니다.",
-            "셀프호스트: docker-compose.selfhost.yml에서 MULTICA_SLACK_SECRET_KEY가 백엔드 컨테이너로 전달됩니다. (커뮤니티 보고)",
+            "셀프호스트: docker-compose.selfhost.yml에서 ORCHESTRA_SLACK_SECRET_KEY가 백엔드 컨테이너로 전달됩니다. (커뮤니티 보고)",
             "태스크 보드 상단의 «N개 처리 중» 칩이 에이전트가 아니라 태스크 수를 기준으로 집계됩니다.",
             "셀프호스트 익명 소스 채널 리포팅 대상이 정식 Orchestra API로 복원되었습니다.",
             "댓글 딥링크 하이라이트가 배경색만 사용하도록 통일되어, 루트 댓글과 답글 동작이 일치합니다.",
@@ -1037,7 +1033,7 @@ export function createKoDict(allowSignup: boolean): LandingDict {
             "Slack 채널의 과거 대화를 Orchestra로 백필할 수 있어, 에이전트가 채널에 합류한 순간부터 이전 맥락을 알 수 있습니다.",
             "Slack에서 에이전트가 응답을 준비하는 동안 사용자 메시지에 👀 반응이 표시되고, 종료 시 안정적으로 제거됩니다.",
             "스킬 번들을 로컬 .skill / .zip 아카이브에서 가져올 수 있습니다.",
-            "multica issue 계열 명령은 더 이상 짧은 UUID 접두사를 받지 않습니다. 태스크 Key(MUL-123) 또는 전체 UUID를 사용하세요.",
+            "orchestra issue 계열 명령은 더 이상 짧은 UUID 접두사를 받지 않습니다. 태스크 Key(MUL-123) 또는 전체 UUID를 사용하세요.",
             "Agents 페이지가 모바일에 맞게 다듬어졌습니다.",
           ],
           improvements: [
@@ -1697,7 +1693,7 @@ export function createKoDict(allowSignup: boolean): LandingDict {
             "스쿼드 생성 흐름의 멤버 선택이 팀 조율에 더 적합해졌습니다.",
           ],
           improvements: [
-            "페이지 전환, 긴 태스크 활동 접기, Agents/Squads 목록 보기 기억, SSH 저장소 URL 처리, 스쿼드 handoff가 개선되었습니다.",
+            "페이지 전환, 긴 태스크 활동 접기, Agents/Crews 목록 보기 기억, SSH 저장소 URL 처리, 스쿼드 handoff가 개선되었습니다.",
           ],
           fixes: [
             "셀프 호스팅 파일 카드, 로컬 도구와 스킬 탐색, Claude 사용량, 워크스페이스 전환 후 실시간 업데이트, 좁은 화면 메뉴를 수정했습니다.",
@@ -1793,7 +1789,7 @@ export function createKoDict(allowSignup: boolean): LandingDict {
           title: "데몬 디스크 사용량 CLI와 타임라인 개선",
           changes: [],
           features: [
-            "`multica daemon disk-usage`가 작업별, 워크스페이스별 디스크 사용량을 보여줍니다.",
+            "`orchestra daemon disk-usage`가 작업별, 워크스페이스별 디스크 사용량을 보여줍니다.",
             "에이전트 설정의 스킬 picker에 검색 상자가 추가되고 데몬 GC 범위가 채팅, 오토파일럿, quick-create 작업까지 확장되었습니다.",
             "태스크 상세 breadcrumb에 빠른 참조용 식별자가 표시됩니다.",
           ],
@@ -1842,15 +1838,15 @@ export function createKoDict(allowSignup: boolean): LandingDict {
           title: "Repo checkout --ref와 Hermes 재생 수정",
           changes: [],
           features: [
-            "`multica repo checkout --ref`가 브랜치, 태그, 특정 커밋을 대상으로 저장소를 가져올 수 있습니다.",
-            "`multica agent avatar`가 CLI에서 에이전트 아바타를 직접 업로드합니다.",
+            "`orchestra repo checkout --ref`가 브랜치, 태그, 특정 커밋을 대상으로 저장소를 가져올 수 있습니다.",
+            "`orchestra agent avatar`가 CLI에서 에이전트 아바타를 직접 업로드합니다.",
             "인박스 Done 작업에 보관 버튼이 추가되고 중복 mark-as-done hover 버튼은 제거되었습니다.",
           ],
           improvements: [
             "긴 타임라인 태스크 열기, multi-replica 모델 picker, 데몬 empty-claim cache TTL이 개선되었습니다.",
           ],
           fixes: [
-            "새 에이전트 즉시 표시, Hermes 이전 답변 재생, Codex GPT-5.5 모델 표시, `multica login --token`, CLI 업데이트 상태, session resume, Kanban 설정, 오토파일럿 반응형 등을 수정했습니다.",
+            "새 에이전트 즉시 표시, Hermes 이전 답변 재생, Codex GPT-5.5 모델 표시, `orchestra login --token`, CLI 업데이트 상태, session resume, Kanban 설정, 오토파일럿 반응형 등을 수정했습니다.",
           ],
         },
         {
@@ -1926,7 +1922,7 @@ export function createKoDict(allowSignup: boolean): LandingDict {
           title: "사용자 지정 에이전트 환경 변수와 더 나은 실패 메시지",
           changes: [],
           features: [
-            "`multica agent create/update --custom-env KEY=VALUE`가 에이전트 실행에 사용자 지정 환경 변수를 주입합니다.",
+            "`orchestra agent create/update --custom-env KEY=VALUE`가 에이전트 실행에 사용자 지정 환경 변수를 주입합니다.",
             "에이전트 실패 메시지에 런타임 CLI stderr tail이 포함되어 디버깅이 쉬워졌습니다.",
             "CLI 업데이트 다운로드 timeout을 설정할 수 있습니다.",
           ],

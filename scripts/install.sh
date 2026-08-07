@@ -1,23 +1,22 @@
 #!/usr/bin/env bash
-# Multica installer — installs the CLI and optionally provisions a self-host server.
+# Orchestra installer — installs the CLI and optionally provisions a self-host server.
 #
-# Install / upgrade CLI only:
-#   curl -fsSL https://raw.githubusercontent.com/orchestra-ai/multica/main/scripts/install.sh | bash
+# Install / upgrade CLI:
+#   bash scripts/install.sh
 #
 # Install CLI + provision self-host server:
-#   curl -fsSL https://raw.githubusercontent.com/orchestra-ai/multica/main/scripts/install.sh | bash -s -- --with-server
+#   bash scripts/install.sh --with-server
 #
-# After installation, run `multica setup` to configure your environment.
+# After installation, run `orchestra setup` to configure your environment.
 #
 set -euo pipefail
 
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-REPO_URL="https://github.com/orchestra-ai/multica.git"
-REPO_WEB_URL="https://github.com/orchestra-ai/multica"  # without .git, for GitHub web APIs
-INSTALL_DIR="${ORCHESTRA_INSTALL_DIR:-$HOME/.multica/server}"
-BREW_PACKAGE="orchestra-ai/tap/multica"
+REPO_URL="https://github.com/JanMori/Orchestra.git"
+REPO_WEB_URL="https://github.com/JanMori/Orchestra"  # without .git, for GitHub web APIs
+INSTALL_DIR="${ORCHESTRA_INSTALL_DIR:-$HOME/.orchestra/server}"
 
 # Host ports Compose reported after `up -d`; set by setup_server and reused by
 # the summary so the health check and the printed URLs cannot diverge.
@@ -57,22 +56,14 @@ print_remote_server_token_hint() {
 
   printf "  ${BOLD}Looks like a remote/SSH session.${RESET} Browser login may not be able to call back to this machine's localhost.\n"
   printf "  Token login is usually simpler here:\n"
-  printf "     1. On your local computer, open ${CYAN}https://multica.ai/settings?tab=tokens${RESET}\n"
-  printf "        and create a token under ${BOLD}Settings > API Tokens${RESET}.\n"
+  printf "     1. On your local computer, open Settings > API Tokens.\n"
   printf "     2. On this server, run:\n"
-  printf "        ${CYAN}multica login --token <YOUR_TOKEN>${RESET}\n"
-  printf "        ${CYAN}multica daemon start${RESET}\n"
+  printf "        ${CYAN}orchestra login --token <YOUR_TOKEN>${RESET}\n"
+  printf "        ${CYAN}orchestra daemon start${RESET}\n"
   printf "\n"
 }
 
 # Host port Docker Compose actually published for a service.
-#
-# This is the only authority. Compose's interpolation gives the calling process
-# environment precedence over .env, so an ambient PORT / BACKEND_PORT / API_PORT
-# / SERVER_PORT / FRONTEND_PORT moves the published port without touching the
-# file. Re-deriving the port from .env alone made the installer probe and print
-# a port the stack was never published on (#6145). Must be called from the
-# installation directory, after `up -d`.
 compose_published_port() {
   local service=$1 container_port=$2 published
 
@@ -92,9 +83,9 @@ detect_os() {
     Darwin) OS="darwin" ;;
     Linux)  OS="linux" ;;
     MINGW*|MSYS*|CYGWIN*)
-            fail "This script does not support Windows. Use the PowerShell installer instead:
-  irm https://raw.githubusercontent.com/orchestra-ai/multica/main/scripts/install.ps1 | iex" ;;
-    *)      fail "Unsupported operating system: $(uname -s). Multica supports macOS, Linux, and Windows." ;;
+            fail "This script does not support Windows. Use PowerShell installer instead:
+  powershell -ExecutionPolicy Bypass -File scripts/install.ps1" ;;
+    *)      fail "Unsupported operating system: $(uname -s). Orchestra supports macOS, Linux, and Windows." ;;
   esac
 
   ARCH="$(uname -m)"
@@ -109,85 +100,66 @@ detect_os() {
 # ---------------------------------------------------------------------------
 # CLI Installation
 # ---------------------------------------------------------------------------
-_dump_brew_log() {
-  local log="$1"
-  if [ -s "$log" ]; then
-    warn "Homebrew output (last 80 lines):"
-    tail -n 80 "$log" | sed 's/^/  /' >&2
-  fi
-}
-
-install_cli_brew() {
-  info "Installing Multica CLI via Homebrew..."
-  local brew_log
-  brew_log=$(mktemp)
-  if ! brew tap orchestra-ai/tap >"$brew_log" 2>&1; then
-    warn "Failed to add Homebrew tap. Falling back to GitHub Releases binary install."
-    _dump_brew_log "$brew_log"
-    rm -f "$brew_log"
-    return 1
-  fi
-  # brew install exits non-zero if already installed on older Homebrew versions
-  if ! brew install "$BREW_PACKAGE" >"$brew_log" 2>&1; then
-    if brew list "$BREW_PACKAGE" >/dev/null 2>&1; then
-      rm -f "$brew_log"
-      ok "Multica CLI already installed via Homebrew"
-    else
-      warn "Failed to install multica via Homebrew. Falling back to GitHub Releases binary install."
-      _dump_brew_log "$brew_log"
-      rm -f "$brew_log"
-      return 1
-    fi
-  else
-    rm -f "$brew_log"
-    ok "Multica CLI installed via Homebrew"
-  fi
-}
-
 install_cli_binary() {
-  info "Installing Multica CLI from GitHub Releases..."
+  info "Installing Orchestra CLI..."
 
-  # Get latest release tag
-  local latest
-  latest=$(curl -sI "$REPO_WEB_URL/releases/latest" 2>/dev/null | grep -i '^location:' | sed 's/.*tag\///' | tr -d '\r\n' || true)
-  if [ -z "$latest" ]; then
-    fail "Could not determine latest release. Check your network connection."
-  fi
-
-  local version="${latest#v}"
-  local url="https://github.com/orchestra-ai/multica/releases/download/${latest}/multica-cli-${version}-${OS}-${ARCH}.tar.gz"
   local tmp_dir
   tmp_dir=$(mktemp -d)
 
-  info "Downloading $url ..."
-  if ! curl -fsSL "$url" -o "$tmp_dir/multica.tar.gz"; then
-    rm -rf "$tmp_dir"
-    fail "Failed to download CLI binary."
-  fi
+  # Check if we are in the source tree with Go installed
+  local script_dir
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-  tar -xzf "$tmp_dir/multica.tar.gz" -C "$tmp_dir" multica
-
-  # Try /usr/local/bin first, fall back to ~/.local/bin. Tests and scripted
-  # installs can override the first choice with ORCHESTRA_BIN_DIR.
-  local bin_dir="${ORCHESTRA_BIN_DIR:-/usr/local/bin}"
-  if [ -w "$bin_dir" ]; then
-    mv "$tmp_dir/multica" "$bin_dir/multica"
-  elif command_exists sudo; then
-    sudo mv "$tmp_dir/multica" "$bin_dir/multica"
+  if [ -d "$script_dir/server/cmd/orchestra" ] && command_exists go; then
+    info "Building Orchestra CLI from local Go source..."
+    (cd "$script_dir/server" && CGO_ENABLED=0 go build -o "$tmp_dir/orchestra" ./cmd/orchestra)
+  elif [ -f "$script_dir/server/bin/orchestra" ]; then
+    info "Using existing local Orchestra CLI binary..."
+    cp "$script_dir/server/bin/orchestra" "$tmp_dir/orchestra"
   else
-    bin_dir="$HOME/.local/bin"
-    mkdir -p "$bin_dir"
-    mv "$tmp_dir/multica" "$bin_dir/multica"
-    chmod +x "$bin_dir/multica"
-    # Add to PATH if not already there
-    if ! echo "$PATH" | tr ':' '\n' | grep -q "^$bin_dir$"; then
-      export PATH="$bin_dir:$PATH"
-      add_to_path "$bin_dir"
+    local latest
+    latest=$(curl -sI "$REPO_WEB_URL/releases/latest" 2>/dev/null | grep -i '^location:' | sed 's/.*tag\///' | tr -d '\r\n' || true)
+    if [ -n "$latest" ]; then
+      local version="${latest#v}"
+      local url="${REPO_WEB_URL}/releases/download/${latest}/orchestra-cli-${version}-${OS}-${ARCH}.tar.gz"
+      info "Downloading $url ..."
+      if curl -fsSL "$url" -o "$tmp_dir/orchestra.tar.gz" 2>/dev/null; then
+        tar -xzf "$tmp_dir/orchestra.tar.gz" -C "$tmp_dir" orchestra 2>/dev/null || true
+      fi
     fi
   fi
 
+  if [ ! -f "$tmp_dir/orchestra" ]; then
+    if command_exists go && [ -d "$script_dir/server" ]; then
+      (cd "$script_dir/server" && CGO_ENABLED=0 go build -o "$tmp_dir/orchestra" ./cmd/orchestra)
+    fi
+  fi
+
+  if [ ! -f "$tmp_dir/orchestra" ]; then
+    rm -rf "$tmp_dir"
+    fail "Could not install Orchestra CLI. Ensure Go is installed or run `make build` inside the repository."
+  fi
+
+  chmod +x "$tmp_dir/orchestra"
+
+  local bin_dir="${ORCHESTRA_BIN_DIR:-}"
+  if [ -z "$bin_dir" ]; then
+    if [ -w "/usr/local/bin" ]; then
+      bin_dir="/usr/local/bin"
+    else
+      bin_dir="$HOME/.local/bin"
+    fi
+  fi
+  mkdir -p "$bin_dir"
+  mv "$tmp_dir/orchestra" "$bin_dir/orchestra"
+  chmod +x "$bin_dir/orchestra"
+  if ! echo "$PATH" | tr ':' '\n' | grep -q "^$bin_dir$"; then
+    export PATH="$bin_dir:$PATH"
+    add_to_path "$bin_dir"
+  fi
+
   rm -rf "$tmp_dir"
-  ok "Multica CLI installed to $bin_dir/multica"
+  ok "Orchestra CLI installed to $bin_dir/orchestra"
 }
 
 add_to_path() {
@@ -195,117 +167,20 @@ add_to_path() {
   local line="export PATH=\"$dir:\$PATH\""
   for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
     if [ -f "$rc" ] && ! grep -qF "$dir" "$rc"; then
-      printf '\n# Added by Multica installer\n%s\n' "$line" >> "$rc"
+      printf '\n# Added by Orchestra installer\n%s\n' "$line" >> "$rc"
     fi
   done
 }
 
-get_latest_version() {
-  # grep exits 1 when no match; use `|| true` to avoid triggering pipefail
-  curl -sI "$REPO_WEB_URL/releases/latest" 2>/dev/null | grep -i '^location:' | sed 's/.*tag\///' | tr -d '\r\n' || true
-}
-
-get_selfhost_ref() {
-  if [ -n "${ORCHESTRA_SELFHOST_REF:-}" ]; then
-    printf '%s' "$ORCHESTRA_SELFHOST_REF"
-    return
-  fi
-
-  local latest
-  latest=$(get_latest_version)
-  if [ -n "$latest" ]; then
-    printf '%s' "$latest"
-    return
-  fi
-
-  printf '%s' "main"
-}
-
-checkout_server_ref() {
-  local ref="$1"
-
-  if [ "$ref" = "main" ]; then
-    git fetch origin main --depth 1 2>/dev/null || true
-    git checkout --force main 2>/dev/null || true
-    git reset --hard origin/main 2>/dev/null || true
-    return
-  fi
-
-  git fetch origin --tags --force 2>/dev/null || true
-  if git rev-parse --verify --quiet "refs/tags/$ref" >/dev/null; then
-    git checkout --force "$ref" 2>/dev/null || git checkout --force "tags/$ref" 2>/dev/null || true
-    return
-  fi
-
-  git fetch origin "$ref" --depth 1 2>/dev/null || true
-  git checkout --force "$ref" 2>/dev/null || true
-}
-
-pull_official_selfhost_images() {
-  if docker compose -f docker-compose.selfhost.build.yml pull; then
-    return
-  fi
-
-  echo ""
-  warn "Official images for the selected self-host channel are not published yet."
-  echo "This can happen before the first GHCR release is available."
-  echo "From $INSTALL_DIR, build from source instead:"
-  echo "  docker compose -f docker-compose.selfhost.build.yml up -d --build"
-  exit 1
-}
-
-upgrade_cli_brew() {
-  info "Upgrading Multica CLI via Homebrew..."
-  brew update 2>/dev/null || true
-  if brew upgrade "$BREW_PACKAGE" 2>/dev/null; then
-    ok "Multica CLI upgraded via Homebrew"
-  else
-    # brew upgrade exits non-zero if already up to date
-    ok "Multica CLI is already the latest version"
-  fi
-}
-
 install_cli() {
-  if command_exists multica; then
-    local current_ver
-    # `multica version` outputs "multica 0.3.23 (commit: f46b929eb, built: 2026-06-16T10:11:56Z)" — extract just the version
-    current_ver=$(multica version 2>/dev/null | awk 'NR==1{print $2}' || echo "unknown")
+  install_cli_binary
 
-    local latest_ver
-    latest_ver=$(get_latest_version)
-
-    # Normalize: strip leading 'v' for comparison
-    local current_cmp="${current_ver#v}"
-    local latest_cmp="${latest_ver#v}"
-
-    if [ -z "$latest_ver" ] || [ "$current_cmp" = "$latest_cmp" ]; then
-      ok "Multica CLI is up to date ($current_ver)"
-      return 0
-    fi
-
-    info "Multica CLI $current_ver installed, latest is $latest_ver — upgrading..."
-    if command_exists brew && brew list "$BREW_PACKAGE" >/dev/null 2>&1; then
-      upgrade_cli_brew
-    else
-      install_cli_binary
-    fi
-
-    local new_ver
-    new_ver=$(multica version 2>/dev/null | awk 'NR==1{print $2}' || echo "unknown")
-    ok "Multica CLI upgraded ($current_ver → $new_ver)"
-    return 0
+  if ! command_exists orchestra; then
+    fail "CLI installed but 'orchestra' not found on PATH. You may need to restart your shell."
   fi
-
-  if command_exists brew; then
-    install_cli_brew || install_cli_binary
-  else
-    install_cli_binary
-  fi
-
-  # Verify
-  if ! command_exists multica; then
-    fail "CLI installed but 'multica' not found on PATH. You may need to restart your shell."
-  fi
+  local ver
+  ver=$(orchestra version 2>/dev/null | awk 'NR==1{print $2}' || echo "ready")
+  ok "Orchestra CLI is ready ($ver)"
 }
 
 # ---------------------------------------------------------------------------
@@ -314,13 +189,13 @@ install_cli() {
 check_docker() {
   if ! command_exists docker; then
     printf "\n"
-    fail "Docker is not installed. Multica self-hosting requires Docker and Docker Compose.
+    fail "Docker is not installed. Orchestra self-hosting requires Docker and Docker Compose.
 
 Install Docker:
   macOS:  https://docs.docker.com/desktop/install/mac-install/
   Linux:  https://docs.docker.com/engine/install/
 
-After installing Docker, re-run this script with --with-server."
+After installing Docker, re-run: bash scripts/install.sh --with-server"
   fi
 
   if ! docker info >/dev/null 2>&1; then
@@ -334,32 +209,36 @@ After installing Docker, re-run this script with --with-server."
 # Server setup (self-host / --with-server)
 # ---------------------------------------------------------------------------
 setup_server() {
-  info "Setting up Multica server..."
-  local server_ref
-  server_ref=$(get_selfhost_ref)
-  info "Using self-host assets from ${server_ref}..."
+  info "Setting up Orchestra server..."
+  local script_dir
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-  if [ -d "$INSTALL_DIR/.git" ]; then
-    info "Updating existing installation at $INSTALL_DIR..."
+  if [ -n "${ORCHESTRA_INSTALL_DIR:-}" ]; then
+    INSTALL_DIR="$ORCHESTRA_INSTALL_DIR"
+    cd "$INSTALL_DIR"
+  elif [ -f "$script_dir/docker-compose.selfhost.build.yml" ]; then
+    INSTALL_DIR="$script_dir"
     cd "$INSTALL_DIR"
   else
-    info "Cloning Multica repository..."
-    if ! command_exists git; then
-      fail "Git is not installed. Please install git and re-run."
+    if [ -d "$INSTALL_DIR/.git" ]; then
+      info "Updating existing installation at $INSTALL_DIR..."
+      cd "$INSTALL_DIR"
+    else
+      info "Cloning Orchestra repository..."
+      if ! command_exists git; then
+        fail "Git is not installed. Please install git and re-run."
+      fi
+      if [ -d "$INSTALL_DIR" ]; then
+        warn "Removing incomplete installation at $INSTALL_DIR..."
+        rm -rf "$INSTALL_DIR"
+      fi
+      mkdir -p "$(dirname "$INSTALL_DIR")"
+      git clone --depth 1 "$REPO_URL" "$INSTALL_DIR"
+      cd "$INSTALL_DIR"
     fi
-    # Remove leftover directory from a previously interrupted clone
-    if [ -d "$INSTALL_DIR" ]; then
-      warn "Removing incomplete installation at $INSTALL_DIR..."
-      rm -rf "$INSTALL_DIR"
-    fi
-    mkdir -p "$(dirname "$INSTALL_DIR")"
-    git clone --depth 1 "$REPO_URL" "$INSTALL_DIR"
-    cd "$INSTALL_DIR"
   fi
 
-  checkout_server_ref "$server_ref"
-
-  ok "Repository ready at $INSTALL_DIR ($server_ref)"
+  ok "Repository ready at $INSTALL_DIR"
 
   # Generate .env if needed
   if [ ! -f .env ]; then
@@ -383,13 +262,9 @@ setup_server() {
   fi
 
   # Start Docker Compose
-  info "Pulling official Multica images..."
-  pull_official_selfhost_images
-  info "Starting Multica services (this may take a few minutes on first run)..."
-  docker compose -f docker-compose.selfhost.build.yml up -d
+  info "Starting Orchestra services (this may take a few minutes on first run)..."
+  docker compose -f docker-compose.selfhost.build.yml up -d --build
 
-  # Read the ports Compose actually published, once, and reuse them for both the
-  # health check and the summary so the two can never disagree.
   if ! SELFHOST_BACKEND_PORT="$(compose_published_port backend 8080)"; then
     fail "Started the stack but could not read the backend host port from Docker Compose.
   Check it with: cd $INSTALL_DIR && docker compose -f docker-compose.selfhost.build.yml ps"
@@ -411,7 +286,7 @@ setup_server() {
   done
 
   if [ "$ready" = true ]; then
-    ok "Multica server is running"
+    ok "Orchestra server is running"
   else
     warn "Server is still starting. You can check logs with:"
     echo "  cd $INSTALL_DIR && docker compose -f docker-compose.selfhost.build.yml logs"
@@ -419,13 +294,12 @@ setup_server() {
   fi
 }
 
-
 # ---------------------------------------------------------------------------
-# Main: Default mode (install / upgrade CLI only)
+# Main: Default mode (install CLI only)
 # ---------------------------------------------------------------------------
 run_default() {
   printf "\n"
-  printf "${BOLD}  Multica — Installer${RESET}\n"
+  printf "${BOLD}  Orchestra — Installer${RESET}\n"
   printf "\n"
 
   detect_os
@@ -433,26 +307,26 @@ run_default() {
 
   printf "\n"
   printf "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}\n"
-  printf "${BOLD}${GREEN}  ✓ Multica CLI is ready!${RESET}\n"
+  printf "${BOLD}${GREEN}  ✓ Orchestra CLI is ready!${RESET}\n"
   printf "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}\n"
   printf "\n"
   printf "  ${BOLD}Next: configure your environment${RESET}\n"
   printf "\n"
-  printf "     ${CYAN}multica setup${RESET}                # Connect to Multica Cloud (multica.ai)\n"
-  printf "     ${CYAN}multica setup self-host${RESET}       # Connect to a self-hosted server\n"
+  printf "     ${CYAN}orchestra setup${RESET}                # Configure + authenticate + start daemon\n"
+  printf "     ${CYAN}orchestra setup self-host${RESET}       # Connect to a self-hosted server\n"
   printf "\n"
   print_remote_server_token_hint
   printf "  ${BOLD}Self-hosting?${RESET} Install the server first:\n"
-  printf "     curl -fsSL https://raw.githubusercontent.com/orchestra-ai/multica/main/scripts/install.sh | bash -s -- --with-server\n"
+  printf "     bash scripts/install.sh --with-server\n"
   printf "\n"
 }
 
 # ---------------------------------------------------------------------------
-# Main: With-server mode (provision self-host infrastructure + install CLI)
+# Main: With-server mode
 # ---------------------------------------------------------------------------
 run_with_server() {
   printf "\n"
-  printf "${BOLD}  Multica — Self-Host Installer${RESET}\n"
+  printf "${BOLD}  Orchestra — Self-Host Installer${RESET}\n"
   printf "  Provisioning server infrastructure + installing CLI\n"
   printf "\n"
 
@@ -463,7 +337,7 @@ run_with_server() {
 
   printf "\n"
   printf "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}\n"
-  printf "${BOLD}${GREEN}  ✓ Multica server is running and CLI is ready!${RESET}\n"
+  printf "${BOLD}${GREEN}  ✓ Orchestra server is running and CLI is ready!${RESET}\n"
   printf "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}\n"
   printf "\n"
   printf "  ${BOLD}Frontend:${RESET}  http://localhost:%s\n" "$SELFHOST_FRONTEND_PORT"
@@ -472,13 +346,10 @@ run_with_server() {
   printf "\n"
   printf "  ${BOLD}Next: configure your CLI to connect${RESET}\n"
   printf "\n"
-  printf "     ${CYAN}multica setup self-host${RESET}   # Configure + authenticate + start daemon\n"
-  printf "\n"
-  printf "  ${BOLD}Login:${RESET} configure ${CYAN}RESEND_API_KEY${RESET} in .env for email codes,\n"
-  printf "  or read the generated code from backend logs when Resend is unset.\n"
+  printf "     ${CYAN}orchestra setup self-host${RESET}   # Configure + authenticate + start daemon\n"
   printf "\n"
   printf "  ${BOLD}To stop all services:${RESET}\n"
-  printf "     curl -fsSL https://raw.githubusercontent.com/orchestra-ai/multica/main/scripts/install.sh | bash -s -- --stop\n"
+  printf "     bash scripts/install.sh --stop\n"
   printf "\n"
 }
 
@@ -487,22 +358,18 @@ run_with_server() {
 # ---------------------------------------------------------------------------
 run_stop() {
   printf "\n"
-  info "Stopping Multica services..."
+  info "Stopping Orchestra services..."
 
   if [ -d "$INSTALL_DIR" ]; then
     cd "$INSTALL_DIR"
     if [ -f docker-compose.selfhost.build.yml ]; then
       docker compose -f docker-compose.selfhost.build.yml down
       ok "Docker services stopped"
-    else
-      warn "No docker-compose.selfhost.build.yml found at $INSTALL_DIR"
     fi
-  else
-    warn "No Multica installation found at $INSTALL_DIR"
   fi
 
-  if command_exists multica; then
-    multica daemon stop 2>/dev/null && ok "Daemon stopped" || true
+  if command_exists orchestra; then
+    orchestra daemon stop 2>/dev/null && ok "Daemon stopped" || true
   fi
 
   printf "\n"
@@ -517,25 +384,22 @@ main() {
   while [ $# -gt 0 ]; do
     case "$1" in
       --with-server) mode="with-server" ;;
-      --local)       mode="with-server" ;;  # backwards compat alias
+      --local)       mode="with-server" ;;
       --stop)        mode="stop" ;;
       --help|-h)
-        echo "Usage: install.sh [--with-server | --stop]"
+        echo "Usage: bash scripts/install.sh [--with-server | --stop]"
         echo ""
-        echo "  (default)       Install / upgrade the Multica CLI"
+        echo "  (default)       Install / upgrade the Orchestra CLI"
         echo "  --with-server   Install CLI + provision a self-host server (Docker)"
         echo "  --stop          Stop a self-hosted installation"
         echo ""
         echo "Environment variables:"
         echo "  ORCHESTRA_INSTALL_DIR   Self-host server install directory"
-        echo "                        (default: \$HOME/.multica/server)"
-        echo "  ORCHESTRA_BIN_DIR       Target directory for the CLI binary when"
-        echo "                        installing from GitHub Releases"
+        echo "                        (default: \$HOME/.orchestra/server)"
+        echo "  ORCHESTRA_BIN_DIR       Target directory for the CLI binary"
         echo "                        (default: /usr/local/bin, then \$HOME/.local/bin)"
-        echo "  ORCHESTRA_SELFHOST_REF  Git ref to check out for self-host assets"
-        echo "                        (default: latest release tag, falling back to main)"
         echo ""
-        echo "After installation, run 'multica setup' to configure your environment."
+        echo "After installation, run 'orchestra setup' to configure your environment."
         exit 0
         ;;
       *) warn "Unknown option: $1" ;;

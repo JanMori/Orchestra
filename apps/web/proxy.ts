@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { LOCALE_COOKIE } from "@orchestra/core/i18n";
 import {
-  MULTICA_LOCALE_HEADER,
+  ORCHESTRA_LOCALE_HEADER,
   resolveLocaleFromSignals,
 } from "./lib/locale-routing";
 import { runtimeRewriteDestination } from "./config/runtime-urls";
@@ -15,7 +15,7 @@ const LEGACY_ROUTE_SEGMENTS = new Set([
   "issues",
   "projects",
   "agents",
-  "squads",
+  "crews",
   "inbox",
   "my-issues",
   "autopilots",
@@ -32,13 +32,13 @@ function resolveLocale(req: NextRequest): string {
   });
 }
 
-// Forward the resolved locale to RSC layouts via the `x-multica-locale`
+// Forward the resolved locale to RSC layouts via the `x-orchestra-locale`
 // request header. layout.tsx reads it through `await headers()`. The
 // `request: { headers }` form is what makes the header land on the upstream
 // request — without it the value would only sit on the response.
 function nextWithLocale(req: NextRequest): NextResponse {
   const headers = new Headers(req.headers);
-  headers.set(MULTICA_LOCALE_HEADER, resolveLocale(req));
+  headers.set(ORCHESTRA_LOCALE_HEADER, resolveLocale(req));
   return NextResponse.next({ request: { headers } });
 }
 

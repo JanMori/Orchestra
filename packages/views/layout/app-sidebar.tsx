@@ -5,7 +5,6 @@ import { cn } from "@orchestra/ui/lib/utils";
 import { useScrollFade } from "@orchestra/ui/hooks/use-scroll-fade";
 import { AppLink, useNavigation } from "../navigation";
 import { HelpLauncher } from "./help-launcher";
-import { JoinDiscordCard } from "./join-discord-card";
 import {
   DndContext,
   PointerSensor,
@@ -113,7 +112,7 @@ type NavKey =
   | "projects"
   | "autopilots"
   | "agents"
-  | "squads"
+  | "crews"
   | "usage"
   | "runtimes"
   | "skills"
@@ -129,7 +128,7 @@ type NavLabelKey =
   | "projects"
   | "autopilots"
   | "agents"
-  | "squads"
+  | "crews"
   | "usage"
   | "runtimes"
   | "skills"
@@ -149,7 +148,7 @@ const workspaceNav: { key: NavKey; labelKey: NavLabelKey }[] = [
   { key: "projects", labelKey: "projects" },
   { key: "autopilots", labelKey: "autopilots" },
   { key: "agents", labelKey: "agents" },
-  { key: "squads", labelKey: "squads" },
+  { key: "crews", labelKey: "crews" },
   { key: "usage", labelKey: "usage" },
 ];
 
@@ -796,11 +795,7 @@ export function AppSidebar({ topSlot, searchSlot, headerClassName, headerStyle }
         </SidebarContent>
 
         <SidebarFooter className="p-2">
-          {/* One utility strip: the Discord link takes the leading space the
-              help trigger was leaving empty. `justify-end` keeps the trigger
-              right-aligned once the Discord link is dismissed. */}
           <div className="flex items-center justify-end gap-1">
-            <JoinDiscordCard />
             <HelpLauncher />
           </div>
         </SidebarFooter>

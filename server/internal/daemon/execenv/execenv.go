@@ -1,6 +1,6 @@
 // Package execenv manages isolated per-task execution environments for the daemon.
 // Each task gets its own directory with injected context files. Repositories are
-// checked out on demand by the agent via `multica repo checkout`.
+// checked out on demand by the agent via `orchestra repo checkout`.
 package execenv
 
 import (
@@ -141,7 +141,7 @@ type TaskContextForEnv struct {
 	AutopilotTriggerPayload string
 	QuickCreatePrompt       string // non-empty for quick-create tasks
 	HandoffNote             string // assignment handoff instruction; rendered into issue_context.md (MUL-3375)
-	IsSquadLeader           bool   // true when the agent is acting as a squad leader (may exit silently on no_action)
+	IsCrewLeader           bool   // true when the agent is acting as a crew leader (may exit silently on no_action)
 	// WorkspaceContext is the workspace-level system prompt (workspace.context
 	// in the DB). Rendered into the brief as `## Workspace Context` when
 	// non-empty so every agent in the workspace sees the same shared context,
@@ -254,7 +254,7 @@ func PredictRootDir(workspacesRoot, workspaceID, taskID string) string {
 
 // Prepare creates an isolated execution environment for a task.
 // The workdir starts empty (no repo checkouts). The agent checks out repos
-// on demand via `multica repo checkout <url>`.
+// on demand via `orchestra repo checkout <url>`.
 func Prepare(params PrepareParams, logger *slog.Logger) (*Environment, error) {
 	if params.WorkspacesRoot == "" {
 		return nil, fmt.Errorf("execenv: workspaces root is required")
@@ -327,7 +327,7 @@ func Prepare(params PrepareParams, logger *slog.Logger) (*Environment, error) {
 	// the prior handler writes .gc_meta.json — so reuse eligibility must be
 	// provable from an artifact that exists the moment the env is created. Only
 	// managed (non-local_directory) issue envs get this marker; that is exactly
-	// the set squad-leader reuse targets (MUL-4886). Non-fatal: a write failure
+	// the set crew-leader reuse targets (MUL-4886). Non-fatal: a write failure
 	// only costs the next follow-up its session reuse (it falls back to a fresh
 	// session), which must never block dispatching this task.
 	if params.LocalWorkDir == "" && params.Task.IssueID != "" {
@@ -790,7 +790,7 @@ const ManagedEnvProvenanceManagedBy = "multica-daemon-managed-env"
 // env root is a daemon-managed, non-local_directory issue env owned by a
 // specific workspace/issue/agent.
 //
-// Its whole reason to exist is timing. A squad-leader follow-up on the same
+// Its whole reason to exist is timing. A crew-leader follow-up on the same
 // issue can be claimed the instant the prior task completes — the server's
 // task-complete handler reconciles the follow-up and wakes the runtime before
 // the prior task's daemon handler writes .gc_meta.json. Keying reuse

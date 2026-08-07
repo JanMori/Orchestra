@@ -38,7 +38,7 @@ import {
 import { Button } from "@orchestra/ui/components/ui/button";
 import { useCurrentWorkspace } from "@orchestra/core/paths";
 import { useWorkspaceId } from "@orchestra/core/hooks";
-import { agentListOptions, squadListOptions } from "@orchestra/core/workspace/queries";
+import { agentListOptions, crewListOptions } from "@orchestra/core/workspace/queries";
 import { projectListOptions } from "@orchestra/core/projects/queries";
 import {
   useCreateAutopilot,
@@ -141,7 +141,7 @@ export function AutopilotDialog(props: AutopilotDialogProps) {
   const workspaceName = useCurrentWorkspace()?.name;
   const wsId = useWorkspaceId();
   const { data: agents = [] } = useQuery(agentListOptions(wsId));
-  const { data: squads = [] } = useQuery(squadListOptions(wsId));
+  const { data: crews = [] } = useQuery(crewListOptions(wsId));
   const { data: projects = [] } = useQuery(projectListOptions(wsId));
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -238,13 +238,13 @@ export function AutopilotDialog(props: AutopilotDialogProps) {
 
   const selectedAssignee = useMemo(() => {
     if (!assigneeId) return null;
-    if (assigneeType === "squad") {
-      const squad = squads.find((s) => s.id === assigneeId);
-      return squad ? { name: squad.name, description: squad.description } : null;
+    if (assigneeType === "crew") {
+      const crew = crews.find((s) => s.id === assigneeId);
+      return crew ? { name: crew.name, description: crew.description } : null;
     }
     const agent = agents.find((a) => a.id === assigneeId);
     return agent ? { name: agent.name, description: agent.description } : null;
-  }, [agents, squads, assigneeId, assigneeType]);
+  }, [agents, crews, assigneeId, assigneeType]);
   const selectedProject = useMemo(
     () => projects.find((project) => project.id === projectId) ?? null,
     [projects, projectId],

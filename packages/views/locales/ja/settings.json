@@ -127,7 +127,7 @@
       "goProjects": { "label": "プロジェクトへ移動", "description": "プロジェクト一覧を開きます。" },
       "goAutopilots": { "label": "自動化へ移動", "description": "ワークスペースの自動化を開きます。" },
       "goAgents": { "label": "エージェントへ移動", "description": "エージェント一覧を開きます。" },
-      "goSquads": { "label": "Squadsへ移動", "description": "Squad一覧を開きます。" },
+      "goCrews": { "label": "Crewsへ移動", "description": "Crew一覧を開きます。" },
       "goUsage": { "label": "使用量へ移動", "description": "使用量分析を開きます。" },
       "goRuntimes": { "label": "ランタイムへ移動", "description": "ランタイム設定を開きます。" },
       "goSkills": { "label": "Skillsへ移動", "description": "Skillライブラリを開きます。" },
@@ -357,7 +357,7 @@
   },
   "tokens": {
     "title": "API トークン",
-    "description": "個人アクセストークンを使うと、CLI や外部連携があなたのアカウントで認証できます。multica login --token で使用するか、API 呼び出し時に Bearer トークンとして送信します。",
+    "description": "個人アクセストークンを使うと、CLI や外部連携があなたのアカウントで認証できます。orchestra login --token で使用するか、API 呼び出し時に Bearer トークンとして送信します。",
     "security_note": "トークンはアカウントへのフルアクセスを付与します。パスワードと同じように厳重に管理してください。",
     "empty": "API トークンはまだありません。上のフォームから作成できます。",
     "load_failed": "API トークンを読み込めませんでした。ページを再読み込みしてもう一度お試しください。",

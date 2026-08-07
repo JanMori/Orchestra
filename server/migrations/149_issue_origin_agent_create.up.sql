@@ -2,7 +2,7 @@
 -- the new issue with origin_type='agent_create' + origin_id=<agent_task_queue.id>
 -- (the acting task that created it). This is the load-bearing link that lets
 -- resolveOriginatorForIssueTask inherit the top-of-chain human originator for
--- any run derived from the new issue (assignment / squad-leader). Without it an
+-- any run derived from the new issue (assignment / crew-leader). Without it an
 -- agent-created issue was left unattributed, so downstream A2A mentions from
 -- those runs failed the canInvokeAgent gate against private agents (MUL-4305).
 -- Mirrors the quick_create link (060) — same origin_id semantics (an

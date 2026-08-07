@@ -145,7 +145,7 @@ describe("Agent creation errors", () => {
       createElement(CreateAgentFooter, {
         canCreate: true,
         creating: false,
-        squad: false,
+        crew: false,
         error: "Network request failed",
         onCreate: vi.fn(),
       }),
@@ -169,7 +169,7 @@ describe("Unfinished draft preview", () => {
       draftPreview({
         last_message_role: "user",
         last_message_content:
-          'MULTICA_AGENT_BUILDER_INPUT\n{"user_request":"Create a release manager","current_draft":{"name":"X"}}',
+          'ORCHESTRA_AGENT_BUILDER_INPUT\n{"user_request":"Create a release manager","current_draft":{"name":"X"}}',
       }),
     ).toBe("Create a release manager");
   });

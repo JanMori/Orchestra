@@ -18,8 +18,8 @@ const maxPreviewTriggerIssues = 500
 
 // issueTriggerWriteProbe builds the probe the write paths feed to
 // WillEnqueueRun. The private-agent gate is already enforced at the HTTP
-// boundary (validateAssigneePair on assign) and inside enqueueSquadLeaderTask
-// (canEnqueueSquadLeader), so a write must NOT re-run or sink it — it passes
+// boundary (validateAssigneePair on assign) and inside enqueueCrewLeaderTask
+// (canEnqueueCrewLeader), so a write must NOT re-run or sink it — it passes
 // allow-all. The self-loop check needs the request's X-Task-ID header.
 func (h *Handler) issueTriggerWriteProbe(r *http.Request, actorType string, issue db.Issue) service.IssueTriggerProbe {
 	return service.IssueTriggerProbe{
@@ -33,7 +33,7 @@ func (h *Handler) issueTriggerWriteProbe(r *http.Request, actorType string, issu
 // issueTriggerPreviewProbe mirrors the real write-time gates for the read-only
 // preview: the private-agent gate (so preview never leaks a private agent's
 // readiness to a member who cannot see it — matching validateAssigneePair /
-// canEnqueueSquadLeader) and the same self-loop guard.
+// canEnqueueCrewLeader) and the same self-loop guard.
 func (h *Handler) issueTriggerPreviewProbe(r *http.Request, actorType, actorID, workspaceID string, issue db.Issue) service.IssueTriggerProbe {
 	originatorUserID := h.invokeOriginatorFromRequest(r, actorType, actorID)
 	return service.IssueTriggerProbe{
@@ -48,7 +48,7 @@ func (h *Handler) issueTriggerPreviewProbe(r *http.Request, actorType, actorID, 
 
 // dispatchIssueRun executes the enqueue side effect for a decision produced by
 // WillEnqueueRun, carrying an optional handoff note into the run's opening
-// context. The squad path still flows through enqueueSquadLeaderTask so the
+// context. The crew path still flows through enqueueCrewLeaderTask so the
 // leader access gate and pending dedup stay in one place.
 func (h *Handler) dispatchIssueRun(ctx context.Context, issue db.Issue, trigger service.IssueRunTrigger, actorType, actorID, handoffNote string) {
 	switch trigger.AssigneeType {
@@ -57,8 +57,8 @@ func (h *Handler) dispatchIssueRun(ctx context.Context, issue db.Issue, trigger 
 		// for the run (MUL-4302 §4). An agent actor is not a human, so only a
 		// member actor is threaded; otherwise attribution falls back to the chain.
 		_, _ = h.TaskService.EnqueueTaskForIssueWithHandoff(ctx, issue, handoffNote, memberActorUserID(actorType, actorID))
-	case "squad":
-		h.enqueueSquadLeaderTask(ctx, issue, pgtype.UUID{}, actorType, actorID, handoffNote)
+	case "crew":
+		h.enqueueCrewLeaderTask(ctx, issue, pgtype.UUID{}, actorType, actorID, handoffNote)
 	}
 }
 
@@ -92,7 +92,7 @@ type IssueTriggerPreviewRequest struct {
 }
 
 // IssueTriggerPreviewItem is one issue that WILL start a run under the
-// prospective write. AgentID is the runnable agent (squad leader for squads).
+// prospective write. AgentID is the runnable agent (crew leader for crews).
 // HandoffSupported is the soft-gate signal: false when the target runtime's
 // daemon is too old to render a handoff note, so the UI can gray out the note
 // box rather than silently drop the text. The assignment itself still works.

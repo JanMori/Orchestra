@@ -47,10 +47,10 @@ describe("issue surface scope", () => {
       kind: "scoped",
       scopeKey: "workspace:agents",
       queryScope: "workspace:agents",
-      queryFilter: { assignee_types: ["agent", "squad"] },
-      groupedScopeFilter: { assignee_types: ["agent", "squad"] },
+      queryFilter: { assignee_types: ["agent", "crew"] },
+      groupedScopeFilter: { assignee_types: ["agent", "crew"] },
       loadMoreScope: "workspace:agents",
-      loadMoreFilter: { assignee_types: ["agent", "squad"] },
+      loadMoreFilter: { assignee_types: ["agent", "crew"] },
       createDefaults: {},
     });
     expect(

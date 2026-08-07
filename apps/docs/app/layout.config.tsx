@@ -6,7 +6,7 @@ import { ArrowUpRight } from "lucide-react";
 // useEffect so it's safe to render from Server Components such as
 // layout.config.tsx / layout.tsx. Keep in sync with
 // packages/ui/components/common/multica-icon.tsx if the mark changes.
-const MULTICA_CLIP = `polygon(
+const ORCHESTRA_CLIP = `polygon(
   45% 62.1%, 45% 100%, 55% 100%, 55% 62.1%,
   81.8% 88.9%, 88.9% 81.8%, 62.1% 55%, 100% 55%,
   100% 45%, 62.1% 45%, 88.9% 18.2%, 81.8% 11.1%,

@@ -243,11 +243,11 @@ func sanitizeBriefCodeToken(s string) string {
 
 // writeAvailableCommands emits the slim Available Commands section
 // (~2.4k chars vs legacy ~4.4k). Every test-asserted substring is
-// preserved: each `multica issue …` command name, all three `comment add`
+// preserved: each `orchestra issue …` command name, all three `comment add`
 // input modes, `--description-file <path>`, `--parent ""`, the
 // `Next reply cursor` / `Next thread cursor` stderr labels, the three
 // metadata discovery lines, the "core agent loop and common issue
-// create/update tasks" intro phrase, and `multica issue comment add
+// create/update tasks" intro phrase, and `orchestra issue comment add
 // --help`.
 //
 // The fold-aware `--full` flag from MUL-3555 is documented inline on the
@@ -257,37 +257,37 @@ func writeAvailableCommands(b *strings.Builder, ctx TaskContextForEnv) {
 	b.WriteString("## Available Commands\n\n")
 	b.WriteString("Prefer `--output json` for structured data. The default brief lists only the core agent loop and common issue create/update tasks; for everything else run `multica --help` or `multica <command> --help`.\n\n")
 	b.WriteString("### Core\n")
-	b.WriteString("- `multica issue get <id> --output json` — full issue.\n")
-	b.WriteString("- `multica issue comment list <issue-id> [--roots-only] [--summary] [--thread <comment-id> [--tail N] | --recent N] [--since <RFC3339>] --output json` — thread-aware comment reads. Bound a wide read with `--roots-only --summary` (roots plus `reply_count` / `last_activity_at`, clipped bodies); bound a deep one with `--thread <id> --tail N`. Careful with `--recent N`: it caps THREADS, not comments, and can return the whole history on a small issue. Resolved-thread folding, paging cursors, and full flag semantics: `--help`.\n")
-	b.WriteString("- `multica issue create --title \"...\" [--description-file <path>] [--priority X] [--status X] [--assignee X | --assignee-id <uuid>] [--parent <issue-id>] [--stage N] [--project <project-id>] [--due-date <YYYY-MM-DD>] [--attachment <path>]` — create an issue. For agent-authored long descriptions prefer `--description-file <path>` (heredoc stdin can swallow trailing flags, #4182). Write that file inside your working directory (e.g. `./description.md`), never `/tmp` or shared paths — same workdir rule as `## Comment Formatting`.\n")
-	b.WriteString("- `multica issue update <id> [--title X] [--description-file <path>] [--priority X] [--status X] [--assignee X] [--parent <issue-id>] [--stage N] [--project <project-id>] [--due-date <YYYY-MM-DD>]` — update fields; pass `--parent \"\"` to clear parent.\n")
-	b.WriteString("- `multica issue status <id> <status>` — flip status (todo / in_progress / in_review / done / blocked / backlog / cancelled).\n")
-	b.WriteString("- `multica issue children <id> [--output json]` — list a parent's sub-issues grouped by stage.\n")
-	b.WriteString("- `multica issue comment add <issue-id> [--content \"...\" | --content-file <path> | --content-stdin] [--parent <comment-id>] [--attachment <path>]` — post a comment. Agent-authored bodies MUST use `--content-file`; see `## Comment Formatting` for why. `multica issue comment add --help` for full flags.\n")
-	b.WriteString("- `multica issue metadata list <issue-id> [--output json]` — list KV metadata.\n")
-	b.WriteString("- `multica issue metadata set <issue-id> --key <k> --value <v> [--type string|number|bool]` — pin or overwrite a key.\n")
-	b.WriteString("- `multica issue metadata delete <issue-id> --key <k>` — remove a key.\n")
-	b.WriteString("- `multica repo checkout <url> [--ref <branch-or-sha>]` — repository checkout on a dedicated branch.\n\n")
-	// Squad maintenance is squad-leader surface: an agent that leads no squad
-	// has no squad to change roles in, so this shipped to every run as dead
-	// weight (MUL-5442). IsSquadLeader is agent configuration, not per-run
+	b.WriteString("- `orchestra issue get <id> --output json` — full issue.\n")
+	b.WriteString("- `orchestra issue comment list <issue-id> [--roots-only] [--summary] [--thread <comment-id> [--tail N] | --recent N] [--since <RFC3339>] --output json` — thread-aware comment reads. Bound a wide read with `--roots-only --summary` (roots plus `reply_count` / `last_activity_at`, clipped bodies); bound a deep one with `--thread <id> --tail N`. Careful with `--recent N`: it caps THREADS, not comments, and can return the whole history on a small issue. Resolved-thread folding, paging cursors, and full flag semantics: `--help`.\n")
+	b.WriteString("- `orchestra issue create --title \"...\" [--description-file <path>] [--priority X] [--status X] [--assignee X | --assignee-id <uuid>] [--parent <issue-id>] [--stage N] [--project <project-id>] [--due-date <YYYY-MM-DD>] [--attachment <path>]` — create an issue. For agent-authored long descriptions prefer `--description-file <path>` (heredoc stdin can swallow trailing flags, #4182). Write that file inside your working directory (e.g. `./description.md`), never `/tmp` or shared paths — same workdir rule as `## Comment Formatting`.\n")
+	b.WriteString("- `orchestra issue update <id> [--title X] [--description-file <path>] [--priority X] [--status X] [--assignee X] [--parent <issue-id>] [--stage N] [--project <project-id>] [--due-date <YYYY-MM-DD>]` — update fields; pass `--parent \"\"` to clear parent.\n")
+	b.WriteString("- `orchestra issue status <id> <status>` — flip status (todo / in_progress / in_review / done / blocked / backlog / cancelled).\n")
+	b.WriteString("- `orchestra issue children <id> [--output json]` — list a parent's sub-issues grouped by stage.\n")
+	b.WriteString("- `orchestra issue comment add <issue-id> [--content \"...\" | --content-file <path> | --content-stdin] [--parent <comment-id>] [--attachment <path>]` — post a comment. Agent-authored bodies MUST use `--content-file`; see `## Comment Formatting` for why. `orchestra issue comment add --help` for full flags.\n")
+	b.WriteString("- `orchestra issue metadata list <issue-id> [--output json]` — list KV metadata.\n")
+	b.WriteString("- `orchestra issue metadata set <issue-id> --key <k> --value <v> [--type string|number|bool]` — pin or overwrite a key.\n")
+	b.WriteString("- `orchestra issue metadata delete <issue-id> --key <k>` — remove a key.\n")
+	b.WriteString("- `orchestra repo checkout <url> [--ref <branch-or-sha>]` — repository checkout on a dedicated branch.\n\n")
+	// Crew maintenance is crew-leader surface: an agent that leads no crew
+	// has no crew to change roles in, so this shipped to every run as dead
+	// weight (MUL-5442). IsCrewLeader is agent configuration, not per-run
 	// state, so gating on it keeps the brief byte-stable across runs of one
 	// session (MUL-5377) — the same reason the workflow already branches on it.
-	if ctx.IsSquadLeader {
-		b.WriteString("### Squad maintenance\n")
-		b.WriteString("- `multica squad member set-role <squad-id> --member-id <id> --member-type <agent|member> --role <role> [--output json]` — change role in place (use this instead of remove+add).\n\n")
+	if ctx.IsCrewLeader {
+		b.WriteString("### Crew maintenance\n")
+		b.WriteString("- `orchestra crew member set-role <crew-id> --member-id <id> --member-type <agent|member> --role <role> [--output json]` — change role in place (use this instead of remove+add).\n\n")
 	}
 }
 
 // writeAvailableCommandsQuickCreate emits a minimal Available Commands
 // section for quick-create runs. Quick-create's hard guardrails forbid
-// every CLI other than `multica issue create`, so listing more would just
+// every CLI other than `orchestra issue create`, so listing more would just
 // tempt the model to bend the guardrail.
 func writeAvailableCommandsQuickCreate(b *strings.Builder) {
 	b.WriteString("## Available Commands\n\n")
 	b.WriteString("**Use `--output json` for structured data.** For anything beyond `issue create`, run `multica --help` or `multica <command> --help`.\n\n")
 	b.WriteString("### Core\n")
-	b.WriteString("- `multica issue create --title \"...\" [--description \"...\" | --description-file <path> | --description-stdin] [--priority X] [--status X] [--assignee X | --assignee-id <uuid>] [--parent <issue-id>] [--stage N] [--project <project-id>] [--due-date <YYYY-MM-DD>] [--attachment <path>]` — Create a new issue; `--attachment` may be repeated. For agent-authored long descriptions, prefer `--description-file <path>` over `--description-stdin` (flags after a HEREDOC terminator can be silently swallowed, #4182). Write that file inside your working directory (e.g. `./description.md`), never `/tmp` or shared paths, and treat a failed write as fatal — the CLI rejects a path outside the workdir so a stale file from another run can't leak in (MUL-4252).\n\n")
+	b.WriteString("- `orchestra issue create --title \"...\" [--description \"...\" | --description-file <path> | --description-stdin] [--priority X] [--status X] [--assignee X | --assignee-id <uuid>] [--parent <issue-id>] [--stage N] [--project <project-id>] [--due-date <YYYY-MM-DD>] [--attachment <path>]` — Create a new issue; `--attachment` may be repeated. For agent-authored long descriptions, prefer `--description-file <path>` over `--description-stdin` (flags after a HEREDOC terminator can be silently swallowed, #4182). Write that file inside your working directory (e.g. `./description.md`), never `/tmp` or shared paths, and treat a failed write as fatal — the CLI rejects a path outside the workdir so a stale file from another run can't leak in (MUL-4252).\n\n")
 }
 
 // writeIssueBodyFormatting emits the default Markdown hierarchy for issue
@@ -322,7 +322,7 @@ func writeRepositories(b *strings.Builder, ctx TaskContextForEnv) {
 		return
 	}
 	b.WriteString("## Repositories\n\n")
-	b.WriteString("Available in this workspace — `multica repo checkout <url> [--ref <branch-or-sha>]` to fetch (creates a repository checkout on a dedicated branch).\n\n")
+	b.WriteString("Available in this workspace — `orchestra repo checkout <url> [--ref <branch-or-sha>]` to fetch (creates a repository checkout on a dedicated branch).\n\n")
 	for _, repo := range ctx.Repos {
 		if repo.Description != "" {
 			fmt.Fprintf(b, "- %s — %s\n", repo.URL, repo.Description)
@@ -356,7 +356,7 @@ func writeProjectContext(b *strings.Builder, ctx TaskContextForEnv) {
 			fmt.Fprintf(b, "- %s\n", formatProjectResource(r))
 		}
 		b.WriteString("\nResources are pointers — open them only when relevant to the task. ")
-		b.WriteString("For `github_repo` resources, use `multica repo checkout <url>` to fetch the code. Add `--ref <branch-or-sha>` when a task or handoff names an exact revision.\n\n")
+		b.WriteString("For `github_repo` resources, use `orchestra repo checkout <url>` to fetch the code. Add `--ref <branch-or-sha>` when a task or handoff names an exact revision.\n\n")
 	} else {
 		b.WriteString("This project has no resources attached yet.\n\n")
 	}
@@ -369,7 +369,7 @@ func writeIssueMetadata(b *strings.Builder) {
 	b.WriteString("## Issue Metadata\n\n")
 	b.WriteString("`metadata` is a small per-issue KV bag — custom key-value state your workflow wants future runs on this issue to re-read. Most runs write nothing.\n\n")
 	b.WriteString("- **Read on entry.** Hints, not truth: latest comment / code wins on conflict. Empty `{}` is normal.\n")
-	b.WriteString("- **Write on exit.** Only what a future run will actually re-read — short values, never secrets or long content. Overwrite or `multica issue metadata delete` stale keys. Full write discipline: the `multica-working-on-issues` skill.\n\n")
+	b.WriteString("- **Write on exit.** Only what a future run will actually re-read — short values, never secrets or long content. Overwrite or `orchestra issue metadata delete` stale keys. Full write discipline: the `multica-working-on-issues` skill.\n\n")
 }
 
 // writeInstructionPrecedence emits the "Agent Identity wins over the issue
@@ -445,10 +445,10 @@ func writeWorkflowChat(b *strings.Builder) {
 	b.WriteString("**You are in chat mode.**\n\n")
 	b.WriteString("- Respond conversationally and helpfully to the user's message\n")
 	b.WriteString("- You have full access to the `multica` CLI to look up issues, workspace info, members, agents, etc.\n")
-	b.WriteString("- If asked about issues, use `multica issue list --output json` or `multica issue get <id> --output json`\n")
-	b.WriteString("- If asked about the workspace, use `multica workspace get --output json`\n")
+	b.WriteString("- If asked about issues, use `orchestra issue list --output json` or `orchestra issue get <id> --output json`\n")
+	b.WriteString("- If asked about the workspace, use `orchestra workspace get --output json`\n")
 	b.WriteString("- If asked to perform actions (create issues, update status, etc.), use the appropriate CLI commands\n")
-	b.WriteString("- If the task requires code changes, use `multica repo checkout <url>` to get the code first. Use `--ref <branch-or-sha>` when you need an exact revision\n")
+	b.WriteString("- If the task requires code changes, use `orchestra repo checkout <url>` to get the code first. Use `--ref <branch-or-sha>` when you need an exact revision\n")
 	b.WriteString("- Keep responses concise and direct\n\n")
 }
 
@@ -457,8 +457,8 @@ func writeWorkflowChat(b *strings.Builder) {
 func writeWorkflowQuickCreate(b *strings.Builder) {
 	b.WriteString("**This task was triggered by quick-create.** There is NO existing Multica issue. Follow the field and output rules in the user message you just received; ignore the default assignment-task workflow.\n\n")
 	b.WriteString("Hard guardrails (apply even if the user message is missing):\n")
-	b.WriteString("- Run exactly one `multica issue create` invocation, then exit.\n")
-	b.WriteString("- Do NOT call `multica issue get`, `multica issue status`, or `multica issue comment add` for this task — there is no issue to query, transition, or comment on. The platform writes the user's success/failure inbox notification automatically based on whether `multica issue create` succeeded.\n")
+	b.WriteString("- Run exactly one `orchestra issue create` invocation, then exit.\n")
+	b.WriteString("- Do NOT call `orchestra issue get`, `orchestra issue status`, or `orchestra issue comment add` for this task — there is no issue to query, transition, or comment on. The platform writes the user's success/failure inbox notification automatically based on whether `orchestra issue create` succeeded.\n")
 	b.WriteString("- If the CLI returns an error, exit with that error as the only output. Do not retry.\n\n")
 }
 
@@ -467,7 +467,7 @@ func writeWorkflowQuickCreate(b *strings.Builder) {
 // per-turn prompt (daemon.buildAutopilotPrompt). Both land in the same context
 // window; MUL-5696 found the two hand-maintained copies had drifted into an
 // unconditional ban on one surface and a conditional one on the other.
-const AutopilotIssueCommandsGuard = "Do not run `multica issue get`, `multica issue comment add`, or `multica issue status` for this run unless the autopilot instructions explicitly tell you to create or update an issue"
+const AutopilotIssueCommandsGuard = "Do not run `orchestra issue get`, `orchestra issue comment add`, or `orchestra issue status` for this run unless the autopilot instructions explicitly tell you to create or update an issue"
 
 // writeWorkflowAutopilot emits the autopilot run-only workflow.
 func writeWorkflowAutopilot(b *strings.Builder, ctx TaskContextForEnv) {
@@ -530,52 +530,52 @@ func writeWorkflowAutopilot(b *strings.Builder, ctx TaskContextForEnv) {
 // step is what made this one bloat in the first place.
 //
 // Ordinary agents own the full status arc for their issue: open with
-// in_progress, deliver with in_review. Squad leaders share the opening
+// in_progress, deliver with in_review. Crew leaders share the opening
 // in_progress step so the parent leaves todo as soon as coordination
 // starts, but their first assignment turn is only a dispatch — flipping
 // the parent to in_review there would mark unfinished multi-stage work
 // as ready for review. Leaders move the parent to in_review later, when
 // a re-trigger (member update / stage barrier) confirms the overall goal
-// is met; see the Squad Operating Protocol and child-done system comments.
+// is met; see the Crew Operating Protocol and child-done system comments.
 //
-// ctx.IsSquadLeader is agent configuration, not per-run state, so branching
+// ctx.IsCrewLeader is agent configuration, not per-run state, so branching
 // on it does not break byte-stability across runs of one session.
 func writeWorkflowIssue(b *strings.Builder, ctx TaskContextForEnv) {
 	b.WriteString("**Turn mode.** The per-turn user message names this run's mode on a line of its own: `Turn mode: Reply.` (respond to the comment that message carries — it brings the triggering comment's id and your `--parent` value) or `Turn mode: Ownership.` (an assignment or status change started this run). Steps 1–6 are shared; then **apply exactly one mode block, the one the user message named** — they differ on issue status. No mode line → Reply mode, do not change the issue status.\n\n")
 
 	b.WriteString("**Steps 1–6 — both modes** (the per-turn user message carries this issue's real id and ready-to-run context-read commands; assemble other calls from `## Available Commands`)\n\n")
-	b.WriteString("1. Read the issue (`multica issue get`) to understand the context.\n")
-	b.WriteString("2. Read the metadata bag (`multica issue metadata list`) — best-effort, empty `{}` and CLI failures are normal. What to look for: `## Issue Metadata`.\n")
+	b.WriteString("1. Read the issue (`orchestra issue get`) to understand the context.\n")
+	b.WriteString("2. Read the metadata bag (`orchestra issue metadata list`) — best-effort, empty `{}` and CLI failures are normal. What to look for: `## Issue Metadata`.\n")
 	b.WriteString("3. Catch up on the comment history — this is mandatory, not optional — in two bounded reads, never one bulk pull: scan every thread cheaply (`--roots-only --summary`), then expand only the threads that matter (`--thread <id> --tail 30`). Earlier comments often carry context the issue body lacks. Skipping this step is the most common cause of agents acting on stale or incomplete instructions — so always run the scan, even when the trigger looks self-contained. In Reply mode the per-turn user message names the thread to expand first; the scan is how you decide whether any OTHER thread is also relevant.\n")
 	b.WriteString("4. Complete the task within your Agent Identity boundaries (`## Instruction Precedence` lists the actions Agent Identity can forbid). If your role is delegation-only, perform the allowed delegation work and stop once that outcome is delivered.\n")
-	if ctx.IsSquadLeader {
-		b.WriteString("5. **Post your final results as a comment** (unless your outcome is `no_action` — in that case, calling `multica squad activity <issue-id> no_action --reason \"...\"` alone is sufficient; you MUST exit without posting any comment. DO NOT post a comment announcing no_action or saying you are exiting silently): post it with `multica issue comment add` using the platform-correct non-inline mode from ## Comment Formatting (never inline `--content`). Your results are only visible to the user if posted via this CLI call; text in your terminal or run logs is NOT delivered.\n")
+	if ctx.IsCrewLeader {
+		b.WriteString("5. **Post your final results as a comment** (unless your outcome is `no_action` — in that case, calling `orchestra crew activity <issue-id> no_action --reason \"...\"` alone is sufficient; you MUST exit without posting any comment. DO NOT post a comment announcing no_action or saying you are exiting silently): post it with `orchestra issue comment add` using the platform-correct non-inline mode from ## Comment Formatting (never inline `--content`). Your results are only visible to the user if posted via this CLI call; text in your terminal or run logs is NOT delivered.\n")
 	} else {
-		b.WriteString("5. **Post your final results as a comment — this step is mandatory**: post it with `multica issue comment add` using the platform-correct non-inline mode from ## Comment Formatting (never inline `--content`). `## Output` states why this call is the only delivery channel. In Reply mode this step is conditional on the reply rule below.\n")
+		b.WriteString("5. **Post your final results as a comment — this step is mandatory**: post it with `orchestra issue comment add` using the platform-correct non-inline mode from ## Comment Formatting (never inline `--content`). `## Output` states why this call is the only delivery channel. In Reply mode this step is conditional on the reply rule below.\n")
 	}
-	b.WriteString("6. Before exiting, pin or clear a metadata key via `multica issue metadata set`/`delete` only if it clears the bar in `## Issue Metadata`. Most runs write nothing here — that is the expected outcome, not a gap. When in doubt, do not write.\n\n")
+	b.WriteString("6. Before exiting, pin or clear a metadata key via `orchestra issue metadata set`/`delete` only if it clears the bar in `## Issue Metadata`. Most runs write nothing here — that is the expected outcome, not a gap. When in doubt, do not write.\n\n")
 
 	b.WriteString("**Ownership mode only — you own the issue status this run** (skip any status call below that your Agent Identity forbids)\n\n")
-	b.WriteString("- Before step 4, run `multica issue status <issue-id> in_progress`.\n")
-	if ctx.IsSquadLeader {
+	b.WriteString("- Before step 4, run `orchestra issue status <issue-id> in_progress`.\n")
+	if ctx.IsCrewLeader {
 		b.WriteString("- After this initial dispatch, leave the parent issue `in_progress` — do NOT move it to `in_review` or `done` on this turn. Dispatching members is not completion. You will be re-triggered when members post updates or a stage closes; only then, if the overall goal is met, move the parent to `in_review`.\n")
 	} else {
-		b.WriteString("- When done, run `multica issue status <issue-id> in_review`.\n")
+		b.WriteString("- When done, run `orchestra issue status <issue-id> in_review`.\n")
 	}
-	b.WriteString("- If blocked, run `multica issue status <issue-id> blocked`, and post a comment explaining the blocker unless your Agent Identity forbids issue comments.\n\n")
+	b.WriteString("- If blocked, run `orchestra issue status <issue-id> blocked`, and post a comment explaining the blocker unless your Agent Identity forbids issue comments.\n\n")
 
 	b.WriteString("**Reply mode only — respond to the comment in the user message**\n\n")
 	b.WriteString("- Respond to THAT specific comment; take its id from the user message, never from this file or from an earlier turn.\n")
 	b.WriteString("- **Decide whether a reply is warranted.** If you produced actual work this turn, post the result via step 5. If the triggering comment was a pure acknowledgment / thanks / sign-off from another agent AND you produced no work, do NOT reply — not even a 'No reply needed' comment; exit with no output. Silence is a valid and preferred way to end agent-to-agent conversations.\n")
-	if ctx.IsSquadLeader {
-		b.WriteString("- **Squad leader rule:** If your evaluation outcome is `no_action`, call `multica squad activity <issue-id> no_action --reason \"...\"` and then EXIT IMMEDIATELY. DO NOT post any comment whose only purpose is to announce that you are taking no action, exiting silently, or acknowledging another agent. A comment like \"No action needed\" or \"Exiting silently\" is noise — the `squad activity` call already records your decision in the timeline.\n")
+	if ctx.IsCrewLeader {
+		b.WriteString("- **Crew leader rule:** If your evaluation outcome is `no_action`, call `orchestra crew activity <issue-id> no_action --reason \"...\"` and then EXIT IMMEDIATELY. DO NOT post any comment whose only purpose is to announce that you are taking no action, exiting silently, or acknowledging another agent. A comment like \"No action needed\" or \"Exiting silently\" is noise — the `crew activity` call already records your decision in the timeline.\n")
 	}
 	b.WriteString("- If a reply IS warranted: do any requested work first, then **decide whether to include any `@mention` link.** The default is NO mention; `## Mentions` states when one is warranted.\n")
 	b.WriteString("- **If you reply, posting it as a comment is mandatory** (`## Output`). Use the `--parent` value the per-turn user message gives you for this turn; do NOT reuse a `--parent` from an earlier turn in this session. When that message lists more than one thread to answer, post one reply per thread instead of merging them.\n")
-	if ctx.IsSquadLeader {
-		// The default rule below and the Squad Operating Protocol's
+	if ctx.IsCrewLeader {
+		// The default rule below and the Crew Operating Protocol's
 		// "Own the parent issue status" responsibility would otherwise
-		// contradict each other on the squad's most common shape:
+		// contradict each other on the crew's most common shape:
 		// @mention dispatch with no child issues, where the member's
 		// delivery comment never "explicitly asks" for a status change and
 		// no child-done system comment exists to carry that ask. Naming the
@@ -583,9 +583,9 @@ func writeWorkflowIssue(b *strings.Builder, ctx TaskContextForEnv) {
 		//
 		// The exception is safe to state unconditionally here because the
 		// grant only exists in the instructions when the server determined
-		// this issue is assigned to this squad (see buildSquadLeaderBriefing);
+		// this issue is assigned to this crew (see buildCrewLeaderBriefing);
 		// a guest leader gets the opposite text and this stays a no-op.
-		b.WriteString("- Do NOT change the issue status unless the comment explicitly asks for it — **or** a section in your instructions explicitly grants you ownership of this issue's status (the Squad Operating Protocol's \"Own the parent issue status\" responsibility). That section only appears when this issue is assigned to your squad; when it is there, treat it as a standing instruction and move the parent to `in_review` on the turn you confirm the overall goal is met, without waiting to be asked. When it is absent, the rule above is absolute. **The Ownership-mode status steps above do not apply in Reply mode.**\n\n")
+		b.WriteString("- Do NOT change the issue status unless the comment explicitly asks for it — **or** a section in your instructions explicitly grants you ownership of this issue's status (the Crew Operating Protocol's \"Own the parent issue status\" responsibility). That section only appears when this issue is assigned to your crew; when it is there, treat it as a standing instruction and move the parent to `in_review` on the turn you confirm the overall goal is met, without waiting to be asked. When it is absent, the rule above is absolute. **The Ownership-mode status steps above do not apply in Reply mode.**\n\n")
 	} else {
 		b.WriteString("- Do NOT change the issue status unless the comment explicitly asks for it. **The Ownership-mode status steps above do not apply in Reply mode.**\n\n")
 	}
@@ -658,7 +658,7 @@ func writeAttachments(b *strings.Builder) {
 	b.WriteString("An attachment you download lands in your own workdir: that local path is a private working copy, not something the reader can open — the link rules in `## Output` apply to it too.\n\n")
 }
 
-// writeAlwaysUseCLI emits the "must go through the multica CLI" guardrail
+// writeAlwaysUseCLI emits the "must go through the orchestra CLI" guardrail
 // (compressed).
 func writeAlwaysUseCLI(b *strings.Builder) {
 	b.WriteString("## Important: Always Use the `multica` CLI\n\n")
@@ -693,11 +693,11 @@ func writeOutput(b *strings.Builder, kind taskKind, ctx TaskContextForEnv) {
 		b.WriteString("This is a run-only autopilot task, so there may be no issue comment to post. Your final assistant output is captured automatically as the autopilot run result. Keep it concise and state the outcome.\n\n")
 		b.WriteString("**Delivering files here:** this surface is text-only — the run result carries no attachments. Describe what you produced; do not link its path.\n")
 	case kindQuickCreate:
-		b.WriteString("This is a quick-create task. There is NO existing issue to comment on. Your final stdout is captured automatically and the platform writes the user's success/failure inbox notification based on whether `multica issue create` succeeded.\n\n")
-		b.WriteString("- Do NOT call `multica issue comment add` — the issue you just created has no conversation context for this run.\n")
-		b.WriteString("- Print exactly one final line: `Created <identifier-or-id>: <title>` after a successful `multica issue create`, using the created issue's `identifier` from JSON output (fall back to its `id`; never assume a workspace issue prefix such as `MUL-`).\n")
+		b.WriteString("This is a quick-create task. There is NO existing issue to comment on. Your final stdout is captured automatically and the platform writes the user's success/failure inbox notification based on whether `orchestra issue create` succeeded.\n\n")
+		b.WriteString("- Do NOT call `orchestra issue comment add` — the issue you just created has no conversation context for this run.\n")
+		b.WriteString("- Print exactly one final line: `Created <identifier-or-id>: <title>` after a successful `orchestra issue create`, using the created issue's `identifier` from JSON output (fall back to its `id`; never assume a workspace issue prefix such as `MUL-`).\n")
 		b.WriteString("- On CLI failure, exit with the CLI error as the only output — the platform turns it into a `quick_create_failed` inbox item for the user.\n\n")
-		b.WriteString("**Delivering files here:** your stdout is text-only. A file that belongs to the new issue goes on the `multica issue create` call itself via `--attachment <path>`; never put its path in the description or in your stdout line.\n")
+		b.WriteString("**Delivering files here:** your stdout is text-only. A file that belongs to the new issue goes on the `orchestra issue create` call itself via `--attachment <path>`; never put its path in the description or in your stdout line.\n")
 	case kindChat:
 		b.WriteString("This is a chat session. Your reply is delivered directly to the chat window the user is reading.\n\n")
 		// Two-layer channel policy (MUL-4899). This is the DELIVERY layer: any
@@ -711,14 +711,14 @@ func writeOutput(b *strings.Builder, kind taskKind, ctx TaskContextForEnv) {
 			b.WriteString("**Delivering files here:** run `multica attachment upload <local-path>` — it binds the file to your reply and it renders as an attachment card. That command is the ONLY way a file reaches the user; a path written into your reply text is not.\n")
 		}
 	default:
-		if ctx.IsSquadLeader {
-			b.WriteString("⚠️ **Final results MUST be delivered via `multica issue comment add`** — unless your outcome is `no_action`. When you evaluate a trigger and decide no action is needed, calling `multica squad activity <issue-id> no_action --reason \"...\"` alone is sufficient; you MUST exit without posting any comment. DO NOT post a comment that announces no_action, acknowledges another agent, or says you are exiting silently — such comments are noise. For all other outcomes (`action`, `failed`), a comment is still mandatory.\n\n")
+		if ctx.IsCrewLeader {
+			b.WriteString("⚠️ **Final results MUST be delivered via `orchestra issue comment add`** — unless your outcome is `no_action`. When you evaluate a trigger and decide no action is needed, calling `orchestra crew activity <issue-id> no_action --reason \"...\"` alone is sufficient; you MUST exit without posting any comment. DO NOT post a comment that announces no_action, acknowledges another agent, or says you are exiting silently — such comments are noise. For all other outcomes (`action`, `failed`), a comment is still mandatory.\n\n")
 		} else {
-			b.WriteString("⚠️ **Final results MUST be delivered via `multica issue comment add`.** The user does NOT see your terminal output or run logs — only comments on the issue.\n\n")
+			b.WriteString("⚠️ **Final results MUST be delivered via `orchestra issue comment add`.** The user does NOT see your terminal output or run logs — only comments on the issue.\n\n")
 		}
 		b.WriteString("**Post exactly ONE comment per run — your final result, before this turn exits.** Do NOT post progress updates or plans along the way.\n\n")
 		b.WriteString("Keep comments concise and natural — state the outcome, not the process.\n\n")
-		b.WriteString("**Delivering files here:** pass `--attachment <path>` to `multica issue comment add` (repeatable) — the only way a screenshot or artifact reaches the reader.\n")
+		b.WriteString("**Delivering files here:** pass `--attachment <path>` to `orchestra issue comment add` (repeatable) — the only way a screenshot or artifact reaches the reader.\n")
 	}
 	b.WriteString("\n")
 	writeDeliveryInvariant(b)

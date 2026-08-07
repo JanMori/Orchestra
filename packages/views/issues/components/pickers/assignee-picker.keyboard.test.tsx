@@ -39,7 +39,7 @@ vi.mock("@orchestra/core/workspace/hooks", () => ({
 vi.mock("@orchestra/core/workspace/queries", () => ({
   memberListOptions: () => ({ queryKey: ["members"] }),
   agentListOptions: () => ({ queryKey: ["agents"] }),
-  squadListOptions: () => ({ queryKey: ["squads"] }),
+  crewListOptions: () => ({ queryKey: ["crews"] }),
   assigneeFrequencyOptions: () => ({ queryKey: ["frequency"] }),
 }));
 vi.mock("../../../common/actor-avatar", () => ({

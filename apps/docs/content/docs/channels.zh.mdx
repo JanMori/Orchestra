@@ -66,8 +66,8 @@ import { Callout } from "fumadocs-ui/components/callout";
 自托管部署需要先为对应平台配置一个 32 字节加密密钥，Multica 才会开放连接入口：
 
 ```dotenv
-MULTICA_LARK_SECRET_KEY=<base64 编码的 32 字节密钥>
-MULTICA_SLACK_SECRET_KEY=<base64 编码的 32 字节密钥>
+ORCHESTRA_LARK_SECRET_KEY=<base64 编码的 32 字节密钥>
+ORCHESTRA_SLACK_SECRET_KEY=<base64 编码的 32 字节密钥>
 ```
 
 这些密钥用于加密保存 Bot 凭据。生成、保存和轮换方法见[环境变量](/environment-variables)。Multica Cloud 已完成这项配置。

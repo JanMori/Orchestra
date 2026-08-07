@@ -23,7 +23,7 @@ const (
 )
 
 // HistoryMessage is one normalized message. It is the same shape regardless of
-// platform so the agent reads a uniform list, like `multica issue comment list
+// platform so the agent reads a uniform list, like `orchestra issue comment list
 // --output json`.
 type HistoryMessage struct {
 	// ID is the platform message identifier (Slack ts, Feishu message_id).

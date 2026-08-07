@@ -16,14 +16,14 @@ DATABASE_URL=postgres://user:password@postgres:5432/multica?sslmode=require
 JWT_SECRET=<long-random-secret>
 APP_ENV=production
 FRONTEND_ORIGIN=https://multica.example.com
-MULTICA_APP_URL=https://multica.example.com
-MULTICA_PUBLIC_URL=https://api.multica.example.com
+ORCHESTRA_APP_URL=https://multica.example.com
+ORCHESTRA_PUBLIC_URL=https://api.multica.example.com
 ```
 
 You also need to pick an email service, otherwise verification codes and invitations are only written to the server log.
 
 <Callout type="warning">
-Do not use the default `JWT_SECRET` in production, and do not set `MULTICA_DEV_VERIFICATION_CODE`.
+Do not use the default `JWT_SECRET` in production, and do not set `ORCHESTRA_DEV_VERIFICATION_CODE`.
 </Callout>
 
 ## API and database
@@ -38,7 +38,7 @@ Do not use the default `JWT_SECRET` in production, and do not set `MULTICA_DEV_V
 | `APP_ENV` | empty | Set to `production` in production |
 | `AUTH_TOKEN_TTL` | `720h` (30 days) | Lifetime of browser JWTs and cookies; accepts a Go duration or a positive integer of seconds |
 | `LOG_LEVEL` | application default | Log level |
-| `MULTICA_SHUTDOWN_HOLD_DURATION` | `0` | How long to wait after a termination signal before graceful shutdown begins |
+| `ORCHESTRA_SHUTDOWN_HOLD_DURATION` | `0` | How long to wait after a termination signal before graceful shutdown begins |
 
 When setting a shutdown hold on Kubernetes, `terminationGracePeriodSeconds` must exceed the hold plus the time the actual shutdown needs.
 
@@ -47,8 +47,8 @@ When setting a shutdown hold on Kubernetes, `terminationGracePeriodSeconds` must
 | Variable | Default | Description |
 |---|---|---|
 | `FRONTEND_ORIGIN` | empty | Frontend origin users visit; used for CORS, cookies, and invitation links |
-| `MULTICA_APP_URL` | falls back to `FRONTEND_ORIGIN` | User-reachable web URL; CLI sign-in and account-link URLs use it |
-| `MULTICA_PUBLIC_URL` | empty | Public API URL; used for webhook URLs and runtime connection instructions |
+| `ORCHESTRA_APP_URL` | falls back to `FRONTEND_ORIGIN` | User-reachable web URL; CLI sign-in and account-link URLs use it |
+| `ORCHESTRA_PUBLIC_URL` | empty | Public API URL; used for webhook URLs and runtime connection instructions |
 | `CORS_ALLOWED_ORIGINS` | empty | Extra allowed HTTP origins, comma-separated |
 | `ALLOWED_ORIGINS` | falls back to CORS / frontend origins | WebSocket origin allowlist, comma-separated |
 | `COOKIE_DOMAIN` | empty | Required when the frontend and API use different hosts and the browser talks to the API domain directly; keep empty for single-domain deployments |
@@ -99,7 +99,7 @@ SMTP takes priority over Resend whenever `SMTP_HOST` is non-empty.
 | `ALLOWED_EMAILS` | empty | Full email addresses allowed to sign up, comma-separated |
 | `ALLOWED_EMAIL_DOMAINS` | empty | Email domains allowed to sign up, comma-separated |
 | `DISABLE_WORKSPACE_CREATION` | `false` | Blocks all users from creating workspaces; no owner/admin exception |
-| `MULTICA_DEV_VERIFICATION_CODE` | empty | Fixed 6-digit test code for non-production environments |
+| `ORCHESTRA_DEV_VERIFICATION_CODE` | empty | Fixed 6-digit test code for non-production environments |
 
 For the exact allowlist evaluation order, see [Sign-in and signup](/auth-setup#signup-restrictions).
 
@@ -147,7 +147,7 @@ Use `ATTACHMENT_DOWNLOAD_MODE=proxy` when the endpoint — an internal MinIO, fo
 | `RATE_LIMIT_AUTH` | `5` | Per-IP requests per minute to send a verification code or start Google sign-in |
 | `RATE_LIMIT_AUTH_VERIFY` | `20` | Per-IP code verifications per minute |
 | `RATE_LIMIT_TRUSTED_PROXIES` | empty | Comma-separated proxy CIDRs allowed to provide `X-Forwarded-For` |
-| `MULTICA_TRUSTED_PROXIES` | empty | Trusted proxy CIDRs for automation webhooks and realtime connections |
+| `ORCHESTRA_TRUSTED_PROXIES` | empty | Trusted proxy CIDRs for automation webhooks and realtime connections |
 
 Deployments behind a reverse proxy must list their real proxy ranges. Do not blanket-trust all sources, or clients can forge forwarded IPs.
 
@@ -161,13 +161,13 @@ The `RATE_LIMIT_*` variables above only take effect once `REDIS_URL` is set; wit
 | GitHub | `GITHUB_WEBHOOK_SECRET` | Webhook HMAC and connect-state signing secret |
 | GitHub | `GITHUB_APP_ID` | Needed for CI status and mergeability on PR cards and the "pick from GitHub" repository picker |
 | GitHub | `GITHUB_APP_PRIVATE_KEY` | Full PEM private key paired with the App ID; same uses as above |
-| Lark | `MULTICA_LARK_SECRET_KEY` | Base64-encoded 32-byte credential encryption key |
-| Slack | `MULTICA_SLACK_SECRET_KEY` | Base64-encoded 32-byte token encryption key |
+| Lark | `ORCHESTRA_LARK_SECRET_KEY` | Base64-encoded 32-byte credential encryption key |
+| Slack | `ORCHESTRA_SLACK_SECRET_KEY` | Base64-encoded 32-byte token encryption key |
 | Composio | `COMPOSIO_API_KEY` | Enables Composio tool connections |
-| Composio | `COMPOSIO_CALLBACK_BASE_URL` | Callback API URL; can fall back to `MULTICA_PUBLIC_URL` |
+| Composio | `COMPOSIO_CALLBACK_BASE_URL` | Callback API URL; can fall back to `ORCHESTRA_PUBLIC_URL` |
 | Composio | `COMPOSIO_STATE_SECRET` | OAuth state signing secret; can be derived from `JWT_SECRET` |
-| Self-hosted Git | `MULTICA_VCS_INTEGRATION_ENABLED` | Forgejo/Gitea/GitLab integration switch; enabled by default in compose |
-| Self-hosted Git | `MULTICA_VCS_SECRET_KEY` | Base64-encoded 32-byte encryption key (`openssl rand -base64 32`); the feature is entirely unavailable without it |
+| Self-hosted Git | `ORCHESTRA_VCS_INTEGRATION_ENABLED` | Forgejo/Gitea/GitLab integration switch; enabled by default in compose |
+| Self-hosted Git | `ORCHESTRA_VCS_SECRET_KEY` | Base64-encoded 32-byte encryption key (`openssl rand -base64 32`); the feature is entirely unavailable without it |
 
 Without `GITHUB_APP_ID` and the private key, PRs still link, mirror, and trigger merge-to-done normally, but cards show no CI or mergeability status, and the "pick from GitHub" repository entry is disabled.
 
@@ -179,9 +179,9 @@ This group configures server-side assist generation, such as conversation titles
 
 | Variable | Default | Description |
 |---|---|---|
-| `MULTICA_LLM_API_KEY` | empty | OpenAI-compatible API key |
-| `MULTICA_LLM_BASE_URL` | empty | OpenAI-compatible endpoint |
-| `MULTICA_LLM_DEFAULT_MODEL` | `gpt-5.6-luna` | Used when a request does not specify a model |
+| `ORCHESTRA_LLM_API_KEY` | empty | OpenAI-compatible API key |
+| `ORCHESTRA_LLM_BASE_URL` | empty | OpenAI-compatible endpoint |
+| `ORCHESTRA_LLM_DEFAULT_MODEL` | `gpt-5.6-luna` | Used when a request does not specify a model |
 
 When both the API key and base URL are empty, server-side LLM generation is off and callers use local fallback logic.
 
@@ -191,29 +191,29 @@ The variables below are read on the computer that runs your agents, not in the A
 
 | Variable | Default | Description |
 |---|---|---|
-| `MULTICA_SERVER_URL` | `ws://localhost:8080/ws` | Multica API / WebSocket URL; also accepts `http(s)` |
-| `MULTICA_DAEMON_DEVICE_NAME` | hostname | Device name shown in the runtime list |
-| `MULTICA_AGENT_RUNTIME_NAME` | `Local Agent` | Runtime display name |
-| `MULTICA_DAEMON_POLL_INTERVAL` | `30s` | Task polling interval when no wake event arrives |
-| `MULTICA_DAEMON_HEARTBEAT_INTERVAL` | `15s` | Heartbeat interval |
-| `MULTICA_DAEMON_MAX_CONCURRENT_TASKS` | `20` | Concurrent task ceiling per daemon |
-| `MULTICA_AGENT_TIMEOUT` | `0` | Absolute time limit per run; `0` means no limit |
-| `MULTICA_AGENT_IDLE_WATCHDOG` | `30m` | Silence ceiling with no output and no tool execution |
-| `MULTICA_AGENT_TOOL_WATCHDOG` | `2h` | Silence ceiling for a single tool call |
-| `MULTICA_OPENCODE_IDLE_WATCHDOG` | `10m` | OpenCode-specific silence threshold |
-| `MULTICA_CODEX_SEMANTIC_INACTIVITY_TIMEOUT` | `10m` | Codex semantic-silence threshold |
-| `MULTICA_CODEX_HANDSHAKE_TIMEOUT` | `30s` | Codex app-server startup handshake ceiling |
-| `MULTICA_DAEMON_AUTO_UPDATE` | Cloud `true`; self-hosted `false` | Whether to check for and apply CLI updates automatically |
-| `MULTICA_DAEMON_AUTO_UPDATE_INTERVAL` | `6h` | Update check interval |
-| `MULTICA_DAEMON_AUTO_RELOAD` | `true` | Whether to restart into a `multica` binary replaced on disk out of band (`brew upgrade`, a re-download, a local build). Independent of `MULTICA_DAEMON_AUTO_UPDATE` |
-| `MULTICA_WORKSPACES_ROOT` | `~/multica_workspaces` | Root directory for task working directories |
-| `MULTICA_KEEP_ENV_AFTER_TASK` | `false` | Keep task directories for debugging |
+| `ORCHESTRA_SERVER_URL` | `ws://localhost:8080/ws` | Multica API / WebSocket URL; also accepts `http(s)` |
+| `ORCHESTRA_DAEMON_DEVICE_NAME` | hostname | Device name shown in the runtime list |
+| `ORCHESTRA_AGENT_RUNTIME_NAME` | `Local Agent` | Runtime display name |
+| `ORCHESTRA_DAEMON_POLL_INTERVAL` | `30s` | Task polling interval when no wake event arrives |
+| `ORCHESTRA_DAEMON_HEARTBEAT_INTERVAL` | `15s` | Heartbeat interval |
+| `ORCHESTRA_DAEMON_MAX_CONCURRENT_TASKS` | `20` | Concurrent task ceiling per daemon |
+| `ORCHESTRA_AGENT_TIMEOUT` | `0` | Absolute time limit per run; `0` means no limit |
+| `ORCHESTRA_AGENT_IDLE_WATCHDOG` | `30m` | Silence ceiling with no output and no tool execution |
+| `ORCHESTRA_AGENT_TOOL_WATCHDOG` | `2h` | Silence ceiling for a single tool call |
+| `ORCHESTRA_OPENCODE_IDLE_WATCHDOG` | `10m` | OpenCode-specific silence threshold |
+| `ORCHESTRA_CODEX_SEMANTIC_INACTIVITY_TIMEOUT` | `10m` | Codex semantic-silence threshold |
+| `ORCHESTRA_CODEX_HANDSHAKE_TIMEOUT` | `30s` | Codex app-server startup handshake ceiling |
+| `ORCHESTRA_DAEMON_AUTO_UPDATE` | Cloud `true`; self-hosted `false` | Whether to check for and apply CLI updates automatically |
+| `ORCHESTRA_DAEMON_AUTO_UPDATE_INTERVAL` | `6h` | Update check interval |
+| `ORCHESTRA_DAEMON_AUTO_RELOAD` | `true` | Whether to restart into a `multica` binary replaced on disk out of band (`brew upgrade`, a re-download, a local build). Independent of `ORCHESTRA_DAEMON_AUTO_UPDATE` |
+| `ORCHESTRA_WORKSPACES_ROOT` | `~/multica_workspaces` | Root directory for task working directories |
+| `ORCHESTRA_KEEP_ENV_AFTER_TASK` | `false` | Keep task directories for debugging |
 
-Each AI coding tool accepts `MULTICA_<PROVIDER>_PATH` and `MULTICA_<PROVIDER>_MODEL` to override the command path and default model. Machine-wide default arguments via `MULTICA_<PROVIDER>_ARGS` are currently supported for four tools: Claude Code, Codex, CodeBuddy, and Qwen Code. The variables are `MULTICA_CLAUDE_ARGS`, `MULTICA_CODEX_ARGS`, `MULTICA_CODEBUDDY_ARGS`, and `MULTICA_QWEN_ARGS`. For example:
+Each AI coding tool accepts `ORCHESTRA_<PROVIDER>_PATH` and `ORCHESTRA_<PROVIDER>_MODEL` to override the command path and default model. Machine-wide default arguments via `ORCHESTRA_<PROVIDER>_ARGS` are currently supported for four tools: Claude Code, Codex, CodeBuddy, and Qwen Code. The variables are `ORCHESTRA_CLAUDE_ARGS`, `ORCHESTRA_CODEX_ARGS`, `ORCHESTRA_CODEBUDDY_ARGS`, and `ORCHESTRA_QWEN_ARGS`. For example:
 
 ```dotenv
-MULTICA_CLAUDE_PATH=/opt/bin/claude
-MULTICA_CLAUDE_ARGS=--max-turns 40
+ORCHESTRA_CLAUDE_PATH=/opt/bin/claude
+ORCHESTRA_CLAUDE_ARGS=--max-turns 40
 ```
 
 Precedence is command-line flag → environment variable → `~/.multica/config.json` → built-in default. For watchdog behavior, see [Daemon and runtimes](/daemon-runtimes).
@@ -223,8 +223,8 @@ Precedence is command-line flag → environment variable → `~/.multica/config.
 Common daemon-side settings can also be written to `~/.multica/config.json` instead of relying on shell environment variables; named profiles keep theirs at `~/.multica/profiles/<name>/config.json`:
 
 ```bash
-multica config set poll_interval 10s
-multica config show
+orchestra config set poll_interval 10s
+orchestra config show
 ```
 
 Supported keys:
@@ -249,7 +249,7 @@ Supported keys:
 A few value rules:
 
 - Duration keys accept positive Go durations (such as `10s`, `2h`); `0s` and negative values are rejected. The one exception is `agent_timeout`: `0s` is valid and explicitly disables the run time limit.
-- Passing an empty string clears a persisted value and falls back to the env var or built-in default, for example `multica config set poll_interval ""`.
+- Passing an empty string clears a persisted value and falls back to the env var or built-in default, for example `orchestra config set poll_interval ""`.
 - `max_concurrent_tasks` requires a non-negative integer.
 
 ## Observability and analytics

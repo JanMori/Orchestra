@@ -34,8 +34,8 @@ vi.mock("@orchestra/core/workspace/queries", () => ({
       },
     ],
   }),
-  squadListOptions: (wsId: string) => ({
-    queryKey: ["squads", wsId],
+  crewListOptions: (wsId: string) => ({
+    queryKey: ["crews", wsId],
     queryFn: async () => [],
   }),
 }));

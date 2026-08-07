@@ -138,7 +138,7 @@ func TestFindLocalDirectoryAssignment(t *testing.T) {
 	})
 }
 
-func TestAcquireLocalDirectoryLockSkipsSquadLeaderTasks(t *testing.T) {
+func TestAcquireLocalDirectoryLockSkipsCrewLeaderTasks(t *testing.T) {
 	t.Parallel()
 
 	const daemonID = "d-mine"

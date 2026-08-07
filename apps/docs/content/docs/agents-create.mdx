@@ -113,7 +113,7 @@ Environment variables suit limited-privilege credentials the agent needs at run 
 
 Do not use production database admin passwords or other high-value long-lived credentials.
 
-Critical runtime variables such as `PATH`, `HOME`, and `MULTICA_*` cannot be overridden here.
+Critical runtime variables such as `PATH`, `HOME`, and `ORCHESTRA_*` cannot be overridden here.
 
 ## Custom arguments and MCP
 
@@ -130,7 +130,7 @@ Environment variable values and MCP configuration are never copied and must be s
 ## Creating with the CLI
 
 ```bash
-multica agent create \
+orchestra agent create \
   --name "Frontend Reviewer" \
   --runtime-id <runtime-id> \
   --description "Reviews frontend pull requests" \
@@ -142,7 +142,7 @@ Plaintext in command-line arguments ends up in shell history; stdin and permissi
 When a similarly configured agent already exists, copy it directly:
 
 ```bash
-multica agent copy <agent-id>
+orchestra agent copy <agent-id>
 ```
 
 By default the copy stays on the same runtime; add `--runtime-id` to move it to another runtime, which also requires `--model`. Environment variables, MCP configuration, and `runtime_config` are never copied; the runtime binding itself is kept. Full flags in [Using the CLI](/cli).

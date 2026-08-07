@@ -4,7 +4,7 @@ import {
   type SupportedLocale,
 } from "@orchestra/core/i18n";
 
-export const MULTICA_LOCALE_HEADER = "x-multica-locale";
+export const ORCHESTRA_LOCALE_HEADER = "x-orchestra-locale";
 
 export function isSupportedLocale(
   value: string | null,

@@ -15,7 +15,7 @@ import (
 	"github.com/multica-ai/multica/server/internal/daemon/execenv"
 )
 
-// TestRunTaskSquadLeaderReusesWorkdirBeforeGCMetaWritten drives two real
+// TestRunTaskCrewLeaderReusesWorkdirBeforeGCMetaWritten drives two real
 // runTask calls and asserts the follow-up reuses the first workdir and provider
 // session while NO .gc_meta.json exists. That absence is the whole point: the
 // server marks the prior task completed, reconciles the follow-up, and wakes
@@ -24,7 +24,7 @@ import (
 // hinge on the Prepare-time .managed_env.json provenance, not the terminal GC
 // file. runTask writes that provenance via execenv.Prepare; this test never
 // writes .gc_meta.json, so it fails against the pre-fix GC-meta-keyed gate.
-func TestRunTaskSquadLeaderReusesWorkdirBeforeGCMetaWritten(t *testing.T) {
+func TestRunTaskCrewLeaderReusesWorkdirBeforeGCMetaWritten(t *testing.T) {
 	t.Parallel()
 
 	d, argsFile, cleanup := newLeaderReuseTestDaemon(t)
@@ -64,7 +64,7 @@ func TestRunTaskSquadLeaderReusesWorkdirBeforeGCMetaWritten(t *testing.T) {
 	}
 }
 
-func TestRunTaskSquadLeaderDoesNotReuseExternalPriorWorkdir(t *testing.T) {
+func TestRunTaskCrewLeaderDoesNotReuseExternalPriorWorkdir(t *testing.T) {
 	t.Parallel()
 
 	d, _, cleanup := newLeaderReuseTestDaemon(t)
@@ -99,9 +99,9 @@ func TestShouldReusePriorWorkdirNonLeaderReusesUnchanged(t *testing.T) {
 	}
 }
 
-// TestShouldReusePriorWorkdirSquadLeaderAcceptsManagedProvenance is the unit
+// TestShouldReusePriorWorkdirCrewLeaderAcceptsManagedProvenance is the unit
 // positive: managed shape + matching Prepare-time provenance + matching marker.
-func TestShouldReusePriorWorkdirSquadLeaderAcceptsManagedProvenance(t *testing.T) {
+func TestShouldReusePriorWorkdirCrewLeaderAcceptsManagedProvenance(t *testing.T) {
 	t.Parallel()
 
 	root := t.TempDir()
@@ -116,7 +116,7 @@ func TestShouldReusePriorWorkdirSquadLeaderAcceptsManagedProvenance(t *testing.T
 	}
 }
 
-func TestShouldReusePriorWorkdirSquadLeaderRejectsNonManagedPathUnderRoot(t *testing.T) {
+func TestShouldReusePriorWorkdirCrewLeaderRejectsNonManagedPathUnderRoot(t *testing.T) {
 	t.Parallel()
 
 	root := t.TempDir()
@@ -132,13 +132,13 @@ func TestShouldReusePriorWorkdirSquadLeaderRejectsNonManagedPathUnderRoot(t *tes
 	}
 }
 
-// TestShouldReusePriorWorkdirSquadLeaderRejectsManagedShapeWithoutProvenance
+// TestShouldReusePriorWorkdirCrewLeaderRejectsManagedShapeWithoutProvenance
 // covers the race-critical case and the local_directory fail-closed guarantee:
 // a workdir with the right shape and a valid marker but NO .managed_env.json is
 // rejected. Local_directory envs never get provenance (Prepare skips it), and a
 // follow-up claimed before any provenance exists must start fresh rather than
 // risk reusing a user path.
-func TestShouldReusePriorWorkdirSquadLeaderRejectsManagedShapeWithoutProvenance(t *testing.T) {
+func TestShouldReusePriorWorkdirCrewLeaderRejectsManagedShapeWithoutProvenance(t *testing.T) {
 	t.Parallel()
 
 	root := t.TempDir()
@@ -152,10 +152,10 @@ func TestShouldReusePriorWorkdirSquadLeaderRejectsManagedShapeWithoutProvenance(
 	}
 }
 
-// TestShouldReusePriorWorkdirSquadLeaderRejectsMismatchedProvenanceOwner
+// TestShouldReusePriorWorkdirCrewLeaderRejectsMismatchedProvenanceOwner
 // rejects a provenance file whose workspace/issue/agent does not match the
 // claiming task, even when the marker is otherwise well-formed.
-func TestShouldReusePriorWorkdirSquadLeaderRejectsMismatchedProvenanceOwner(t *testing.T) {
+func TestShouldReusePriorWorkdirCrewLeaderRejectsMismatchedProvenanceOwner(t *testing.T) {
 	t.Parallel()
 
 	root := t.TempDir()
@@ -170,10 +170,10 @@ func TestShouldReusePriorWorkdirSquadLeaderRejectsMismatchedProvenanceOwner(t *t
 	}
 }
 
-// TestShouldReusePriorWorkdirSquadLeaderRejectsMismatchedTaskMarker keeps its
+// TestShouldReusePriorWorkdirCrewLeaderRejectsMismatchedTaskMarker keeps its
 // original intent — a marker for another agent must be refused — now with a
 // matching provenance in place so the check reaches the marker comparison.
-func TestShouldReusePriorWorkdirSquadLeaderRejectsMismatchedTaskMarker(t *testing.T) {
+func TestShouldReusePriorWorkdirCrewLeaderRejectsMismatchedTaskMarker(t *testing.T) {
 	t.Parallel()
 
 	root := t.TempDir()
@@ -188,7 +188,7 @@ func TestShouldReusePriorWorkdirSquadLeaderRejectsMismatchedTaskMarker(t *testin
 	}
 }
 
-func TestShouldReusePriorWorkdirSquadLeaderRejectsRegularFile(t *testing.T) {
+func TestShouldReusePriorWorkdirCrewLeaderRejectsRegularFile(t *testing.T) {
 	t.Parallel()
 
 	root := t.TempDir()
@@ -207,7 +207,7 @@ func TestShouldReusePriorWorkdirSquadLeaderRejectsRegularFile(t *testing.T) {
 	}
 }
 
-func TestShouldReusePriorWorkdirSquadLeaderRejectsEmptyAgentID(t *testing.T) {
+func TestShouldReusePriorWorkdirCrewLeaderRejectsEmptyAgentID(t *testing.T) {
 	t.Parallel()
 
 	root := t.TempDir()
@@ -223,7 +223,7 @@ func TestShouldReusePriorWorkdirSquadLeaderRejectsEmptyAgentID(t *testing.T) {
 	}
 }
 
-func TestShouldReusePriorWorkdirSquadLeaderRejectsSymlinkEscape(t *testing.T) {
+func TestShouldReusePriorWorkdirCrewLeaderRejectsSymlinkEscape(t *testing.T) {
 	t.Parallel()
 
 	root := t.TempDir()

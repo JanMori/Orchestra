@@ -73,25 +73,25 @@ Multica never deletes a linked local directory when cleaning up run environments
 
 ```bash
 # Link a repository when creating a project
-multica project create \
+orchestra project create \
   --title "Agent UX" \
   --repo https://github.com/multica-ai/multica
 
 # List and add resources
-multica project resource list <project-id>
-multica project resource add <project-id> \
+orchestra project resource list <project-id>
+orchestra project resource add <project-id> \
   --type github_repo \
   --url https://github.com/multica-ai/multica \
   --ref main
 
 # Link a local directory on a specific daemon
-multica project resource add <project-id> \
+orchestra project resource add <project-id> \
   --type local_directory \
   --local-path /absolute/path/to/repo \
   --daemon-id <daemon-id>
 
 # Remove a resource
-multica project resource remove <project-id> <resource-id>
+orchestra project resource remove <project-id> <resource-id>
 ```
 
 Resource changes affect tasks created afterwards; they do not rewrite records of runs that already ended.

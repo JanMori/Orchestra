@@ -41,7 +41,7 @@ type localDirectoryAssignment struct {
 }
 
 // localDirectoryAssignmentForTask returns the local_directory assignment a task
-// should execute inside. Squad-leader tasks are coordinators: they may create
+// should execute inside. Crew-leader tasks are coordinators: they may create
 // child issues or comments, but should not bind to the user's repo worktree or
 // hold the path mutex while downstream workers are ready to write.
 func localDirectoryAssignmentForTask(task Task, daemonID string) (*localDirectoryAssignment, error) {

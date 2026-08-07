@@ -73,25 +73,25 @@ Multica が実行環境をクリーンアップするとき、紐づけたロー
 
 ```bash
 # プロジェクト作成時にリポジトリを紐づける
-multica project create \
+orchestra project create \
   --title "Agent UX" \
   --repo https://github.com/multica-ai/multica
 
 # リソースの一覧表示と追加
-multica project resource list <project-id>
-multica project resource add <project-id> \
+orchestra project resource list <project-id>
+orchestra project resource add <project-id> \
   --type github_repo \
   --url https://github.com/multica-ai/multica \
   --ref main
 
 # 特定のデーモン上のローカルディレクトリを紐づける
-multica project resource add <project-id> \
+orchestra project resource add <project-id> \
   --type local_directory \
   --local-path /absolute/path/to/repo \
   --daemon-id <daemon-id>
 
 # リソースを削除する
-multica project resource remove <project-id> <resource-id>
+orchestra project resource remove <project-id> <resource-id>
 ```
 
 リソースの変更は、その後に作成されるタスクに反映されます。すでに終了した実行の記録が書き換えられることはありません。

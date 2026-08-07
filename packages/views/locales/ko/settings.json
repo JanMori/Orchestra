@@ -127,7 +127,7 @@
       "goProjects": { "label": "프로젝트로 이동", "description": "프로젝트 목록을 엽니다." },
       "goAutopilots": { "label": "자동화로 이동", "description": "워크스페이스 자동화를 엽니다." },
       "goAgents": { "label": "에이전트로 이동", "description": "에이전트 목록을 엽니다." },
-      "goSquads": { "label": "스쿼드로 이동", "description": "스쿼드 목록을 엽니다." },
+      "goCrews": { "label": "스쿼드로 이동", "description": "스쿼드 목록을 엽니다." },
       "goUsage": { "label": "사용량으로 이동", "description": "사용량 분석을 엽니다." },
       "goRuntimes": { "label": "런타임으로 이동", "description": "런타임 설정을 엽니다." },
       "goSkills": { "label": "Skills로 이동", "description": "Skill 라이브러리를 엽니다." },
@@ -357,7 +357,7 @@
   },
   "tokens": {
     "title": "API 토큰",
-    "description": "개인 액세스 토큰을 사용하면 CLI와 외부 연동이 내 계정으로 인증할 수 있습니다. multica login --token 으로 사용하거나 API 호출 시 Bearer 토큰으로 보낼 수 있습니다.",
+    "description": "개인 액세스 토큰을 사용하면 CLI와 외부 연동이 내 계정으로 인증할 수 있습니다. orchestra login --token 으로 사용하거나 API 호출 시 Bearer 토큰으로 보낼 수 있습니다.",
     "security_note": "토큰은 계정에 대한 전체 접근 권한을 부여하므로 비밀번호처럼 안전하게 보관하세요.",
     "empty": "아직 API 토큰이 없습니다. 위에서 만들어 시작하세요.",
     "load_failed": "API 토큰을 불러오지 못했습니다. 페이지를 새로고침한 뒤 다시 시도하세요.",

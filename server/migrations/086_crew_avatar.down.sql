@@ -1,0 +1,1 @@
+ALTER TABLE crew DROP COLUMN IF EXISTS avatar_url;

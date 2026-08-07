@@ -26,7 +26,7 @@ Two commands to set up everything — server, CLI, and configuration.
 curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash -s -- --with-server
 
 # 2. Configure CLI, authenticate, and start the daemon
-multica setup self-host
+orchestra setup self-host
 ```
 </details>
 <details>
@@ -36,10 +36,10 @@ multica setup self-host
 
 ```powershell
 # 1. Install CLI + provision the self-host server
-$env:MULTICA_MODE="with-server"; irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex
+$env:ORCHESTRA_MODE="with-server"; irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex
 
 # 2. Configure CLI, authenticate, and start the daemon
-multica setup self-host
+orchestra setup self-host
 ```
 </details>
 
@@ -90,11 +90,11 @@ Open http://localhost:3000 in your browser. The Docker self-host stack defaults 
 
 - **Recommended (production):** configure `RESEND_API_KEY` in `.env`, then restart the backend. Real verification codes will be sent to the email address you enter. See [Advanced Configuration → Email](SELF_HOSTING_ADVANCED.md#email-required-for-authentication).
 - **Without email configured:** the verification code is generated server-side and printed to the backend container logs (look for `[DEV] Verification code for ...:`). Useful for one-off testing on a single machine.
-- **Deterministic local/private testing:** set `APP_ENV=development` and `MULTICA_DEV_VERIFICATION_CODE=888888` in `.env`, then restart the backend. This fixed code is ignored when `APP_ENV=production`.
+- **Deterministic local/private testing:** set `APP_ENV=development` and `ORCHESTRA_DEV_VERIFICATION_CODE=888888` in `.env`, then restart the backend. This fixed code is ignored when `APP_ENV=production`.
 
 Changes to `ALLOW_SIGNUP`, `DISABLE_WORKSPACE_CREATION`, and `GOOGLE_CLIENT_ID` also take effect after restarting the backend / compose stack. The web UI reads all three from `/api/config` at runtime, so no web rebuild is needed. See [Advanced Configuration → Signup Controls](SELF_HOSTING_ADVANCED.md#signup-controls-optional) for the recommended sequence to lock down workspace creation.
 
-> **Warning:** do **not** set `MULTICA_DEV_VERIFICATION_CODE` on a publicly reachable instance — anyone who knows an email address can then log in with that fixed code.
+> **Warning:** do **not** set `ORCHESTRA_DEV_VERIFICATION_CODE` on a publicly reachable instance — anyone who knows an email address can then log in with that fixed code.
 
 ### Step 3 — Install CLI & Start Daemon
 
@@ -129,7 +129,7 @@ You also need at least one AI agent CLI installed:
 ### b) One-command setup
 
 ```bash
-multica setup self-host
+orchestra setup self-host
 ```
 
 This automatically:
@@ -141,13 +141,13 @@ This automatically:
 For on-premise deployments with custom domains:
 
 ```bash
-multica setup self-host --server-url https://api.example.com --app-url https://app.example.com
+orchestra setup self-host --server-url https://api.example.com --app-url https://app.example.com
 ```
 
 To verify the daemon is running:
 
 ```bash
-multica daemon status
+orchestra daemon status
 ```
 
 > **Alternative:** If you prefer manual steps, see [Manual CLI Configuration](#manual-cli-configuration) below.
@@ -212,7 +212,7 @@ kubectl -n multica create secret generic multica-secrets \
   --from-literal=RESEND_API_KEY="" \
   --from-literal=GOOGLE_CLIENT_SECRET="" \
   --from-literal=CLOUDFRONT_PRIVATE_KEY="" \
-  --from-literal=MULTICA_DEV_VERIFICATION_CODE=""
+  --from-literal=ORCHESTRA_DEV_VERIFICATION_CODE=""
 ```
 
 Leave optional values empty for now — you can fill them in later (see [Step 5 — Log In](#step-5--log-in)).
@@ -280,7 +280,7 @@ The chart defaults to `APP_ENV=production` (set in `values.yaml` under `backend.
   kubectl -n multica logs -f deploy/multica-backend | grep "Verification code"
   ```
 
-- **Deterministic local/private testing:** set `backend.config.appEnv: development` in your values file and `MULTICA_DEV_VERIFICATION_CODE=888888` in the Secret, then `helm upgrade` and restart. This fixed code is ignored when `APP_ENV=production`.
+- **Deterministic local/private testing:** set `backend.config.appEnv: development` in your values file and `ORCHESTRA_DEV_VERIFICATION_CODE=888888` in the Secret, then `helm upgrade` and restart. This fixed code is ignored when `APP_ENV=production`.
 
   ```bash
   helm upgrade multica oci://ghcr.io/multica-ai/charts/multica \
@@ -288,20 +288,20 @@ The chart defaults to `APP_ENV=production` (set in `values.yaml` under `backend.
     -n multica \
     -f my-values.yaml --set backend.config.appEnv=development
   kubectl -n multica patch secret multica-secrets --type=merge \
-    -p '{"stringData":{"MULTICA_DEV_VERIFICATION_CODE":"888888"}}'
+    -p '{"stringData":{"ORCHESTRA_DEV_VERIFICATION_CODE":"888888"}}'
   kubectl -n multica rollout restart deploy/multica-backend
   ```
 
 `ALLOW_SIGNUP`, `DISABLE_WORKSPACE_CREATION`, and `GOOGLE_CLIENT_ID` likewise live under `backend.config.*` in `values.yaml` (as `allowSignup`, `disableWorkspaceCreation`, and `googleClientId`). After `helm upgrade`, the backend pod will roll automatically because the ConfigMap hash changes; the web UI reads all three from `/api/config` at runtime, so no web rebuild is needed.
 
-> **Warning:** do **not** set `MULTICA_DEV_VERIFICATION_CODE` on a publicly reachable instance — anyone who knows an email address can then log in with that fixed code.
+> **Warning:** do **not** set `ORCHESTRA_DEV_VERIFICATION_CODE` on a publicly reachable instance — anyone who knows an email address can then log in with that fixed code.
 
 ### Step 6 — Install CLI & Start Daemon
 
 The daemon runs on your local machine, not in the cluster. Install the CLI and an AI agent as in [Step 3](#step-3--install-cli--start-daemon) above, then point the CLI at your Ingress hostnames:
 
 ```bash
-multica setup self-host \
+orchestra setup self-host \
   --server-url http://api.multica.dev.lan \
   --app-url http://multica.dev.lan
 ```
@@ -426,7 +426,7 @@ If you cloned the repo manually:
 make selfhost-stop
 
 # Stop the local daemon
-multica daemon stop
+orchestra daemon stop
 ```
 
 ## Switching to Multica Cloud
@@ -434,7 +434,7 @@ multica daemon stop
 If you've been self-hosting and want to switch your CLI to [Multica Cloud](https://multica.ai):
 
 ```bash
-multica setup
+orchestra setup
 ```
 
 This reconfigures the CLI for multica.ai, re-authenticates, and restarts the daemon. You will be prompted before overwriting the existing configuration.
@@ -448,7 +448,7 @@ docker compose -f docker-compose.selfhost.yml pull
 docker compose -f docker-compose.selfhost.yml up -d
 ```
 
-Pin `MULTICA_IMAGE_TAG` in `.env` to an exact version like `v0.2.4` if you want to stay on a specific release. Migrations run automatically on backend startup.
+Pin `ORCHESTRA_IMAGE_TAG` in `.env` to an exact version like `v0.2.4` if you want to stay on a specific release. Migrations run automatically on backend startup.
 If the selected GHCR tag has not been published yet, fall back to `make selfhost-build` or `docker compose -f docker-compose.selfhost.yml -f docker-compose.selfhost.build.yml up -d --build`.
 
 > **Upgrading from `v0.3.4` to `v0.3.5+` fails with `refusing to drop legacy daily rollups: ...`?** That's migration `103`'s fail-closed guard: it requires `task_usage_hourly` to be seeded before the legacy daily rollups are dropped. As of MUL-2957 `migrate up` runs that backfill automatically right before applying `103`, so the upgrade completes in a single invocation. If you are still on a pre-MUL-2957 binary or the auto-hook fails, run `backfill_task_usage_hourly` manually first, then re-run the upgrade. Full instructions in [Advanced Configuration → Usage Dashboard Rollup](SELF_HOSTING_ADVANCED.md#usage-dashboard-rollup).
@@ -480,27 +480,27 @@ docker compose -f docker-compose.selfhost.yml up -d
 
 ## Manual CLI Configuration
 
-If you prefer configuring the CLI step by step instead of `multica setup`:
+If you prefer configuring the CLI step by step instead of `orchestra setup`:
 
 ```bash
 # Point CLI to your local server
-multica config set server_url http://localhost:8080
-multica config set app_url http://localhost:3000
+orchestra config set server_url http://localhost:8080
+orchestra config set app_url http://localhost:3000
 
 # Login (opens browser)
-multica login
+orchestra login
 
 # Start the daemon
-multica daemon start
+orchestra daemon start
 ```
 
 For production deployments with TLS:
 
 ```bash
-multica config set app_url https://app.example.com
-multica config set server_url https://api.example.com
-multica login
-multica daemon start
+orchestra config set app_url https://app.example.com
+orchestra config set server_url https://api.example.com
+orchestra login
+orchestra daemon start
 ```
 
 ## Advanced Configuration

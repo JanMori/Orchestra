@@ -1,0 +1,2 @@
+ALTER TABLE crew ADD COLUMN archived_at TIMESTAMPTZ;
+ALTER TABLE crew ADD COLUMN archived_by UUID;

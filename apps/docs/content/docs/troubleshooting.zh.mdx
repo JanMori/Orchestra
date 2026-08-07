@@ -8,10 +8,10 @@ import { Callout } from "fumadocs-ui/components/callout";
 先确认问题发生在哪一层：Multica 服务、守护进程、运行时，还是 AI 编程工具。下面几条命令通常足以找到第一条有效错误：
 
 ```bash
-multica version
-multica auth status
-multica daemon status --output json
-multica daemon logs --lines 100
+orchestra version
+orchestra auth status
+orchestra daemon status --output json
+orchestra daemon logs --lines 100
 ```
 
 自托管实例还可以直接检查服务：
@@ -28,9 +28,9 @@ curl -i https://api.example.com/readyz
 先运行：
 
 ```bash
-multica auth status
-multica daemon status --output json
-multica daemon logs --lines 100
+orchestra auth status
+orchestra daemon status --output json
+orchestra daemon logs --lines 100
 ```
 
 常见原因包括：
@@ -44,14 +44,14 @@ multica daemon logs --lines 100
 重新登录并重启守护进程：
 
 ```bash
-multica login
-multica daemon restart
+orchestra login
+orchestra daemon restart
 ```
 
-自托管部署还需要从**执行电脑**请求 API 的 `/health`——服务器本机测试无法暴露执行电脑侧的 DNS、TLS 或防火墙问题。需要修改地址时，重新运行 `multica setup self-host`，或检查当前 profile 的 `server_url`：
+自托管部署还需要从**执行电脑**请求 API 的 `/health`——服务器本机测试无法暴露执行电脑侧的 DNS、TLS 或防火墙问题。需要修改地址时，重新运行 `orchestra setup self-host`，或检查当前 profile 的 `server_url`：
 
 ```bash
-multica config show
+orchestra config show
 ```
 
 ## Issue 未开始执行
@@ -70,18 +70,18 @@ multica config show
 智能体默认最多同时执行 6 条执行任务；单个守护进程默认最多同时执行 20 条。达到上限时，新执行任务会留在队列中，等已有执行结束后再开始。运行时离线时，执行任务也会继续排队；超过 2 小时仍未领取才会失败。
 
 ```bash
-multica daemon status --output json
-multica agent get <agent-id>
-multica issue runs <issue-id>
+orchestra daemon status --output json
+orchestra agent get <agent-id>
+orchestra issue runs <issue-id>
 ```
 
-如果运行时列表缺少预期工具，先在同一个系统账号和 `PATH` 中确认工具可以运行并且已经登录，再执行 `multica daemon restart`。
+如果运行时列表缺少预期工具，先在同一个系统账号和 `PATH` 中确认工具可以运行并且已经登录，再执行 `orchestra daemon restart`。
 
 ### `waiting_local_directory` 状态
 
 这表示另一条在途执行任务正在使用同一个本地目录。Multica 会等待目录锁释放，避免两个智能体同时修改同一份文件。
 
-通常只需等前一条执行任务结束。若前一条已经卡住，可以从它的执行日志中停止；也可以为当前智能体选择其他本地目录。这个目录互斥由守护进程在内存中维护，不写磁盘锁文件；怀疑锁状态异常时运行 `multica daemon restart` 即可释放，没有需要手动删除的文件。
+通常只需等前一条执行任务结束。若前一条已经卡住，可以从它的执行日志中停止；也可以为当前智能体选择其他本地目录。这个目录互斥由守护进程在内存中维护，不写磁盘锁文件；怀疑锁状态异常时运行 `orchestra daemon restart` 即可释放，没有需要手动删除的文件。
 
 ## AI 编程工具启动失败
 
@@ -195,8 +195,8 @@ netstat -ano | findstr :8080       # Windows
 
 | 组件 | 查看方式 |
 | --- | --- |
-| 后台守护进程 | `multica daemon logs --lines 100` |
-| 实时跟随守护进程日志 | `multica daemon logs --follow` |
+| 后台守护进程 | `orchestra daemon logs --lines 100` |
+| 实时跟随守护进程日志 | `orchestra daemon logs --follow` |
 | 默认 profile 的日志文件 | `~/.multica/daemon.log` |
 | 默认 profile 的启动或崩溃日志 | `~/.multica/daemon.err.log` |
 | 命名 profile | `~/.multica/profiles/<name>/` 下的对应日志 |
@@ -206,8 +206,8 @@ netstat -ano | findstr :8080       # Windows
 需要直接观察守护进程启动过程时，可以改为前台运行：
 
 ```bash
-multica daemon stop
-multica daemon start --foreground
+orchestra daemon stop
+orchestra daemon start --foreground
 ```
 
 仍然无法定位时，到 [GitHub Issues](https://github.com/multica-ai/multica/issues) 搜索已有问题或提交新的 issue。

@@ -630,7 +630,7 @@ export function myIssueListOptions(
   scope: string,
   filter: MyIssuesFilter,
   // Required when scope === "all" — the user id whose three relations
-  // (assignee, creator, agents+squads) we union over. For every other
+  // (assignee, creator, agents+crews) we union over. For every other
   // scope the filter object already carries the relevant id and userId
   // is ignored.
   userId?: string,

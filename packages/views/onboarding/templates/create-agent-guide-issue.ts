@@ -83,7 +83,7 @@ Now create an issue (or reassign an existing one) → set assignee = Multica Hel
 ## Where to go next
 
 - **Skills** — reusable instruction packs you can attach to any agent.
-- **Squads** — groups of agents that can be assigned together.
+- **Crews** — groups of agents that can be assigned together.
 - **Autopilots** — scheduled or webhook-triggered runs.
 - **Docs** — https://multica.ai/docs.`;
 }
@@ -125,7 +125,7 @@ ${HELPER_INSTRUCTIONS.zh}
 ## 接下来去哪
 
 - **Skills** —— 可复用的指令包，可挂到任何 agent 上。
-- **Squads** —— 可一起被分派的一组 agent。
+- **Crews** —— 可一起被分派的一组 agent。
 - **Autopilots** —— 定时或 webhook 触发的运行。
 - **文档** —— https://multica.ai/docs。`;
 }
@@ -167,7 +167,7 @@ ${HELPER_INSTRUCTIONS.ko}
 ## 다음에 볼 곳
 
 - **Skills** — 어떤 agent에도 붙일 수 있는 재사용 instruction pack입니다.
-- **Squads** — 함께 배정할 수 있는 agent 그룹입니다.
+- **Crews** — 함께 배정할 수 있는 agent 그룹입니다.
 - **Autopilots** — 예약 또는 webhook으로 실행되는 작업입니다.
 - **Docs** — https://multica.ai/docs.`;
 }
@@ -209,7 +209,7 @@ ${HELPER_INSTRUCTIONS.ja}
 ## 次に見る場所
 
 - **Skills** — どの agent にも付けられる、再利用可能な instruction パックです。
-- **Squads** — 一緒に割り当てられる agent のグループです。
+- **Crews** — 一緒に割り当てられる agent のグループです。
 - **Autopilots** — スケジュールや webhook で実行される処理です。
 - **Docs** — https://multica.ai/docs。`;
 }
