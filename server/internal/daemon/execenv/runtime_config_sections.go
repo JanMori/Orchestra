@@ -637,8 +637,8 @@ func writeSkills(b *strings.Builder, ctx TaskContextForEnv) {
 func writeMentions(b *strings.Builder) {
 	b.WriteString("## Mentions\n\n")
 	b.WriteString("Mention links are **side-effecting actions**:\n\n")
-	b.WriteString("- `[MUL-123](mention://issue/<issue-id>)` — clickable link (no side effect)\n")
-	// Projects have no `MUL-123`-style identifier to autolink, so unless the
+	b.WriteString("- `[TASK-123](mention://issue/<issue-id>)` — clickable link (no side effect)\n")
+	// Projects have no `TASK-123`-style identifier to autolink, so unless the
 	// agent writes this form (or pastes the project URL, which the reader's
 	// client unfurls into the same chip) a project reference stays dead text.
 	b.WriteString("- `[Project Name](mention://project/<project-id>)` — clickable link (no side effect)\n")

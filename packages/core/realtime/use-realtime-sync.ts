@@ -443,7 +443,7 @@ export function applyChatCancelFinalizedToCache(
  * Apply a workspace:updated event directly to the cached workspace list.
  * If the incoming `issue_prefix` differs from what's currently cached, also
  * invalidates issueKeys.all for that workspace, since every issue's rendered
- * identifier (`MUL-123`) is recomputed from the workspace prefix at read time.
+ * identifier (`TASK-123`) is recomputed from the workspace prefix at read time.
  *
  * If the workspace isn't in the cached list (first observation), we
  * conservatively invalidate — the prefix is effectively "new" relative to

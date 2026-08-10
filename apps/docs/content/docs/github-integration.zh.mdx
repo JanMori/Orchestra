@@ -43,14 +43,14 @@ GitHub 集成只读取安装时授权的仓库，不会提交代码、评论或 
 
 ## 让 PR 关联到 issue
 
-最简单的做法，是把 issue 编号写进分支名或 PR 标题。例如 issue 为 `MUL-123`：
+最简单的做法，是把 issue 编号写进分支名或 PR 标题。例如 issue 为 `TASK-123`：
 
 ```text
-mul-123-fix-login-redirect
+task-123-fix-login-redirect
 ```
 
 ```text
-MUL-123 修复登录后的跳转
+TASK-123 修复登录后的跳转
 ```
 
 Multica 会忽略大小写，并且只匹配当前工作区的 issue 前缀。一个 PR 可以关联多个 issue。
@@ -58,12 +58,12 @@ Multica 会忽略大小写，并且只匹配当前工作区的 issue 前缀。�
 只在 PR 正文中写编号时，需要使用 GitHub 的关闭语句：
 
 ```text
-Closes MUL-123
-Fixes MUL-123
-Resolves MUL-123
+Closes TASK-123
+Fixes TASK-123
+Resolves TASK-123
 ```
 
-正文中的普通提及，例如 `Related to MUL-123`，不会作为该 issue 的工作 PR 显示。Commit message 和 PR 评论也不会触发关联。
+正文中的普通提及，例如 `Related to TASK-123`，不会作为该 issue 的工作 PR 显示。Commit message 和 PR 评论也不会触发关联。
 
 ## 在 issue 中查看 PR
 
@@ -83,11 +83,11 @@ CI 状态和可合并性来自 Multica 从 GitHub API 拉取的快照，两者�
 
 PR 合并不一定代表 issue 已完成。Multica 只有在以下条件同时成立时，才把 issue 改为 `Done`：
 
-1. 至少一个已合并的关联 PR 使用了紧跟编号的关闭语句，例如 `Closes MUL-123`（`Closes login MUL-123` 这类中间隔词的写法不生效）；
+1. 至少一个已合并的关联 PR 使用了紧跟编号的关闭语句，例如 `Closes TASK-123`（`Closes login TASK-123` 这类中间隔词的写法不生效）；
 2. 该 issue 没有其他仍为 `Open` 或 `Draft` 的工作 PR（正文中的普通提及不算）；
 3. issue 当前不是 `done` 或 `cancelled`。
 
-因此，仅在分支名或标题中写 `MUL-123` 会建立关联，但不会单独触发完成。PR 关闭但没有合并，也不会完成 issue。
+因此，仅在分支名或标题中写 `TASK-123` 会建立关联，但不会单独触发完成。PR 关闭但没有合并，也不会完成 issue。
 
 状态变化会以系统操作写入时间线，订阅该 issue 的成员会收到通知。
 
@@ -175,7 +175,7 @@ make migrate-up
 - **连接按钮不可用**：检查 `GITHUB_APP_SLUG` 和 `GITHUB_WEBHOOK_SECRET` 是否已进入 API 进程。
 - **Webhook 返回 401**：确认 GitHub App 与 API 使用同一个 Webhook secret，然后在 GitHub 的 **Recent Deliveries** 中重新投递。
 - **PR 没有关联**：检查仓库是否在 App 授权范围内、自动关联是否开启，以及编号是否属于当前工作区。
-- **正文写了编号但没显示**：改用 `Closes MUL-123`，或把编号放到分支名、PR 标题中。
+- **正文写了编号但没显示**：改用 `Closes TASK-123`，或把编号放到分支名、PR 标题中。
 - **没有 CI 状态**：确认 `GITHUB_APP_ID` 和 `GITHUB_APP_PRIVATE_KEY` 已配置，App 具有 Checks 与 Commit statuses 的只读权限并订阅了对应事件。给已安装的 App 补加权限后，还需要各 installation 的所有者在 GitHub 上批准才会生效。
 - **PR 合并后 issue 没完成**：确认 PR 使用了关闭语句，并检查是否还有其他关联 PR 处于 Open 或 Draft。
 

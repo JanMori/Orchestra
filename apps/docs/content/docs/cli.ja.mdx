@@ -87,32 +87,32 @@ orchestra workspace member invite admin@example.com --role admin
 ```bash
 # 表示と検索
 orchestra issue list
-orchestra issue get MUL-123
+orchestra issue get TASK-123
 orchestra issue search "ログイン失敗"
 
 # 作成と更新
 orchestra issue create --title "ログイン失敗を修正"
-orchestra issue status MUL-123 in_progress
-orchestra issue assign MUL-123 --to "Backend Agent"
+orchestra issue status TASK-123 in_progress
+orchestra issue assign TASK-123 --to "Backend Agent"
 
 # コメントと実行履歴
-orchestra issue comment list MUL-123
-orchestra issue comment add MUL-123 --content "まず回帰テストを確認してください"
-orchestra issue runs MUL-123
+orchestra issue comment list TASK-123
+orchestra issue comment add TASK-123 --content "まず回帰テストを確認してください"
+orchestra issue runs TASK-123
 ```
 
 長い説明やコメントは stdin から読み込むと、改行や引用符の扱いに悩まずに済みます:
 
 ```bash
 orchestra issue create --title "アップグレードメモ" --description-stdin < notes.md
-orchestra issue comment add MUL-123 --content-stdin < review.md
+orchestra issue comment add TASK-123 --content-stdin < review.md
 ```
 
 1 回の実行のメッセージを表示する、またはタスクを停止する:
 
 ```bash
-orchestra issue run-messages <task-id> --issue MUL-123
-orchestra issue cancel-task <task-id> --issue MUL-123
+orchestra issue run-messages <task-id> --issue TASK-123
+orchestra issue cancel-task <task-id> --issue TASK-123
 ```
 
 ## エージェントとスキル
@@ -180,7 +180,7 @@ multica runtime activity <runtime-id>
 
 ## ID と出力形式
 
-イシューには `MUL-123` のようなキーまたは完全な UUID を使います。UUID の短いプレフィックスは受け付けません。
+イシューには `TASK-123` のようなキーまたは完全な UUID を使います。UUID の短いプレフィックスは受け付けません。
 
 その他のリソースの `list` コマンドは通常、コピーできる短い ID を表示し、`--full-id` で完全な UUID を出力できます。短い ID が一意に定まらない場合、CLI は文字の追加か完全な UUID への切り替えを求めます。タスクの短い ID は、所属するイシューを `--issue` で指定する必要もあります。
 

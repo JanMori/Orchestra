@@ -136,7 +136,7 @@ func ambiguousIDPrefixError(kind, input string, matches []idCandidate) error {
 // Short UUID prefixes (e.g. "1881abcd") were briefly supported but are no
 // longer — on large workspaces the CLI had to page the entire issue list
 // client-side to disambiguate, causing 14–35s timeouts (GH #4701). Since
-// `MUL-123` already covers every human use case for an issue reference, the
+// `TASK-123` already covers every human use case for an issue reference, the
 // short-prefix path is removed instead of being moved server-side. Other
 // resources without a human-readable key (autopilots, projects, labels,
 // task runs, workspaces, ...) continue to accept short UUID prefixes; see
@@ -161,12 +161,12 @@ func resolveIssueRef(ctx context.Context, client *cli.APIClient, input string) (
 	if _, err := normalizeUUIDPrefix(trimmed); err == nil {
 		return resolvedID{}, fmt.Errorf(
 			"issue ref %q looks like a short UUID prefix; short prefixes are no longer supported for issues. "+
-				"Use the issue key (e.g. MUL-123) shown by `orchestra issue list`, or pass the full UUID (run a list command with --full-id to copy it)",
+				"Use the issue key (e.g. TASK-123) shown by `orchestra issue list`, or pass the full UUID (run a list command with --full-id to copy it)",
 			input,
 		)
 	}
 	return resolvedID{}, fmt.Errorf(
-		"issue ref %q is not a recognized issue reference; use the issue key (e.g. MUL-123) shown by `orchestra issue list`, or pass the full UUID",
+		"issue ref %q is not a recognized issue reference; use the issue key (e.g. TASK-123) shown by `orchestra issue list`, or pass the full UUID",
 		input,
 	)
 }

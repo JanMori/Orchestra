@@ -352,7 +352,7 @@
       "display_name_label": "Display name",
       "display_name_placeholder": "e.g. My custom Claude…",
       "command_name_label": "Command",
-      "command_name_placeholder": "e.g. agent --model composer-2.5…",
+      "command_name_placeholder": "e.g. agent --model model_name…",
       "description_label": "Description",
       "description_placeholder": "What this runtime is for (optional)…",
       "error_display_name_required": "Display name is required.",

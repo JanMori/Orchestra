@@ -14,7 +14,7 @@ import (
 const countAgentsByProfile = `-- name: CountAgentsByProfile :one
 SELECT count(*) FROM agent a
 JOIN agent_runtime ar ON ar.id = a.runtime_id
-WHERE ar.profile_id = $1 AND ar.workspace_id = $2 AND a.archived_at IS NULL
+WHERE ar.profile_id = $1 AND ar.workspace_id = $2 AND a.archived_at IS NULL AND a.kind = 'user'
 `
 
 type CountAgentsByProfileParams struct {

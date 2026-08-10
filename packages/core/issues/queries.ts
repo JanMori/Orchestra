@@ -109,7 +109,7 @@ export const issueKeys = {
     [...issueKeys.projectGanttAll(wsId), projectId] as const,
   detail: (wsId: string, id: string) =>
     [...issueKeys.all(wsId), "detail", id] as const,
-  /** Resolve a bare issue identifier (e.g. "MUL-123") to an issue. */
+  /** Resolve a bare issue identifier (e.g. "TASK-123") to an issue. */
   identifier: (wsId: string, identifier: string) =>
     [...issueKeys.all(wsId), "identifier", identifier] as const,
   /** Prefix for every per-parent children query in a workspace. */
@@ -733,10 +733,10 @@ export function issueDetailOptions(wsId: string, id: string) {
 }
 
 /**
- * Resolve a bare issue identifier ("MUL-123") to its issue, or `null`.
+ * Resolve a bare issue identifier ("TASK-123") to its issue, or `null`.
  *
  * Backs the Linear-style autolink: the backend `q` search matches an
- * identifier on issue NUMBER only (prefix-agnostic — `MUL-123` and `TES-123`
+ * identifier on issue NUMBER only (prefix-agnostic — `TASK-123` and `TES-123`
  * both hit number 123), so the exact `identifier === value` filter here is
  * what enforces the workspace prefix. A non-existent or wrong-prefix
  * identifier resolves to `null` and renders as plain text.

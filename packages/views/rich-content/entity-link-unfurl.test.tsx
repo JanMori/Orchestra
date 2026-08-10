@@ -1,7 +1,7 @@
 /**
  * Bare in-app entity URLs render as chips (MUL-5499).
  *
- * A project has no `MUL-123` shorthand — only a UUID and a free-text title — so
+ * A project has no `TASK-123` shorthand — only a UUID and a free-text title — so
  * the link copied out of the app IS how people reference one. This fixture pins
  * the three conditions that decide whether such a link becomes a chip, because
  * each of them fails silently: an over-eager rule eats an author's link label,

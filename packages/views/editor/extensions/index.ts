@@ -183,7 +183,7 @@ export interface EditorExtensionsOptions {
   quickActionMenu?: BuiltinCommandSuggestionOptions;
   /**
    * Resolver for Linear-style bare issue-identifier autolinking. When present
-   * (and mentions are enabled), typing a boundary after `MUL-123` or pasting
+   * (and mentions are enabled), typing a boundary after `TASK-123` or pasting
    * text with identifiers resolves them and swaps in real issue mentions. A
    * ref so the editor is created once while the resolver reads live workspace
    * context; the setup layer owns React Query + workspace access.

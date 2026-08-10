@@ -2436,7 +2436,7 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 			// Parent-issue resolution for quick-create tasks opened from
 			// "Add sub issue". The handler already verified workspace
 			// membership at submit time; here we re-fetch to pull the
-			// human-readable identifier (e.g. MUL-123) the agent will
+			// human-readable identifier (e.g. TASK-123) the agent will
 			// reference in the prompt. If the parent was deleted between
 			// submit and claim we surface the UUID anyway — the agent
 			// still passes `--parent <uuid>` and the server-side create

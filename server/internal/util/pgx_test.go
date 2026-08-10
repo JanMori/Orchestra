@@ -18,7 +18,7 @@ func TestParseUUID_Valid(t *testing.T) {
 }
 
 func TestParseUUID_InvalidReturnsError(t *testing.T) {
-	cases := []string{"", "not-a-uuid", "MUL-123", "12345"}
+	cases := []string{"", "not-a-uuid", "TASK-123", "12345"}
 	for _, s := range cases {
 		t.Run(s, func(t *testing.T) {
 			u, err := ParseUUID(s)

@@ -11,7 +11,7 @@
  * list to produce `[@<name>](mention://<type>/<id>)` markdown that the
  * backend's `util.ParseMentions` regex (server/internal/util/mention.go:16)
  * already accepts. **Issues drop the `@` in the label** — they render as
- * `[MUL-123](mention://issue/<uuid>)` to match web (mention-extension.ts).
+ * `[TASK-123](mention://issue/<uuid>)` to match web (mention-extension.ts).
  *
  * Sentinel mismatch (e.g. user copy-paste broke a marker) → serializer
  * falls back to plain text with all sentinels stripped: never crash, never
@@ -27,7 +27,7 @@ export interface MentionMarker {
   /** UUID for member/agent/crew/issue, the literal "all" for @all. */
   id: string;
   /** Display name without the leading `@`. For issues this is the
-   *  identifier (e.g. "MUL-123"). May contain non-ASCII chars. */
+   *  identifier (e.g. "TASK-123"). May contain non-ASCII chars. */
   name: string;
 }
 

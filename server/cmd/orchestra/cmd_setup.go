@@ -172,7 +172,7 @@ func runSetupCloud(cmd *cobra.Command, args []string) error {
 	if err := runDaemonAfterSetup(cmd, args); err != nil {
 		return fmt.Errorf("start or restart daemon: %w", err)
 	}
-	fmt.Fprintln(os.Stderr, "\n✓ Setup complete! Your machine is now connected to Multica.")
+	fmt.Fprintln(os.Stderr, "\n✓ Setup complete! Your machine is now connected to Orchestra.")
 
 	return nil
 }
@@ -250,7 +250,7 @@ func runSetupSelfHost(cmd *cobra.Command, args []string) error {
 	if err := runDaemonAfterSetup(cmd, args); err != nil {
 		return fmt.Errorf("start or restart daemon: %w", err)
 	}
-	fmt.Fprintln(os.Stderr, "\n✓ Setup complete! Your machine is now connected to Multica.")
+	fmt.Fprintln(os.Stderr, "\n✓ Setup complete! Your machine is now connected to Orchestra.")
 
 	return nil
 }

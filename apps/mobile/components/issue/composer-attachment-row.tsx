@@ -43,7 +43,7 @@ export interface MentionChip {
   /** UUID for member/agent/crew/issue; literal "all" for @all. */
   id: string;
   /** Display name without leading `@`. For type "issue" this stores the
-   *  human identifier (e.g. "MUL-123"), which is what the chip + the
+   *  human identifier (e.g. "TASK-123"), which is what the chip + the
    *  serialised markdown link both surface (matches web's
    *  packages/views/editor/extensions/mention-extension.ts:67-74 — issues
    *  drop the leading `@`). */
@@ -143,7 +143,7 @@ function MentionChipView({
         ? "git-branch-outline"
         : "person";
 
-  // Issue chips show the bare identifier (e.g. "MUL-123") — no leading @.
+  // Issue chips show the bare identifier (e.g. "TASK-123") — no leading @.
   // Mirrors how the serialized markdown link renders on web/desktop.
   const label = mention.type === "issue" ? mention.name : `@${mention.name}`;
 

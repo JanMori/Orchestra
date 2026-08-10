@@ -1,7 +1,7 @@
 {
   "page": {
     "title": "运行时",
-    "tagline": "为智能体跑 CLI 会话的机器和云端 worker。",
+    "tagline": "同智能体进行会话任务的CLI。",
     "learn_more": "了解更多 →",
     "connect_remote": "添加电脑",
     "search_placeholder": "搜索运行时...",
@@ -340,7 +340,7 @@
       "display_name_label": "显示名称",
       "display_name_placeholder": "例如：我的自定义 Claude...",
       "command_name_label": "命令",
-      "command_name_placeholder": "例如：agent --model composer-2.5...",
+      "command_name_placeholder": "例如：agent --model model_name...",
       "description_label": "描述",
       "description_placeholder": "描述此运行时的用途（可选）...",
       "error_display_name_required": "显示名称为必填项。",

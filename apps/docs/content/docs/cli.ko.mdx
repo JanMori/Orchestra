@@ -87,32 +87,32 @@ orchestra workspace member invite admin@example.com --role admin
 ```bash
 # 확인 및 검색
 orchestra issue list
-orchestra issue get MUL-123
+orchestra issue get TASK-123
 orchestra issue search "로그인 실패"
 
 # 생성 및 수정
 orchestra issue create --title "로그인 실패 수정"
-orchestra issue status MUL-123 in_progress
-orchestra issue assign MUL-123 --to "Backend Agent"
+orchestra issue status TASK-123 in_progress
+orchestra issue assign TASK-123 --to "Backend Agent"
 
 # 댓글 및 실행 기록
-orchestra issue comment list MUL-123
-orchestra issue comment add MUL-123 --content "회귀 테스트를 먼저 확인해 주세요"
-orchestra issue runs MUL-123
+orchestra issue comment list TASK-123
+orchestra issue comment add TASK-123 --content "회귀 테스트를 먼저 확인해 주세요"
+orchestra issue runs TASK-123
 ```
 
 긴 설명이나 댓글은 stdin에서 읽어 줄바꿈과 따옴표 처리를 피할 수 있습니다.
 
 ```bash
 orchestra issue create --title "업그레이드 안내" --description-stdin < notes.md
-orchestra issue comment add MUL-123 --content-stdin < review.md
+orchestra issue comment add TASK-123 --content-stdin < review.md
 ```
 
 특정 실행의 메시지를 확인하거나 태스크를 중지합니다.
 
 ```bash
-orchestra issue run-messages <task-id> --issue MUL-123
-orchestra issue cancel-task <task-id> --issue MUL-123
+orchestra issue run-messages <task-id> --issue TASK-123
+orchestra issue cancel-task <task-id> --issue TASK-123
 ```
 
 ## 에이전트와 스킬
@@ -180,7 +180,7 @@ multica runtime activity <runtime-id>
 
 ## ID와 출력 형식
 
-이슈에는 `MUL-123` 같은 key 또는 전체 UUID를 사용하며 UUID 짧은 접두사는 허용하지 않습니다.
+이슈에는 `TASK-123` 같은 key 또는 전체 UUID를 사용하며 UUID 짧은 접두사는 허용하지 않습니다.
 
 다른 리소스의 `list` 명령은 일반적으로 복사 가능한 짧은 ID를 표시하고 `--full-id`로 전체 UUID를 출력할 수 있습니다. 짧은 ID가 고유하지 않으면 CLI가 더 많은 글자를 입력하거나 전체 UUID를 사용하도록 요청합니다. 실행 태스크의 짧은 ID에는 `--issue`로 소속 이슈도 지정해야 합니다.
 

@@ -25,7 +25,7 @@ export interface MentionChipDraft {
   /** UUID for member / agent / crew / issue; literal "all" for @all. */
   id: string;
   /** Display name without leading `@`. For type "issue" this stores the
-   *  human identifier (e.g. "MUL-123"). */
+   *  human identifier (e.g. "TASK-123"). */
   name: string;
 }
 

@@ -825,7 +825,7 @@ export function createKoDict(allowSignup: boolean): LandingDict {
           changes: [],
           features: [
             "이제 새 Codex gpt-5.6 모델(Sol, Terra, Luna)에서 에이전트를 실행할 수 있습니다.",
-            "MUL-123 같은 태스크 번호를 입력하거나 붙여넣으면 자동으로 클릭할 수 있는 태스크 링크가 됩니다.",
+            "TASK-123 같은 태스크 번호를 입력하거나 붙여넣으면 자동으로 클릭할 수 있는 태스크 링크가 됩니다.",
             "아바타를 올릴 때 저장 전에 자르기, 확대·축소, 회전을 할 수 있습니다.",
             "에이전트가 글자 답장 없이 끝나면 빈 메시지 대신 알기 쉬운 “답장 없음” 표시가 나옵니다.",
             "바쁜 에이전트를 여러 개의 서로 다른 댓글 스레드에서 멘션하면 이제 각 스레드가 저마다 답장을 받습니다.",
@@ -1033,7 +1033,7 @@ export function createKoDict(allowSignup: boolean): LandingDict {
             "Slack 채널의 과거 대화를 Orchestra로 백필할 수 있어, 에이전트가 채널에 합류한 순간부터 이전 맥락을 알 수 있습니다.",
             "Slack에서 에이전트가 응답을 준비하는 동안 사용자 메시지에 👀 반응이 표시되고, 종료 시 안정적으로 제거됩니다.",
             "스킬 번들을 로컬 .skill / .zip 아카이브에서 가져올 수 있습니다.",
-            "orchestra issue 계열 명령은 더 이상 짧은 UUID 접두사를 받지 않습니다. 태스크 Key(MUL-123) 또는 전체 UUID를 사용하세요.",
+            "orchestra issue 계열 명령은 더 이상 짧은 UUID 접두사를 받지 않습니다. 태스크 Key(TASK-123) 또는 전체 UUID를 사용하세요.",
             "Agents 페이지가 모바일에 맞게 다듬어졌습니다.",
           ],
           improvements: [

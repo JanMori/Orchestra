@@ -30,7 +30,7 @@ The actual encoding (see `packages/views/editor/extensions/mention-extension.ts:
 ```ts
 return `[${prefix}${safeLabel}](mention://${type}/${id})`;
 // emits e.g. [@naiyuan](mention://member/abc-123)
-//           [MUL-123](mention://issue/issue-uuid)
+//           [TASK-123](mention://issue/issue-uuid)
 ```
 
 Mentions are **already standard markdown links** with a custom URI scheme. So mobile does NOT need a custom tokenizer — overriding `Renderer.link()` to check `href.startsWith("mention://")` is enough. This makes the integration significantly simpler than the initial sketch.
@@ -157,7 +157,7 @@ function MentionChip({ type, id, fallback }: Props) {
 }
 ```
 
-The "miss → render fallback string" path matters: in production, member/agent lists are pre-loaded in `[workspace]/_layout.tsx` so cache hit rate is near 100%. The fallback string is the original markdown link text (`@naiyuan` / `MUL-123`) so the user always sees something readable.
+The "miss → render fallback string" path matters: in production, member/agent lists are pre-loaded in `[workspace]/_layout.tsx` so cache hit rate is near 100%. The fallback string is the original markdown link text (`@naiyuan` / `TASK-123`) so the user always sees something readable.
 
 ---
 

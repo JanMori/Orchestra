@@ -9,7 +9,7 @@ type Mention struct {
 }
 
 // MentionRe matches [@Label](mention://type/id) or [Label](mention://issue/id) in markdown.
-// The @ prefix is optional to support issue mentions which use [MUL-123](mention://issue/...).
+// The @ prefix is optional to support issue mentions which use [TASK-123](mention://issue/...).
 // Uses .+? (non-greedy) instead of [^\]]* so labels containing square brackets
 // (e.g. "David[TF]") are matched correctly — the ](mention:// anchor is specific
 // enough to prevent over-matching.

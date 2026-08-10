@@ -148,7 +148,7 @@ export function useIssueActions(issue: Issue | null): UseIssueActionsResult {
 
   const copyLink = useCallback(async () => {
     if (!issueId) return;
-    // Share the identifier form (`/{ws}/issues/MUL-123`): a pasted link should
+    // Share the identifier form (`/{ws}/issues/TASK-123`): a pasted link should
     // say which issue it points at. The UUID form stays valid, so links copied
     // before this still resolve.
     const url = navigation.getShareableUrl(paths.issueDetail(issueIdentifier || issueId));

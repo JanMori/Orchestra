@@ -9,8 +9,8 @@ import {
 /**
  * Linear-style bare issue identifier autolinking for markdown preprocessing.
  *
- * Rewrites bare issue identifiers like `MUL-123` / `TES-1` into canonical
- * mention links `[MUL-123](mention://issue/MUL-123)`, so the shared markdown
+ * Rewrites bare issue identifiers like `TASK-123` / `TES-1` into canonical
+ * mention links `[TASK-123](mention://issue/TASK-123)`, so the shared markdown
  * `a`/mention renderers can route them to a navigable issue chip.
  *
  * This module is intentionally PURE (packages/ui): it has no workspace or API
@@ -39,7 +39,7 @@ const IDENTIFIER_RE = /(?<![A-Za-z0-9_-])([A-Z][A-Z0-9]*-\d+)(?![A-Za-z0-9_-])/g
 export const ISSUE_IDENTIFIER_PATTERN = /^[A-Z][A-Z0-9]*-\d+$/
 
 /**
- * True when `value` is a bare issue identifier (e.g. "MUL-123"). A UUID never
+ * True when `value` is a bare issue identifier (e.g. "TASK-123"). A UUID never
  * matches (lowercase hex, four dashes), so this cleanly separates autolinked
  * identifiers from real mention UUIDs at render time.
  */

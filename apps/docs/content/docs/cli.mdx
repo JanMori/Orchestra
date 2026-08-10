@@ -87,32 +87,32 @@ orchestra workspace member invite admin@example.com --role admin
 ```bash
 # View and search
 orchestra issue list
-orchestra issue get MUL-123
+orchestra issue get TASK-123
 orchestra issue search "login failure"
 
 # Create and update
 orchestra issue create --title "Fix login failure"
-orchestra issue status MUL-123 in_progress
-orchestra issue assign MUL-123 --to "Backend Agent"
+orchestra issue status TASK-123 in_progress
+orchestra issue assign TASK-123 --to "Backend Agent"
 
 # Comments and runs
-orchestra issue comment list MUL-123
-orchestra issue comment add MUL-123 --content "Check the regression tests first"
-orchestra issue runs MUL-123
+orchestra issue comment list TASK-123
+orchestra issue comment add TASK-123 --content "Check the regression tests first"
+orchestra issue runs TASK-123
 ```
 
 Read long descriptions or comments from stdin to avoid dealing with newlines and quoting:
 
 ```bash
 orchestra issue create --title "Upgrade notes" --description-stdin < notes.md
-orchestra issue comment add MUL-123 --content-stdin < review.md
+orchestra issue comment add TASK-123 --content-stdin < review.md
 ```
 
 View the messages of a single run, or stop a task:
 
 ```bash
-orchestra issue run-messages <task-id> --issue MUL-123
-orchestra issue cancel-task <task-id> --issue MUL-123
+orchestra issue run-messages <task-id> --issue TASK-123
+orchestra issue cancel-task <task-id> --issue TASK-123
 ```
 
 ## Agents and skills
@@ -180,7 +180,7 @@ See [Daemon and runtimes](/daemon-runtimes) for how it works and for custom prof
 
 ## IDs and output formats
 
-Issues use keys like `MUL-123` or full UUIDs; short UUID prefixes are not accepted.
+Issues use keys like `TASK-123` or full UUIDs; short UUID prefixes are not accepted.
 
 `list` commands for other resources usually print copyable short IDs and support `--full-id` for the full UUID. When a short ID is ambiguous, the CLI asks for more characters or the full UUID. Short task IDs also require `--issue` to identify the owning issue.
 

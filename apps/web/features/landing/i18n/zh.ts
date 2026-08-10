@@ -851,7 +851,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         changes: [],
         features: [
           "你现在可以让智能体运行在全新的 Codex gpt-5.6 模型上——Sol、Terra 和 Luna。",
-          "输入或粘贴像 MUL-123 这样的任务编号，它会自动变成可点击的任务链接。",
+          "输入或粘贴像 TASK-123 这样的任务编号，它会自动变成可点击的任务链接。",
           "上传头像时，你现在可以先裁剪、缩放和旋转，再保存。",
           "当智能体最终没有文字回复时，聊天里会显示清晰的“无回复”提示，而不是一条空消息。",
           "在多个不同的评论会话里提到同一个繁忙的智能体，现在每个会话都会各自得到回复。",
@@ -1059,7 +1059,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
           "Slack 频道可以把过往对话回灌到 Orchestra，智能体一进入频道即拥有完整上下文。",
           "Slack 智能体处理消息期间会在用户消息上加 👀 反应表情，处理结束后稳定清除，不再出现卡死。",
           "技能包支持从本地 .skill / .zip 归档导入。",
-          "orchestra issue 命令不再接受短 UUID 前缀，请使用任务 Key（MUL-123）或完整 UUID。",
+          "orchestra issue 命令不再接受短 UUID 前缀，请使用任务 Key（TASK-123）或完整 UUID。",
           "Agents 页面适配移动端。",
         ],
         improvements: [
@@ -2512,7 +2512,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
         ],
         improvements: [
           "侧边栏重新设计——个人/工作区分组、用户档案底栏、⌘K 搜索入口",
-          "搜索排序优化——大小写无关匹配、标识符搜索（MUL-123）、多词匹配",
+          "搜索排序优化——大小写无关匹配、标识符搜索（TASK-123）、多词匹配",
           "搜索结果关键词高亮",
           "每日 Token 用量图表优化，Y 轴标签更清晰，新增分类 Tooltip",
           "Master Agent 支持多行输入",

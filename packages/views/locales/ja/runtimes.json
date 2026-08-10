@@ -340,7 +340,7 @@
       "display_name_label": "表示名",
       "display_name_placeholder": "例：マイカスタム Claude…",
       "command_name_label": "コマンド",
-      "command_name_placeholder": "例：agent --model composer-2.5…",
+      "command_name_placeholder": "例：agent --model model_name…",
       "description_label": "説明",
       "description_placeholder": "このランタイムの用途（任意）…",
       "error_display_name_required": "表示名は必須です。",

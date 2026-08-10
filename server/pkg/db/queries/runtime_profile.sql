@@ -82,12 +82,12 @@ WHERE profile_id = $1 AND workspace_id = $2
 RETURNING id, workspace_id, owner_id, daemon_id, provider;
 
 -- name: CountAgentsByProfile :one
--- Counts active (non-archived) agents bound to any runtime instance of this
+-- Counts active (non-archived) user agents bound to any runtime instance of this
 -- profile. The profile-delete path uses this to refuse deletion (409) while
--- agents still depend on it, mirroring the runtime-delete guard.
+-- user agents still depend on it, mirroring the runtime-delete guard.
 SELECT count(*) FROM agent a
 JOIN agent_runtime ar ON ar.id = a.runtime_id
-WHERE ar.profile_id = $1 AND ar.workspace_id = $2 AND a.archived_at IS NULL;
+WHERE ar.profile_id = $1 AND ar.workspace_id = $2 AND a.archived_at IS NULL AND a.kind = 'user';
 
 -- name: ListAgentRuntimeIDsByProfile :many
 -- Enumerates the runtime instance rows registered against a profile. The

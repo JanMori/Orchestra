@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/uuid"
 	db "github.com/multica-ai/multica/server/pkg/db/generated"
 )
 
@@ -188,6 +189,45 @@ func TestDeleteRuntimeProfile_ActiveAgentBlocks(t *testing.T) {
 	}
 	if rtRows != 1 {
 		t.Fatalf("expected runtime to survive 409, found %d", rtRows)
+	}
+}
+
+// TestDeleteRuntimeProfile_SystemAgentDoesNotBlock confirms system carrier agents
+// (e.g. agent builder background agents, kind = 'system') do not block profile deletion.
+func TestDeleteRuntimeProfile_SystemAgentDoesNotBlock(t *testing.T) {
+	if testHandler == nil {
+		t.Skip("database not available")
+	}
+	ctx := context.Background()
+
+	profileID := insertRuntimeProfileFixture(t, ctx, "Cascade Profile System Agent", "codex", "company-codex-system")
+	runtimeID := insertProfileRuntimeFixture(t, ctx, profileID, "Cascade Profile System Runtime", "codex")
+	
+	// Create a system agent bound to this runtime
+	systemAgentID := uuid.NewString()
+	_, err := testPool.Exec(ctx, `
+		INSERT INTO agent (id, workspace_id, name, description, runtime_mode, runtime_config, runtime_id, kind, system_key, owner_id)
+		VALUES ($1, $2, $3, '', 'cli', '{}'::jsonb, $4, 'system', $5, $6)
+	`, systemAgentID, testWorkspaceID, "Builder Carrier Agent", runtimeID, ".orchestra-agent-builder-"+systemAgentID, testUserID)
+	if err != nil {
+		t.Fatalf("insert system agent fixture: %v", err)
+	}
+
+	w := httptest.NewRecorder()
+	req := newRequest("DELETE", "/api/workspaces/"+testWorkspaceID+"/runtime-profiles/"+profileID, nil)
+	req = withURLParams(req, "id", testWorkspaceID, "profileId", profileID)
+	testHandler.DeleteRuntimeProfile(w, req)
+
+	if w.Code != http.StatusNoContent {
+		t.Fatalf("expected 204, got %d: %s", w.Code, w.Body.String())
+	}
+
+	var profileRows int
+	if err := testPool.QueryRow(ctx, `SELECT count(*) FROM runtime_profile WHERE id = $1`, profileID).Scan(&profileRows); err != nil {
+		t.Fatalf("count profile rows: %v", err)
+	}
+	if profileRows != 0 {
+		t.Fatalf("expected profile to be deleted, found %d", profileRows)
 	}
 }
 

@@ -95,7 +95,7 @@ export interface WorkspaceEntityRef {
   kind: "issue" | "project";
   /**
    * Entity id, decoded from the path. A UUID for either kind, or — for an
-   * issue only — a bare identifier (`MUL-123`). Callers dispatch on the shape
+   * issue only — a bare identifier (`TASK-123`). Callers dispatch on the shape
    * with `isIssueIdentifier`: an identifier still has to be resolved to a real
    * issue before it can be rendered as a chip.
    */
@@ -124,7 +124,7 @@ const UUID_RE =
  * A project is only ever addressed by UUID — it has no shorthand. An issue has
  * both, and the identifier form is the one that matters most: `copyLink` and
  * `openInNewTab` both build `paths.issueDetail(identifier || id)`, and the
- * issue route rewrites a UUID URL back to the identifier, so `MUL-123` is what
+ * issue route rewrites a UUID URL back to the identifier, so `TASK-123` is what
  * a user actually copies out of the app or the address bar. Accepting only the
  * UUID here would leave the shape people really paste as a raw URL.
  *

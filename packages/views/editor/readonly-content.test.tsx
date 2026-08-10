@@ -265,11 +265,11 @@ describe("ReadonlyContent highlight Markdown", () => {
 describe("ReadonlyContent issue mention Markdown", () => {
   it("renders an issue mention inside a task list as an issue mention card", () => {
     const { container, getByTestId } = render(
-      <ReadonlyContent content="- [ ] [MUL-123](mention://issue/issue-123)" />,
+      <ReadonlyContent content="- [ ] [TASK-123](mention://issue/issue-123)" />,
     );
 
     expect(container.querySelector('input[type="checkbox"]')).not.toBeNull();
-    expect(getByTestId("issue-mention-card").textContent).toBe("MUL-123");
+    expect(getByTestId("issue-mention-card").textContent).toBe("TASK-123");
   });
 
   it("autolinks a resolved bare identifier as an issue mention card", () => {

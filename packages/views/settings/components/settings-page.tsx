@@ -194,7 +194,13 @@ export function SettingsPage({ extraAccountTabs }: SettingsPageProps = {}) {
           <span className="hidden truncate px-2 pb-1 pt-4 text-caption font-medium text-muted-foreground md:block">
             {workspaceName ?? t(($) => $.page.workspace_fallback)}
           </span>
-          {WORKSPACE_TAB_KEYS.map((key) => {
+          {WORKSPACE_TAB_KEYS.filter(
+            (key) =>
+              key !== "repositories" &&
+              key !== "github" &&
+              key !== "integrations" &&
+              key !== "labs",
+          ).map((key) => {
             const Icon = WORKSPACE_TAB_ICONS[key];
             return (
               <TabsTrigger

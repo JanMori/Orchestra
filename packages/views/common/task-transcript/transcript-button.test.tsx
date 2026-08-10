@@ -120,7 +120,7 @@ describe("TranscriptButton", () => {
     act(() => {
       window.dispatchEvent(
         new CustomEvent("multica:navigate", {
-          detail: { path: "/acme/inbox?issue=MUL-123" },
+          detail: { path: "/acme/inbox?issue=TASK-123" },
         }),
       );
     });
