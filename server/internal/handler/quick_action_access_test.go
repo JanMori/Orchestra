@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-// Cross-member access regression for private quick actions (MUL-5465, review
+// Cross-member access regression for private quick actions (ISS-5465, review
 // finding #2).
 //
 // The ownership rule used to be enforced inline in RunQuickAction ONLY. Update

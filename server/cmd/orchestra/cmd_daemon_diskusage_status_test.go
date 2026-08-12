@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/internal/cli"
-	"github.com/multica-ai/multica/server/internal/daemon"
+	"github.com/JanMori/Orchestra/server/internal/cli"
+	"github.com/JanMori/Orchestra/server/internal/daemon"
 	"github.com/spf13/cobra"
 )
 
@@ -122,7 +122,7 @@ func writeDiskUsageIssueTask(t *testing.T, root, wsID, taskShort, issueID string
 // issue-kind task dir under that profile's workspaces root.
 func setupDiskUsageProfile(t *testing.T, home, profile, token, serverURL, wsID, taskShort, issueID string) {
 	t.Helper()
-	root := filepath.Join(home, "multica_workspaces")
+	root := filepath.Join(home, "orchestra_workspaces")
 	if profile != "" {
 		root += "_" + profile
 		mkdirProfile(t, home, profile)

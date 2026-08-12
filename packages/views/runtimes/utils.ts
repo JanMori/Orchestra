@@ -907,7 +907,7 @@ export function aggregateByDate(usage: RuntimeUsage[]): {
 // rather than disappearing. Rows whose week falls outside the window are
 // dropped; without this guard `.slice(-weekCount)` on a sparse 180-day
 // aggregate would surface old populated weeks instead of the empty
-// in-range buckets the user asked for (MUL-2382 weekly window scoping).
+// in-range buckets the user asked for (ISS-2382 weekly window scoping).
 // Accepts any row carrying `date` + token counts + the model needed for
 // pricing. Both `RuntimeUsage` (runtime detail) and `DashboardUsageDaily`
 // (workspace dashboard) match this shape — there's no behavioural difference,
@@ -1021,7 +1021,7 @@ export function aggregateByWeek(
 // immediately prior window of equal length. "Today" is read in the runtime's
 // timezone so the cutoff lands on the same calendar boundary the backend
 // used when bucketing rows — without this the browser/runtime tz gap could
-// shift the boundary by a day at the edges (#MUL-2382 sliceWindow tz bug).
+// shift the boundary by a day at the edges (#ISS-2382 sliceWindow tz bug).
 export function sliceWindow(
   usage: readonly RuntimeUsage[],
   days: number,

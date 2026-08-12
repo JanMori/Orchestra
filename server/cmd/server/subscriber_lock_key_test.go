@@ -6,12 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/internal/util"
+	"github.com/JanMori/Orchestra/server/internal/util"
 
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
-// TestLockSubscriberWrites_KeyedOnUUIDValueNotSpelling covers MUL-5483 review
+// TestLockSubscriberWrites_KeyedOnUUIDValueNotSpelling covers ISS-5483 review
 // round 8, finding 1.
 //
 // The lock key used to be hashtext() over the caller's raw string. PostgreSQL

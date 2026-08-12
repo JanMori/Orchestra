@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/multica-ai/multica/server/internal/daemonws"
-	"github.com/multica-ai/multica/server/internal/middleware"
+	"github.com/JanMori/Orchestra/server/internal/daemonws"
+	"github.com/JanMori/Orchestra/server/internal/middleware"
 )
 
 // rpcResponseCapture is a minimal in-memory http.ResponseWriter so a WS RPC can
@@ -35,7 +35,7 @@ func (w *rpcResponseCapture) Write(b []byte) (int, error) {
 	return w.body.Write(b)
 }
 
-// DaemonRPCHandler is the daemonws.RPCHandler wired into the WS hub (MUL-4257).
+// DaemonRPCHandler is the daemonws.RPCHandler wired into the WS hub (ISS-4257).
 // It dispatches a generic daemon:rpc_request to the matching HTTP handler,
 // reusing all of its auth / payload-building / finalization logic by driving it
 // with a synthetic in-process request carrying the WS connection's identity.

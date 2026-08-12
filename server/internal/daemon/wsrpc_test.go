@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // TestWSRPCClient_CallRoundTrip: a request is framed and sent, and a matching
@@ -123,7 +123,7 @@ func TestWSRPCClient_ServerError(t *testing.T) {
 
 // TestWSRPCClient_DetachFailsPending: detaching (disconnect) unblocks an
 // in-flight Call whose frame was already sent with errWSRPCUncertain — the
-// caller must not blindly re-claim over HTTP (MUL-4257).
+// caller must not blindly re-claim over HTTP (ISS-4257).
 func TestWSRPCClient_DetachFailsPending(t *testing.T) {
 	c := newWSRPCClient(2 * time.Second)
 	var mu sync.Mutex
@@ -187,7 +187,7 @@ func TestWSRPCClient_DeliverDetachRaceNoPanic(t *testing.T) {
 // TestWSOutbound_CancelBeforeWriteDropsFrame: a caller that gives up before the
 // writer sends the frame cancels it, and the writer then skips it (never
 // delivered) — the core guarantee that a delayed frame cannot double-claim
-// after an HTTP fallback (MUL-4257).
+// after an HTTP fallback (ISS-4257).
 func TestWSOutbound_CancelBeforeWriteDropsFrame(t *testing.T) {
 	o := &wsOutbound{data: []byte("x")}
 	if !o.cancel() {

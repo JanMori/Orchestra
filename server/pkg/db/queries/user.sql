@@ -13,7 +13,7 @@ WHERE (LOWER(email) = LOWER($1)) OR (username IS NOT NULL AND LOWER(username) = 
 -- name: GetUsersByIDs :many
 -- Batch lookup from the GLOBAL user table (not gated on membership, so departed
 -- members still render). Used to enrich attribution initiator / originator refs on
--- task responses without an N+1 (MUL-4302 §9). Returns only the display fields.
+-- task responses without an N+1 (ISS-4302 §9). Returns only the display fields.
 SELECT id, name, email, avatar_url FROM "user"
 WHERE id = ANY(@ids::uuid[]);
 
@@ -101,3 +101,11 @@ UPDATE "user" SET
     updated_at = now()
 WHERE id = $1
 RETURNING *;
+
+-- name: UpdateUserAccessToken :one
+UPDATE "user" SET
+    access_token = $2,
+    updated_at = now()
+WHERE id = $1
+RETURNING *;
+

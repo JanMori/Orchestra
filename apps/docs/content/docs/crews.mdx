@@ -5,7 +5,7 @@ description: A leader coordinates multiple agents or members and hands work to t
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-A crew consists of one leader agent and any number of members. Assigning an issue to a crew does not run every agent at once. Multica wakes the leader first; it reads the context and decides who takes the next step.
+A crew consists of one leader agent and any number of members. Assigning an issue to a crew does not run every agent at once. Orchestra wakes the leader first; it reads the context and decides who takes the next step.
 
 Crews solve the question of who the work goes to. They don't merge multiple agents into a new agent, and they don't automatically raise concurrency.
 
@@ -28,10 +28,10 @@ Creating a crew requires a name and a leader. The crew leader automatically beco
 
 ## Execution flow after assignment
 
-When a non-Backlog issue is assigned to a crew, Multica immediately enqueues a `task` for the **leader agent** (not for every member). The flow then looks like this:
+When a non-Backlog issue is assigned to a crew, Orchestra immediately enqueues a `task` for the **leader agent** (not for every member). The flow then looks like this:
 
 1. **Leader claims the task.** The agent runtime picks up the task on its next poll, same as any other agent assignment.
-2. **Leader is briefed.** On claim, Multica appends three sections to the leader's system prompt — see [What the leader sees on every turn](#what-the-leader-sees-on-every-turn) below.
+2. **Leader is briefed.** On claim, Orchestra appends three sections to the leader's system prompt — see [What the leader sees on every turn](#what-the-leader-sees-on-every-turn) below.
 3. **Leader moves the parent to `in_progress`.** Same agent-managed status contract as a direct agent assignment: the first turn should leave `todo` / leave `backlog`-promoted work as `in_progress`. Dispatching members is not completion — the parent stays `in_progress` while the crew works.
 4. **Leader posts one delegation comment.** The comment `@`-mentions the chosen member(s) using the exact mention markdown from the roster — that mention triggers a new `task` for each mentioned agent.
 5. **Leader records its evaluation** via `orchestra crew activity <issue-id> action --reason "..."`. This writes an entry to the issue's activity timeline so humans can see the leader actually evaluated the trigger.
@@ -74,7 +74,7 @@ Dedup applies on top of these rules: if the leader already has a `queued` or `di
 | **Assign an issue to a crew** | Yes | The crew becomes the assignee and the leader is triggered. |
 | **@-mention a crew in a comment** | No | The leader handles that comment only; the current assignee is unchanged. |
 
-@-mentioning a specific member directly hands the work to that member. Multica also dedupes repeated triggers and prevents the leader's comments from re-triggering itself, avoiding execution loops.
+@-mentioning a specific member directly hands the work to that member. Orchestra also dedupes repeated triggers and prevents the leader's comments from re-triggering itself, avoiding execution loops.
 
 ## Crews and Access
 

@@ -8,7 +8,7 @@ SELECT * FROM agent_runtime
 WHERE id = $1;
 
 -- name: GetAgentRuntimes :many
--- Batch variant of GetAgentRuntime (MUL-4257): loads every runtime in the
+-- Batch variant of GetAgentRuntime (ISS-4257): loads every runtime in the
 -- input set in one round trip so the machine-level batch claim handler can
 -- resolve+authorize all of a daemon's runtimes without one point query per
 -- runtime. Rows are returned only for ids that exist; the caller matches them
@@ -114,7 +114,7 @@ WHERE id = @id
 RETURNING *;
 
 -- name: UpdateAgentRuntimeCustomName :one
--- Sets or clears a runtime's user-facing custom name (MUL-4217). custom_name
+-- Sets or clears a runtime's user-facing custom name (ISS-4217). custom_name
 -- overrides the daemon-proposed `name` for display; passing NULL reverts to
 -- the default. Kept separate from the registration upserts above (which do
 -- name = EXCLUDED.name on every heartbeat) so a custom name is never
@@ -125,7 +125,7 @@ WHERE id = @id
 RETURNING *;
 
 -- name: UpdateAgentRuntimeCustomNameByDaemon :many
--- Machine-level rename (MUL-4217): applies one custom name to every runtime
+-- Machine-level rename (ISS-4217): applies one custom name to every runtime
 -- sharing a daemon_id in the workspace, since a single machine hosts one
 -- runtime per provider. @owner_id is NULL for workspace owners/admins (rename
 -- the whole machine) or the actor's user id otherwise (only their own
@@ -140,7 +140,7 @@ RETURNING *;
 
 -- name: ListDaemonCustomNames :many
 -- Lists the custom_name of every OTHER runtime on (workspace_id, daemon_id)
--- (MUL-4217). @exclude_id drops the just-registered row. The caller derives
+-- (ISS-4217). @exclude_id drops the just-registered row. The caller derives
 -- the machine-level name in Go — the same "all runtimes share one non-null
 -- name" rule the frontend applies in sharedCustomName — so a freshly-added
 -- runtime on an already-named machine can inherit that name and keep the
@@ -275,7 +275,7 @@ RETURNING id, workspace_id, owner_id, daemon_id, provider;
 -- The status list must cover EVERY non-terminal status, not just the ones the
 -- daemon is actively working: 'deferred' (migration 128, comment-routing
 -- escalation) was missing here and only went unnoticed because the runtime
--- delete used to cascade those rows away. Since MUL-5559 the runtime delete
+-- delete used to cascade those rows away. Since ISS-5559 the runtime delete
 -- unbinds history rows instead, and agent_task_queue_active_requires_runtime
 -- rejects an active row without a runtime — so a missed status now surfaces as
 -- a failed delete (runtime_delete_not_drained) instead of silent data loss.
@@ -312,7 +312,7 @@ SET runtime_id = NULL
 WHERE runtime_id = $1 AND completed_at IS NOT NULL;
 
 -- name: UnbindUserAgentsFromRuntime :many
--- MUL-5559: the runtime-delete replacement for archive-then-hard-delete. Every
+-- ISS-5559: the runtime-delete replacement for archive-then-hard-delete. Every
 -- user agent bound to this runtime becomes unbound (runtime_id IS NULL) and
 -- keeps its row, chats, labels, channel installations and autopilot config.
 --

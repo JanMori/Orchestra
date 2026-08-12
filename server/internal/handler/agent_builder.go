@@ -12,7 +12,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 const agentBuilderInstructions = `You are Multica Agent Builder. Help the user design one practical AI agent through a short conversation.
@@ -148,7 +148,7 @@ type AgentBuilderSessionSummary struct {
 	Title     string `json:"title"`
 	// RuntimeID is the carrier's runtime — where this conversation actually
 	// executes. The client seeds its runtime picker from it so the picker can
-	// never disagree with what answers the next message (MUL-5163).
+	// never disagree with what answers the next message (ISS-5163).
 	RuntimeID string `json:"runtime_id"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
@@ -376,7 +376,7 @@ type SwitchAgentBuilderRuntimeResponse struct {
 // SwitchAgentBuilderRuntime re-points a live builder conversation at another
 // runtime. The live-draft runtime picker used to mutate React state only, so the
 // UI could show runtime B while every subsequent message still enqueued against
-// the carrier agent frozen to runtime A at session create time (MUL-5163).
+// the carrier agent frozen to runtime A at session create time (ISS-5163).
 //
 // The rebind runs under LockChatSessionForRuntimeBind, the same row lock
 // SendDirectChatMessage takes, so "no reply is in flight" and "the carrier now

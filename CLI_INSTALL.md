@@ -7,7 +7,7 @@
 Give this instruction to your AI agent:
 
 ```
-Fetch https://github.com/multica-ai/multica/blob/main/CLI_INSTALL.md and follow the instructions to install Orchestra CLI, log in, and start the daemon on this machine.
+Fetch https://github.com/JanMori/Orchestra/blob/main/CLI_INSTALL.md and follow the instructions to install Orchestra CLI, log in, and start the daemon on this machine.
 ```
 
 ---
@@ -20,7 +20,7 @@ Run:
 orchestra version
 ```
 
-- **If it prints a version string** (e.g. `multica v0.x.x`): skip to **Step 3**.
+- **If it prints a version string** (e.g. `orchestra v0.x.x`): skip to **Step 3**.
 - **If command not found**: continue to **Step 2**.
 
 ---
@@ -40,7 +40,7 @@ which brew
 If `brew` is found, install via Homebrew:
 
 ```bash
-brew install multica-ai/tap/multica
+brew install orchestra-ai/tap/orchestra
 ```
 
 Then verify:
@@ -54,7 +54,7 @@ If the version prints successfully, skip to **Step 3**.
 To upgrade later, run:
 
 ```bash
-brew upgrade multica-ai/tap/multica
+brew upgrade orchestra-ai/tap/orchestra
 ```
 
 ### Option B: Download from GitHub Releases (macOS/Linux, no Homebrew)
@@ -73,14 +73,14 @@ if [ "$ARCH" = "x86_64" ]; then
 fi
 
 # Get the latest release tag from GitHub
-LATEST=$(curl -sI https://github.com/multica-ai/multica/releases/latest | grep -i '^location:' | sed 's/.*tag\///' | tr -d '\r\n')
+LATEST=$(curl -sI https://github.com/JanMori/Orchestra/releases/latest | grep -i '^location:' | sed 's/.*tag\///' | tr -d '\r\n')
 
 # Download and extract
 VERSION="${LATEST#v}"
-curl -sL "https://github.com/multica-ai/multica/releases/download/${LATEST}/orchestra-cli-${VERSION}-${OS}-${ARCH}.tar.gz" -o /tmp/multica.tar.gz
-tar -xzf /tmp/multica.tar.gz -C /tmp multica
-sudo mv /tmp/multica /usr/local/bin/multica
-rm /tmp/multica.tar.gz
+curl -sL "https://github.com/JanMori/Orchestra/releases/download/${LATEST}/orchestra-cli-${VERSION}-${OS}-${ARCH}.tar.gz" -o /tmp/orchestra.tar.gz
+tar -xzf /tmp/orchestra.tar.gz -C /tmp orchestra
+sudo mv /tmp/orchestra /usr/local/bin/orchestra
+rm /tmp/orchestra.tar.gz
 ```
 
 Verify:
@@ -91,18 +91,18 @@ orchestra version
 
 **If this fails:**
 - Check that `/usr/local/bin` is in `$PATH`.
-- On Linux, you may need `chmod +x /usr/local/bin/multica`.
-- If `sudo` is not available, install to a user-writable directory: `mv /tmp/multica ~/.local/bin/multica` and ensure `~/.local/bin` is in `$PATH`.
+- On Linux, you may need `chmod +x /usr/local/bin/orchestra`.
+- If `sudo` is not available, install to a user-writable directory: `mv /tmp/orchestra ~/.local/bin/orchestra` and ensure `~/.local/bin` is in `$PATH`.
 
 ### Option C: Windows (PowerShell)
 
 Run in PowerShell (no admin required):
 
 ```powershell
-irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex
+irm https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.ps1 | iex
 ```
 
-This downloads the latest Windows binary from GitHub Releases, installs it to `%USERPROFILE%\.multica\bin\`, and adds it to your user PATH.
+This downloads the latest Windows binary from GitHub Releases, installs it to `%USERPROFILE%\.orchestra\bin\`, and adds it to your user PATH.
 
 Verify:
 
@@ -112,7 +112,7 @@ orchestra version
 
 **If this fails:**
 - Restart your terminal so the updated PATH takes effect.
-- If you use Scoop, the installer will use it automatically: `scoop bucket add multica https://github.com/multica-ai/scoop-bucket.git && scoop install multica`
+- If you use Scoop, the installer will use it automatically: `scoop bucket add orchestra https://github.com/orchestra-ai/scoop-bucket.git && scoop install orchestra`
 - If your execution policy blocks the script: `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` then re-run.
 
 ---
@@ -127,7 +127,7 @@ orchestra login
 
 **Important:** This command opens a browser window for OAuth authentication. Tell the user:
 
-> "A browser window will open for Multica login. Please complete the authentication in your browser, then come back here."
+> "A browser window will open for Orchestra login. Please complete the authentication in your browser, then come back here."
 
 Wait for the command to complete. It will automatically discover and watch all workspaces the user belongs to.
 
@@ -140,7 +140,7 @@ orchestra auth status
 Expected output should show the authenticated user and server URL.
 
 **If login fails:**
-- If no browser is available (headless environment), the user can generate a Personal Access Token at `https://multica.ai/settings?tab=tokens` and run: `orchestra login --token <mul_...>` (use `--token=` with an empty value to be prompted interactively).
+- If no browser is available (headless environment), the user can generate a Personal Access Token at `http://localhost:5001/settings?tab=tokens` and run: `orchestra login --token <mul_...>` (use `--token=` with an empty value to be prompted interactively).
 - If the server URL needs to be customized: `orchestra config set server_url <url>` before logging in.
 
 ---
@@ -190,7 +190,7 @@ Confirm:
 
 If the agents list is empty, tell the user:
 
-> "The Multica daemon is running but no AI agent CLIs were detected. Please install at least one supported CLI (`claude`, `codex`, `copilot`, `opencode`, `openclaw`, `hermes`, `pi`, `cursor-agent`, or `grok`), then restart the daemon with `orchestra daemon stop && orchestra daemon start`."
+> "The Orchestra daemon is running but no AI agent CLIs were detected. Please install at least one supported CLI (`claude`, `codex`, `copilot`, `opencode`, `openclaw`, `hermes`, `pi`, `cursor-agent`, or `grok`), then restart the daemon with `orchestra daemon stop && orchestra daemon start`."
 
 ---
 

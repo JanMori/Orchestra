@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/multica-ai/multica/server/internal/auth"
+	"github.com/JanMori/Orchestra/server/internal/auth"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -54,7 +54,7 @@ func generateToken(claims jwt.MapClaims, secret []byte) string {
 func validClaims() jwt.MapClaims {
 	return jwt.MapClaims{
 		"sub":   "test-user-id",
-		"email": "test@multica.ai",
+		"email": "test@orchestra.local",
 		"exp":   time.Now().Add(time.Hour).Unix(),
 	}
 }
@@ -191,8 +191,8 @@ func TestAuth_ValidToken(t *testing.T) {
 	if gotUserID != "test-user-id" {
 		t.Fatalf("expected X-User-ID 'test-user-id', got '%s'", gotUserID)
 	}
-	if gotEmail != "test@multica.ai" {
-		t.Fatalf("expected X-User-Email 'test@multica.ai', got '%s'", gotEmail)
+	if gotEmail != "test@orchestra.local" {
+		t.Fatalf("expected X-User-Email 'test@orchestra.local', got '%s'", gotEmail)
 	}
 }
 
@@ -238,7 +238,7 @@ func TestAuth_InvalidPAT(t *testing.T) {
 // guarantee a client carrying a normal mul_ PAT could supply a forged
 // `X-Actor-Source: task_token` (or any other value) to fool a handler
 // into treating the request differently — exactly the kind of trust
-// boundary MUL-2600 introduces.
+// boundary ISS-2600 introduces.
 func TestAuth_StripsClientSuppliedActorSource(t *testing.T) {
 	var gotActorSource string
 	mw := Auth(nil, nil, nil)

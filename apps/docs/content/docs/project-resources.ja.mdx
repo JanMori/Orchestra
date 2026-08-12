@@ -16,7 +16,7 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 ## リソースが実行に入る仕組み
 
-エージェントがプロジェクト内のイシューを処理するとき、Multica はプロジェクト名、プロジェクトの説明、リソース一覧を実行コンテキストに追加し、作業ディレクトリに `.multica/project/resources.json` を書き込みます。
+エージェントがプロジェクト内のイシューを処理するとき、Orchestra はプロジェクト名、プロジェクトの説明、リソース一覧を実行コンテキストに追加し、作業ディレクトリに `.orchestra/project/resources.json` を書き込みます。
 
 ワークスペースに紐づくリポジトリ一覧は、常に実行コンテキストに含まれます。プロジェクトに紐づくリポジトリは、それに加えて、この一連の作業で使うコードとデフォルトの ref を指定します。
 
@@ -26,7 +26,7 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 プロジェクトを開き、**リソース** で「リソースを追加」を選択します。ワークスペースに紐づけ済みのリポジトリを選ぶことも、Git URL を貼り付けることもできます。ワークスペースのリポジトリは **設定 → リポジトリ** で管理します。GitHub を接続すると、同じページの **GitHub から選択** で、App が認可済みのリポジトリをインポートできます。
 
-リポジトリは GitHub に限定されません。ランタイムがアクセスできる Git URL であれば、どれでもリポジトリリソースとして使えます。セルフホストの Multica では、**設定 → 連携 → Git ホスティング** でセルフホストの Forgejo、Gitea、GitLab も接続できます。詳細は[セルフホスト Git ホスティング](/vcs-integration)を参照してください。
+リポジトリは GitHub に限定されません。ランタイムがアクセスできる Git URL であれば、どれでもリポジトリリソースとして使えます。セルフホストの Orchestra では、**設定 → 連携 → Git ホスティング** でセルフホストの Forgejo、Gitea、GitLab も接続できます。詳細は[セルフホスト Git ホスティング](/vcs-integration)を参照してください。
 
 プロジェクトの作成時に、**リポジトリ** で直接リポジトリを選ぶこともできます。1 つのプロジェクトには複数の GitHub リポジトリを紐づけられます。
 
@@ -52,7 +52,7 @@ import { Callout } from "fumadocs-ui/components/callout";
 同じデーモンに紐づけられるローカルディレクトリは、プロジェクトごとに最大 1 つです。チーム内の別々のコンピュータは、同じプロジェクトにそれぞれ自分のディレクトリを紐づけられます。
 
 <Callout type="warning">
-ローカルディレクトリは隔離された環境ではありません。エージェントは現在のブランチと未コミットのファイルをそのまま参照・変更します。Multica がブランチの切り替え、stash、commit、push、PR の作成を自動で行うことはありません。
+ローカルディレクトリは隔離された環境ではありません。エージェントは現在のブランチと未コミットのファイルをそのまま参照・変更します。Orchestra がブランチの切り替え、stash、commit、push、PR の作成を自動で行うことはありません。
 </Callout>
 
 ## ローカルディレクトリの直列実行
@@ -65,9 +65,9 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 ## 実行中に書き込まれるもの
 
-エージェントによるコードの変更のほかに、ランタイムは、現在の AI コーディングツールが必要とする指示ファイルと `.multica/project/resources.json` をディレクトリに書き込むことがあります。バージョン管理に含めたくない場合は `.gitignore` に追加してください。
+エージェントによるコードの変更のほかに、ランタイムは、現在の AI コーディングツールが必要とする指示ファイルと `.orchestra/project/resources.json` をディレクトリに書き込むことがあります。バージョン管理に含めたくない場合は `.gitignore` に追加してください。
 
-Multica が実行環境をクリーンアップするとき、紐づけたローカルディレクトリを削除することはありません。エージェントによるこのディレクトリへの変更は、あなたがターミナルで AI コーディングツールを直接実行したときの変更と同じ性質のものであり、同じようにレビューが必要です。
+Orchestra が実行環境をクリーンアップするとき、紐づけたローカルディレクトリを削除することはありません。エージェントによるこのディレクトリへの変更は、あなたがターミナルで AI コーディングツールを直接実行したときの変更と同じ性質のものであり、同じようにレビューが必要です。
 
 ## CLI でリソースを管理する
 
@@ -75,13 +75,13 @@ Multica が実行環境をクリーンアップするとき、紐づけたロー
 # プロジェクト作成時にリポジトリを紐づける
 orchestra project create \
   --title "Agent UX" \
-  --repo https://github.com/multica-ai/multica
+  --repo https://github.com/orchestra-ai/orchestra
 
 # リソースの一覧表示と追加
 orchestra project resource list <project-id>
 orchestra project resource add <project-id> \
   --type github_repo \
-  --url https://github.com/multica-ai/multica \
+  --url https://github.com/orchestra-ai/orchestra \
   --ref main
 
 # 特定のデーモン上のローカルディレクトリを紐づける

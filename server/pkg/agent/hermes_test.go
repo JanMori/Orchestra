@@ -3007,7 +3007,7 @@ func TestHermesSetModelPreservesCustomModelIDWithColon(t *testing.T) {
 	}
 }
 
-// TestHermesSkipsRedundantSetModelWhenAlreadyCurrent pins the MUL-5029 fix:
+// TestHermesSkipsRedundantSetModelWhenAlreadyCurrent pins the ISS-5029 fix:
 // when session/new already reports the requested model as current, we must
 // NOT replay session/set_model. Hermes' set_model re-runs provider
 // auto-detection and can mis-route a `provider:model` id (e.g.

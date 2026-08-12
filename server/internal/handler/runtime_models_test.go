@@ -15,7 +15,7 @@ import (
 // never reported — usually because the heartbeat response carrying the
 // `pending_model_list` field was lost in transit. Before this, the only
 // way out of Running was the 2-minute memory GC, which exceeded the UI
-// polling window and surfaced as a silent "discovery failed" (MUL-1397).
+// polling window and surfaced as a silent "discovery failed" (ISS-1397).
 func TestModelListStore_RunningRequestTimesOut(t *testing.T) {
 	ctx := context.Background()
 	store := NewInMemoryModelListStore()

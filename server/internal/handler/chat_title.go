@@ -9,8 +9,8 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // chatTitleGenTimeout bounds the whole best-effort title generation (LLM call
@@ -22,14 +22,14 @@ const chatTitleGenTimeout = 20 * time.Second
 
 // chatTitleSystemPrompt instructs the model to condense the opening of a
 // conversation into a short, language-matched title. The rules mirror the
-// acceptance criteria in MUL-4295: no quotes, no trailing punctuation, no
+// acceptance criteria in ISS-4295: no quotes, no trailing punctuation, no
 // label prefix, follow the conversation's language. sanitizeChatTitle re-applies
 // these rules defensively in case the model ignores them.
 //
 // This text names no language and contains no CJK, deliberately. A prompt that
 // spells out a specific language — even only as a formatting example — reads as
 // permission to answer in it, which is how quick actions ended up emitting
-// Chinese pills for English conversations (MUL-5689). The label prefixes this
+// Chinese pills for English conversations (ISS-5689). The label prefixes this
 // used to enumerate are still stripped for real by chatTitleLabelPrefixes,
 // which is where that guarantee belongs.
 const chatTitleSystemPrompt = `You write a very short title that summarizes the topic of a chat conversation, given the user's opening message.
@@ -46,7 +46,7 @@ Rules:
 // chat session and returns immediately. It is the entry point wired into the
 // first-user-message path of SendChatMessage.
 //
-// Design constraints from MUL-4295:
+// Design constraints from ISS-4295:
 //   - Non-blocking: never delays the user's send / first response. The work
 //     runs in a detached goroutine on context.Background() (the request context
 //     is cancelled the moment SendChatMessage returns).

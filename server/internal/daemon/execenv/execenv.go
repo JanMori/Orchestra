@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/multica-ai/multica/server/internal/runtimeapps"
+	"github.com/JanMori/Orchestra/server/internal/runtimeapps"
 )
 
 // RepoContextForEnv describes a workspace repo available for checkout.
@@ -35,13 +35,13 @@ type ProjectResourceForEnv struct {
 
 // PrepareParams holds all inputs needed to set up an execution environment.
 type PrepareParams struct {
-	WorkspacesRoot string // base path for all envs (e.g., ~/multica_workspaces)
+	WorkspacesRoot string // base path for all envs (e.g., ~/orchestra_workspaces)
 	WorkspaceID    string // workspace UUID — tasks are grouped under this
 	TaskID         string // task UUID — used for directory name
 	AgentName      string // for git branch naming only
 	// Profile is the daemon's profile name (empty = default). It namespaces the
 	// per-issue Codex session store so a second profile-daemon sharing the same
-	// ~/.codex cannot see or GC this daemon's stores (MUL-4424).
+	// ~/.codex cannot see or GC this daemon's stores (ISS-4424).
 	Profile      string
 	Provider     string // agent provider (determines runtime config and skill injection paths)
 	CodexVersion string // detected Codex CLI version (only used when Provider == "codex")
@@ -66,7 +66,7 @@ type PrepareParams struct {
 	// the user's directory in place. The daemon still creates envRoot for
 	// output/, logs/, and .gc_meta.json; only the workdir slot is
 	// substituted. Used by the local_directory project_resource flow
-	// (MUL-2663). When set, the envRoot/workdir directory is not created.
+	// (ISS-2663). When set, the envRoot/workdir directory is not created.
 	LocalWorkDir string
 	// HermesSourceHome is the shared Hermes home the per-task overlay is seeded
 	// from — resolved by the daemon via execenv.ResolveHermesProfile so it honors
@@ -84,7 +84,7 @@ type PrepareParams struct {
 	// CodexCustomArgs are the effective Codex CLI args this task launches with
 	// (daemon defaults + profile-fixed + per-agent custom_args). Only the
 	// Windows sandbox decision reads them, to honor a `-c windows.sandbox=...`
-	// override that never lands in config.toml (MUL-4957).
+	// override that never lands in config.toml (ISS-4957).
 	CodexCustomArgs []string
 	Task            TaskContextForEnv // context data for writing files
 }
@@ -95,7 +95,7 @@ type TaskContextForEnv struct {
 	TriggerCommentID string // comment that triggered this task (empty for on_assign)
 	TriggerThreadID  string // root comment ID for the triggering thread; falls back to TriggerCommentID when empty
 	// CommentReplyTargets is set for a comment run that coalesced comments
-	// spanning MORE THAN ONE root thread (MUL-4348). When it has >=2 entries the
+	// spanning MORE THAN ONE root thread (ISS-4348). When it has >=2 entries the
 	// workflow's reply step fans out — one reply per thread — instead of the
 	// single --parent=trigger cookbook, keeping this persistent brief in sync
 	// with the per-turn prompt so a cross-thread run cannot get one source
@@ -111,7 +111,7 @@ type TaskContextForEnv struct {
 	// gone, or the Codex rollout was not present in the task CODEX_HOME). The
 	// brief surfaces this so the agent tells the user its previous conversation
 	// context is gone and this run starts fresh — turning a silent context loss
-	// into a user-visible one (MUL-4424). Distinct from an ordinary cold start,
+	// into a user-visible one (ISS-4424). Distinct from an ordinary cold start,
 	// which never had a prior session to lose.
 	PriorSessionResumeUnavailable bool
 	AgentID                       string // unique ID of the dispatched agent
@@ -129,7 +129,7 @@ type TaskContextForEnv struct {
 	// "feishu", "wecom"); empty for a web/mobile chat. Any non-empty value
 	// means the reply leaves Multica for an external channel, so `multica
 	// attachment upload` cannot deliver a file and the Output section says
-	// text-only instead (MUL-4899). The orthogonal audience and history policies
+	// text-only instead (ISS-4899). The orthogonal audience and history policies
 	// live in the per-turn chat prompt (daemon/prompt.go) — the server has no
 	// history reader for any other channel.
 	ChatChannelType         string
@@ -140,7 +140,7 @@ type TaskContextForEnv struct {
 	AutopilotSource         string
 	AutopilotTriggerPayload string
 	QuickCreatePrompt       string // non-empty for quick-create tasks
-	HandoffNote             string // assignment handoff instruction; rendered into issue_context.md (MUL-3375)
+	HandoffNote             string // assignment handoff instruction; rendered into issue_context.md (ISS-3375)
 	IsCrewLeader           bool   // true when the agent is acting as a crew leader (may exit silently on no_action)
 	// WorkspaceContext is the workspace-level system prompt (workspace.context
 	// in the DB). Rendered into the brief as `## Workspace Context` when
@@ -164,7 +164,7 @@ type TaskContextForEnv struct {
 	// as `## Task Initiator` when a name is present; InitiatorEmail is shown
 	// only for member initiators. Empty for on-assign / autopilot /
 	// quick-create tasks, which have no attributable human initiator. See
-	// MUL-2645.
+	// ISS-2645.
 	InitiatorType  string
 	InitiatorID    string
 	InitiatorName  string
@@ -327,7 +327,7 @@ func Prepare(params PrepareParams, logger *slog.Logger) (*Environment, error) {
 	// the prior handler writes .gc_meta.json — so reuse eligibility must be
 	// provable from an artifact that exists the moment the env is created. Only
 	// managed (non-local_directory) issue envs get this marker; that is exactly
-	// the set crew-leader reuse targets (MUL-4886). Non-fatal: a write failure
+	// the set crew-leader reuse targets (ISS-4886). Non-fatal: a write failure
 	// only costs the next follow-up its session reuse (it falls back to a fresh
 	// session), which must never block dispatching this task.
 	if params.LocalWorkDir == "" && params.Task.IssueID != "" {
@@ -438,7 +438,7 @@ type ReuseParams struct {
 	// only used while migrating a legacy per-task home whose sessions/ still
 	// symlinks the shared ~/.codex/sessions — the single rollout for this ID is
 	// exposed into the new task-local sessions dir so thread/resume still finds
-	// it. Empty means a fresh thread. See prepareCodexSessionsDir (MUL-4424).
+	// it. Empty means a fresh thread. See prepareCodexSessionsDir (ISS-4424).
 	ResumeSessionID string
 	OpenclawBin     string // only used when Provider == "openclaw"; empty = PATH lookup
 	// McpConfig is the agent's saved `mcp_config` JSON. Reused on reuse so a
@@ -453,7 +453,7 @@ type ReuseParams struct {
 	OpenclawGateway OpenclawGatewayPin
 	// Profile is the daemon's profile name (empty = default), mirroring
 	// PrepareParams.Profile so a reused task keys its per-issue Codex session
-	// store into the same profile namespace (MUL-4424).
+	// store into the same profile namespace (ISS-4424).
 	Profile string
 	// LocalDirectory is true when the reused WorkDir is a user-supplied
 	// directory (the local_directory flow). The flag is propagated into
@@ -469,7 +469,7 @@ type ReuseParams struct {
 	HermesEnv             map[string]string
 	// CodexCustomArgs mirrors PrepareParams.CodexCustomArgs on reuse so the
 	// Windows sandbox decision honors a `-c windows.sandbox=...` override here
-	// too (MUL-4957).
+	// too (ISS-4957).
 	CodexCustomArgs []string
 	Task            TaskContextForEnv // refreshed context files / skills
 }
@@ -795,7 +795,7 @@ const ManagedEnvProvenanceManagedBy = "multica-daemon-managed-env"
 // task-complete handler reconciles the follow-up and wakes the runtime before
 // the prior task's daemon handler writes .gc_meta.json. Keying reuse
 // eligibility off .gc_meta.json therefore raced: the successor read a
-// not-yet-written file and started a fresh session (MUL-4886). This marker is
+// not-yet-written file and started a fresh session (ISS-4886). This marker is
 // on disk from the moment the env is created, so the successor can prove reuse
 // safety inside that window. It is written ONLY for non-local managed issue
 // envs, so its presence is itself the "safe to reuse, not a user

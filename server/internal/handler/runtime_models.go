@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // ---------------------------------------------------------------------------
@@ -62,7 +62,7 @@ type ModelListRequest struct {
 	UpdatedAt    time.Time       `json:"updated_at"`
 	RunStartedAt *time.Time      `json:"-"`
 	// Cached marks a response answered from the server-side catalog cache
-	// instead of a live daemon round trip (MUL-5444). Purely informational —
+	// instead of a live daemon round trip (ISS-5444). Purely informational —
 	// Status is already "completed" and Models is already populated, so a client
 	// that ignores this field behaves exactly as before. CachedAt carries the
 	// snapshot's capture time for clients that want to surface freshness.
@@ -79,7 +79,7 @@ type ModelListRequest struct {
 //
 // `Thinking` carries the per-model reasoning-effort catalog discovered
 // by the daemon for runtimes that support it (claude, codex — see
-// MUL-2339). nil means "no picker for this model"; the UI hides the
+// ISS-2339). nil means "no picker for this model"; the UI hides the
 // thinking_level selector. Older daemons (pre-2026-05) won't send this
 // field, which is fine: the UI hides the selector and the agent runs
 // with the runtime default.
@@ -482,7 +482,7 @@ func (h *Handler) ReportModelListResult(w http.ResponseWriter, r *http.Request) 
 		// Fallback marks a completed report whose models are a static
 		// stand-in the provider substituted after discovery failed, not the
 		// runtime's real catalog. Older daemons omit it; absent means "this
-		// daemon cannot tell us", which stays the pre-MUL-5549 behaviour.
+		// daemon cannot tell us", which stays the pre-ISS-5549 behaviour.
 		Fallback bool `json:"fallback"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -507,7 +507,7 @@ func (h *Handler) ReportModelListResult(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		// Warm the catalog cache so the next picker open renders instantly
-		// (MUL-5444). A cache write failure is not the daemon's problem — the
+		// (ISS-5444). A cache write failure is not the daemon's problem — the
 		// report itself succeeded — so it is logged, not surfaced.
 		//
 		// A completed-but-uncacheable result (empty catalog, or a runtime that
@@ -520,7 +520,7 @@ func (h *Handler) ReportModelListResult(w http.ResponseWriter, r *http.Request) 
 		// A fallback report is a failed report wearing a completed label: the
 		// models are a static stand-in, so they are neither fresh truth to
 		// store nor grounds to discard a real catalog we already hold. Treat it
-		// like a failure and leave the cache untouched (MUL-5549).
+		// like a failure and leave the cache untouched (ISS-5549).
 		if h.ModelCatalogCache != nil {
 			switch modelCatalogCacheDecision(body.Models, supported, body.Fallback) {
 			case modelCatalogCacheStore:

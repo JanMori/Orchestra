@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/internal/events"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // setupSweeperTestFixture creates an issue and a task in the given status with
@@ -158,7 +158,7 @@ func TestSweepStaleTasksBroadcastsWithWorkspaceID(t *testing.T) {
 	issueID, agentID, taskID := setupSweeperTestFixture(t, "running")
 	t.Cleanup(func() { cleanupSweeperFixture(t, issueID, agentID) })
 	// The running-task sweep now requires the task's runtime to be NOT
-	// heartbeating (MUL-4107). Age the runtime out so this test still
+	// heartbeating (ISS-4107). Age the runtime out so this test still
 	// exercises the sweeper wall clock rather than being silently skipped.
 	ageOutAgentRuntime(t, agentID, 10*time.Minute)
 
@@ -243,7 +243,7 @@ func TestSweepStaleTasksReconcileAgentStatus(t *testing.T) {
 
 	issueID, agentID, _ := setupSweeperTestFixture(t, "running")
 	t.Cleanup(func() { cleanupSweeperFixture(t, issueID, agentID) })
-	// Runtime must be stale for the running-task wall clock to fire (MUL-4107).
+	// Runtime must be stale for the running-task wall clock to fire (ISS-4107).
 	ageOutAgentRuntime(t, agentID, 10*time.Minute)
 
 	queries := db.New(testPool)
@@ -379,7 +379,7 @@ func TestSweepDispatchedStaleTask(t *testing.T) {
 	}
 }
 
-// TestSweepRunningTaskSkippedWhenRuntimeFresh is the MUL-4107 regression test:
+// TestSweepRunningTaskSkippedWhenRuntimeFresh is the ISS-4107 regression test:
 // a running task whose wall-clock deadline has already passed MUST NOT be
 // killed by the sweeper as long as its owning runtime is 'online' and its
 // last_seen_at is within the runtime stale window. This preserves healthy
@@ -408,7 +408,7 @@ func TestSweepRunningTaskSkippedWhenRuntimeFresh(t *testing.T) {
 
 	for _, ft := range failedTasks {
 		if ft.ID.Bytes == parseUUIDBytes(taskID) {
-			t.Fatalf("healthy long-running task on live daemon must NOT be swept — that was the MUL-4107 bug")
+			t.Fatalf("healthy long-running task on live daemon must NOT be swept — that was the ISS-4107 bug")
 		}
 	}
 
@@ -527,7 +527,7 @@ func TestSweepResetsInProgressIssueToTodo(t *testing.T) {
 	queries := db.New(testPool)
 	bus := events.New()
 
-	// Runtime must be stale for the running-task wall clock to fire (MUL-4107).
+	// Runtime must be stale for the running-task wall clock to fire (ISS-4107).
 	ageOutAgentRuntime(t, agentID, 10*time.Minute)
 
 	// Fail the stale task (running timeout of 1 second — our task is 3 hours old).
@@ -616,7 +616,7 @@ func TestSweepDoesNotResetIssueAlreadyInReview(t *testing.T) {
 	queries := db.New(testPool)
 	bus := events.New()
 
-	// Runtime must be stale for the running-task wall clock to fire (MUL-4107).
+	// Runtime must be stale for the running-task wall clock to fire (ISS-4107).
 	ageOutAgentRuntime(t, agentID, 10*time.Minute)
 
 	failedTasks, err := queries.FailStaleTasks(ctx, db.FailStaleTasksParams{
@@ -641,7 +641,7 @@ func TestSweepDoesNotResetIssueAlreadyInReview(t *testing.T) {
 	}
 }
 
-// TestExpireStaleQueuedTasks verifies the MUL-1899 queued-TTL sweeper:
+// TestExpireStaleQueuedTasks verifies the ISS-1899 queued-TTL sweeper:
 // tasks that have been sitting in 'queued' beyond the TTL are transitioned
 // to 'failed' with failure_reason='queued_expired', while fresh queued tasks
 // are left alone and the per-tick batch limit is respected.

@@ -175,7 +175,7 @@ export function onIssueUpdated(
   // diffing the payload against the cached copy only when a flag is absent
   // (older backend): the diff is unreliable once a local optimistic move has
   // overwritten the cached value, but it still covers remote/agent changes
-  // and keeps a new frontend on an old backend from regressing (MUL-3669 /
+  // and keeps a new frontend on an old backend from regressing (ISS-3669 /
   // #4548). The local move itself is covered by useUpdateIssue's own
   // coordinator pass, which never depends on these flags.
   const oldProjectId = detailData?.project_id ?? cachedIssue?.project_id ?? null;
@@ -346,7 +346,7 @@ export function onIssueMetadataChanged(
   // A metadata write bumps issue.updated_at server-side (SetIssueMetadataKey /
   // DeleteIssueMetadataKey), but the patches above keep each card's slot, so a
   // board/table sorted by "Updated date" would stay in the old order. This
-  // event is server-committed, so refetch those keys to re-sort (MUL-5016).
+  // event is server-committed, so refetch those keys to re-sort (ISS-5016).
   invalidateUpdatedAtSortedIssueLists(qc, wsId);
   // Server-backed Table counts, membership and cursor boundaries may also
   // depend on metadata-driven timestamps, so refresh its query graph too.
@@ -383,7 +383,7 @@ export function onIssuePropertiesChanged(
   // Queries only refetches property-filtered/-sorted windows, so a status board
   // or flat table sorted by "Updated date" (no property param) would keep the
   // old order. Refetch those too. Only committed callers reach here (WS event +
-  // mutation onSuccess); the optimistic leg uses patchIssueProperties (MUL-5016).
+  // mutation onSuccess); the optimistic leg uses patchIssueProperties (ISS-5016).
   invalidateUpdatedAtSortedIssueLists(qc, wsId);
 }
 

@@ -39,7 +39,7 @@ func insertAgentAssignedIssue(t *testing.T, agentID string, number int, title st
 	return issueID
 }
 
-// TestUpdateIssueReassignDoesNotCancelActiveTasks locks in the #4963 / MUL-4113
+// TestUpdateIssueReassignDoesNotCancelActiveTasks locks in the #4963 / ISS-4113
 // decision: changing an issue's assignee cancels nothing. Both the previous
 // assignee's own in-flight run and an unrelated (mention-triggered) run for a
 // different agent must survive the reassignment.
@@ -128,7 +128,7 @@ func queuedTaskCountFor(t *testing.T, issueID, agentID string) int {
 // TestUpdateIssueReassignToAgentKeepsOldTaskAndEnqueuesNew covers the core
 // handoff path the member-target tests above do not: reassigning from one agent
 // to ANOTHER agent. The previous assignee's in-flight run must survive (the
-// #4963 / MUL-4113 no-cancel guarantee), and the new assignee must still get
+// #4963 / ISS-4113 no-cancel guarantee), and the new assignee must still get
 // its run enqueued by WillEnqueueRun — the two effects are independent.
 func TestUpdateIssueReassignToAgentKeepsOldTaskAndEnqueuesNew(t *testing.T) {
 	if testHandler == nil {

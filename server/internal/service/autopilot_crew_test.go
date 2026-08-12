@@ -7,7 +7,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 func TestAutopilotCrewAttribution(t *testing.T) {
@@ -48,7 +48,7 @@ func TestFormatAdmissionReason(t *testing.T) {
 		{"crew archived", db.Autopilot{AssigneeType: "crew"}, "agent is archived", "crew leader agent is archived"},
 		{"agent no runtime", db.Autopilot{AssigneeType: "agent"}, "agent has no runtime bound", "assignee agent has no runtime bound"},
 		{"crew no runtime", db.Autopilot{AssigneeType: "crew"}, "agent has no runtime bound", "crew leader agent has no runtime bound"},
-		{"runtime offline retains MUL-1899 suffix", db.Autopilot{AssigneeType: "agent"}, "agent runtime is offline", "agent runtime is offline at dispatch time"},
+		{"runtime offline retains ISS-1899 suffix", db.Autopilot{AssigneeType: "agent"}, "agent runtime is offline", "agent runtime is offline at dispatch time"},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {

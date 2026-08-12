@@ -153,7 +153,7 @@ func autopilotCanManageAccess(t *testing.T, caller, apID string) bool {
 
 // TestAutopilotCollaborator_GrantedMemberCanWrite verifies the full delegation
 // flow: a non-creator member is blocked, becomes a writer once granted, and is
-// blocked again after the grant is revoked (MUL-3807).
+// blocked again after the grant is revoked (ISS-3807).
 func TestAutopilotCollaborator_GrantedMemberCanWrite(t *testing.T) {
 	if testHandler == nil || testPool == nil {
 		t.Skip("database not available")
@@ -225,7 +225,7 @@ func TestAutopilotCollaborator_NonWriterCannotGrant(t *testing.T) {
 // TestAutopilotCollaborator_CannotManageAccessList verifies the privilege-
 // escalation boundary: a granted collaborator keeps write/execute access but
 // CANNOT manage the access list — they cannot grant access to others or revoke
-// peers. Only the creator / owner / admin may manage access (MUL-3807).
+// peers. Only the creator / owner / admin may manage access (ISS-3807).
 func TestAutopilotCollaborator_CannotManageAccessList(t *testing.T) {
 	if testHandler == nil || testPool == nil {
 		t.Skip("database not available")
@@ -272,7 +272,7 @@ func TestAutopilotCollaborator_CannotManageAccessList(t *testing.T) {
 
 // TestAutopilotWrite_PlainMemberCannotMutateOthers verifies that a workspace
 // member who is neither the creator nor an admin cannot edit, trigger, or
-// delete an autopilot created by someone else (MUL-3807).
+// delete an autopilot created by someone else (ISS-3807).
 func TestAutopilotWrite_PlainMemberCannotMutateOthers(t *testing.T) {
 	if testHandler == nil || testPool == nil {
 		t.Skip("database not available")
@@ -351,7 +351,7 @@ func TestAutopilotWrite_AdminCanMutateMembersAutopilot(t *testing.T) {
 // TestAutopilotWrite_WebhookSecretRedactedForNonWriter verifies that the
 // webhook token/path are returned to a writer (the owner) but stripped from
 // the read response for a member who lacks write access — seeing the token is
-// equivalent to being able to trigger the autopilot (MUL-3807).
+// equivalent to being able to trigger the autopilot (ISS-3807).
 func TestAutopilotWrite_WebhookSecretRedactedForNonWriter(t *testing.T) {
 	if testHandler == nil || testPool == nil {
 		t.Skip("database not available")

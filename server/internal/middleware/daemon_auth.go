@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/multica-ai/multica/server/internal/auth"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/auth"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // Daemon context keys.
@@ -186,8 +186,8 @@ func DaemonAuth(queries *db.Queries, patCache *auth.PATCache, daemonCache *auth.
 				return
 			}
 
-			// Fallback: PAT tokens ("mul_" prefix).
-			if strings.HasPrefix(tokenString, "mul_") {
+			// Fallback: PAT tokens ("tok_" or legacy "mul_" prefix).
+			if strings.HasPrefix(tokenString, "tok_") || strings.HasPrefix(tokenString, "mul_") {
 				hash := auth.HashToken(tokenString)
 
 				if userID, ok := patCache.Get(r.Context(), hash); ok {

@@ -11,14 +11,14 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/slack-go/slack"
 
-	"github.com/multica-ai/multica/server/internal/integrations/channel"
-	"github.com/multica-ai/multica/server/internal/integrations/channel/engine"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel/engine"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // This file is the Slack OutboundReplier — the engine seam that delivers a
-// verdict-driven reply back to the user (MUL-3666, completing the stage-3
+// verdict-driven reply back to the user (ISS-3666, completing the stage-3
 // Replier=nil tail). It posts through the same bot-token Send path as the
 // EventChatDone outbound subscriber, so it needs no new transport.
 //

@@ -1142,7 +1142,7 @@ func containsString(items []string, want string) bool {
 }
 
 // TestOpencodeBackendAnchorsDirAndPWD pins the discovery-root fix from
-// MUL-2416: OpenCode resolves its AGENTS.md walk-up and .opencode/skills
+// ISS-2416: OpenCode resolves its AGENTS.md walk-up and .opencode/skills
 // project config scan from `--dir` and PWD. cmd.Dir alone is not enough
 // because OpenCode reads PWD (inherited from the daemon) before falling
 // back to process.cwd(). Without this anchor, skills written into the
@@ -1223,7 +1223,7 @@ func TestOpencodeBackendAnchorsDirAndPWD(t *testing.T) {
 	}
 }
 
-// TestOpencodeBackendNeverEmitsPromptFlag pins MUL-5392: `opencode run` has no
+// TestOpencodeBackendNeverEmitsPromptFlag pins ISS-5392: `opencode run` has no
 // --prompt flag, so emitting one makes the real CLI exit 1 with a usage dump
 // before a single token is sent. The backend carried that dead branch from the
 // day OpenCode was added (#341); it never fired because the daemon leaves
@@ -1455,7 +1455,7 @@ func TestOpencodeBackendQuestionDenySurvivesUserConfig(t *testing.T) {
 
 // TestOpencodeBackendBlocksDirOverride ensures user-supplied custom args
 // cannot replace the daemon-managed `--dir` anchor. Letting custom args
-// override it would re-introduce the MUL-2416 regression.
+// override it would re-introduce the ISS-2416 regression.
 func TestOpencodeBackendBlocksDirOverride(t *testing.T) {
 	t.Parallel()
 

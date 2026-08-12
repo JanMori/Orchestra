@@ -17,7 +17,7 @@ type LegacyListIssues = (
 
 /** One agent holding running issue tasks, as the working-agents projection
  *  reports it. `issue_ids` may name issues outside the queried surface — the
- *  facet is expected to drop those, which is the whole point of MUL-5525. */
+ *  facet is expected to drop those, which is the whole point of ISS-5525. */
 export interface WorkingTaskFixture {
   id: string;
   issue_ids: readonly string[];

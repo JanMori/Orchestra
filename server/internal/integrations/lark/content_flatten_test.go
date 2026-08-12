@@ -3,7 +3,7 @@ package lark
 import "testing"
 
 // TestFlattenPostContent_IssueExample pins the exact rich-text `post`
-// example from MUL-2951: a title line, a prose paragraph, and a
+// example from ISS-2951: a title line, a prose paragraph, and a
 // paragraph mixing a text span with a hyperlink span. The link must
 // render as "text (href)" so the URL survives into the agent's context.
 func TestFlattenPostContent_IssueExample(t *testing.T) {

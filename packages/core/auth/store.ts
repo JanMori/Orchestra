@@ -99,10 +99,13 @@ export function createAuthStore(options: AuthStoreOptions) {
     },
 
     login: async (account: string, password: string) => {
-      const { token, user } = await api.login(account, password);
+      const { token, access_token, user } = await api.login(account, password);
       if (!cookieAuth) {
         storage.setItem("multica_token", token);
         api.setToken(token);
+      }
+      if (access_token) {
+        storage.setItem("data_query_token", access_token);
       }
       onLogin?.();
       identifyAnalytics(user.id, { email: user.email, name: user.name });
@@ -116,10 +119,13 @@ export function createAuthStore(options: AuthStoreOptions) {
       username?: string;
       password: string;
     }) => {
-      const { token, user } = await api.register(payload);
+      const { token, access_token, user } = await api.register(payload);
       if (!cookieAuth) {
         storage.setItem("multica_token", token);
         api.setToken(token);
+      }
+      if (access_token) {
+        storage.setItem("data_query_token", access_token);
       }
       onLogin?.();
       identifyAnalytics(user.id, { email: user.email, name: user.name });
@@ -155,6 +161,7 @@ export function createAuthStore(options: AuthStoreOptions) {
         api.logout().catch(() => {});
       }
       storage.removeItem("multica_token");
+      storage.removeItem("data_query_token");
       api.setToken(null);
       setCurrentWorkspace(null, null);
       resetAnalytics();

@@ -78,7 +78,7 @@ func cachedShellResolvedAgents() map[string]string {
 //
 // It is called once from LoadConfig at startup and again from the periodic
 // workspace sync (refreshAgentAvailability), so a CLI the user installs while
-// the daemon is already running gets picked up without a restart (MUL-5439).
+// the daemon is already running gets picked up without a restart (ISS-5439).
 // Everything it reads is process-external (PATH, ORCHESTRA_*_PATH, ORCHESTRA_*_MODEL),
 // so re-running it is the only way to observe such an install.
 //
@@ -105,7 +105,7 @@ var probeAgentCLIs = func() map[string]AgentEntry {
 	// sync.Once would fork a login shell on every discovery round, since there
 	// is almost always at least one uninstalled provider to miss on. The TTL
 	// still lets a CLI installed into a login-shell-only PATH dir (nvm, fnm,
-	// ~/.local/bin via ~/.zshrc) be discovered without a restart (MUL-5439).
+	// ~/.local/bin via ~/.zshrc) be discovered without a restart (ISS-5439).
 	getShellResolved := cachedShellResolvedAgents
 	probe := func(envVar, defaultCmd, modelEnv string) (AgentEntry, bool) {
 		cmd := envOrDefault(envVar, defaultCmd)
@@ -186,7 +186,7 @@ var probeAgentCLIs = func() map[string]AgentEntry {
 	if e, ok := probe("ORCHESTRA_CODEBUDDY_PATH", "codebuddy", "ORCHESTRA_CODEBUDDY_MODEL"); ok {
 		agents["codebuddy"] = e
 	}
-	// agy 1.0.6 added a `--model` flag (MUL-3125), so Antigravity now takes a
+	// agy 1.0.6 added a `--model` flag (ISS-3125), so Antigravity now takes a
 	// model env like every other backend. ORCHESTRA_ANTIGRAVITY_MODEL seeds the
 	// daemon-wide default; its value is the exact `agy models` display string
 	// (e.g. "Claude Opus 4.6 (Thinking)"), not a provider/model slug.
@@ -198,7 +198,7 @@ var probeAgentCLIs = func() map[string]AgentEntry {
 	// It must go through probe() like every other provider so the login-shell
 	// fallback applies: a GUI/Launchpad-started daemon does not inherit the
 	// interactive shell PATH, and without the fallback a perfectly good
-	// qodercli install stayed invisible across restarts (MUL-5524).
+	// qodercli install stayed invisible across restarts (ISS-5524).
 	if e, ok := probe("ORCHESTRA_QODER_PATH", "qodercli", "ORCHESTRA_QODER_MODEL"); ok {
 		agents["qoder"] = e
 	}

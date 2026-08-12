@@ -21,7 +21,7 @@ import (
 // "stream ended without terminal result" when finalizing the error (cursor.go),
 // so a lost race replaces the failure the test is asserting on with
 // "cursor-agent prompt write failed: broken pipe" — the flake that turned main
-// red on 2026-07-30 (MUL-5536).
+// red on 2026-07-30 (ISS-5536).
 //
 // Draining stdin first makes the fake honour the same contract as the real CLI,
 // which removes the race instead of papering over it. Only fixtures whose

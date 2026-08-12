@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/analytics"
-	"github.com/multica-ai/multica/server/internal/metrics"
+	"github.com/JanMori/Orchestra/server/internal/analytics"
+	"github.com/JanMori/Orchestra/server/internal/metrics"
 )
 
 func TestNormalizePR3LabelsCollapseUnknownValues(t *testing.T) {

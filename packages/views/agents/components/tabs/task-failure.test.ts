@@ -6,7 +6,7 @@ import { failureReasonLabel } from "./task-failure";
 // offender is only actionable if the runs it links to actually say why they
 // failed.
 describe("failureReasonLabel", () => {
-  it("labels the refined agent_error.* reasons the backend has written since MUL-1949", () => {
+  it("labels the refined agent_error.* reasons the backend has written since ISS-1949", () => {
     // Regression: this used to be a Record indexed with a cast to the old
     // 6-value coarse enum, so every one of these resolved to `undefined` and
     // the row rendered no reason at all.
@@ -22,7 +22,7 @@ describe("failureReasonLabel", () => {
     expect(failureReasonLabel("queued_expired")).toBe("Expired in queue");
   });
 
-  it("still labels the pre-MUL-1949 coarse reasons on historical rows", () => {
+  it("still labels the pre-ISS-1949 coarse reasons on historical rows", () => {
     expect(failureReasonLabel("agent_error")).toBe("Agent execution error");
     expect(failureReasonLabel("runtime_offline")).toBe("Daemon offline");
     expect(failureReasonLabel("manual")).toBe("Cancelled by user");

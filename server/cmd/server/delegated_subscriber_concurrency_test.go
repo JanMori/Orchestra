@@ -5,12 +5,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
-// Concurrency regressions for MUL-5483 review round 7.
+// Concurrency regressions for ISS-5483 review round 7.
 //
 // The earlier cut checked membership and ancestor opt-out in their own round
 // trips and then inserted in another, so a competing request could invalidate

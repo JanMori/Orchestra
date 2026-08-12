@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // TestCommentMentionsAnyone covers the pure helper that drives the
@@ -28,10 +28,10 @@ func TestCommentMentionsAnyone(t *testing.T) {
 		{name: "member mention", content: "[@Bob](mention://member/22222222-2222-2222-2222-222222222222)", want: true},
 		{name: "crew mention", content: "[@Crew](mention://crew/44444444-4444-4444-4444-444444444444)", want: true},
 		{name: "mention all", content: "[@all](mention://all/all)", want: true},
-		{name: "issue mention only", content: "see [MUL-1](mention://issue/33333333-3333-3333-3333-333333333333)", want: false},
-		{name: "issue + plain text", content: "see [MUL-1](mention://issue/33333333-3333-3333-3333-333333333333) for context", want: false},
+		{name: "issue mention only", content: "see [ISS-1](mention://issue/33333333-3333-3333-3333-333333333333)", want: false},
+		{name: "issue + plain text", content: "see [ISS-1](mention://issue/33333333-3333-3333-3333-333333333333) for context", want: false},
 		{name: "agent plus member", content: "[@A](mention://agent/11111111-1111-1111-1111-111111111111) cc [@B](mention://member/22222222-2222-2222-2222-222222222222)", want: true},
-		{name: "issue plus member", content: "blocks [MUL-1](mention://issue/33333333-3333-3333-3333-333333333333) — [@Bob](mention://member/22222222-2222-2222-2222-222222222222)", want: true},
+		{name: "issue plus member", content: "blocks [ISS-1](mention://issue/33333333-3333-3333-3333-333333333333) — [@Bob](mention://member/22222222-2222-2222-2222-222222222222)", want: true},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -155,7 +155,7 @@ func TestShouldEnqueueCrewLeaderOnComment_SkipsWhenMemberMentionsAnyone(t *testi
 		},
 		{
 			name:        "member issue cross-reference only triggers leader",
-			content:     "blocked by [MUL-1](mention://issue/" + testUserID + ")",
+			content:     "blocked by [ISS-1](mention://issue/" + testUserID + ")",
 			authorType:  "member",
 			authorID:    testUserID,
 			want:        true,
@@ -223,7 +223,7 @@ func TestShouldEnqueueCrewLeaderOnComment_SkipsWhenMemberMentionsAnyone(t *testi
 }
 
 // TestShouldEnqueueCrewLeaderOnComment_AgentAuthoredWorkerCommentsWakeLeader
-// pins the MUL-3879 restored behavior in the new MUL-3794 cascade: an
+// pins the ISS-3879 restored behavior in the new ISS-3794 cascade: an
 // agent-authored worker-result comment on a crew-assigned issue wakes the
 // assigned crew leader so the leader→worker→leader coordination loop stays
 // closed, while the leader's own self-trigger loop stays suppressed.
@@ -390,7 +390,7 @@ func TestCreateComment_CrewPlainReplyToMemberParentKeepsRootMentionOwner(t *test
 	}
 }
 
-// TestCreateComment_DualRoleAgentWorkerCommentWakesLeader pins the MUL-3879
+// TestCreateComment_DualRoleAgentWorkerCommentWakesLeader pins the ISS-3879
 // restored coordination loop at the full-handler level. Scenario:
 //
 //   - Agent L is the leader of crew S and also runs worker tasks on issues
@@ -458,7 +458,7 @@ func TestCreateComment_DualRoleAgentWorkerCommentWakesLeader(t *testing.T) {
 }
 
 // TestCreateComment_CrewLeaderMentionTaskDoesNotSelfTriggerAssignedFallback
-// pins MUL-4024's direct-mention gap:
+// pins ISS-4024's direct-mention gap:
 //
 //   - A member explicitly @mentions the issue's assigned crew leader by agent
 //     id, which queues a generic mention task for L (is_leader_task=false,
@@ -547,7 +547,7 @@ func TestCreateComment_CrewLeaderMentionTaskDoesNotSelfTriggerAssignedFallback(t
 }
 
 // TestCreateComment_CrewLeaderThreadParentTaskDoesNotSelfTriggerAssignedFallback
-// pins MUL-4024's thread-parent gap: a member reply to the leader's earlier
+// pins ISS-4024's thread-parent gap: a member reply to the leader's earlier
 // comment queues L through EnqueueTaskForThreadParent (is_leader_task=false,
 // crew_id=NULL). L's reply from that generic task must not queue L again as
 // the assigned crew leader.
@@ -658,7 +658,7 @@ func TestCreateComment_CrewLeaderThreadParentTaskDoesNotSelfTriggerAssignedFallb
 }
 
 // TestCreateRetryTask_InheritsIsLeaderTask locks the retry-clone contract for
-// MUL-2218: auto-retry of a leader-role task must produce a child task that is
+// ISS-2218: auto-retry of a leader-role task must produce a child task that is
 // also is_leader_task=true. Without this, MaybeRetryFailedTask silently
 // demotes a retried leader task to a worker task, and role-specific claim-time
 // briefing/self-mention guards lose the leader provenance.

@@ -1,6 +1,6 @@
 # Self-Hosting Setup (for AI Agents)
 
-This document is designed for AI agents to execute. Follow these steps exactly to deploy a local Multica instance and connect to it.
+This document is designed for AI agents to execute. Follow these steps exactly to deploy a local Orchestra instance and connect to it.
 
 ## Prerequisites
 
@@ -12,26 +12,26 @@ This document is designed for AI agents to execute. Follow these steps exactly t
 
 ```bash
 # Install CLI + provision self-host server
-curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash -s -- --with-server
+curl -fsSL https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.sh | bash -s -- --with-server
 
 # Configure CLI for localhost, authenticate, and start daemon
 orchestra setup self-host
 ```
 
-Wait for the server output `✓ Multica server is running and CLI is ready!` before running `orchestra setup self-host`.
+Wait for the server output `✓ Orchestra server is running and CLI is ready!` before running `orchestra setup self-host`.
 
 **Expected result:**
 - Frontend at http://localhost:3000
 - Backend at http://localhost:8080
-- `multica` CLI installed and configured for localhost
+- `orchestra` CLI installed and configured for localhost
 
 ## Alternative: Manual Setup
 
 ```bash
-git clone https://github.com/multica-ai/multica.git
-cd multica
+git clone https://github.com/JanMori/Orchestra.git
+cd orchestra
 make selfhost
-brew install multica-ai/tap/multica
+brew install orchestra-ai/tap/orchestra
 orchestra setup self-host
 ```
 
@@ -56,7 +56,7 @@ Should show `running` with detected agents.
 orchestra daemon stop
 
 # Stop all Docker services
-cd multica
+cd orchestra
 make selfhost-stop
 ```
 

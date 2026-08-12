@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/util"
+	"github.com/JanMori/Orchestra/server/internal/util"
 )
 
 // createPermissionTestMember inserts a fresh workspace member and returns its
@@ -31,7 +31,7 @@ func createPermissionTestMember(t *testing.T, email string) string {
 }
 
 // TestCreateAgent_LegacyVisibilityMapsToPermission verifies the lossless
-// legacy-visibility mapping (MUL-3963) at the API layer — the same mapping the
+// legacy-visibility mapping (ISS-3963) at the API layer — the same mapping the
 // migration backfill applies to existing rows:
 //   - visibility "workspace" -> permission_mode public_to + a workspace target
 //   - visibility "private"   -> permission_mode private + no targets
@@ -148,7 +148,7 @@ func TestMigrationBackfill_VisibilityToPermission(t *testing.T) {
 // TestCanInvokeAgent_PublicToMemberWhitelist verifies that a public_to agent
 // restricted to a specific member is invocable (assignable) only by that
 // member — not by other plain members, and not by workspace admins who are not
-// on the list (MUL-3963).
+// on the list (ISS-3963).
 func TestCanInvokeAgent_PublicToMemberWhitelist(t *testing.T) {
 	if testHandler == nil || testPool == nil {
 		t.Skip("database not available")
@@ -206,7 +206,7 @@ func TestCanInvokeAgent_PublicToMemberWhitelist(t *testing.T) {
 	}
 }
 
-// --- MUL-3963 follow-up: stackable / mixed / batch-replaced targets -------
+// --- ISS-3963 follow-up: stackable / mixed / batch-replaced targets -------
 
 // createPublicToAgentWithTargets creates a public_to agent (owned by
 // testUserID) with the given invocation targets via the CreateAgent handler
@@ -375,7 +375,7 @@ func TestUpdateAgent_WorkspaceStacksWithMembersThenNarrowed(t *testing.T) {
 	}
 }
 
-// TestCreateAgent_EmptyPublicToNormalizesToWorkspace locks the MUL-3963 review
+// TestCreateAgent_EmptyPublicToNormalizesToWorkspace locks the ISS-3963 review
 // ruling: a public_to agent with no invocation targets is a phantom, so the
 // backend normalises it to a single workspace target (and therefore derived
 // visibility "workspace"). This also covers `--permission-mode public_to`
@@ -423,7 +423,7 @@ func TestCreateAgent_EmptyPublicToNormalizesToWorkspace(t *testing.T) {
 }
 
 // TestCanInvokeAgent_SystemWorkspaceExceptionAndMemberFailClosed locks the
-// product-approved exception (MUL-3963): a system / no-human-originator trigger
+// product-approved exception (ISS-3963): a system / no-human-originator trigger
 // MAY hit a workspace target (webhook / workspace-wide automation), but MUST
 // fail closed against a member/team target when no originator resolves.
 func TestCanInvokeAgent_SystemWorkspaceExceptionAndMemberFailClosed(t *testing.T) {
@@ -469,7 +469,7 @@ func TestCanInvokeAgent_SystemWorkspaceExceptionAndMemberFailClosed(t *testing.T
 	}
 }
 
-// TestRevokeMember_ClearsInvocationTargets is the MUL-3963 review regression:
+// TestRevokeMember_ClearsInvocationTargets is the ISS-3963 review regression:
 // removing a member must prune their member-target invocation grants (there is
 // no DB FK), and a re-invited user must NOT silently reclaim the old grant.
 func TestRevokeMember_ClearsInvocationTargets(t *testing.T) {
@@ -525,7 +525,7 @@ func TestRevokeMember_ClearsInvocationTargets(t *testing.T) {
 }
 
 // TestRevokeMember_InvocationTargetCleanupIsWorkspaceScoped locks the 3rd-review
-// fix (MUL-3963): removing a user from ONE workspace must only prune their
+// fix (ISS-3963): removing a user from ONE workspace must only prune their
 // member-target invocation grants in THAT workspace. A user who belongs to
 // multiple workspaces must keep their grants in the workspaces they remain in.
 func TestRevokeMember_InvocationTargetCleanupIsWorkspaceScoped(t *testing.T) {

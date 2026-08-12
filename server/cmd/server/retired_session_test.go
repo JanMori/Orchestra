@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/service"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -263,7 +263,7 @@ func TestFailTaskKeepsChatPointerOnTransientFailure(t *testing.T) {
 }
 
 // TestGetLastChatTaskSessionExcludesOverflowedResumeFromOlderCompletedRow is
-// the chat half of the MUL-5722 topology. Same shape as the issue side: the
+// the chat half of the ISS-5722 topology. Same shape as the issue side: the
 // overflowed resume records no session, so only the older completed row names
 // the oversized thread.
 //

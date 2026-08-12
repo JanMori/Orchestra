@@ -15,8 +15,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/util/secretbox"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/util/secretbox"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 func withVCSBox(t *testing.T) *secretbox.Box {
@@ -145,7 +145,7 @@ func TestVCSWebhook_ForgejoMirrorsAndCloses(t *testing.T) {
 	}
 }
 
-// A bare body mention ("Related MUL-X", no closing keyword, not in title or
+// A bare body mention ("Related ISS-X", no closing keyword, not in title or
 // branch) must link reference_only: excluded from the issue PR list and from
 // the close gate, so it neither shows as a working PR nor blocks a genuine
 // Closes sibling from advancing the issue. Mirrors the GitHub qualifying rule.

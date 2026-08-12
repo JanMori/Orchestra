@@ -19,7 +19,7 @@ import { useT } from "../../../i18n";
 
 // Env values never reach this component until the user clicks
 // "Reveal & edit" — the agent resource feed no longer carries
-// custom_env at all after MUL-2600. Until then we display only the
+// custom_env at all after ISS-2600. Until then we display only the
 // configured-key count from `agent.custom_env_key_count`, which is
 // safe because it's not the values themselves.
 

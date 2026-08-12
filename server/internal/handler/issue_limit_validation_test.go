@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// Backs issue #3563 / MUL-2847: ListIssues must validate and clamp the `limit`
+// Backs issue #3563 / ISS-2847: ListIssues must validate and clamp the `limit`
 // and `offset` query params the same way the sibling endpoints (SearchIssues,
 // ListGroupedIssues) already do. Without these guards:
 //   - limit=-1  → Postgres rejects the negative LIMIT → HTTP 500

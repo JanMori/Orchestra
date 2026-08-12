@@ -33,7 +33,7 @@ const MACHINE_PROVIDER_PREVIEW = 4;
 /**
  * Two-level runtime picker for the agent settings form. A machine-level
  * rename stamps the same custom name on every runtime of a daemon
- * (MUL-4217), so the previous flat list rendered N indistinguishable
+ * (ISS-4217), so the previous flat list rendered N indistinguishable
  * "Jiayuan's MacBook Pro" rows. Level 1 lists machines; drilling in lists
  * that machine's runtimes labelled by what actually differs — the runtime
  * itself. Opening lands inside the selected runtime's machine so the common

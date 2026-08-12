@@ -122,7 +122,7 @@ func (b *cursorBackend) Execute(ctx context.Context, prompt string, opts ExecOpt
 		// unhandledTypes tracks top-level event types the switch below does not
 		// handle. See cursorUnhandledTypeTally: it makes a dropped event
 		// observable, and documents what the count does and does not establish
-		// (MUL-5434).
+		// (ISS-5434).
 		var unhandledTypes cursorUnhandledTypeTally
 		lastEventType := "none"
 		// assistantBytes counts only model-authored streamed text. It is kept
@@ -185,7 +185,7 @@ func (b *cursorBackend) Execute(ctx context.Context, prompt string, opts ExecOpt
 				// as it lands so the daemon's 500ms flush shows it mid-run),
 				// `completed` closes the block. An unknown subtype is NOT folded
 				// into reasoning — silently absorbing upstream additions is the
-				// exact failure mode this fix exists to prevent (MUL-5231).
+				// exact failure mode this fix exists to prevent (ISS-5231).
 				switch evt.Subtype {
 				case "delta":
 					if content := thinking.delta(evt.Text); content != "" {
@@ -204,7 +204,7 @@ func (b *cursorBackend) Execute(ctx context.Context, prompt string, opts ExecOpt
 				// NOT synthesize a result — that would decrement the daemon's
 				// in-flight tool count early and drop a still-running long tool
 				// from the tool watchdog onto the shorter idle watchdog, which
-				// can force-stop it as falsely stuck (MUL-5231 review).
+				// can force-stop it as falsely stuck (ISS-5231 review).
 				switch evt.Subtype {
 				case "started":
 					call := parseCursorToolCall(&evt)
@@ -304,7 +304,7 @@ func (b *cursorBackend) Execute(ctx context.Context, prompt string, opts ExecOpt
 				// bug: if the CLI renames `tool_call` or `thinking`, every tool
 				// and reasoning row vanishes while the run still reports
 				// success and tool_use_count=0, with no diagnostic to
-				// distinguish that from a tool-free run (MUL-5434).
+				// distinguish that from a tool-free run (ISS-5434).
 				//
 				// Counting makes the drop observable. It does not identify the
 				// cause on its own — see cursorUnhandledTypeTally for what a
@@ -312,7 +312,7 @@ func (b *cursorBackend) Execute(ctx context.Context, prompt string, opts ExecOpt
 				//
 				// Counting is also all we do. An unrecognized event is never
 				// coerced into a tool or reasoning message: guessing at
-				// upstream additions is the failure mode MUL-5231 already
+				// upstream additions is the failure mode ISS-5231 already
 				// fixed once.
 				if !cursorNonTranscriptEventType(evt.Type) {
 					unhandledTypes.observe(evt.Type)
@@ -497,7 +497,7 @@ func observedCursorEventType(value string) string {
 //   - `user` — the CLI echoing our own prompt back. Confirmed present in the
 //     recorded 2026.07.20 stream, i.e. in every real run.
 //   - `connection`, `retry` — transport/control frames reported on newer CLI
-//     builds (MUL-5434 review). Not reproduced locally, so they are listed
+//     builds (ISS-5434 review). Not reproduced locally, so they are listed
 //     defensively: if a build does not emit them the entry is inert, and if it
 //     does we must not call a known control frame an unhandled protocol event.
 //
@@ -528,7 +528,7 @@ const cursorUnhandledTypeOverflowKey = "(overflow)"
 // cursorUnhandledTypeTally counts top-level event types this parser does not
 // handle, so that dropping them stops being silent. Before it existed a renamed
 // `tool_call` fell through the type switch and the run reported success with
-// tool_use_count=0 and no diagnostic whatsoever (MUL-5434).
+// tool_use_count=0 and no diagnostic whatsoever (ISS-5434).
 //
 // Read it as evidence, not as a verdict — in both directions:
 //

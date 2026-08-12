@@ -206,7 +206,7 @@ var (
 		"other":   "other",
 	}
 
-	// Evidence kinds for multica_chat_output_local_path_total (MUL-4899). A
+	// Evidence kinds for multica_chat_output_local_path_total (ISS-4899). A
 	// closed allowlist is what keeps the offending path out of Prometheus: the
 	// caller passes a classification, never a fragment of the reply.
 	knownChatOutputLocalPathKinds = map[string]string{

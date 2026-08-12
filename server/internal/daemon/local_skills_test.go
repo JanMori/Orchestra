@@ -672,7 +672,7 @@ func TestLoadRuntimeLocalSkillBundle_Cursor(t *testing.T) {
 }
 
 // ---------------------------------------------------------------------------
-// Multi-root discovery: provider root + universal ~/.agents/skills (MUL-3333)
+// Multi-root discovery: provider root + universal ~/.agents/skills (ISS-3333)
 // ---------------------------------------------------------------------------
 
 // A skill that lives only in the universal ~/.agents/skills root (no provider

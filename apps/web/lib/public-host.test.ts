@@ -10,7 +10,7 @@ describe("isOfficialMarketingHost", () => {
     },
   );
 
-  it.each(["app.multica.ai", "api.multica.ai", "localhost", "multica.test"])(
+  it.each(["app.multica.ai", "localhost:7081", "localhost", "multica.test"])(
     "does not treat %s as the public marketing host",
     (host) => {
       expect(isOfficialMarketingHost(host)).toBe(false);

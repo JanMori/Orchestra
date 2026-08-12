@@ -43,7 +43,7 @@ func TestPgCronConcurrentNoDoubleWrite(t *testing.T) {
 	// exactly one of N concurrent callers advances it. Serialise against any
 	// other package's rollup test running concurrently against the same DB,
 	// otherwise a stray rollup tick advances the watermark past our window
-	// and we see winners=0 (MUL-3980).
+	// and we see winners=0 (ISS-3980).
 	lockRollupSingleton(t, pool)
 
 	// Seed an isolated workspace/runtime/agent/task and a handful of

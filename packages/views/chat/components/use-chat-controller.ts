@@ -80,7 +80,7 @@ export function deriveChatTitle(content: string): string {
  * The active session answers this on its own, deliberately. The new-chat
  * composer is ONE box per workspace (see DRAFT_NEW_SESSION), so moving the
  * agent picker re-points where the next send goes without moving the view or
- * the draft slot — that is not "navigating away" (MUL-4864). Counting it as
+ * the draft slot — that is not "navigating away" (ISS-4864). Counting it as
  * such would leave a completed send's text sitting in the composer, primed to
  * be sent a second time to the agent just picked.
  *
@@ -387,11 +387,11 @@ export function useChatController(opts?: { isActive?: boolean }) {
   // the floating overlay passes `isOpen`, the tab passes `true`. `appForeground`
   // additionally requires the window to be visible and focused: a reply landing
   // while the app is backgrounded must stay unread so the sidebar badges it
-  // (MUL-4485); it clears the moment the user returns and this effect re-runs.
+  // (ISS-4485); it clears the moment the user returns and this effect re-runs.
   //
   // The read is deferred by a tick and cancelled on cleanup, so a session that
   // is only *momentarily* active never gets marked read. This is the fix for
-  // MUL-4360's mount race: `activeSessionId` is persisted, so on a bare `/chat`
+  // ISS-4360's mount race: `activeSessionId` is persisted, so on a bare `/chat`
   // navigation the page restores the last session for one frame before its
   // URL→store effect (which runs AFTER this hook's effects, since the hook is
   // called first) clears it back to null. Without the defer, that restored-but-
@@ -477,7 +477,7 @@ export function useChatController(opts?: { isActive?: boolean }) {
   }, [activeSessionId, sessionsLoaded, sessions, qc, setActiveSession]);
 
   // Upload transport moved into the coordinated-upload engine inside ChatInput
-  // (MUL-5181 L2); surfaces only forward whether the affordance exists.
+  // (ISS-5181 L2); surfaces only forward whether the affordance exists.
   const uploadEnabled = !!activeAgent;
 
   const handleSend = useCallback(
@@ -529,7 +529,7 @@ export function useChatController(opts?: { isActive?: boolean }) {
       } catch (err) {
         apiLogger.error("sendChatMessage.ensureSession.error", err);
         // A revoked invoke permission blocks session create with a structured
-        // 403 (MUL-4525) — name the cause instead of a generic failure.
+        // 403 (ISS-4525) — name the cause instead of a generic failure.
         const reason = dispatchReasonCode(err);
         toast.error(
           reason === "invocation_not_allowed"
@@ -557,7 +557,7 @@ export function useChatController(opts?: { isActive?: boolean }) {
       } catch (err) {
         apiLogger.error("sendChatMessage.error", { sessionId, err });
         // Invoke permission can be revoked mid-session; the send is refused with
-        // a structured 403 before anything persists (MUL-4525). Surface the
+        // a structured 403 before anything persists (ISS-4525). Surface the
         // specific cause so the user knows it is a permission change, not a
         // transient failure they should retry.
         const reason = dispatchReasonCode(err);

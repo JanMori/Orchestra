@@ -20,7 +20,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/multica-ai/multica/server/pkg/redact"
+	"github.com/JanMori/Orchestra/server/pkg/redact"
 )
 
 // codexBlockedArgs are flags hardcoded by the daemon that must not be
@@ -56,7 +56,7 @@ const (
 	// independent field reports measured the first progress event landing just
 	// past 30s on gpt-5.5, and ~39s for a WSL app-server (GH #5959). Both were
 	// healthy turns the watchdog killed. 60s clears that evidence with margin
-	// while keeping the fast-fail value (MUL-5542).
+	// while keeping the fast-fail value (ISS-5542).
 	defaultCodexFirstTurnNoProgressTimeout = 60 * time.Second
 	defaultCodexHandshakeTimeout           = 30 * time.Second
 	codexVersionDiagnosticTimeout          = 2 * time.Second
@@ -175,7 +175,7 @@ const (
 //
 // The session behind such a failure is unusable for resume until it shrinks,
 // which it never does — codex rollouts are append-only. Callers use this to
-// stop handing the same oversized thread to the next task (MUL-5722).
+// stop handing the same oversized thread to the next task (ISS-5722).
 func CodexResumeOverflowError(errText string) bool {
 	if errText == "" {
 		return false
@@ -284,7 +284,7 @@ func buildCodexArgs(opts ExecOptions, logger *slog.Logger) []string {
 // `'-c' 'windows.sandbox=unelevated'`), and only after this same normalization
 // does it match the `-c windows.sandbox=…` shape the sandbox detector looks
 // for. Reconstructing the args any other way lets the two drift, silently
-// downgrading a user's isolation opt-in (MUL-4957).
+// downgrading a user's isolation opt-in (ISS-4957).
 func NormalizeCodexLaunchArgs(extraArgs, customArgs []string, mcpConfig json.RawMessage, logger *slog.Logger) []string {
 	extra := filterCustomArgs(extraArgs, codexBlockedArgs, logger)
 	custom := filterCustomArgs(customArgs, codexBlockedArgs, logger)
@@ -844,7 +844,7 @@ func (b *codexBackend) Execute(ctx context.Context, prompt string, opts ExecOpti
 			// discarded attempt's thread (initialize retries fail before any
 			// thread exists; catalog retries clear ResumeSessionID below), so
 			// forwarding its pin would leave the resume pointer aimed at a
-			// thread that never produced a turn (MUL-5110). The first non-pin
+			// thread that never produced a turn (ISS-5110). The first non-pin
 			// message means the attempt is live: flush and stream from then on.
 			var heldPins []Message
 			holdingPins := true
@@ -1131,7 +1131,7 @@ func (b *codexBackend) executeOnce(ctx context.Context, prompt string, opts Exec
 			// process is gone, and bufio.ErrTooLong to tell "we could not read
 			// the response" apart from "codex died". startOrResumeThread needs
 			// that distinction to report an oversized resume as a rejected
-			// resume rather than a crash (MUL-5722).
+			// resume rather than a crash (ISS-5722).
 			c.markProcessExited(fmt.Errorf("%w: %w", errCodexProcessExited, err))
 			return
 		}
@@ -1401,11 +1401,11 @@ func (b *codexBackend) executeOnce(ctx context.Context, prompt string, opts Exec
 		// transport failure forced a fresh retry), prepend the caller's continuity
 		// notice so the agent does not assume continuity it no longer has. The
 		// daemon's pre-flight gates only catch cases detectable before launch;
-		// this covers the ones only the live resume reveals (MUL-4424).
+		// this covers the ones only the live resume reveals (ISS-4424).
 		//
 		// Whether that notice asks the agent to tell the USER is the caller's
 		// call, not ours: it depends on whether this surface's conversation is
-		// still readable, which this package cannot see (MUL-5722).
+		// still readable, which this package cannot see (ISS-5722).
 		turnParams := map[string]any{
 			"threadId": threadID,
 			"input":    codexTurnInput(prompt, opts.ResumeExpected, resumed, opts.ResumeContinuityNotice),
@@ -1413,7 +1413,7 @@ func (b *codexBackend) executeOnce(ctx context.Context, prompt string, opts Exec
 		// Per-turn reasoning override. Mirrors the per-thread injection in
 		// startOrResumeThread; keeping both in sync is enforced by the
 		// shared `codexReasoningInjection` fixture in codex_test.go (see
-		// MUL-2339 — Trump's constraint that the three injection points
+		// ISS-2339 — Trump's constraint that the three injection points
 		// must not drift independently).
 		applyCodexReasoningEffort(turnParams, opts.ThinkingLevel)
 		applyCodexServiceTier(turnParams, opts.ServiceTier)
@@ -1677,7 +1677,7 @@ func (b *codexBackend) executeOnce(ctx context.Context, prompt string, opts Exec
 		// Fallback: if no usage from JSON-RPC, scan Codex session JSONL logs.
 		// Codex writes token_count events to $CODEX_HOME/sessions/YYYY/MM/DD/*.jsonl;
 		// scan this backend's per-task CODEX_HOME, since sessions are isolated
-		// there rather than in the shared ~/.codex/sessions (MUL-4424).
+		// there rather than in the shared ~/.codex/sessions (ISS-4424).
 		if u.InputTokens == 0 && u.OutputTokens == 0 {
 			taskCodexHome := strings.TrimSpace(b.cfg.Env["CODEX_HOME"])
 			if scanned := scanCodexSessionUsage(startTime, taskCodexHome, threadID, resumed); scanned != nil {
@@ -1715,7 +1715,7 @@ func (b *codexBackend) executeOnce(ctx context.Context, prompt string, opts Exec
 // constant in this file that mirrored the daemon's, which meant two hand-kept
 // copies of the same paragraph and no way for this package to know which
 // surface it was running on — the wording is only correct if you know whether
-// the conversation is still readable (MUL-5722).
+// the conversation is still readable (ISS-5722).
 
 // codexTurnInput builds the input content for the first turn/start. When a
 // resume was expected (resumeExpected) but the backend landed on a fresh thread
@@ -1757,7 +1757,7 @@ func (c *codexClient) startOrResumeThread(ctx context.Context, opts ExecOptions,
 		// Explicit override of the persisted reasoning effort: without
 		// this, a Codex resume silently reuses whatever level the prior
 		// session was created with, even when the user has flipped the
-		// agent's thinking_level since. See MUL-2339 — Elon flagged that
+		// agent's thinking_level since. See ISS-2339 — Elon flagged that
 		// resume must honour the live config, not the stored one.
 		applyCodexReasoningEffort(resumeParams, opts.ThinkingLevel)
 		applyCodexServiceTier(resumeParams, opts.ServiceTier)
@@ -1781,7 +1781,7 @@ func (c *codexClient) startOrResumeThread(ctx context.Context, opts ExecOptions,
 	// already in context and inlining it would duplicate it on every turn.
 	// Confirmed end-to-end against codex-cli 0.144.6 driving the real
 	// app-server (thread/start -> turn/start) with developerInstructions unset
-	// (MUL-5392).
+	// (ISS-5392).
 	startParams := map[string]any{
 		"model":                  nilIfEmpty(opts.Model),
 		"modelProvider":          nil,
@@ -1856,7 +1856,7 @@ func (c *codexClient) setThreadName(ctx context.Context, threadID, name string) 
 // Codex app-server request. The three points — thread/start.config,
 // thread/resume.config, turn/start.effort — all flow through this helper
 // so any future protocol/key change touches one site rather than three
-// (per Trump's MUL-2339 review constraint).
+// (per Trump's ISS-2339 review constraint).
 //
 // The shape is detected from the params keys:
 //   - turn/start always carries `input`, and the schema exposes the
@@ -2395,7 +2395,7 @@ func (c *codexClient) getProcessErr() error {
 // fallback. By the time we get here the reader goroutine has exited and codex
 // is blocked writing the rest of the oversized line into a pipe nobody drains,
 // so this process can no longer answer any RPC. The daemon's fresh-session
-// retry re-execs codex, which is the only way back (MUL-5722).
+// retry re-execs codex, which is the only way back (ISS-5722).
 //
 // Requires ResumeSessionID: an overflow on a thread/start response is a
 // different failure and nothing about the session pointer would fix it.

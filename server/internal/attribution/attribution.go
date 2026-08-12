@@ -1,5 +1,5 @@
 // Package attribution implements the accountable-human resolution contract for
-// agent task runs (MUL-4302, "Human Attribution"). Every run enqueued into
+// agent task runs (ISS-4302, "Human Attribution"). Every run enqueued into
 // agent_task_queue must be traceable to exactly one accountable human, and the
 // attribution must be EXPLAINABLE: it records not just who, but at which
 // waterfall level the human was resolved (a direct member action, a delegation
@@ -12,7 +12,7 @@
 // into the Classify* functions so the rules remain side-effect-free and fully
 // unit-testable without a database.
 //
-// Hard invariant (MUL-4302 §1.3): attribution is "on behalf of", never blame
+// Hard invariant (ISS-4302 §1.3): attribution is "on behalf of", never blame
 // and never authorization. Nothing in this package is consulted for permission
 // decisions — it labels provenance for visibility, audit, and cost only. In
 // particular the accountable-human value stamped here mirrors the existing
@@ -25,7 +25,7 @@ import "github.com/jackc/pgx/v5/pgtype"
 // Source is the waterfall level that resolved the accountable human for a run.
 // Stored verbatim in agent_task_queue.originator_source. Kept as free strings
 // (no DB CHECK) so a newly-modeled trigger path can introduce a source without
-// a schema migration (MUL-4302 §7).
+// a schema migration (ISS-4302 §7).
 type Source string
 
 const (
@@ -36,28 +36,28 @@ const (
 	// SourceDelegation — an agent running on behalf of a human caused the
 	// enqueue (agent @-mentions another agent, agent creates a sub-issue,
 	// stage-completion wakeup). The parent task's accountable human is COPIED,
-	// not chained, so delegation cycles stay harmless (MUL-4302 §3.2).
+	// not chained, so delegation cycles stay harmless (ISS-4302 §3.2).
 	SourceDelegation Source = "delegation"
 	// SourceCommentSource — the issue's standing assignee reacted to an
 	// agent/system-authored comment; the human is resolved through
-	// comment.source_task_id (a special case of delegation, MUL-4302 §3.3).
+	// comment.source_task_id (a special case of delegation, ISS-4302 §3.3).
 	SourceCommentSource Source = "comment_source"
 	// SourceTriggerOwner — an autopilot schedule/webhook trigger enqueued the run;
 	// the accountable human is the member who CREATED that specific trigger (set up
 	// the schedule / registered the webhook). Preferred over rule_owner: a run is
 	// accountable to whoever armed the trigger that fired it, not to whoever last
-	// published the rule (MUL-4302; Bohan's refinement). originator stays NULL — an
+	// published the rule (ISS-4302; Bohan's refinement). originator stays NULL — an
 	// autonomous fire carries no human authorization — so this is the same authz-safe
 	// audit-only divergence as rule_owner.
 	SourceTriggerOwner Source = "trigger_owner"
 	// SourceRuleOwner — an autopilot trigger enqueued the run but its creator is not
 	// recoverable (a trigger created before per-trigger creators were recorded); the
 	// accountable human degrades to the publisher of the rule's active version
-	// (MUL-4302 §3.4). Precise, but coarser than trigger_owner.
+	// (ISS-4302 §3.4). Precise, but coarser than trigger_owner.
 	SourceRuleOwner Source = "rule_owner"
 	// SourceOwnerFallback — nothing above resolved a human, so attribution
 	// degrades to the agent owner. This is DEGRADED, not compliance-grade, and
-	// must be surfaced distinctly (MUL-4302 §3.5).
+	// must be surfaced distinctly (ISS-4302 §3.5).
 	SourceOwnerFallback Source = "owner_fallback"
 	// SourceBackfill — a historical row attributed after the fact by the
 	// backfill command; never impersonates a real-time attribution.
@@ -70,7 +70,7 @@ const (
 
 // Precise reports whether src is a compliance-grade (non-degraded) attribution.
 // owner_fallback, backfill, and unattributed are degraded and count against the
-// attribution-coverage health metric (MUL-4302 §9).
+// attribution-coverage health metric (ISS-4302 §9).
 func (src Source) Precise() bool {
 	switch src {
 	case SourceDirectHuman, SourceDelegation, SourceCommentSource, SourceTriggerOwner, SourceRuleOwner:
@@ -102,13 +102,13 @@ const (
 	// EvidenceChat points the uniform evidence pair at the chat session that
 	// triggered the run — the chat analogue of autopilot_run/issue_assignment.
 	// The dedicated chat_session_id column still exists for its own consumers;
-	// this makes the attribution UI's jump-to-evidence path uniform (MUL-4302 §2).
+	// this makes the attribution UI's jump-to-evidence path uniform (ISS-4302 §2).
 	EvidenceChat EvidenceKind = "chat"
 )
 
 // TriggerKind enumerates every path that can enqueue a run. Kept as an explicit
 // taxonomy so that adding a new trigger path is a visible, deliberate change
-// that has to declare its attribution rule (MUL-4302 §2 architecture
+// that has to declare its attribution rule (ISS-4302 §2 architecture
 // invariant: no enqueue path may exist without a declared attribution).
 type TriggerKind string
 
@@ -159,7 +159,7 @@ type Result struct {
 }
 
 // finalizeAttribution enforces the one-way Phase 1 accountability invariant
-// (MUL-4302 §11): a resolved originator IS the accountable human, so
+// (ISS-4302 §11): a resolved originator IS the accountable human, so
 // `originator_user_id IS NOT NULL ⟹ accountable_user_id = originator_user_id`.
 // Every Result flows through here. It mirrors UserID onto AccountableUserID
 // whenever UserID is valid; when UserID is NULL (no human authorized the run) it
@@ -188,7 +188,7 @@ type CommentFacts struct {
 	SourceTaskID     pgtype.UUID
 	ParentOriginator pgtype.UUID
 
-	// ParentAccountable is the source task's accountable_user_id (MUL-4302 §3.2).
+	// ParentAccountable is the source task's accountable_user_id (ISS-4302 §3.2).
 	// It lets an autopilot-rooted chain — where the parent has NO authorizing human
 	// (ParentOriginator NULL) but IS accountable to someone (trigger creator / rule
 	// publisher) — copy that responsible human down the delegation, instead of
@@ -227,7 +227,7 @@ func ClassifyComment(f CommentFacts, agentAuthoredSource Source) Result {
 			// The parent had no authorizing human (autopilot-rooted chain:
 			// originator NULL, accountable = trigger creator / rule publisher) but
 			// IS accountable to someone. Copy that accountable down so the
-			// responsibility chain root stays stable at any depth (MUL-4302 §3.2);
+			// responsibility chain root stays stable at any depth (ISS-4302 §3.2);
 			// originator stays NULL so authorization is unchanged and a fail-closed
 			// workspace does not reject a fan-out that has a precise responsible human.
 			r.AccountableUserID = f.ParentAccountable
@@ -251,7 +251,7 @@ type DirectFacts struct {
 
 	// ActorUserID is the member who PERFORMED the action that enqueued this run
 	// (assigned the issue, promoted the backlog child, created-with-assignee).
-	// When valid it is the accountable human per MUL-4302 §4 ("执行 assign /
+	// When valid it is the accountable human per ISS-4302 §4 ("执行 assign /
 	// promote 的成员") and takes precedence over the issue creator: the person who
 	// acted, not whoever happened to file the issue, is on the hook. Left invalid
 	// by non-actor paths (comment chain, rerun, autopilot) which resolve the human
@@ -268,7 +268,7 @@ type DirectFacts struct {
 	OriginOriginator pgtype.UUID
 
 	// OriginAccountable is the origin task's accountable_user_id — the DirectFacts
-	// analogue of CommentFacts.ParentAccountable (MUL-4302 §3.2). An agent-created
+	// analogue of CommentFacts.ParentAccountable (ISS-4302 §3.2). An agent-created
 	// sub-issue whose origin task is autopilot-rooted (OriginOriginator NULL,
 	// accountable set) inherits that accountable via delegation instead of dropping
 	// to unattributed.
@@ -278,7 +278,7 @@ type DirectFacts struct {
 // ClassifyDirect resolves attribution for a run with no trigger comment.
 func ClassifyDirect(f DirectFacts) Result {
 	// A member who directly assigned/promoted the issue is the accountable human,
-	// ahead of the issue's creator (MUL-4302 §4). Evidence points at the issue the
+	// ahead of the issue's creator (ISS-4302 §4). Evidence points at the issue the
 	// action targeted.
 	if f.ActorUserID.Valid {
 		return finalizeAttribution(Result{
@@ -309,7 +309,7 @@ func ClassifyDirect(f DirectFacts) Result {
 		} else if f.OriginAccountable.Valid {
 			// Autopilot-rooted origin task: no authorizing human, but accountable
 			// to the trigger creator / rule publisher. Copy accountable down so the
-			// chain root stays stable; originator stays NULL (MUL-4302 §3.2).
+			// chain root stays stable; originator stays NULL (ISS-4302 §3.2).
 			r.AccountableUserID = f.OriginAccountable
 			r.Source = SourceDelegation
 		} else {
@@ -351,7 +351,7 @@ func Unattributed(evidenceKind EvidenceKind, evidenceRefID pgtype.UUID) Result {
 	return finalizeAttribution(Result{Source: SourceUnattributed, EvidenceKind: evidenceKind, EvidenceRefID: evidenceRefID})
 }
 
-// RuleOwner builds attribution for an autopilot-triggered run (MUL-4302 §3.4).
+// RuleOwner builds attribution for an autopilot-triggered run (ISS-4302 §3.4).
 // No human authorized it, so UserID (originator, the authorization value) stays
 // NULL and canInvokeAgent / the Composio overlay keep seeing "no human"; the
 // AUDIT-accountable human is publisherUserID — the member who published the active
@@ -376,7 +376,7 @@ func RuleOwner(publisherUserID, ruleVersionID pgtype.UUID, evidenceKind Evidence
 }
 
 // TriggerOwner builds attribution for an autopilot schedule/webhook run keyed to
-// the human who created the firing trigger (MUL-4302; Bohan's refinement). Like
+// the human who created the firing trigger (ISS-4302; Bohan's refinement). Like
 // RuleOwner, no human authorized the run, so UserID (originator) stays NULL and
 // only the audit-accountable side is set — to creatorUserID, the trigger's member
 // creator. Evidence is caller-supplied (autopilot_run for run_only, the issue for
@@ -397,7 +397,7 @@ func TriggerOwner(creatorUserID pgtype.UUID, evidenceKind EvidenceKind, evidence
 }
 
 // SubscriptionFacts are the already-fetched facts about an agent-created issue,
-// used to decide who inherits VISIBILITY of it (MUL-5483). Same shape of
+// used to decide who inherits VISIBILITY of it (ISS-5483). Same shape of
 // contract as the Classify* inputs: the caller does the DB reads, the rule
 // stays pure.
 type SubscriptionFacts struct {
@@ -417,7 +417,7 @@ type SubscriptionFacts struct {
 //
 // It deliberately mirrors ClassifyDirect's origin branch rather than inventing
 // a second notion of "whose behalf is this" — the whole defect this fixes was
-// attribution and notification disagreeing about that (MUL-5483). The waterfall
+// attribution and notification disagreeing about that (ISS-5483). The waterfall
 // is narrower than ClassifyDirect's on purpose:
 //
 //   - OriginOriginator valid → subscribe. A human authorized this chain, and
@@ -451,7 +451,7 @@ func DelegatedSubscriber(f SubscriptionFacts) (pgtype.UUID, string, bool) {
 	}
 }
 
-// OwnerFallback degrades an UNATTRIBUTED result to owner_fallback (MUL-4302 §3.5):
+// OwnerFallback degrades an UNATTRIBUTED result to owner_fallback (ISS-4302 §3.5):
 // the agent owner becomes the accountable human so no run is left without one, but
 // this is a DEGRADED label (Source.Precise() == false) and must be surfaced
 // distinctly in reporting. It is audit-only — originator (UserID) stays NULL, so

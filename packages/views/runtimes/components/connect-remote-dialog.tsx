@@ -31,17 +31,20 @@ import { useT } from "../../i18n";
 type Step = "instructions" | "success";
 
 const INSTALL_CMD = "bash scripts/install.sh";
-const CLOUD_SERVER_URL = "http://localhost:7081";
-const CLOUD_APP_URL = "http://localhost:5001";
+const DEFAULT_SERVER_URL = "http://localhost:7081";
+const DEFAULT_APP_URL = "http://localhost:5001";
 
 function normalizeCommandURL(url: string | undefined) {
   return url?.trim().replace(/\/+$/, "") ?? "";
 }
 
 function daemonCommands(serverUrl: string | undefined, appUrl: string | undefined) {
-  const normalizedServerUrl = normalizeCommandURL(serverUrl);
+  let normalizedServerUrl = normalizeCommandURL(serverUrl);
   const normalizedAppUrl = normalizeCommandURL(appUrl);
   if (normalizedServerUrl && normalizedAppUrl) {
+    if (normalizedServerUrl === normalizedAppUrl && normalizedServerUrl.includes(":5001")) {
+      normalizedServerUrl = normalizedServerUrl.replace(":5001", ":7081");
+    }
     return {
       setupCmd: `orchestra setup self-host --server-url ${normalizedServerUrl} --app-url ${normalizedAppUrl}`,
       tokenCmd: `orchestra config set server_url ${normalizedServerUrl}
@@ -53,8 +56,8 @@ orchestra daemon start`,
 
   return {
     setupCmd: "orchestra setup",
-    tokenCmd: `orchestra config set server_url ${CLOUD_SERVER_URL}
-orchestra config set app_url ${CLOUD_APP_URL}
+    tokenCmd: `orchestra config set server_url ${DEFAULT_SERVER_URL}
+orchestra config set app_url ${DEFAULT_APP_URL}
 orchestra login --token <YOUR_TOKEN>
 orchestra daemon start`,
   };

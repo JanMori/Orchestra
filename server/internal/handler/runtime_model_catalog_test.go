@@ -17,7 +17,7 @@ func sampleCatalog() []ModelEntry {
 }
 
 // TestInMemoryModelCatalogCache_RoundTrip is the happy path behind the
-// stale-while-revalidate fast path (MUL-5444): a completed discovery is
+// stale-while-revalidate fast path (ISS-5444): a completed discovery is
 // remembered so the next picker open answers without a daemon round trip.
 func TestInMemoryModelCatalogCache_RoundTrip(t *testing.T) {
 	ctx := context.Background()
@@ -195,7 +195,7 @@ func TestInMemoryModelCatalogCache_ExpiresAndInvalidates(t *testing.T) {
 }
 
 // TestModelCatalogServeWindow_ServesDayOldSnapshotAndRevalidates pins the
-// day-scale serve window (MUL-5444). Nothing keeps a snapshot warm in the
+// day-scale serve window (ISS-5444). Nothing keeps a snapshot warm in the
 // background and the browser's own react-query cache dies with the tab, so a
 // minutes-scale window turned every first-open-of-the-day into a cold daemon
 // round trip — the multi-second wait this cache exists to remove. Freshness is
@@ -393,7 +393,7 @@ func TestCacheableModelCatalog(t *testing.T) {
 	if cacheableModelCatalog([]ModelEntry{}, true, false) {
 		t.Error("an empty (non-nil) catalog is not cacheable either")
 	}
-	// The MUL-5549 hole: a fallback catalog is non-empty and `supported`, so
+	// The ISS-5549 hole: a fallback catalog is non-empty and `supported`, so
 	// both checks above pass it. Only the fallback flag keeps a static
 	// stand-in out of the 24h serve window.
 	if cacheableModelCatalog(sampleCatalog(), true, true) {

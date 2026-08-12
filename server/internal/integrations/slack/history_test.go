@@ -9,8 +9,8 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/slack-go/slack"
 
-	"github.com/multica-ai/multica/server/internal/integrations/channel"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 type fakeHistoryQueries struct {
@@ -249,7 +249,7 @@ func TestChannelOverviewLimitClamp(t *testing.T) {
 
 // TestThreadRecoversBotAttachmentText covers alerting/webhook bots (Grafana
 // cards, incoming webhooks): the body lives in attachments with an empty
-// top-level Text. The root must be recovered, not dropped (MUL-3931 / #4803).
+// top-level Text. The root must be recovered, not dropped (ISS-3931 / #4803).
 func TestThreadRecoversBotAttachmentText(t *testing.T) {
 	q := &fakeHistoryQueries{binding: groupBinding("50.000000"), inst: activeSlackInstall()}
 	root := slack.Message{Msg: slack.Msg{

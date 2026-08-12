@@ -9,9 +9,9 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/events"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/taskfailure"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/taskfailure"
 )
 
 // mockRow implements pgx.Row, returning either a scanned task or pgx.ErrNoRows.
@@ -170,7 +170,7 @@ func TestFailTask_AlreadyFinalized(t *testing.T) {
 }
 
 // TestProviderNetworkRetrySchedule locks in the three-tier schedule for a
-// transient provider stream cut (MUL-4910): first run + immediate retry + one
+// transient provider stream cut (ISS-4910): first run + immediate retry + one
 // retry deferred ~5s, and only for provider_network — other retryable reasons
 // keep their generic max_attempts=2 (single, immediate retry).
 func TestProviderNetworkRetrySchedule(t *testing.T) {
@@ -252,7 +252,7 @@ func TestTaskFailureClassifiers(t *testing.T) {
 	}{
 		{reason: "timeout", wantType: "timeout", wantResumeOK: true, wantRetry: true},
 		{reason: "codex_semantic_inactivity", wantType: "timeout", wantResumeOK: false, wantRetry: true},
-		// Transient mid-stream provider disconnect (MUL-4910): retryable, and
+		// Transient mid-stream provider disconnect (ISS-4910): retryable, and
 		// resume-safe so the retry continues the truncated conversation.
 		{reason: "agent_error.provider_network", wantType: "agent_error", wantResumeOK: true, wantRetry: true},
 		{reason: "runtime_recovery", wantType: "runtime", wantResumeOK: true, wantRetry: true},
@@ -281,7 +281,7 @@ func TestTaskFailureClassifiers(t *testing.T) {
 }
 
 // TestSkillBundleFailureFromLegacyDaemonRetries is the mixed-version
-// regression for MUL-5370. It walks the exact chain FailTask runs for a task
+// regression for ISS-5370. It walks the exact chain FailTask runs for a task
 // an un-upgraded daemon just failed, and asserts the user-visible outcome:
 // the run is retried instead of dying.
 //

@@ -34,7 +34,7 @@ func createPrivateAgentOwnedBy(t *testing.T, name, ownerID string) string {
 }
 
 // TestAgentCreateOriginator_E2E_CreateAssignCrew_PrivateWorkerTriggered walks
-// the exact line failure shape from MUL-4305 end to end, deliberately NOT
+// the exact line failure shape from ISS-4305 end to end, deliberately NOT
 // re-testing the resolver in isolation but locking the real wiring between the
 // handler create stamp, the create-time crew gate, the crew-leader task's
 // stored originator, the comment source-task stamp, and the private-worker
@@ -64,7 +64,7 @@ func TestAgentCreateOriginator_E2E_CreateAssignCrew_PrivateWorkerTriggered(t *te
 	var crewID string
 	if err := testPool.QueryRow(ctx, `
 		INSERT INTO crew (workspace_id, name, description, leader_id, creator_id)
-		VALUES ($1, 'MUL-4305 E2E Crew', '', $2, $3)
+		VALUES ($1, 'ISS-4305 E2E Crew', '', $2, $3)
 		RETURNING id
 	`, testWorkspaceID, leaderID, testUserID).Scan(&crewID); err != nil {
 		t.Fatalf("create crew: %v", err)
@@ -89,7 +89,7 @@ func TestAgentCreateOriginator_E2E_CreateAssignCrew_PrivateWorkerTriggered(t *te
 	// assigns it to the private-leader crew in the same call.
 	w := httptest.NewRecorder()
 	r := newRequest("POST", "/api/issues?workspace_id="+testWorkspaceID, map[string]any{
-		"title":         "MUL-4305 E2E agent-created + crew-assigned",
+		"title":         "ISS-4305 E2E agent-created + crew-assigned",
 		"assignee_type": "crew",
 		"assignee_id":   crewID,
 	})
@@ -159,7 +159,7 @@ func TestAgentCreateOriginator_E2E_CreateAssignCrew_PrivateWorkerTriggered(t *te
 		t.Fatalf("count worker tasks: %v", err)
 	}
 	if queuedForHuman == 0 {
-		t.Fatalf("private worker got 0 queued tasks attributed to H; the A2A mention was denied (MUL-4305 regression)")
+		t.Fatalf("private worker got 0 queued tasks attributed to H; the A2A mention was denied (ISS-4305 regression)")
 	}
 }
 
@@ -187,7 +187,7 @@ func TestAgentCreateOriginator_E2E_UpdateAssignCrew_HandlerGateAdmitsPrivateLead
 	var crewID string
 	if err := testPool.QueryRow(ctx, `
 		INSERT INTO crew (workspace_id, name, description, leader_id, creator_id)
-		VALUES ($1, 'MUL-4305 E2E Update-Assign Crew', '', $2, $3)
+		VALUES ($1, 'ISS-4305 E2E Update-Assign Crew', '', $2, $3)
 		RETURNING id
 	`, testWorkspaceID, leaderID, testUserID).Scan(&crewID); err != nil {
 		t.Fatalf("create crew: %v", err)
@@ -208,7 +208,7 @@ func TestAgentCreateOriginator_E2E_UpdateAssignCrew_HandlerGateAdmitsPrivateLead
 	// Agent A creates an unassigned issue via the ordinary path.
 	w := httptest.NewRecorder()
 	r := newRequest("POST", "/api/issues?workspace_id="+testWorkspaceID, map[string]any{
-		"title": "MUL-4305 E2E unassigned then crew-assigned",
+		"title": "ISS-4305 E2E unassigned then crew-assigned",
 	})
 	r.Header.Set("X-Agent-ID", creatorAID)
 	r.Header.Set("X-Task-ID", creatorTaskID)
@@ -249,6 +249,6 @@ func TestAgentCreateOriginator_E2E_UpdateAssignCrew_HandlerGateAdmitsPrivateLead
 		t.Fatalf("count leader tasks: %v", err)
 	}
 	if leaderCount == 0 {
-		t.Fatalf("private crew leader got 0 tasks attributed to H after agent-triggered assign; the enqueue gate denied it (MUL-4305 gate regression)")
+		t.Fatalf("private crew leader got 0 tasks attributed to H after agent-triggered assign; the enqueue gate denied it (ISS-4305 gate regression)")
 	}
 }

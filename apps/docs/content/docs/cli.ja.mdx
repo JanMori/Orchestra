@@ -12,19 +12,19 @@ Orchestra CLI は、ローカルのランタイムを接続する役割と、タ
 **macOS / Linux**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.sh | bash
 ```
 
 Homebrew がインストールされていれば、次のコマンドでもインストールできます:
 
 ```bash
-brew install multica-ai/tap/multica
+brew install orchestra-ai/tap/orchestra
 ```
 
 **Windows PowerShell**
 
 ```powershell
-irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex
+irm https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.ps1 | iex
 ```
 
 インストールを確認します:
@@ -35,7 +35,7 @@ orchestra version
 
 ## 初回接続
 
-Multica Cloud に接続する:
+Orchestra Self-Host に接続する:
 
 ```bash
 orchestra setup
@@ -148,13 +148,13 @@ orchestra daemon restart
 orchestra daemon status --output json
 orchestra daemon logs --follow
 
-multica runtime list
-multica runtime rename <runtime-id> "Office Mac"
-multica runtime usage <runtime-id>
-multica runtime activity <runtime-id>
+orchestra runtime list
+orchestra runtime rename <runtime-id> "Office Mac"
+orchestra runtime usage <runtime-id>
+orchestra runtime activity <runtime-id>
 ```
 
-アクティブなエージェントがまだ紐付いているランタイムの削除は、デフォルトで拒否されます。`multica runtime delete <id> --cascade` は、それらのエージェントをランタイムから解除して設定と履歴を保持し、アクティブなタスクをキャンセルします。
+アクティブなエージェントがまだ紐付いているランタイムの削除は、デフォルトで拒否されます。`orchestra runtime delete <id> --cascade` は、それらのエージェントをランタイムから解除して設定と履歴を保持し、アクティブなタスクをキャンセルします。
 
 仕組みとカスタムプロファイルについては[デーモンとランタイム](/daemon-runtimes)を参照してください。
 
@@ -176,7 +176,7 @@ multica runtime activity <runtime-id>
 | `config` | 現在の CLI プロファイルのローカル設定を表示・編集 |
 | `update`、`version` | CLI の更新とバージョンの表示 |
 
-`multica chat` が読み取るのは、**エージェントが現在処理している外部チャットセッション**です。主にチャット統合の中のエージェントが使うもので、任意のワークスペースの会話を閲覧するための汎用コマンドではありません。
+`orchestra chat` が読み取るのは、**エージェントが現在処理している外部チャットセッション**です。主にチャット統合の中のエージェントが使うもので、任意のワークスペースの会話を閲覧するための汎用コマンドではありません。
 
 ## ID と出力形式
 
@@ -191,11 +191,11 @@ orchestra issue list --output json
 orchestra agent list --output json
 ```
 
-スクリプトでは、ターミナル向けの表を解析せず JSON 出力を使ってください。各コマンドがサポートする出力形式とページネーションのフラグは `multica <command> --help` が正です。
+スクリプトでは、ターミナル向けの表を解析せず JSON 出力を使ってください。各コマンドがサポートする出力形式とページネーションのフラグは `orchestra <command> --help` が正です。
 
 ## プロファイルと設定
 
-デフォルトの設定は `~/.multica/config.json` に保存されます。`--profile <name>` を使うと、サーバーアドレス、トークン、デフォルトワークスペース、デーモン状態を別のセットとして分離できます:
+デフォルトの設定は `~/.orchestra/config.json` に保存されます。`--profile <name>` を使うと、サーバーアドレス、トークン、デフォルトワークスペース、デーモン状態を別のセットとして分離できます:
 
 ```bash
 orchestra setup self-host --profile staging \
@@ -205,7 +205,7 @@ orchestra setup self-host --profile staging \
 orchestra issue list --profile staging
 ```
 
-名前付きプロファイルは `~/.multica/profiles/<name>/config.json` に保存されます。現在の値を確認する:
+名前付きプロファイルは `~/.orchestra/profiles/<name>/config.json` に保存されます。現在の値を確認する:
 
 ```bash
 orchestra config show
@@ -213,12 +213,12 @@ orchestra config show --profile staging
 ```
 
 <Callout type="warning">
-CLI の設定ファイルには、あなたとして Multica にアクセスできるトークンが含まれます。リポジトリにコミットしたり、ログにアップロードしたり、他人と共有したりしないでください。
+CLI の設定ファイルには、あなたとして Orchestra にアクセスできるトークンが含まれます。リポジトリにコミットしたり、ログにアップロードしたり、他人と共有したりしないでください。
 </Callout>
 
 ## コマンドリファレンス
 
-以下の表は、現在のすべてのトップレベルコマンドを CLI 自身のグループ分けに沿って掲載しています。すべてのコマンドがグローバルフラグ `--server-url`、`--workspace-id`、`--profile`、`--debug` を受け付けます。`--output` はコマンドごとに登録されるフラグで、デフォルトの形式はコマンドによって異なります: `list` 系は表、`get` や `create` 系は多くが JSON です。完全なフラグは `multica <command> --help` が正です。
+以下の表は、現在のすべてのトップレベルコマンドを CLI 自身のグループ分けに沿って掲載しています。すべてのコマンドがグローバルフラグ `--server-url`、`--workspace-id`、`--profile`、`--debug` を受け付けます。`--output` はコマンドごとに登録されるフラグで、デフォルトの形式はコマンドによって異なります: `list` 系は表、`get` や `create` 系は多くが JSON です。完全なフラグは `orchestra <command> --help` が正です。
 
 ### Core
 

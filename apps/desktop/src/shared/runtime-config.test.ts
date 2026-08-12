@@ -10,9 +10,9 @@ describe("runtime config", () => {
   it("uses cloud defaults without a desktop.json file", () => {
     expect(DEFAULT_RUNTIME_CONFIG).toEqual({
       schemaVersion: 1,
-      apiUrl: "https://api.multica.ai",
-      wsUrl: "wss://api.multica.ai/ws",
-      appUrl: "https://multica.ai",
+      apiUrl: "http://localhost:7081",
+      wsUrl: "wss://localhost:7081/ws",
+      appUrl: "http://localhost:5001",
     });
   });
 
@@ -35,13 +35,13 @@ describe("runtime config", () => {
   it("strips the leading api. label when deriving appUrl", () => {
     expect(
       parseRuntimeConfig(
-        JSON.stringify({ schemaVersion: 1, apiUrl: "https://api.multica.ai" }),
+        JSON.stringify({ schemaVersion: 1, apiUrl: "http://localhost:7081" }),
       ),
     ).toEqual({
       schemaVersion: 1,
-      apiUrl: "https://api.multica.ai",
-      wsUrl: "wss://api.multica.ai/ws",
-      appUrl: "https://multica.ai",
+      apiUrl: "http://localhost:7081",
+      wsUrl: "wss://localhost:7081/ws",
+      appUrl: "http://localhost:5001",
     });
   });
 

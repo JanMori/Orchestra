@@ -14,10 +14,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/util"
-	"github.com/multica-ai/multica/server/pkg/agent"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	"github.com/JanMori/Orchestra/server/pkg/agent"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 type AgentRuntimeResponse struct {
@@ -25,7 +25,7 @@ type AgentRuntimeResponse struct {
 	WorkspaceID string  `json:"workspace_id"`
 	DaemonID    *string `json:"daemon_id"`
 	Name        string  `json:"name"`
-	// CustomName is the user-set display override (MUL-4217); null when the
+	// CustomName is the user-set display override (ISS-4217); null when the
 	// runtime still uses its daemon-proposed Name. Clients show
 	// CustomName ?? Name and seed the rename field from this raw value.
 	CustomName   *string `json:"custom_name"`
@@ -41,7 +41,7 @@ type AgentRuntimeResponse struct {
 	// 083 and canUseRuntimeForAgent.
 	Visibility string `json:"visibility"`
 	// ProfileID is set when this runtime is an instance of a custom
-	// runtime_profile (MUL-3284); null for built-in runtimes.
+	// runtime_profile (ISS-3284); null for built-in runtimes.
 	ProfileID  *string `json:"profile_id"`
 	LastSeenAt *string `json:"last_seen_at"`
 	CreatedAt  string  `json:"created_at"`
@@ -492,7 +492,7 @@ type UpdateAgentRuntimeRequest struct {
 	// or workspace admins can bind agents) and "public" (any workspace
 	// member can). Owner / workspace admin only, gated by canEditRuntime.
 	Visibility *string `json:"visibility,omitempty"`
-	// CustomName sets or clears a user-facing display override (MUL-4217).
+	// CustomName sets or clears a user-facing display override (ISS-4217).
 	// An empty / whitespace-only string clears it (revert to the
 	// daemon-proposed name). Owner / workspace admin only.
 	CustomName *string `json:"custom_name,omitempty"`
@@ -739,7 +739,7 @@ type runtimeTeardownResult struct {
 }
 
 // unbindRuntimeForDelete is the teardown every runtime-delete path runs inside
-// its transaction, immediately before deleting the agent_runtime row (MUL-5559).
+// its transaction, immediately before deleting the agent_runtime row (ISS-5559).
 //
 // It replaces the old archive-then-hard-delete of the runtime's agents. An agent
 // is a persistent business object — identity, instructions, skills, chats,
@@ -814,11 +814,11 @@ func unbindRuntimeForDelete(ctx context.Context, qtx *db.Queries, runtimeID pgty
 		return out, fmt.Errorf("unbind task history: %w", err)
 	}
 
-	// agent_invocation_target has no agent_id FK (MUL-3963).
+	// agent_invocation_target has no agent_id FK (ISS-3963).
 	if err := qtx.DeleteAgentInvocationTargetsBySystemRuntimeAgents(ctx, runtimeID); err != nil {
 		return out, fmt.Errorf("clean up agent invocation targets: %w", err)
 	}
-	// channel_* has no workspace/agent FK (MUL-3515 §4); an orphaned
+	// channel_* has no workspace/agent FK (ISS-3515 §4); an orphaned
 	// installation would keep occupying its bot's (channel_type, app_id)
 	// routing slot and make that bot un-rebindable (#4810).
 	if err := qtx.DeleteChannelInstallationsBySystemRuntimeAgents(ctx, runtimeID); err != nil {
@@ -1048,7 +1048,7 @@ type unbindAgentsAndDeleteRuntimeRequest struct {
 // delete the runtime row — all inside a single transaction so a partial failure
 // never leaves a runtime half-torn-down.
 //
-// Before MUL-5559 this archived those agents and then hard-deleted the rows,
+// Before ISS-5559 this archived those agents and then hard-deleted the rows,
 // destroying every conversation with them; the dialog said "archive", so what
 // the user agreed to was not what happened. Now nothing of the user's is
 // destroyed: the agents survive unbound and need a new runtime to run again.

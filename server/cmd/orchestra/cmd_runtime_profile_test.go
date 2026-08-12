@@ -9,7 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/multica-ai/multica/server/internal/cli"
+	"github.com/JanMori/Orchestra/server/internal/cli"
 )
 
 // addCommonProfileFlags wires the persistent-style flags the run functions
@@ -336,7 +336,7 @@ func TestRunRuntimeProfileSetPathPreservesExistingConfig(t *testing.T) {
 	t.Setenv("HOME", home)
 
 	// Seed an existing config with unrelated fields.
-	seed := cli.CLIConfig{ServerURL: "https://api.multica.ai", WorkspaceID: "ws-123", Token: "mul_xyz"}
+	seed := cli.CLIConfig{ServerURL: "http://localhost:7081", WorkspaceID: "ws-123", Token: "mul_xyz"}
 	if err := cli.SaveCLIConfig(seed); err != nil {
 		t.Fatal(err)
 	}
@@ -351,7 +351,7 @@ func TestRunRuntimeProfileSetPathPreservesExistingConfig(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if cfg.ServerURL != "https://api.multica.ai" || cfg.WorkspaceID != "ws-123" || cfg.Token != "mul_xyz" {
+	if cfg.ServerURL != "http://localhost:7081" || cfg.WorkspaceID != "ws-123" || cfg.Token != "mul_xyz" {
 		t.Errorf("set-path clobbered existing config: %#v", cfg)
 	}
 	if cfg.ProfileCommandOverrides["prof-1"] != "/opt/bin/company-codex" {

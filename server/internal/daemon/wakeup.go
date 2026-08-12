@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 var errRuntimeSetChanged = errors.New("runtime set changed")
@@ -116,7 +116,7 @@ func (d *Daemon) runTaskWakeupConnection(ctx context.Context, runtimeIDs []strin
 		headers.Set("X-Client-OS", d.client.os)
 	}
 	// Advertise the same capabilities as the HTTP path so a claim built over
-	// this WS connection gets identical capability gating (MUL-4257).
+	// this WS connection gets identical capability gating (ISS-4257).
 	headers.Set("X-Client-Capabilities", daemonClientCapabilities())
 
 	// A hand-built websocket.Dialer has Proxy == nil, which gorilla reads as
@@ -171,7 +171,7 @@ func (d *Daemon) runTaskWakeupConnection(ctx context.Context, runtimeIDs []strin
 	writerDone := make(chan struct{})
 	go d.runWSWriter(conn, writes, writerDone)
 
-	// Attach the generic WS RPC sender (MUL-4257) to this connection's write
+	// Attach the generic WS RPC sender (ISS-4257) to this connection's write
 	// channel. Guarded so a Call racing teardown never sends on the closed
 	// `writes` channel: teardown flips sendClosed under sendMu before
 	// close(writes), and the sender holds sendMu across its non-blocking send.
@@ -192,7 +192,7 @@ func (d *Daemon) runTaskWakeupConnection(ctx context.Context, runtimeIDs []strin
 		}
 	})
 	// A (re)connect may be a freshly-upgraded server: re-probe the batch claim
-	// route rather than staying on the legacy fallback forever (MUL-4257).
+	// route rather than staying on the legacy fallback forever (ISS-4257).
 	d.batchClaimUnsupported.Store(false)
 
 	heartbeatCtx, cancelHeartbeat := context.WithCancel(ctx)
@@ -223,7 +223,7 @@ func (d *Daemon) runTaskWakeupConnection(ctx context.Context, runtimeIDs []strin
 		// runtimeSetCh reconnect) still-alive socket AFTER attach(nil) has made
 		// the RPC fall over to HTTP — the server would then commit that WS
 		// claim on top of the HTTP fallback, double-claiming the same free
-		// slots (MUL-4257, Sol-Boy review). With the conn closed here,
+		// slots (ISS-4257, Sol-Boy review). With the conn closed here,
 		// runWSWriter's next write errors and it DISCARDS the queue instead of
 		// delivering it.
 		conn.Close()
@@ -257,7 +257,7 @@ func (d *Daemon) runWSWriter(conn *websocket.Conn, writes <-chan *wsOutbound, do
 	defer close(done)
 	for item := range writes {
 		// Skip frames whose RPC caller already gave up: delivering them after a
-		// fallback would double-claim (MUL-4257). beginWrite also marks the
+		// fallback would double-claim (ISS-4257). beginWrite also marks the
 		// frame sent so a racing cancel() can no longer reclaim it.
 		if !item.beginWrite() {
 			continue

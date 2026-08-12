@@ -253,7 +253,7 @@ function slackDocsUrl(lang: string | undefined): string {
       : lang?.startsWith("ko")
         ? "/ko"
         : "";
-  return `https://multica.ai/docs${prefix}/slack-bot-integration`;
+  return `http://localhost:5001/docs${prefix}/slack-bot-integration`;
 }
 
 // SlackAgentBindButton is the per-agent CTA exposed from the agent detail page.

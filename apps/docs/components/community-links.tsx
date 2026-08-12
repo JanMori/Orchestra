@@ -18,7 +18,7 @@ export function CommunityLinks({
     },
     {
       label: "GitHub",
-      href: "https://github.com/multica-ai/multica",
+      href: "https://github.com/JanMori/Orchestra",
       description: githubDescription,
       Icon: GitHubMark,
     },

@@ -30,8 +30,8 @@ afterEach(() => {
 describe("toInternalAppPath", () => {
   it("returns the path (with search and hash) for a URL on the app origin", () => {
     expect(
-      toInternalAppPath(`${APP_ORIGIN}/acme/issues/MUL-1?tab=a#c`, APP_ORIGIN),
-    ).toBe("/acme/issues/MUL-1?tab=a#c");
+      toInternalAppPath(`${APP_ORIGIN}/acme/issues/ISS-1?tab=a#c`, APP_ORIGIN),
+    ).toBe("/acme/issues/ISS-1?tab=a#c");
   });
 
   it("returns null for another origin", () => {
@@ -74,41 +74,41 @@ describe("toInternalAppPath", () => {
 });
 
 describe("openLink", () => {
-  it("navigates in-app for a URL pointing back at this deployment (MUL-5208)", () => {
-    openLink(`${APP_ORIGIN}/acme/issues/MUL-1`, "acme", APP_ORIGIN);
-    expect(navigatedPaths()).toEqual(["/acme/issues/MUL-1"]);
+  it("navigates in-app for a URL pointing back at this deployment (ISS-5208)", () => {
+    openLink(`${APP_ORIGIN}/acme/issues/ISS-1`, "acme", APP_ORIGIN);
+    expect(navigatedPaths()).toEqual(["/acme/issues/ISS-1"]);
     expect(openSpy).not.toHaveBeenCalled();
   });
 
   it("navigates in-app for a cross-workspace app URL without rewriting the slug", () => {
-    openLink(`${APP_ORIGIN}/other/issues/MUL-1`, "acme", APP_ORIGIN);
-    expect(navigatedPaths()).toEqual(["/other/issues/MUL-1"]);
+    openLink(`${APP_ORIGIN}/other/issues/ISS-1`, "acme", APP_ORIGIN);
+    expect(navigatedPaths()).toEqual(["/other/issues/ISS-1"]);
   });
 
   it("opens an external URL in a new window", () => {
-    openLink("https://github.com/multica-ai/multica/pull/1", "acme", APP_ORIGIN);
+    openLink("https://github.com/JanMori/Orchestra/pull/1", "acme", APP_ORIGIN);
     expect(dispatched).toHaveLength(0);
     expect(openSpy).toHaveBeenCalledWith(
-      "https://github.com/multica-ai/multica/pull/1",
+      "https://github.com/JanMori/Orchestra/pull/1",
       "_blank",
       "noopener,noreferrer",
     );
   });
 
   it("still opens an app URL externally when no app origin is known", () => {
-    openLink(`${APP_ORIGIN}/acme/issues/MUL-1`, "acme");
+    openLink(`${APP_ORIGIN}/acme/issues/ISS-1`, "acme");
     expect(dispatched).toHaveLength(0);
     expect(openSpy).toHaveBeenCalled();
   });
 
   it("prefixes the current slug on a slugless workspace path", () => {
-    openLink("/issues/MUL-1", "acme", APP_ORIGIN);
-    expect(navigatedPaths()).toEqual(["/acme/issues/MUL-1"]);
+    openLink("/issues/ISS-1", "acme", APP_ORIGIN);
+    expect(navigatedPaths()).toEqual(["/acme/issues/ISS-1"]);
   });
 
   it("leaves a path that already carries a slug alone", () => {
-    openLink("/other/issues/MUL-1", "acme", APP_ORIGIN);
-    expect(navigatedPaths()).toEqual(["/other/issues/MUL-1"]);
+    openLink("/other/issues/ISS-1", "acme", APP_ORIGIN);
+    expect(navigatedPaths()).toEqual(["/other/issues/ISS-1"]);
   });
 });
 
@@ -211,9 +211,9 @@ describe("parseWorkspaceEntityLink", () => {
   // the issue route rewrites a UUID URL back to the identifier, so this — not
   // the UUID form — is what a user actually copies out of the app.
   it("parses an issue addressed by identifier", () => {
-    expect(parseWorkspaceEntityLink("/acme/issues/MUL-1")).toEqual({
+    expect(parseWorkspaceEntityLink("/acme/issues/ISS-1")).toEqual({
       kind: "issue",
-      id: "MUL-1",
+      id: "ISS-1",
       slug: "acme",
     });
   });
@@ -221,7 +221,7 @@ describe("parseWorkspaceEntityLink", () => {
   // A project has no shorthand, so an identifier-shaped id under /projects/
   // addresses nothing this parser could resolve.
   it("returns null for an identifier-shaped project id", () => {
-    expect(parseWorkspaceEntityLink("/acme/projects/MUL-1")).toBeNull();
+    expect(parseWorkspaceEntityLink("/acme/projects/ISS-1")).toBeNull();
   });
 
   it("returns null for an id that is neither a UUID nor an identifier", () => {

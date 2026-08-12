@@ -10,7 +10,7 @@ import (
 )
 
 // TestCreateAgent_ThinkingLevel_ValidationConsistency exercises the
-// MUL-2339 invariant: when an HTTP caller sends a literal-invalid
+// ISS-2339 invariant: when an HTTP caller sends a literal-invalid
 // thinking_level the API MUST return 400, regardless of which other
 // field combination the same request mutates. The constraint comes
 // from Trump's PR1 review: "invalid value 的 API 行为请保持一致，
@@ -364,7 +364,7 @@ func TestUpdateAgent_RuntimeSwitch_PreservesValidValueRejectsInvalid(t *testing.
 }
 
 // TestUpdateAgent_RuntimeSwitch_ClearsKnownIncompatibleModel covers the
-// runtime/model persistence bug from MUL-3341: a runtime_id-only PATCH used
+// runtime/model persistence bug from ISS-3341: a runtime_id-only PATCH used
 // to preserve a provider-native model string, so switching a Claude Code
 // agent to Codex could leave agent.model = "claude-..." and fail at task
 // execution. Unknown custom models are intentionally preserved because the
@@ -478,7 +478,7 @@ func TestUpdateAgent_RuntimeSwitch_ClearsKnownIncompatibleModel(t *testing.T) {
 // just that it was. A runtime with no reasoning control must not be described
 // as receiving an unrecognised value: "high" is a fine effort token, and the
 // old shared sentence sent Hermes users looking for a spelling that cannot
-// exist (MUL-5770).
+// exist (ISS-5770).
 func TestThinkingLevelRejectionCopy(t *testing.T) {
 	t.Parallel()
 

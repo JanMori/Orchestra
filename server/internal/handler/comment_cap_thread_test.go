@@ -7,7 +7,7 @@ import (
 )
 
 // The comment-list endpoint shares ListCommentsForIssue with the timeline, so the
-// newest-N window (MUL-5492) can cut a thread in half here too: an old root
+// newest-N window (ISS-5492) can cut a thread in half here too: an old root
 // outside the window, a fresh reply inside it.
 //
 // Two separate properties are at stake:

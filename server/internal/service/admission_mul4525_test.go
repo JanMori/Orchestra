@@ -9,14 +9,14 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/dispatch"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/dispatch"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // TestRerunIssueBlockedBeforeMutationWhenInvokeDenied is the security acceptance
-// test for MUL-4525 §5: a rerun whose operator cannot invoke the resolved target
+// test for ISS-4525 §5: a rerun whose operator cannot invoke the resolved target
 // agent must be refused with ErrRerunInvokeNotAllowed, and it must fail BEFORE
 // any mutation — the prior task is not cancelled and no new task is created.
 func TestRerunIssueBlockedBeforeMutationWhenInvokeDenied(t *testing.T) {
@@ -93,7 +93,7 @@ func TestRerunIssueBlockedBeforeMutationWhenInvokeDenied(t *testing.T) {
 }
 
 // TestAutopilotDispatchAdmitsClickerNotCreator is the acceptance test for
-// MUL-4525 §3: a MANUAL "run now" admits on the CURRENT clicker's invoke
+// ISS-4525 §3: a MANUAL "run now" admits on the CURRENT clicker's invoke
 // permission (not the autopilot creator's), while automation (no human actor)
 // still falls back to the creator gate. The two must not fork.
 func TestAutopilotDispatchAdmitsClickerNotCreator(t *testing.T) {

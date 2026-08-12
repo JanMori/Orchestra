@@ -8,10 +8,10 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
-// TestTaskAttributionBase covers the pure row→attribution mapping (MUL-4302 §9):
+// TestTaskAttributionBase covers the pure row→attribution mapping (ISS-4302 §9):
 // source label + precise flag, initiator/originator raw refs, evidence, lineage —
 // no DB, no name hydration.
 func TestTaskAttributionBase(t *testing.T) {
@@ -87,7 +87,7 @@ func TestTaskAttributionBase(t *testing.T) {
 
 // TestHydrateTaskAttributionsFillsUserRef verifies the batch name hydration resolves
 // initiator/originator refs from the GLOBAL user table (departed-safe) and leaves an
-// unknown id un-filled without erroring (MUL-4302 §9).
+// unknown id un-filled without erroring (ISS-4302 §9).
 func TestHydrateTaskAttributionsFillsUserRef(t *testing.T) {
 	known := &AttributionUser{ID: testUserID}
 	unknown := &AttributionUser{ID: "44444444-4444-4444-4444-444444444444"}
@@ -107,7 +107,7 @@ func TestHydrateTaskAttributionsFillsUserRef(t *testing.T) {
 	}
 }
 
-// TestListTasksByIssueHydratesAttribution is the MUL-4302 §9 regression guard for
+// TestListTasksByIssueHydratesAttribution is the ISS-4302 §9 regression guard for
 // the execution-log surface: the issue task list (api.listTasksByIssue) drives the
 // "on behalf of <member>" badge, so it must resolve the initiator's display NAME,
 // not just its id. Before the fix ListTasksByIssue returned taskToResponse without

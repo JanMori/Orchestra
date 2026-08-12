@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/multica-ai/multica/server/internal/cli"
+	"github.com/JanMori/Orchestra/server/internal/cli"
 )
 
 // Indirections over the real release / version helpers so tests can run the
@@ -54,7 +54,7 @@ var detectSelfVersion = func(ctx context.Context, path string) (string, error) {
 func ParseSelfVersion(raw string) string {
 	line, _, _ := strings.Cut(raw, "\n")
 	line = strings.TrimSpace(line)
-	if fields := strings.Fields(line); len(fields) >= 2 && fields[0] == "multica" {
+	if fields := strings.Fields(line); len(fields) >= 2 && (fields[0] == "orchestra" || fields[0] == "multica") {
 		return fields[1]
 	}
 	return line
@@ -105,7 +105,7 @@ var selfReloadProbeTimeout = 10 * time.Second
 //
 // The GitHub half is additionally skipped when the operator opted out
 // (--no-auto-update / ORCHESTRA_DAEMON_AUTO_UPDATE=false), when the server is
-// self-hosted (default-off, MUL-2381), or when the running version isn't a
+// self-hosted (default-off, ISS-2381), or when the running version isn't a
 // tagged release — source builds (`make daemon`) report a `git describe`-style
 // version and upgrading them to a public release would silently discard the dev
 // work on the machine. None of those apply to the on-disk half, which follows a
@@ -303,7 +303,7 @@ func (d *Daemon) tryAutoUpdate(ctx context.Context) {
 // tryAutoUpdate does eventually recover the most common shape of this — the
 // running version is older than the latest release, so it re-runs the upgrade
 // (a no-op under brew) and restarts. What it cannot recover is the rest:
-// self-hosted daemons where auto-update is default-off (MUL-2381), dev builds
+// self-hosted daemons where auto-update is default-off (ISS-2381), dev builds
 // skipped by isReleaseVersion, and installing something GitHub doesn't consider
 // newer (a deliberate downgrade, or an intermediate version). It is also up to
 // a full check interval slow. This check closes all of that, which is why it

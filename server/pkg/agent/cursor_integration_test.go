@@ -16,7 +16,7 @@ import (
 // each tool call/result reach the message stream, not just the final answer.
 //
 // The fixture test pins the parser against a recorded stream; this one is what
-// catches the upstream protocol moving on (MUL-5231).
+// catches the upstream protocol moving on (ISS-5231).
 func TestCursorRealStreamObservability(t *testing.T) {
 	requireRealAgentSmoke(t)
 	if testing.Short() {

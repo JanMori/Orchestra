@@ -13,8 +13,8 @@ import { useT } from "../../i18n";
 export function RuntimeAsidePanel() {
   const { t, i18n } = useT("onboarding");
   const installDocHref = i18n.language?.startsWith("zh")
-    ? "https://multica.ai/docs/zh/install-agent-runtime"
-    : "https://multica.ai/docs/install-agent-runtime";
+    ? "/docs/zh/daemon-runtimes"
+    : "/docs/daemon-runtimes";
   return (
     <div className="flex flex-col gap-6">
       <section>
@@ -48,8 +48,6 @@ export function RuntimeAsidePanel() {
 
       <a
         href={installDocHref}
-        target="_blank"
-        rel="noopener noreferrer"
         className="self-start text-label text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
       >
         {t(($) => $.runtime_aside.learn_more)}

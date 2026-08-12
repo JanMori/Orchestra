@@ -25,7 +25,7 @@
  * user-resizable down to 200px — every 1px of drag takes 1px from the label.
  * So a title that merely fits at 256px still truncates for anyone who has
  * narrowed their sidebar; keep every locale's title comfortably under budget,
- * not just under it (MUL-5704).
+ * not just under it (ISS-5704).
  */
 export function JoinDiscordCard() {
   return null;

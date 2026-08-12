@@ -9,7 +9,7 @@ function mk(id: string, status: Issue["status"], position: number): Issue {
     id,
     workspace_id: WS_ID,
     number: 1,
-    identifier: `MUL-${id}`,
+    identifier: `ISS-${id}`,
     title: id,
     description: null,
     status,
@@ -96,7 +96,7 @@ describe("patchIssueInBuckets — cross-status move", () => {
     expect(next.byStatus.in_progress?.total).toBe(2);
   });
 
-  // MUL-4261: `cancelled` is now a first-class paginated bucket, so cancelling
+  // ISS-4261: `cancelled` is now a first-class paginated bucket, so cancelling
   // an issue rebuckets it into `cancelled` (instead of dropping it) and the
   // rebucketed card stays locatable for later patches.
   it("rebuckets a cancelled issue and keeps it locatable", () => {

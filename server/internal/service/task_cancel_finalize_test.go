@@ -9,10 +9,10 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 func newCancelFinalizePool(t *testing.T) *pgxpool.Pool {
@@ -54,7 +54,7 @@ func createCancelFinalizeFixture(t *testing.T, ctx context.Context, pool *pgxpoo
 	t.Helper()
 
 	suffix := time.Now().UnixNano()
-	email := fmt.Sprintf("cancel-finalize-%d@multica.ai", suffix)
+	email := fmt.Sprintf("cancel-finalize-%d@orchestra.local", suffix)
 	slug := fmt.Sprintf("cancel-finalize-%d", suffix)
 
 	var userID string

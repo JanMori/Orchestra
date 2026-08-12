@@ -147,7 +147,7 @@ const single = {
 
 describe("RunConfirmModal", () => {
   it("is fully operable on the first frame — no preview request, no spinner", () => {
-    // The MUL-5010 core: opening the dialog fires nothing and blocks nothing.
+    // The ISS-5010 core: opening the dialog fires nothing and blocks nothing.
     const { container } = render(<RunConfirmModal onClose={vi.fn()} data={single} />);
     expect(screen.queryByTestId("spinner")).not.toBeInTheDocument();
     expect(noteBox()).not.toBeDisabled();
@@ -237,7 +237,7 @@ describe("RunConfirmModal", () => {
     expect(mockToast.success).not.toHaveBeenCalled();
   });
 
-  // --- Send chord (MUL-5694) ------------------------------------------------
+  // --- Send chord (ISS-5694) ------------------------------------------------
   // The note box is where the caret starts, so the dialog has to submit from
   // the keyboard there, the same way the issue composer creates.
 

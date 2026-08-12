@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // pendingWorkHintDaemon builds a Daemon that knows exactly one runtime and
@@ -44,7 +44,7 @@ func withPendingWorkHintMinInterval(t *testing.T, d time.Duration) {
 	t.Cleanup(func() { pendingWorkHintMinInterval = prev })
 }
 
-// TestHandlePendingWorkHint_SendsImmediateHeartbeat is the core of MUL-5444:
+// TestHandlePendingWorkHint_SendsImmediateHeartbeat is the core of ISS-5444:
 // a server-pushed hint must produce a heartbeat right now instead of leaving the
 // queued model-list request to wait for the next scheduled tick (up to a full
 // HeartbeatInterval, 15s by default).

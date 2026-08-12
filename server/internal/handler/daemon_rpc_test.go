@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/daemonws"
+	"github.com/JanMori/Orchestra/server/internal/daemonws"
 )
 
-// TestDaemonRPCHandler_TasksClaim pins the WS-first claim binding (MUL-4257):
+// TestDaemonRPCHandler_TasksClaim pins the WS-first claim binding (ISS-4257):
 // a tasks.claim RPC, driven with the WS connection's identity, reuses the HTTP
 // claim handler and claims a queued task for the daemon's runtime.
 func TestDaemonRPCHandler_TasksClaim(t *testing.T) {

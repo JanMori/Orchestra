@@ -962,7 +962,7 @@ export function createEnDict(allowSignup: boolean): LandingDict {
           "The Codex agent's MCP settings are applied correctly again.",
           "The Pi agent's task result now shows only the final answer — intermediate thinking is hidden.",
           "Autopilots no longer accidentally run the same Issue twice in a row when a run takes longer than expected.",
-          "An Issue's PR list only shows PRs that really target that Issue — PRs that just mention the key in passing (\"Related to MUL-…\") no longer appear.",
+          "An Issue's PR list only shows PRs that really target that Issue — PRs that just mention the key in passing (\"Related to ISS-…\") no longer appear.",
           "The Issue action menu's nested \"More\" item is now called \"Relations\", so you can tell what's inside without opening it.",
           "Every attachment upload button — chat, Issue creation, Issue description, feedback — now lets you pick multiple files at once from the system file dialog.",
         ],
@@ -1991,7 +1991,7 @@ export function createEnDict(allowSignup: boolean): LandingDict {
           "New `orchestra daemon disk-usage` CLI surfaces per-task and per-workspace disk footprint",
           "Skill picker in agent settings has a search box for fast lookup",
           "Daemon GC extends to chat, autopilot, and quick-create tasks",
-          "Issue detail breadcrumb now shows the MUL-xxxx identifier for quick reference",
+          "Issue detail breadcrumb now shows the ISS-xxxx identifier for quick reference",
         ],
         improvements: [
           "Timeline page size bumped to 50, with per-pool keyset cursors for comments and activities",

@@ -1,17 +1,17 @@
 ---
-name: multica-working-on-issues
-description: "Use when acting on a Multica issue beyond what the brief covers: PR linking vs close intent, reading a linked PR's real state, metadata keys, status-change side effects, sub-issue todo vs backlog."
+name: orchestra-working-on-issues
+description: "Use when acting on a Orchestra issue beyond what the brief covers: PR linking vs close intent, reading a linked PR's real state, metadata keys, status-change side effects, sub-issue todo vs backlog."
 user-invocable: false
-allowed-tools: Bash(multica *), Bash(git *), Bash(gh *)
+allowed-tools: Bash(orchestra *), Bash(git *), Bash(gh *)
 ---
 
-# Working on Multica issues
+# Working on Orchestra issues
 
 Product contracts the runtime brief does not fully encode: PR linking vs close
 intent, reading linked-PR state, metadata keys, status side effects, and
 sub-issue enqueue behavior.
 
-For building mention links, load `multica-mentioning` instead — not this skill.
+For building mention links, load `orchestra-mentioning` instead — not this skill.
 
 Every contract below is traced to source in
 `references/working-on-issues-source-map.md`.
@@ -22,13 +22,13 @@ The GitHub webhook runs two separate scans over an incoming PR. They are not the
 same gate and they read different fields.
 
 **Linking** scans the PR **title, body, OR branch** for a routable issue key
-(`PREFIX-NUMBER`, e.g. `MUL-2759`). Each match writes an issue ↔ PR link row.
+(`PREFIX-NUMBER`, e.g. `ISS-2759`). Each match writes an issue ↔ PR link row.
 This is the link that `orchestra issue pull-requests` reads back — but see the
 reference-only rule below: a key that appears **only** as a bare mention in the
 body is linked yet hidden from that list.
 
 ```text
-MUL-2759: add built-in issue working skill        # title prefix → links, shown
+ISS-2759: add built-in issue working skill        # title prefix → links, shown
 agent/matt/mul-2759-working-on-issues             # branch ref   → links, shown
 ```
 
@@ -39,10 +39,10 @@ adjacency is what sets the link row's close-intent flag, the gate that
 auto-advances the issue to `done` when the PR merges.
 
 ```text
-Closes MUL-2759                                    # links AND records close intent
-Fixes MUL-2759
-Resolves MUL-2759
-Fix login MUL-2759                                 # links only — keyword not adjacent
+Closes ISS-2759                                    # links AND records close intent
+Fixes ISS-2759
+Resolves ISS-2759
+Fix login ISS-2759                                 # links only — keyword not adjacent
 ```
 
 Consequence: a bare title prefix or a branch reference links the PR but does not
@@ -54,20 +54,20 @@ records close intent; on merge, that close intent can move the linked issue to
 as a bare mention in the body — no closing keyword, and not in the title or
 branch — still writes a link row, but the row is flagged `reference_only` and
 **excluded from `orchestra issue pull-requests`** (and the issue's right-side PR
-list in the UI). This keeps passing mentions like `Related MUL-2759` or
-`Follow up in MUL-2759` from surfacing an unrelated PR as if it were working on
+list in the UI). This keeps passing mentions like `Related ISS-2759` or
+`Follow up in ISS-2759` from surfacing an unrelated PR as if it were working on
 that issue. To make a PR show up for an issue, put the key in the title, the
 branch, or after a closing keyword in the body — not as a loose body reference.
 
 ```text
-Closes MUL-2759 in the body                        # links and shown
-Related to MUL-2759 in the body (no title/branch)  # links but reference_only → hidden
+Closes ISS-2759 in the body                        # links and shown
+Related to ISS-2759 in the body (no title/branch)  # links but reference_only → hidden
 ```
 
 ### Default for code-changing issue work
 
 When an issue run changes code in a checked-out GitHub repo, the default handoff
-is to open or update a PR before posting the final Multica issue comment, unless
+is to open or update a PR before posting the final Orchestra issue comment, unless
 the user explicitly asked for a local-only change or no PR. This is a default, not
 an unconditional command: if no code changed, say no PR is needed; if PR creation
 is blocked by auth, failing tests, or missing remote state, report that blocker
@@ -78,8 +78,8 @@ the PR back to the issue. If the PR should close the issue on merge, put the key
 immediately after a closing keyword in the title or body, for example:
 
 ```text
-MUL-2759: fix login redirect        # links only
-Closes MUL-2759                     # links and records close intent
+ISS-2759: fix login redirect        # links only
+Closes ISS-2759                     # links and records close intent
 ```
 
 In the final issue comment, include the PR URL when a PR exists. If the task did
@@ -88,7 +88,7 @@ that explicitly.
 
 ## Reading a linked PR's real state
 
-When a step depends on PR state, query Multica's link table — do not infer it
+When a step depends on PR state, query Orchestra's link table — do not infer it
 from branch names, GitHub search, memory, or `pr_url` metadata (which can be
 stale).
 
@@ -155,7 +155,7 @@ Status, ...). Properties are the typed, user-visible sibling of metadata:
 values are validated against the definition (select options, date format,
 http(s) URL), visible in the issue sidebar, and addressed by name.
 
-- Read what exists before writing: `multica property list` shows the catalog;
+- Read what exists before writing: `orchestra property list` shows the catalog;
   `orchestra issue property list <issue-id>` shows values set on the issue.
 - Set values by property name and option name — the CLI translates to ids:
 
@@ -192,11 +192,11 @@ on it. These are the contracts, not advice:
 - **`in_review`** is an accepted issue status. Some workflows use it while a PR
   is open and awaiting review; moving to it is an explicit mutation.
 - **`done`** on a child issue posts a system comment on its parent. If a PR
-  carries close intent (`Closes MUL-XXXX`), it advances the issue to `done`
+  carries close intent (`Closes ISS-XXXX`), it advances the issue to `done`
   itself on merge — you do not also need to flip it manually.
 - **`cancelled`** is a terminal, user-driven decision to close the issue. Like
   `done` it enqueues no new agent work, but it does **not** stop tasks already in
-  flight — a run in progress keeps going (MUL-4465). To stop a running task,
+  flight — a run in progress keeps going (ISS-4465). To stop a running task,
   cancel the task itself.
 - **Failed issue-triggered tasks** may roll an issue from `in_progress` back to
   `todo` when no active task / retry remains — that is the main server-owned
@@ -263,7 +263,7 @@ PR title (link the issue):
 
 ```text
 Fix login redirect                  # incorrect — no issue key, won't link
-MUL-2759: fix login redirect        # correct — links the PR
+ISS-2759: fix login redirect        # correct — links the PR
 ```
 
 Serial / phased sub-issues (don't start the whole chain at once):

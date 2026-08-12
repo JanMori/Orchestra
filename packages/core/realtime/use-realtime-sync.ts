@@ -123,7 +123,7 @@ export function invalidateChatMessageQueries(
 // aggregate stale so it is refetched from the permission-filtering endpoint
 // (/api/chat/pending-tasks[/has-any]).
 //
-// SECURITY (review on PR #5018 / MUL-4159): this is deliberately an
+// SECURITY (review on PR #5018 / ISS-4159): this is deliberately an
 // invalidate, NOT an optimistic setQueryData. Chat `task:*` events are a
 // workspace fanout delivered to every member with no creator / agent
 // visibility in the payload, so optimistically writing the aggregate from them
@@ -158,7 +158,7 @@ export function applyChatDoneToCache(
       created_at: payload.created_at ?? new Date().toISOString(),
       elapsed_ms: payload.elapsed_ms ?? null,
       // Carry the kind so a no_response turn renders its placeholder inline
-      // without waiting for the reconciling refetch (MUL-4351). Missing →
+      // without waiting for the reconciling refetch (ISS-4351). Missing →
       // "message" for older servers.
       message_kind: payload.message_kind ?? "message",
       ...(payload.quick_actions !== undefined
@@ -215,7 +215,7 @@ export function applyChatDoneToCache(
  * actions are the turn's UNCHANGED prior pills, so the patch is a no-op, but a
  * failure signal is raised for a view to toast — otherwise an explicit refresh
  * that failed would look identical to one that succeeded with the same
- * suggestions (MUL-5149 review).
+ * suggestions (ISS-5149 review).
  */
 export async function applyChatQuickActionsToCache(
   qc: QueryClient,
@@ -230,7 +230,7 @@ export async function applyChatQuickActionsToCache(
     // read the assistant row BEFORE the daemon persisted these actions. Cancel
     // it first so its actions-less response can't land after — and overwrite —
     // the patch below. Both message caches are staleTime: Infinity, so such an
-    // overwrite would never self-heal (MUL-5149 stale-refetch race). Cancelling
+    // overwrite would never self-heal (ISS-5149 stale-refetch race). Cancelling
     // before setQueryData is required: cancelQueries reverts to the pre-fetch
     // state, so patching first would be undone by the revert.
     await Promise.all([
@@ -314,7 +314,7 @@ type ChatSessionUpdatedPayload = {
  * Archiving MUST also zero the row's unread here: the server payload carries
  * only status/updated_at, and chatSessionsOptions is `staleTime: Infinity`, so a
  * stale cache in another tab/device would otherwise keep an archived session's
- * unread badge lit forever — the same MUL-4360 stuck-badge bug, one surface over.
+ * unread badge lit forever — the same ISS-4360 stuck-badge bug, one surface over.
  * This mirrors the archive mutation's optimistic patch and the backend deriving
  * unread_count=0 for archived rows. Unarchive does NOT fabricate a count — the
  * true unread state comes back from the server refetch (last_read_at is
@@ -859,7 +859,7 @@ export function useRealtimeSync(
         // re-evaluates authoritatively, so a rare stale label is harmless.
         // Refetching every mounted preview on every workspace task event caused
         // visible flicker, so the preview now refetches only on input change
-        // (signature), mirroring its query design (MUL-3375).
+        // (signature), mirroring its query design (ISS-3375).
       },
     };
 
@@ -1013,7 +1013,7 @@ export function useRealtimeSync(
     // every comment / activity / reaction event. The refetch replaces
     // every entry's reference and busts React.memo on every CommentCard
     // subtree (visible during AI streaming as a flash across all sibling
-    // threads, MUL-1941). Inactive observers don't refetch either way;
+    // threads, ISS-1941). Inactive observers don't refetch either way;
     // when IssueDetail mounts later, the stale flag triggers the refetch
     // through `refetchOnMount`. Active observers stay fresh via the
     // granular setQueryData handlers in `useIssueTimeline`.
@@ -1029,7 +1029,7 @@ export function useRealtimeSync(
       if (!comment?.issue_id) return;
       invalidateTimeline(comment.issue_id);
       // A new comment bumps the parent issue's updated_at server-side
-      // (MUL-5009), so any open board/list sorted by "Updated date" has
+      // (ISS-5009), so any open board/list sorted by "Updated date" has
       // drifted. Refetch just those keys to re-sort the commented card into
       // place; every other sort is untouched. Only comment:created bumps
       // updated_at, so the other comment events below deliberately do not.
@@ -1223,7 +1223,7 @@ export function useRealtimeSync(
 
     // Helpers reused by chat lifecycle handlers.
     //
-    // SECURITY (review on PR #5018 / MUL-4159): chat `task:*` events are a
+    // SECURITY (review on PR #5018 / ISS-4159): chat `task:*` events are a
     // *workspace fanout* — every member of the workspace receives them — and
     // the payload carries no creator / agent-visibility. So we must NEVER
     // optimistically write the cross-session pending AGGREGATE
@@ -1241,7 +1241,7 @@ export function useRealtimeSync(
     // cross-user aggregate leak.
     //
     // chat:message is intentionally NOT a trigger (it fires per streamed
-    // message and would re-create the request storm MUL-4159 fixed); the
+    // message and would re-create the request storm ISS-4159 fixed); the
     // aggregate is refreshed only on task lifecycle transitions, which are
     // per-task and low-frequency, then coalesced by the debounce below.
     let aggregateRefreshTimer: ReturnType<typeof setTimeout> | null = null;
@@ -1264,7 +1264,7 @@ export function useRealtimeSync(
       qc.invalidateQueries({ queryKey: chatKeys.pendingTask(payload.chat_session_id) });
       // NOTE: intentionally does NOT touch the pending aggregate. chat:message
       // fires per streamed message with no status; the aggregate is maintained
-      // by the task lifecycle handlers below (MUL-4159).
+      // by the task lifecycle handlers below (ISS-4159).
     });
 
     const unsubChatDone = ws.on("chat:done", (p) => {
@@ -1290,7 +1290,7 @@ export function useRealtimeSync(
       // NOTE: the pending aggregate is left to the task:completed / task:failed
       // handlers (which carry the task_id needed to remove the right entry).
       // chat:done no longer invalidates it, so a chatty session doesn't refetch
-      // the aggregate on every turn (MUL-4159).
+      // the aggregate on every turn (ISS-4159).
       // Assistant message just landed → has_unread may have flipped to true.
       invalidateSessionLists();
     });

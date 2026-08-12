@@ -881,7 +881,7 @@ export function CrewsPage() {
 
   // Reserve the row-actions (kebab) track when the current user can manage at
   // least one visible crew. Workspace admins manage all crews; a regular
-  // member manages the crews they created (MUL-4223).
+  // member manages the crews they created (ISS-4223).
   const canManageAnyRow = useMemo(
     () =>
       isWorkspaceAdmin ||

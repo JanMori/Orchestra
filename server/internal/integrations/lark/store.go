@@ -2,7 +2,7 @@ package lark
 
 // Channel-backed store for the Feishu integration.
 //
-// MUL-3515 generalized the lark_* tables into channel_* (a channel_type
+// ISS-3515 generalized the lark_* tables into channel_* (a channel_type
 // discriminator + a JSONB `config` blob for the platform-specific
 // identifiers/credentials). This file owns the one boundary where that JSONB
 // is (de)serialized: the rest of the package keeps working with flat domain
@@ -31,7 +31,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // Installation is the flat, feishu-shaped view of a channel_installation row.

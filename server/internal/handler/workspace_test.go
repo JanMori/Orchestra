@@ -940,7 +940,7 @@ INSERT INTO member (workspace_id, user_id, role) VALUES ($1, $2, 'owner')
 		t.Fatalf("create requester member: %v", err)
 	}
 
-	targetEmail := fmt.Sprintf("revocation-%s@multica.ai", slug)
+	targetEmail := fmt.Sprintf("revocation-%s@orchestra.local", slug)
 	var targetUserID string
 	if err := testPool.QueryRow(ctx, `
 INSERT INTO "user" (name, email) VALUES ($1, $2) RETURNING id
@@ -1087,7 +1087,7 @@ func TestDeleteMember_RevokesTargetRuntimes(t *testing.T) {
 }
 
 // TestDeleteMember_PrunesChannelUserBindings verifies the application-layer
-// replacement for the channel_user_binding member-FK cascade (MUL-3515 §4):
+// replacement for the channel_user_binding member-FK cascade (ISS-3515 §4):
 // removing a member prunes that member's channel bindings, in the same tx as
 // the member-row delete, while leaving a remaining member's binding intact.
 func TestDeleteMember_PrunesChannelUserBindings(t *testing.T) {
@@ -1098,7 +1098,7 @@ func TestDeleteMember_PrunesChannelUserBindings(t *testing.T) {
 	const removedOpenID = "ou_revoke_binding_removed"
 	const keepOpenID = "ou_revoke_binding_keep"
 
-	// channel_* rows have no FK to workspace (MUL-3515 §4), so the fixture's
+	// channel_* rows have no FK to workspace (ISS-3515 §4), so the fixture's
 	// workspace-delete cleanup never reaches them; clear by deterministic key
 	// both before (in case a prior run was killed mid-test) and after.
 	cleanChannel := func() {
@@ -1330,7 +1330,7 @@ INSERT INTO member (workspace_id, user_id, role) VALUES ($1, $2, 'owner')
 	var targetUserID string
 	if err := testPool.QueryRow(ctx, `
 INSERT INTO "user" (name, email) VALUES ($1, $2) RETURNING id
-`, "Revocation No Runtimes Target", "revocation-no-runtimes@multica.ai").Scan(&targetUserID); err != nil {
+`, "Revocation No Runtimes Target", "revocation-no-runtimes@orchestra.local").Scan(&targetUserID); err != nil {
 		t.Fatalf("create target user: %v", err)
 	}
 	t.Cleanup(func() {

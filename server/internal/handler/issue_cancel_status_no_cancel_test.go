@@ -9,7 +9,7 @@ import (
 )
 
 // activeTaskStatuses are the non-terminal states CancelAgentTasksByIssue sweeps
-// (server/pkg/db/queries/agent.sql). MUL-4465's contract is that a status flip
+// (server/pkg/db/queries/agent.sql). ISS-4465's contract is that a status flip
 // to `cancelled` leaves every one of them untouched, so the tests below drive
 // each state, not just `running`.
 var activeTaskStatuses = []string{"queued", "dispatched", "running", "waiting_local_directory", "deferred"}
@@ -41,7 +41,7 @@ func insertIssueTaskWithStatus(t *testing.T, agentID, issueID, status string) st
 	return taskID
 }
 
-// TestUpdateIssueCancelStatusDoesNotCancelActiveTasks locks in MUL-4465:
+// TestUpdateIssueCancelStatusDoesNotCancelActiveTasks locks in ISS-4465:
 // moving an issue to `cancelled` no longer stops its in-flight agent runs. A
 // user clicking "cancel" has no expectation that it interrupts running tasks,
 // so that implicit coupling was removed. Every active task state must survive,

@@ -67,7 +67,7 @@ const BOARD_VIRTUALIZE_THRESHOLD = 30;
 // Passed to <Virtuoso components> when the column has no footer. Must be a
 // STABLE object, never `undefined`: an explicit `undefined` prop overwrites
 // react-virtuoso's internal `{}` default and its startup destructure of
-// `EmptyPlaceholder`/`Footer` throws (MUL-4474).
+// `EmptyPlaceholder`/`Footer` throws (ISS-4474).
 const EMPTY_VIRTUOSO_COMPONENTS = {};
 
 export interface BoardColumnGroup {
@@ -132,7 +132,7 @@ export const BoardColumn = memo(function BoardColumn({
   // lets cross-column drops survive virtualization — only the cards inside
   // window in/out of the DOM.
   const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null);
-  // Pull-based scroll restoration (MUL-4741): assign the saved offset at
+  // Pull-based scroll restoration (ISS-4741): assign the saved offset at
   // ref-attach (the seed + estimate spacer give the column a truthful height
   // on its first commit, so the assignment sticks pre-paint) and feed the
   // same offset into the Virtuoso as its initial position.
@@ -245,7 +245,7 @@ export const BoardColumn = memo(function BoardColumn({
         <div
           ref={mergedRef}
           // Per-column scroll registration for the tab session memento
-          // (MUL-4741): the group id is the stable memento key, so every
+          // (ISS-4741): the group id is the stable memento key, so every
           // column's offset survives tab switches/reloads independently.
           data-tab-scroll-root={scrollMementoKey}
           className={`absolute inset-0 overflow-y-auto rounded-lg p-1 transition-colors ${
@@ -292,7 +292,7 @@ export const BoardColumn = memo(function BoardColumn({
                    remount: seed a bounded slice of real cards so the column
                    never paints blank; once the ref lands, mount the Virtuoso
                    with a matching `initialItemCount` to survive the
-                   measurement frame (MUL-4750). */
+                   measurement frame (ISS-4750). */
                 <VirtuosoSeed
                   data={resolvedIssues}
                   itemContent={itemContent}

@@ -11,7 +11,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // stubAPIClientWithRecorder is a fake APIClient that captures the
@@ -312,7 +312,7 @@ func TestLarkOutcomeReplierUsesAppURLForWebLinks(t *testing.T) {
 			Outcome:         OutcomeIngested,
 			IssueID:         mustUUID("22222222-2222-2222-2222-222222222222"),
 			IssueNumber:     42,
-			IssueIdentifier: "MUL-42",
+			IssueIdentifier: "ISS-42",
 		})
 
 	stub.mu.Lock()
@@ -326,14 +326,14 @@ func TestLarkOutcomeReplierUsesAppURLForWebLinks(t *testing.T) {
 	if len(stub.textOut) != 1 {
 		t.Fatalf("expected one issue-created text, got %d", len(stub.textOut))
 	}
-	if !strings.Contains(stub.textOut[0].Text, "https://app.multica.test/issues/MUL-42") {
+	if !strings.Contains(stub.textOut[0].Text, "https://app.multica.test/issues/ISS-42") {
 		t.Fatalf("issue-created text should use AppURL; got %q", stub.textOut[0].Text)
 	}
 }
 
 // TestLarkOutcomeReplierIssueCreatedSendsConfirmation pins the
 // recovered /issue confirmation path. Before the plain-text refactor
-// the design called for a "已创建 [MUL-xxx]" card; the refactor
+// the design called for a "已创建 [ISS-xxx]" card; the refactor
 // dropped the whole card lifecycle, which had the side effect of
 // silently dropping the issue-created signal. Trump flagged it as a
 // blocker on PR #3277 review. Fix: OutcomeIngested with IssueID.Valid
@@ -360,7 +360,7 @@ func TestLarkOutcomeReplierIssueCreatedSendsConfirmation(t *testing.T) {
 		Outcome:         OutcomeIngested,
 		IssueID:         mustUUID("22222222-2222-2222-2222-222222222222"),
 		IssueNumber:     42,
-		IssueIdentifier: "MUL-42",
+		IssueIdentifier: "ISS-42",
 		IssueTitle:      "fix login bug",
 	})
 
@@ -373,13 +373,13 @@ func TestLarkOutcomeReplierIssueCreatedSendsConfirmation(t *testing.T) {
 	if got.ChatID != "oc_chat_42" {
 		t.Errorf("ChatID = %q; want oc_chat_42", got.ChatID)
 	}
-	if !strings.Contains(got.Text, "MUL-42") {
+	if !strings.Contains(got.Text, "ISS-42") {
 		t.Errorf("text should embed the workspace-qualified key; got %q", got.Text)
 	}
 	if !strings.Contains(got.Text, "fix login bug") {
 		t.Errorf("text should embed the issue title; got %q", got.Text)
 	}
-	if !strings.Contains(got.Text, "https://multica.test/issues/MUL-42") {
+	if !strings.Contains(got.Text, "https://multica.test/issues/ISS-42") {
 		t.Errorf("text should embed the deep link back to Multica; got %q", got.Text)
 	}
 	// No interactive card on this path — the confirmation must be
@@ -408,7 +408,7 @@ func TestLarkOutcomeReplierIssueDuplicateSendsConflict(t *testing.T) {
 		Outcome:         OutcomeIngested,
 		IssueID:         mustUUID("22222222-2222-2222-2222-222222222222"),
 		IssueNumber:     42,
-		IssueIdentifier: "MUL-42",
+		IssueIdentifier: "ISS-42",
 		IssueTitle:      "fix login bug",
 		IssueDuplicate:  true,
 	})
@@ -419,10 +419,10 @@ func TestLarkOutcomeReplierIssueDuplicateSendsConflict(t *testing.T) {
 		t.Fatalf("expected one duplicate reply, got %d", len(stub.textOut))
 	}
 	text := stub.textOut[0].Text
-	if !strings.Contains(text, "Not created") || !strings.Contains(text, "MUL-42") || !strings.Contains(text, "fix login bug") {
+	if !strings.Contains(text, "Not created") || !strings.Contains(text, "ISS-42") || !strings.Contains(text, "fix login bug") {
 		t.Fatalf("duplicate reply = %q", text)
 	}
-	if strings.Contains(text, "Created MUL-42") {
+	if strings.Contains(text, "Created ISS-42") {
 		t.Fatalf("duplicate reply falsely claimed creation: %q", text)
 	}
 }
@@ -483,7 +483,7 @@ func TestLarkOutcomeReplierIssueCreatedThreadFallback(t *testing.T) {
 		Outcome:         OutcomeIngested,
 		IssueID:         mustUUID("22222222-2222-2222-2222-222222222222"),
 		IssueNumber:     42,
-		IssueIdentifier: "MUL-42",
+		IssueIdentifier: "ISS-42",
 		IssueTitle:      "fix login bug",
 	})
 
@@ -520,7 +520,7 @@ func TestLarkOutcomeReplierIssueCreatedNoFallbackOnAmbiguous(t *testing.T) {
 		Outcome:         OutcomeIngested,
 		IssueID:         mustUUID("22222222-2222-2222-2222-222222222222"),
 		IssueNumber:     42,
-		IssueIdentifier: "MUL-42",
+		IssueIdentifier: "ISS-42",
 	})
 
 	stub.mu.Lock()

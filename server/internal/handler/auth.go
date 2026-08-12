@@ -20,11 +20,11 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"golang.org/x/crypto/bcrypt"
-	"github.com/multica-ai/multica/server/internal/analytics"
-	"github.com/multica-ai/multica/server/internal/auth"
-	"github.com/multica-ai/multica/server/internal/logger"
-	obsmetrics "github.com/multica-ai/multica/server/internal/metrics"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/analytics"
+	"github.com/JanMori/Orchestra/server/internal/auth"
+	"github.com/JanMori/Orchestra/server/internal/logger"
+	obsmetrics "github.com/JanMori/Orchestra/server/internal/metrics"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // SignupError represents signup restriction errors
@@ -69,7 +69,7 @@ type UserResponse struct {
 }
 
 // MaxProfileDescriptionLen caps the user-supplied profile_description body.
-// Picked at 2000 chars per MUL-2406: enough room for role / stack / a few
+// Picked at 2000 chars per ISS-2406: enough room for role / stack / a few
 // preferences, short enough that injecting it into every agent brief
 // doesn't move the needle on prompt cost.
 const MaxProfileDescriptionLen = 2000
@@ -99,14 +99,42 @@ func (h *Handler) userToResponse(u db.User) UserResponse {
 }
 
 type LoginResponse struct {
-	Token string       `json:"token"`
-	User  UserResponse `json:"user"`
+	Token       string       `json:"token"`
+	AccessToken string       `json:"access_token,omitempty"`
+	User        UserResponse `json:"user"`
+}
+
+type ExternalAuthRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Key      string `json:"key"`
+	Captcha  string `json:"captcha"`
+}
+
+type ExternalAuthResponseData struct {
+	AccessToken string `json:"access_token"`
+}
+
+type ExternalAuthResponse struct {
+	Code int                       `json:"code"`
+	Msg  string                    `json:"msg"`
+	Data *ExternalAuthResponseData `json:"data"`
+}
+
+const defaultExternalAuthURL = "http://192.168.0.138:8082/sys/auth/login"
+
+func getExternalAuthURL() string {
+	if url := strings.TrimSpace(os.Getenv("EXTERNAL_AUTH_API_URL")); url != "" {
+		return url
+	}
+	return defaultExternalAuthURL
 }
 
 type LoginRequest struct {
 	Account  string `json:"account"` // Email or Username
 	Password string `json:"password"`
 }
+
 
 type RegisterRequest struct {
 	Name     string `json:"name"`
@@ -279,100 +307,7 @@ func contains(slice []string, s string) bool {
 }
 
 func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
-	var req RegisterRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid request body")
-		return
-	}
-
-	email := strings.ToLower(strings.TrimSpace(req.Email))
-	username := strings.TrimSpace(req.Username)
-	name := strings.TrimSpace(req.Name)
-	password := req.Password
-
-	if email == "" {
-		writeError(w, http.StatusBadRequest, "email is required")
-		return
-	}
-	if len(password) < 6 {
-		writeError(w, http.StatusBadRequest, "password must be at least 6 characters")
-		return
-	}
-	if name == "" {
-		if at := strings.Index(email, "@"); at > 0 {
-			name = email[:at]
-		} else {
-			name = email
-		}
-	}
-
-	// Check if signup is allowed
-	if err := h.checkSignupAllowed(email, true); err != nil {
-		var signupErr SignupError
-		if errors.As(err, &signupErr) {
-			writeError(w, http.StatusForbidden, signupErr.Error())
-		} else {
-			writeError(w, http.StatusForbidden, "user registration is disabled")
-		}
-		return
-	}
-
-	// Check if user with email or username already exists
-	existing, err := h.Queries.GetUserByUsernameOrEmail(r.Context(), email)
-	if err == nil && existing.ID.Valid {
-		writeError(w, http.StatusConflict, "user with this email or username already exists")
-		return
-	} else if err != nil && !isNotFound(err) {
-		writeError(w, http.StatusInternalServerError, "failed to check user existence")
-		return
-	}
-
-	if username != "" {
-		existingUser, err := h.Queries.GetUserByUsernameOrEmail(r.Context(), username)
-		if err == nil && existingUser.ID.Valid {
-			writeError(w, http.StatusConflict, "username is already taken")
-			return
-		}
-	}
-
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to hash password")
-		return
-	}
-
-	var usernameText pgtype.Text
-	if username != "" {
-		usernameText = pgtype.Text{String: username, Valid: true}
-	}
-
-	user, err := h.Queries.CreateUserWithPassword(r.Context(), db.CreateUserWithPasswordParams{
-		Name:         name,
-		Email:        email,
-		Username:     usernameText,
-		PasswordHash: pgtype.Text{String: string(hash), Valid: true},
-	})
-	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to create user")
-		return
-	}
-
-	token, err := h.issueJWT(user)
-	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to issue token")
-		return
-	}
-
-	if err := auth.SetAuthCookies(w, token); err != nil {
-		slog.Warn("failed to set auth cookies", "error", err)
-	}
-
-	obsmetrics.RecordEvent(h.Analytics, h.Metrics, analytics.Signup(uuidToString(user.ID), user.Email, signupSourceFromRequest(r)))
-
-	writeJSON(w, http.StatusOK, LoginResponse{
-		Token: token,
-		User:  h.userToResponse(user),
-	})
+	writeError(w, http.StatusForbidden, "user registration is disabled")
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
@@ -394,24 +329,76 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 1. Call External Permission Auth API
+	authURL := getExternalAuthURL()
+	authReqPayload, err := json.Marshal(ExternalAuthRequest{
+		Username: account,
+		Password: password,
+		Key:      "123",
+		Captcha:  "1",
+	})
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to marshal auth request")
+		return
+	}
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Post(authURL, "application/json", strings.NewReader(string(authReqPayload)))
+	if err != nil {
+		slog.Error("external auth request failed", "error", err, "url", authURL)
+		writeError(w, http.StatusUnauthorized, "用户名或密码错误")
+		return
+	}
+	defer resp.Body.Close()
+
+	var extResp ExternalAuthResponse
+	if err := json.NewDecoder(resp.Body).Decode(&extResp); err != nil {
+		slog.Error("failed to decode external auth response", "error", err)
+		writeError(w, http.StatusUnauthorized, "用户名或密码错误")
+		return
+	}
+
+	if extResp.Code != 0 || extResp.Data == nil || extResp.Data.AccessToken == "" {
+		slog.Warn("external auth login rejected", "code", extResp.Code, "msg", extResp.Msg)
+		writeError(w, http.StatusUnauthorized, "用户名或密码错误")
+		return
+	}
+
+	accessToken := extResp.Data.AccessToken
+
+	// 2. Find or create user in local Orchestra DB
 	user, err := h.Queries.GetUserByUsernameOrEmail(r.Context(), account)
 	if err != nil {
 		if isNotFound(err) {
-			writeError(w, http.StatusUnauthorized, "invalid account or password")
+			// Auto-provision local user if authenticated externally
+			email := account
+			if !strings.Contains(account, "@") {
+				email = account + "@local.domain"
+			}
+			hash, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+			user, err = h.Queries.CreateUserWithPassword(r.Context(), db.CreateUserWithPasswordParams{
+				Name:         account,
+				Email:        email,
+				Username:     pgtype.Text{String: account, Valid: true},
+				PasswordHash: pgtype.Text{String: string(hash), Valid: true},
+			})
+			if err != nil {
+				writeError(w, http.StatusInternalServerError, "failed to create user session")
+				return
+			}
+		} else {
+			writeError(w, http.StatusInternalServerError, "failed to lookup user")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "failed to lookup user")
-		return
 	}
 
-	if !user.PasswordHash.Valid || user.PasswordHash.String == "" {
-		writeError(w, http.StatusUnauthorized, "password login is not set up for this account")
-		return
-	}
-
-	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash.String), []byte(password)); err != nil {
-		writeError(w, http.StatusUnauthorized, "invalid account or password")
-		return
+	// 3. Save access_token to user DB record
+	user, err = h.Queries.UpdateUserAccessToken(r.Context(), db.UpdateUserAccessTokenParams{
+		ID:          user.ID,
+		AccessToken: pgtype.Text{String: accessToken, Valid: true},
+	})
+	if err != nil {
+		slog.Warn("failed to save user access_token", "error", err)
 	}
 
 	token, err := h.issueJWT(user)
@@ -425,8 +412,9 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, LoginResponse{
-		Token: token,
-		User:  h.userToResponse(user),
+		Token:       token,
+		AccessToken: accessToken,
+		User:        h.userToResponse(user),
 	})
 }
 

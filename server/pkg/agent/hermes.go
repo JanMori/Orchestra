@@ -466,7 +466,7 @@ func (b *hermesBackend) Execute(ctx context.Context, prompt string, opts ExecOpt
 		// auth error. Re-selecting the model the session is already on is pure
 		// downside. An empty sessionCurrentModel (older runtime or unparsable
 		// state) falls through and still sends set_model, preserving prior
-		// behaviour. See MUL-5029 / NousResearch/hermes-agent#59089.
+		// behaviour. See ISS-5029 / NousResearch/hermes-agent#59089.
 		if opts.Model != "" && effectiveModel == sessionCurrentModel {
 			b.cfg.Logger.Info("hermes session already on requested model; skipping redundant set_model",
 				"model", opts.Model,
@@ -1663,7 +1663,7 @@ func parseToolArgsJSON(argsText string) map[string]any {
 // that field as a Go string made json.Unmarshal fail, which made
 // handleToolCallUpdate return early and silently DROP the entire update —
 // including its status:"completed" — so the completion signal was lost and the
-// task was wrongly marked failed (issue #5509 / MUL-4860). Accept both shapes.
+// task was wrongly marked failed (issue #5509 / ISS-4860). Accept both shapes.
 func acpRawText(raw json.RawMessage) string {
 	if len(raw) == 0 {
 		return ""

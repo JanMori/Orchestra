@@ -78,7 +78,7 @@ func resetCodebuddyDiscoveryCaches(t *testing.T) {
 	t.Cleanup(clear)
 }
 
-// TestDiscoverCodebuddyModelsFromACP is the core of the migration (MUL-5549):
+// TestDiscoverCodebuddyModelsFromACP is the core of the migration (ISS-5549):
 // the catalog now comes from the ACP handshake, so IDs, display names AND the
 // default model all come from CodeBuddy instead of being guessed from the ID.
 func TestDiscoverCodebuddyModelsFromACP(t *testing.T) {
@@ -231,7 +231,7 @@ func TestParseACPCodebuddyEffortDefault(t *testing.T) {
 // TestDiscoverCodebuddyModelsFallsBackOnACPFailure covers the not-logged-in /
 // unreachable-CLI cases. The stand-in is still offered so the picker stays
 // usable, but it must be marked Fallback so the server can never cache it as
-// this runtime's real catalog (MUL-5549), and the effort picker must still work.
+// this runtime's real catalog (ISS-5549), and the effort picker must still work.
 func TestDiscoverCodebuddyModelsFallsBackOnACPFailure(t *testing.T) {
 	for _, tc := range []struct {
 		name string

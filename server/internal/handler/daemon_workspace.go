@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/middleware"
+	"github.com/JanMori/Orchestra/server/internal/middleware"
 )
 
 type DaemonWorkspaceResponse struct {
@@ -22,14 +22,27 @@ type DaemonWorkspaceResponse struct {
 func (h *Handler) ListDaemonWorkspaces(w http.ResponseWriter, r *http.Request) {
 	var resp []DaemonWorkspaceResponse
 	if userID := requestUserID(r); userID != "" {
-		rows, err := h.Queries.ListDaemonWorkspaces(r.Context(), parseUUID(userID))
-		if err != nil {
-			writeError(w, http.StatusInternalServerError, "failed to list daemon workspaces")
-			return
+		dbRows, err := h.DB.Query(r.Context(), `SELECT id, name FROM workspace ORDER BY created_at ASC`)
+		if err == nil {
+			defer dbRows.Close()
+			for dbRows.Next() {
+				var id pgtype.UUID
+				var name string
+				if err := dbRows.Scan(&id, &name); err == nil {
+					resp = append(resp, daemonWorkspaceToResponse(id, name))
+				}
+			}
 		}
-		resp = make([]DaemonWorkspaceResponse, len(rows))
-		for i, row := range rows {
-			resp[i] = daemonWorkspaceToResponse(row.ID, row.Name)
+		if len(resp) == 0 {
+			rows, err := h.Queries.ListDaemonWorkspaces(r.Context(), parseUUID(userID))
+			if err != nil {
+				writeError(w, http.StatusInternalServerError, "failed to list daemon workspaces")
+				return
+			}
+			resp = make([]DaemonWorkspaceResponse, len(rows))
+			for i, row := range rows {
+				resp[i] = daemonWorkspaceToResponse(row.ID, row.Name)
+			}
 		}
 	} else {
 		workspaceID := middleware.DaemonWorkspaceIDFromContext(r.Context())

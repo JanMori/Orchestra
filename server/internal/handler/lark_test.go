@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/integrations/lark"
-	"github.com/multica-ai/multica/server/internal/util/secretbox"
+	"github.com/JanMori/Orchestra/server/internal/integrations/lark"
+	"github.com/JanMori/Orchestra/server/internal/util/secretbox"
 )
 
 // Lark-handler unit tests focus on the no-config short-circuits —
@@ -163,7 +163,7 @@ func TestListLarkInstallations_NotConfigured_HardCodedInstallSupportedFalse(t *t
 	}
 }
 
-// TestListActiveLarkInstallations_SkipsOrphans pins the MUL-3515 hub-boot
+// TestListActiveLarkInstallations_SkipsOrphans pins the ISS-3515 hub-boot
 // guard: ListActiveChannelInstallations is JOINed to live workspace + agent,
 // so an active channel_installation whose workspace or agent has been deleted
 // (channel_* has no FK cascade) is never returned — otherwise the Hub would
@@ -288,7 +288,7 @@ func beginLarkInstallAs(userID, agentID string) *httptest.ResponseRecorder {
 	return w
 }
 
-// TestBeginLarkInstall_AuthorizesAgentOwnerAndAdmins is the core of MUL-4213:
+// TestBeginLarkInstall_AuthorizesAgentOwnerAndAdmins is the core of ISS-4213:
 // the device-flow scan-to-bind is authorized by canManageAgent, so the agent's
 // owner (a plain workspace member) and workspace owner/admins may begin an
 // install, while a member who is neither is forbidden.
@@ -328,7 +328,7 @@ func TestBeginLarkInstall_AuthorizesAgentOwnerAndAdmins(t *testing.T) {
 // TestGetLarkInstallStatus_ScopedToInitiatorOrAdmin verifies the status poll is
 // readable by the session's initiator (the agent owner who began it) and by a
 // workspace owner/admin, but returns 404 (no existence leak) to an unrelated
-// member (MUL-4213).
+// member (ISS-4213).
 func TestGetLarkInstallStatus_ScopedToInitiatorOrAdmin(t *testing.T) {
 	wireLarkInstallServices(t)
 	agentID, ownerID, memberID := privateAgentTestFixture(t)
@@ -365,7 +365,7 @@ func TestGetLarkInstallStatus_ScopedToInitiatorOrAdmin(t *testing.T) {
 
 // TestRevokeLarkInstallation_AuthorizesAgentOwnerAndAdmins mirrors the bind
 // authorization on the unbind path: the bound agent's owner (a plain member)
-// and workspace owner/admins may revoke, an unrelated member may not (MUL-4213).
+// and workspace owner/admins may revoke, an unrelated member may not (ISS-4213).
 func TestRevokeLarkInstallation_AuthorizesAgentOwnerAndAdmins(t *testing.T) {
 	wireLarkInstallServices(t)
 	agentID, ownerID, memberID := privateAgentTestFixture(t)
@@ -417,7 +417,7 @@ RETURNING id
 }
 
 // TestRevokeLarkInstallation_OrphanCleanableByAdminNotMember pins the
-// orphan-cleanup path (Elon review on MUL-4213 / PR #5079): when the bound
+// orphan-cleanup path (Elon review on ISS-4213 / PR #5079): when the bound
 // agent has been hard-deleted, the agent-owner authorization has no agent to
 // resolve, so revoke must fall back to workspace owner/admin — a workspace
 // owner can still disconnect the orphan (the documented cleanup entry point),

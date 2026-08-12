@@ -35,7 +35,7 @@ function makeIssue(idx: number, overrides: Partial<Issue> = {}): Issue {
     id: `issue-${idx}`,
     workspace_id: WS_ID,
     number: idx,
-    identifier: `MUL-${idx}`,
+    identifier: `ISS-${idx}`,
     title: `Issue ${idx}`,
     description: null,
     status: "todo",
@@ -716,25 +716,25 @@ describe("issueIdentifierOptions", () => {
     const searchIssues = vi
       .fn<(params: { q: string }) => Promise<SearchIssuesResponse>>()
       .mockResolvedValue({
-        issues: [makeSearchResult(7, "MUL-7")],
+        issues: [makeSearchResult(7, "ISS-7")],
         total: 1,
       });
     installFakeSearchApi(searchIssues);
 
-    const data = await qc.fetchQuery(issueIdentifierOptions(WS_ID, "MUL-7"));
+    const data = await qc.fetchQuery(issueIdentifierOptions(WS_ID, "ISS-7"));
 
     expect(data?.id).toBe("issue-7");
     expect(searchIssues).toHaveBeenCalledWith(
-      expect.objectContaining({ q: "MUL-7" }),
+      expect.objectContaining({ q: "ISS-7" }),
     );
   });
 
   it("returns null when no result's identifier matches (wrong prefix / number-only hit)", async () => {
-    // Backend number-match returns MUL-7 for a TES-7 query; exact filter rejects it.
+    // Backend number-match returns ISS-7 for a TES-7 query; exact filter rejects it.
     const searchIssues = vi
       .fn<(params: { q: string }) => Promise<SearchIssuesResponse>>()
       .mockResolvedValue({
-        issues: [makeSearchResult(7, "MUL-7")],
+        issues: [makeSearchResult(7, "ISS-7")],
         total: 1,
       });
     installFakeSearchApi(searchIssues);
@@ -750,17 +750,17 @@ describe("issueIdentifierOptions", () => {
       .mockResolvedValue({ issues: [], total: 0 });
     installFakeSearchApi(searchIssues);
 
-    const data = await qc.fetchQuery(issueIdentifierOptions(WS_ID, "MUL-999"));
+    const data = await qc.fetchQuery(issueIdentifierOptions(WS_ID, "ISS-999"));
 
     expect(data).toBeNull();
   });
 
   it("keys the query by workspace and identifier", () => {
-    expect(issueKeys.identifier(WS_ID, "MUL-7")).toEqual([
+    expect(issueKeys.identifier(WS_ID, "ISS-7")).toEqual([
       "issues",
       WS_ID,
       "identifier",
-      "MUL-7",
+      "ISS-7",
     ]);
   });
 });

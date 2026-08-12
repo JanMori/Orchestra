@@ -14,9 +14,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 type RuntimeLocalSkillRequestStatus string
@@ -30,7 +30,7 @@ const (
 	// RuntimeLocalSkillConflict is a terminal state set when a fresh import
 	// hits an existing same-name skill. It is not an error: the request carries
 	// structured Conflict metadata so the caller (Desktop UI / CLI) can offer
-	// overwrite / rename / skip instead of silently failing. See MUL-2800.
+	// overwrite / rename / skip instead of silently failing. See ISS-2800.
 	RuntimeLocalSkillConflict RuntimeLocalSkillRequestStatus = "conflict"
 )
 
@@ -97,7 +97,7 @@ type LocalSkillListStore interface {
 // contract: only clients that opt in receive the `conflict` terminal status;
 // older clients keep the legacy `failed` ("a skill with this name already
 // exists") behavior so an already-installed Desktop build doesn't regress when
-// it talks to an upgraded backend. See MUL-2800.
+// it talks to an upgraded backend. See ISS-2800.
 type LocalSkillImportRequestInput struct {
 	RuntimeID        string
 	CreatorID        string

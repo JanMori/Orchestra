@@ -13,9 +13,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/multica-ai/multica/server/internal/cli"
-	"github.com/multica-ai/multica/server/internal/daemon"
-	"github.com/multica-ai/multica/server/internal/daemon/execenv"
+	"github.com/JanMori/Orchestra/server/internal/cli"
+	"github.com/JanMori/Orchestra/server/internal/daemon"
+	"github.com/JanMori/Orchestra/server/internal/daemon/execenv"
 )
 
 var agentCmd = &cobra.Command{
@@ -88,7 +88,7 @@ var agentSkillsCmd = &cobra.Command{
 // they're the ONLY post-creation path for reading or writing
 // custom_env values — `orchestra agent list / get / update` no longer
 // expose env on the wire. Each call hits the audited
-// `/api/agents/{id}/env` endpoint. See MUL-2600.
+// `/api/agents/{id}/env` endpoint. See ISS-2600.
 
 var agentEnvCmd = &cobra.Command{
 	Use:   "env",
@@ -285,8 +285,8 @@ func newAPIClient(cmd *cobra.Command) (*cli.APIClient, error) {
 }
 
 const (
-	defaultCloudServerURL = "https://api.multica.ai"
-	defaultCloudAppURL    = "https://multica.ai"
+	defaultCloudServerURL = "http://localhost:7081"
+	defaultCloudAppURL    = "http://localhost:5001"
 )
 
 func tryResolveServerURL(cmd *cobra.Command) string {
@@ -501,7 +501,7 @@ func runAgentGet(cmd *cobra.Command, args []string) error {
 
 // applyAgentPermissionFlags translates the invocation-permission flags
 // (--permission-mode / --public-to-workspace / --public-to-member) into the
-// permission_mode + invocation_targets request fields (MUL-3963). When none of
+// permission_mode + invocation_targets request fields (ISS-3963). When none of
 // the flags are set it is a no-op, so the legacy --visibility handling still
 // drives the request. When any public-to-* flag is present without an explicit
 // --permission-mode, the mode defaults to public_to.
@@ -589,7 +589,7 @@ func runAgentCreate(cmd *cobra.Command, _ []string) error {
 	// thinking_level mirrors model: a thin pass-through to the top-level agent
 	// field the server already accepts and validates (IsKnownThinkingValue).
 	// The CLI deliberately does not enumerate valid levels — they are
-	// runtime/model-specific and the server owns the catalog (MUL-2339).
+	// runtime/model-specific and the server owns the catalog (ISS-2339).
 	if cmd.Flags().Changed("thinking-level") {
 		v, _ := cmd.Flags().GetString("thinking-level")
 		body["thinking_level"] = v

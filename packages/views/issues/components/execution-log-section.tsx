@@ -439,7 +439,7 @@ function PastRow({ task, issueId }: { task: AgentTask; issueId: string }) {
     try {
       await api.rerunIssue(issueId, task.id);
     } catch (e) {
-      // A rerun is now re-gated on the operator's invoke permission (MUL-4525):
+      // A rerun is now re-gated on the operator's invoke permission (ISS-4525):
       // a structured 403 means the agent can't be triggered, not a transient
       // failure — localize it instead of echoing the server's generic message.
       toast.error(

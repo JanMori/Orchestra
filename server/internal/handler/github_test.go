@@ -23,10 +23,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/middleware"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/middleware"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 func TestExtractIdentifiers(t *testing.T) {
@@ -38,17 +38,17 @@ func TestExtractIdentifiers(t *testing.T) {
 		{
 			name: "branch_name",
 			in:   []string{"", "", "mul-1510/fix-login"},
-			want: []string{"MUL-1510"},
+			want: []string{"ISS-1510"},
 		},
 		{
 			name: "title_and_body",
-			in:   []string{"Fix MUL-82", "Closes MUL-1510 and ABC-7", ""},
-			want: []string{"MUL-82", "MUL-1510", "ABC-7"},
+			in:   []string{"Fix ISS-82", "Closes ISS-1510 and ABC-7", ""},
+			want: []string{"ISS-82", "ISS-1510", "ABC-7"},
 		},
 		{
 			name: "dedupe_across_fields",
-			in:   []string{"MUL-1", "MUL-1 again", "mul-1/branch"},
-			want: []string{"MUL-1"},
+			in:   []string{"ISS-1", "ISS-1 again", "mul-1/branch"},
+			want: []string{"ISS-1"},
 		},
 		{
 			name: "ignore_email_and_versions",
@@ -85,21 +85,21 @@ func TestExtractClosingIdentifiers(t *testing.T) {
 	}{
 		{
 			name: "single_closes",
-			in:   []string{"", "Closes MUL-1"},
-			want: []string{"MUL-1"},
+			in:   []string{"", "Closes ISS-1"},
+			want: []string{"ISS-1"},
 		},
 		{
 			name: "all_keyword_inflections",
 			in: []string{
 				"",
-				"close MUL-1\nclosed MUL-2\ncloses MUL-3\nfix MUL-4\nfixes MUL-5\nfixed MUL-6\nresolve MUL-7\nresolves MUL-8\nresolved MUL-9",
+				"close ISS-1\nclosed ISS-2\ncloses ISS-3\nfix ISS-4\nfixes ISS-5\nfixed ISS-6\nresolve ISS-7\nresolves ISS-8\nresolved ISS-9",
 			},
-			want: []string{"MUL-1", "MUL-2", "MUL-3", "MUL-4", "MUL-5", "MUL-6", "MUL-7", "MUL-8", "MUL-9"},
+			want: []string{"ISS-1", "ISS-2", "ISS-3", "ISS-4", "ISS-5", "ISS-6", "ISS-7", "ISS-8", "ISS-9"},
 		},
 		{
 			name: "case_insensitive_and_colon",
-			in:   []string{"CLOSES: MUL-1", "Fixes:MUL-2 resolves   MUL-3"},
-			want: []string{"MUL-1", "MUL-2", "MUL-3"},
+			in:   []string{"CLOSES: ISS-1", "Fixes:ISS-2 resolves   ISS-3"},
+			want: []string{"ISS-1", "ISS-2", "ISS-3"},
 		},
 		{
 			name: "bare_reference_does_not_close",
@@ -111,22 +111,22 @@ func TestExtractClosingIdentifiers(t *testing.T) {
 		},
 		{
 			name: "keyword_not_adjacent_does_not_close",
-			// "Fix login MUL-1" — keyword present but the identifier is
+			// "Fix login ISS-1" — keyword present but the identifier is
 			// not adjacent. Consistent with GitHub's closing-keyword
 			// grammar; matches via extractIdentifiers for linking only.
-			in:   []string{"Fix login MUL-1", ""},
+			in:   []string{"Fix login ISS-1", ""},
 			want: []string{},
 		},
 		{
 			name: "dedupe_across_fields",
-			in:   []string{"Closes MUL-1", "fixes mul-1"},
-			want: []string{"MUL-1"},
+			in:   []string{"Closes ISS-1", "fixes mul-1"},
+			want: []string{"ISS-1"},
 		},
 		{
 			name: "no_match_on_disclosed_or_foreclose",
 			// Word-boundary guards against keyword fragments embedded
-			// in larger words ("Disclosed MUL-1", "Foreclose MUL-1").
-			in:   []string{"Disclosed MUL-1 in foreclose MUL-2", ""},
+			// in larger words ("Disclosed ISS-1", "Foreclose ISS-1").
+			in:   []string{"Disclosed ISS-1 in foreclose ISS-2", ""},
 			want: []string{},
 		},
 	}
@@ -1009,7 +1009,7 @@ func TestWebhook_MergedPR_OnlyClosesIdentifiersWithClosingKeyword(t *testing.T) 
 	// so it shows in the PR list. The follow-up / unblocks issues are matched
 	// only by a bare body mention — auto-link still records the row (generous),
 	// but the link is reference_only and excluded from the issue's PR list
-	// (MUL-3739).
+	// (ISS-3739).
 	listed, err := testHandler.Queries.ListPullRequestsByIssue(ctx, parseUUID(closes.ID))
 	if err != nil {
 		t.Fatalf("ListPullRequestsByIssue(%s): %v", closes.Identifier, err)
@@ -1056,8 +1056,8 @@ func TestWebhook_MergedPR_OnlyClosesIdentifiersWithClosingKeyword(t *testing.T) 
 }
 
 // TestWebhook_MergedPR_TitlePrefixDoesNotClose locks in the design choice
-// that a bare "MUL-X: foo" title (no closing keyword) links but never
-// auto-completes. The user must write `Closes MUL-X` somewhere if they want
+// that a bare "ISS-X: foo" title (no closing keyword) links but never
+// auto-completes. The user must write `Closes ISS-X` somewhere if they want
 // the merge to flip the status.
 func TestWebhook_MergedPR_TitlePrefixDoesNotClose(t *testing.T) {
 	if testHandler == nil {
@@ -1339,7 +1339,7 @@ func TestWebhook_CloseKeywordRemovedBeforeMergeDoesNotClose(t *testing.T) {
 // guard for the multi-PR sibling case Elon flagged on the first attempt
 // of this fix. Scenario:
 //
-//  1. PR A declares closing intent (`Closes MUL-X`) and is opened.
+//  1. PR A declares closing intent (`Closes ISS-X`) and is opened.
 //  2. PR B references the same issue (link-only — no closing keyword)
 //     and is opened.
 //  3. PR A merges. The issue stays in_progress because PR B is open.
@@ -1425,7 +1425,7 @@ func TestWebhook_LinkOnlySiblingMergeAfterCloseKeywordPR(t *testing.T) {
 }
 
 // TestWebhook_BareBodyMentionHiddenFromPRList is the regression guard for
-// MUL-3739: a PR that only mentions an issue identifier in its body (no closing
+// ISS-3739: a PR that only mentions an issue identifier in its body (no closing
 // keyword, no title prefix, no branch reference) must not appear in that
 // issue's PR list. Editing the body to add/remove a closing keyword flips the
 // PR's visibility, because reference_only follows the live title/body parse
@@ -1771,7 +1771,7 @@ func TestWebhook_PullRequest_MetadataPreservesMergeable(t *testing.T) {
 }
 
 // TestListGitHubInstallations_RoleGating covers the read-only relaxation
-// in MUL-2413: the endpoint is now reachable by any workspace member, but
+// in ISS-2413: the endpoint is now reachable by any workspace member, but
 // the handler strips the numeric installation_id and reports `can_manage`
 // based on the caller's role. Admins / owners still receive the full row.
 func TestListGitHubInstallations_RoleGating(t *testing.T) {
@@ -1875,7 +1875,7 @@ func TestListGitHubInstallations_RoleGating(t *testing.T) {
 }
 
 // TestGitHubRoutes_RoleGating exercises the router-level middleware split
-// introduced in MUL-2413: GET installations runs under
+// introduced in ISS-2413: GET installations runs under
 // RequireWorkspaceMemberFromURL while connect / delete remain behind
 // RequireWorkspaceRoleFromURL(owner, admin). The handler-level tests above
 // inject a member into context directly and so do not cover the middleware
@@ -1906,7 +1906,7 @@ RETURNING id
 	mkUser := func(t *testing.T, label string) string {
 		t.Helper()
 		var id string
-		email := fmt.Sprintf("github-routes-%s-%s@multica.ai", slug, label)
+		email := fmt.Sprintf("github-routes-%s-%s@orchestra.local", slug, label)
 		if err := testPool.QueryRow(ctx, `
 INSERT INTO "user" (name, email) VALUES ($1, $2) RETURNING id
 `, "GHR "+label, email).Scan(&id); err != nil {
@@ -2077,7 +2077,7 @@ func TestGitHubInstallationBroadcastRedaction(t *testing.T) {
 	}
 }
 
-// TestWebhook_MergedPR_ChildWithParent_NotifiesParent guards the MUL-2538
+// TestWebhook_MergedPR_ChildWithParent_NotifiesParent guards the ISS-2538
 // must-fix: a merged PR is the dominant path by which a sub-issue actually
 // reaches `done`, and that path goes through advanceIssueToDone — not the
 // HTTP UpdateIssue / BatchUpdateIssues handlers that originally wired up
@@ -2209,7 +2209,7 @@ func TestWebhook_MergedPR_ChildWithParent_NotifiesParent(t *testing.T) {
 	}
 	// Parent has no assignee in this fixture, so the routing mentions stay
 	// absent. Behavior for assigned parents is covered in
-	// issue_child_done_test.go (MUL-2538 Option C).
+	// issue_child_done_test.go (ISS-2538 Option C).
 	for _, banned := range []string{"mention://agent/", "mention://member/", "mention://crew/"} {
 		if strings.Contains(content, banned) {
 			t.Errorf("system comment must not include %q mention (parent unassigned), got: %s", banned, content)
@@ -2459,7 +2459,7 @@ func TestListGitHubInstallationRepositoriesRejectsCrossWorkspaceRow(t *testing.T
 // verifies that fetchInstallationAccount, when fully configured,
 // (a) sends a Bearer JWT, (b) parses the JSON response, and (c) returns
 // the real account login instead of the "unknown" placeholder. This is
-// the assertion that nails down the bug fix for MUL-3078.
+// the assertion that nails down the bug fix for ISS-3078.
 func TestFetchInstallationAccount_AuthenticatedPopulatesRow(t *testing.T) {
 	pemBytes, key := generateTestRSAKeyPEM(t)
 	t.Setenv("GITHUB_APP_ID", "11111")
@@ -2574,7 +2574,7 @@ func TestFetchInstallationAccount_EmptyAccountKeepsPlaceholder(t *testing.T) {
 }
 
 // TestWebhook_InstallationCreatedRefreshesUnknownLogin guards the fix for
-// MUL-3078: when the setup callback persists a row with the "unknown"
+// ISS-3078: when the setup callback persists a row with the "unknown"
 // placeholder (because the operator hasn't configured App JWT auth, or
 // the API call failed), the subsequent `installation.created` webhook
 // must (a) overwrite account_login with the real value from the payload
@@ -2803,7 +2803,7 @@ func TestSetupCallback_ConsumesPendingInstallationCreated(t *testing.T) {
 	}
 }
 
-// TestWebhook_PullRequest_FansOutToBoundWorkspaces is the MUL-4343 change: one
+// TestWebhook_PullRequest_FansOutToBoundWorkspaces is the ISS-4343 change: one
 // GitHub App installation bound to several workspaces must deliver a repo's PR
 // events to EVERY bound workspace. Each workspace mirrors the PR and auto-links
 // it against its own issues (its own prefix), replacing the old single-workspace

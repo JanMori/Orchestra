@@ -318,7 +318,7 @@ type GetLatestMemberCommentForIssueSinceParams struct {
 	Since   pgtype.Timestamptz `json:"since"`
 }
 
-// MUL-4195 completion reconciliation: the newest MEMBER-authored comment on an
+// ISS-4195 completion reconciliation: the newest MEMBER-authored comment on an
 // issue created strictly after @since (a run's started_at). Used when a task
 // completes to detect deliberate user input that landed while the agent was
 // busy — or that was merged into the running task after its context was
@@ -598,11 +598,11 @@ type ListCommentsForIssueParams struct {
 // closed under "parent of": a reply is always newer than its parent, so an old
 // thread root can fall outside the window while a fresh reply to it stays
 // inside. Callers that render threads must close the parent chains afterwards —
-// see completeCommentThreads (MUL-5492).
+// see completeCommentThreads (ISS-5492).
 //
 // The cap is still purely defensive here — issue p99 is ~30 comments and the max
 // ever observed in prod is ~1.1k — but "defensive" is not a reason to drop the
-// newest rows when it does fire (MUL-5492).
+// newest rows when it does fire (ISS-5492).
 func (q *Queries) ListCommentsForIssue(ctx context.Context, arg ListCommentsForIssueParams) ([]Comment, error) {
 	rows, err := q.db.Query(ctx, listCommentsForIssue, arg.IssueID, arg.WorkspaceID, arg.Limit)
 	if err != nil {
@@ -858,7 +858,7 @@ type ListReconcilableCommentsForIssueSinceParams struct {
 	PlannedCommentIds []pgtype.UUID      `json:"planned_comment_ids"`
 }
 
-// MUL-4195 / MUL-4304 completion reconciliation: every MEMBER- or AGENT-authored
+// ISS-4195 / ISS-4304 completion reconciliation: every MEMBER- or AGENT-authored
 // comment on an issue created strictly after @since (the completing run's
 // created_at anchor), plus every id in its planned trigger/coalesced batch.
 // Planned ids matter for retry children because their input comments predate
@@ -866,7 +866,7 @@ type ListReconcilableCommentsForIssueSinceParams struct {
 // needs reconciliation. The handler excludes only delivered_comment_ids, then
 // replays the remainder through the normal trigger pipeline oldest first.
 //
-// Author-type scope (MUL-4304): originally restricted to author_type = 'member'.
+// Author-type scope (ISS-4304): originally restricted to author_type = 'member'.
 // That left a gap — an explicit agent→agent @mention (agent A comments
 // `@agent B`) that landed while B already had a DISPATCHED task was dropped by
 // the create-time enqueue path (merge only folds into a QUEUED task, so a

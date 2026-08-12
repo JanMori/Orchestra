@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 const testResolverSlug = "middleware-resolver-test"
@@ -147,7 +147,7 @@ func TestResolveWorkspaceIDFromRequest(t *testing.T) {
 			wantEmpty: true,
 		},
 		{
-			// MUL-2600: a mat_ task token authenticates the request and
+			// ISS-2600: a mat_ task token authenticates the request and
 			// the auth middleware writes the token-bound workspace into
 			// X-Workspace-ID along with X-Actor-Source=task_token. Any
 			// other workspace identifier the agent puts on the wire — a

@@ -13,7 +13,7 @@ import (
 )
 
 // Agent deliverables must never carry a link to the runtime's own filesystem
-// (MUL-4899). The runtime brief now states that contract, but a prompt is
+// (ISS-4899). The runtime brief now states that contract, but a prompt is
 // advisory; this is the enforcement backstop on the three commands that publish
 // agent-authored markdown to a human reader.
 //

@@ -13,7 +13,7 @@ import (
 // RuntimeID.Valid. What did not work is what the user is told: the refusal reused
 // runtime_offline, whose copy asks them to bring a machine back online. An
 // unbound agent has no machine to bring back; the fix is to bind one. These tests
-// pin the distinct reason code (MUL-5559).
+// pin the distinct reason code (ISS-5559).
 
 // TestCommentMention_UnboundAgentReportsRuntimeRequired: @mentioning an unbound
 // agent posts the comment, enqueues nothing, and reports agent_runtime_required

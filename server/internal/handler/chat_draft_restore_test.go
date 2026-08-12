@@ -144,7 +144,7 @@ func TestChatDraftRestores_NonCreatorForbidden(t *testing.T) {
 		INSERT INTO "user" (name, email)
 		VALUES ('Draft Restore Other', $1)
 		RETURNING id
-	`, fmt.Sprintf("draft-restore-other-%d@multica.ai", time.Now().UnixNano())).Scan(&otherUserID); err != nil {
+	`, fmt.Sprintf("draft-restore-other-%d@orchestra.local", time.Now().UnixNano())).Scan(&otherUserID); err != nil {
 		t.Fatalf("create other user: %v", err)
 	}
 	if _, err := testPool.Exec(context.Background(), `
@@ -185,7 +185,7 @@ func TestChatDraftRestores_NonCreatorForbidden(t *testing.T) {
 	}
 }
 
-// chat_draft_restore has no chat_session FK (MUL-3515), so nothing but
+// chat_draft_restore has no chat_session FK (ISS-3515), so nothing but
 // DeleteChatSession's own transaction prunes an unconsumed restore.
 func TestDeleteChatSession_PrunesDraftRestores(t *testing.T) {
 	agentID := createHandlerTestAgent(t, "DraftRestorePruneAgent", []byte("[]"))
@@ -222,7 +222,7 @@ func countDraftRestores(t *testing.T, sessionID string) int {
 }
 
 // DeleteChatSession is not the only way a chat_session dies: it also cascades
-// from agent (migration 033). Since MUL-5559 a runtime delete only hard-deletes
+// from agent (migration 033). Since ISS-5559 a runtime delete only hard-deletes
 // the runtime's SYSTEM agents, so that is the cascade whose draft restores would
 // otherwise be stranded (chat_draft_restore has no FK).
 func TestDeleteAgentRuntime_PrunesDraftRestoresOfSystemAgentSessions(t *testing.T) {

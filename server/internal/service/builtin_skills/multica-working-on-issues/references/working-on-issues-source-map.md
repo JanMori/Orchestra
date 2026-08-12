@@ -6,13 +6,13 @@ after the latest `main` merge; the prior skill cited pre-merge lines that have
 since moved (see the "drifted" column). Re-confirm with the verification command
 at the bottom before relying on an exact line.
 
-## `orchestra issue pull-requests` — read PR links from Multica
+## `orchestra issue pull-requests` — read PR links from Orchestra
 
 | Behavior | File:line | Drifted from |
 |---|---|---|
-| CLI command `pull-requests <id>` (alias `prs`) | `server/cmd/multica/cmd_issue.go:105` | `:104` |
-| `runIssuePullRequests` handler | `server/cmd/multica/cmd_issue.go:507` | new citation |
-| Calls `GET /api/issues/<id>/pull-requests` | `server/cmd/multica/cmd_issue.go:522` | `:522` (unchanged) |
+| CLI command `pull-requests <id>` (alias `prs`) | `server/cmd/orchestra/cmd_issue.go:105` | `:104` |
+| `runIssuePullRequests` handler | `server/cmd/orchestra/cmd_issue.go:507` | new citation |
+| Calls `GET /api/issues/<id>/pull-requests` | `server/cmd/orchestra/cmd_issue.go:522` | `:522` (unchanged) |
 | API route registration | `server/cmd/server/router.go:480` | `:480` (unchanged) |
 | Handler `ListPullRequestsForIssue` → `Queries.ListPullRequestsByIssue` | `server/internal/handler/github.go:687,692` | `:466` |
 | Row → response mapper `issuePullRequestRowToResponse` | `server/internal/handler/github.go:205` | `:149` |
@@ -80,7 +80,7 @@ Every `PREFIX-NUMBER` mention in **title, body, or branch** resolves to an issue
 in the workspace and writes a link row (`LinkIssueToPullRequest`, ~`github.go:762`).
 This is what `orchestra issue pull-requests` later reads back.
 
-**Reference-only flag (MUL-3739).** The link row carries a `reference_only`
+**Reference-only flag (ISS-3739).** The link row carries a `reference_only`
 boolean (`migrations/127_issue_pull_request_reference_only.up.sql`). The handler
 computes a `qualifyingIdents` set = identifiers in **title or branch** (any
 `extractIdentifiers` match) ∪ **body closing keywords** (`closingIdents`). A
@@ -108,14 +108,14 @@ call-site location for the link logic.
 Only a `PREFIX-NUMBER` immediately after a closing keyword
 (`Closes`/`Fixes`/`Resolves`, optional `:` then whitespace) sets the link row's
 `close_intent` flag — the gate that auto-advances the issue to `done` on merge.
-`Fix MUL-1` closes; `Fix login MUL-1` does not (adjacency). Branch names are
+`Fix ISS-1` closes; `Fix login ISS-1` does not (adjacency). Branch names are
 deliberately excluded (function doc, `github.go:1044-1050`): a branch like
 `mul-1/fix-login` links but must never declare close intent.
 
 Drifted from the prior skill's `github.go:736` citation.
 
-Net: a bare title prefix (`MUL-2759: ...`) or a branch ref links only (shown in
-the PR list); `Closes MUL-2759` links **and** records close intent; a bare body
+Net: a bare title prefix (`ISS-2759: ...`) or a branch ref links only (shown in
+the PR list); `Closes ISS-2759` links **and** records close intent; a bare body
 mention with no title/branch ref and no closing keyword links as `reference_only`
 and is hidden from the PR list.
 
@@ -128,7 +128,7 @@ and is hidden from the PR list.
 | Backlog → non-backlog (not done/cancelled) enqueues on update | `server/internal/handler/issue.go:2537-2540` | `:2523` |
 | Same contract in batch update | `server/internal/handler/issue.go:3021-3024` | new citation |
 | Child → `done` notifies + wakes the parent, gated by the stage barrier | `server/internal/handler/issue_child_done.go:66` (`notifyParentOfChildDone`; doc comment at `:15`; barrier gate at `:115`) | func def `:51` |
-| Status change (incl. → `cancelled`) does NOT cancel in-flight tasks; only issue deletion does (MUL-4465) | no-cancel note in `server/internal/handler/issue.go:2652-2658` (`UpdateIssue`) and `:3170-3171` (`BatchUpdateIssues`); deletion still cancels at `:2863` (`DeleteIssue`) / `:3239` (`BatchDeleteIssues`) via `CancelTasksForIssue` (`server/internal/service/task.go:1229`) | new citation |
+| Status change (incl. → `cancelled`) does NOT cancel in-flight tasks; only issue deletion does (ISS-4465) | no-cancel note in `server/internal/handler/issue.go:2652-2658` (`UpdateIssue`) and `:3170-3171` (`BatchUpdateIssues`); deletion still cancels at `:2863` (`DeleteIssue`) / `:3239` (`BatchDeleteIssues`) via `CancelTasksForIssue` (`server/internal/service/task.go:1229`) | new citation |
 | `StartTask` / `CompleteTask` do not write issue status (agent CLI owns progress) | `server/internal/service/task.go` (`StartTask` / `CompleteTask` comments) | new citation |
 | Assignment brief: ordinary agent `in_progress` then `in_review`; crew leader `in_progress` only on first dispatch | `server/internal/daemon/execenv/runtime_config_sections.go` (`writeWorkflowAssignment`) | new citation |
 | Failed task may roll `in_progress` → `todo` when no active task remains | `server/internal/service/task.go` (`HandleFailedTasks`) | new citation |
@@ -139,7 +139,7 @@ set but no trigger. Promoting `backlog → todo` later fires it then (update pat
 line 2537).
 
 Moving an issue to `cancelled` used to call `CancelTasksForIssue` and stop every
-active task on it (the old #940 behavior). MUL-4465 removed that from both
+active task on it (the old #940 behavior). ISS-4465 removed that from both
 `UpdateIssue` and `BatchUpdateIssues`: a status flip — `cancelled` included —
 never cancels tasks now. `CancelTasksForIssue` fires only from the issue-deletion
 paths (`DeleteIssue` / `BatchDeleteIssues`), where the owning issue row is going
@@ -152,8 +152,8 @@ away, so no task is left orphaned.
 | `issue.stage` column (nullable, `>= 1`) | `server/migrations/123_issue_stage.up.sql` |
 | Stage barrier: notify+wake fire only when the lowest unfinished stage is all-terminal; unstaged set = one implicit stage | `server/internal/handler/issue_child_done.go:231` (`stageBarrierClosed`) |
 | Per-stage summary + next stage for the wake comment | `server/internal/handler/issue_child_done.go:254` (`stageProgressSummary`) |
-| `--stage` on `issue create` / `issue update` | `server/cmd/multica/cmd_issue.go:328,350` |
-| `orchestra issue children <id>` (sub-issues grouped by stage) | `server/cmd/multica/cmd_issue.go:114,678`; route `GET /api/issues/{id}/children` → `ListChildIssues` |
+| `--stage` on `issue create` / `issue update` | `server/cmd/orchestra/cmd_issue.go:328,350` |
+| `orchestra issue children <id>` (sub-issues grouped by stage) | `server/cmd/orchestra/cmd_issue.go:114,678`; route `GET /api/issues/{id}/children` → `ListChildIssues` |
 
 Advancement is agent-driven: the server only detects the closed barrier and
 wakes the parent assignee. Promoting the next stage's `backlog` sub-issues to
@@ -166,8 +166,8 @@ comment-triggered runs otherwise must not change status unless asked.
 
 | Behavior | File:line |
 |---|---|
-| `orchestra issue metadata set <issue-id> --key --value [--type]` | `server/cmd/multica/cmd_issue_metadata.go:80,109-111` |
-| `orchestra issue metadata delete <issue-id> --key` | `server/cmd/multica/cmd_issue_metadata.go:93,113` |
+| `orchestra issue metadata set <issue-id> --key --value [--type]` | `server/cmd/orchestra/cmd_issue_metadata.go:80,109-111` |
+| `orchestra issue metadata delete <issue-id> --key` | `server/cmd/orchestra/cmd_issue_metadata.go:93,113` |
 | API routes (PUT/DELETE `/metadata/{key}`) | `server/cmd/server/router.go:478-479` |
 
 `--value` is JSON-parsed by default (bool/number sniff); `--type` forces
@@ -177,8 +177,8 @@ comment-triggered runs otherwise must not change status unless asked.
 
 | Behavior | File:line |
 |---|---|
-| `multica property list/get/create/update/archive/unarchive` | `server/cmd/multica/cmd_property.go` |
-| `orchestra issue property list/set/unset` (name→id translation) | `server/cmd/multica/cmd_property.go` (`encodeIssuePropertyValue`) |
+| `orchestra property list/get/create/update/archive/unarchive` | `server/cmd/orchestra/cmd_property.go` |
+| `orchestra issue property list/set/unset` (name→id translation) | `server/cmd/orchestra/cmd_property.go` (`encodeIssuePropertyValue`) |
 | Definition CRUD, admin gate, agent-actor rejection | `server/internal/handler/property.go` (`requirePropertyAdmin`) |
 | Optional catalog icon field and allowlist validation | `server/internal/handler/property.go` (`PropertyResponse`, `validatePropertyIcon`) |
 | Per-type value validation (self-correcting errors) | `server/internal/handler/property.go` (`validatePropertyValue`) |
@@ -190,7 +190,7 @@ Re-derive any line above before depending on it:
 
 ```bash
 cd server
-grep -n 'pull-requests <id>'                 cmd/multica/cmd_issue.go
+grep -n 'pull-requests <id>'                 cmd/orchestra/cmd_issue.go
 grep -n 'ListPullRequestsForIssue'           cmd/server/router.go internal/handler/github.go
 grep -n 'func issuePullRequestRowToResponse\|type GitHubPullRequestResponse struct\|func derivePRState\|func extractIdentifiers\|func extractClosingIdentifiers\|closingIdentifierRe' internal/handler/github.go
 grep -n 'extractIdentifiers(\|extractClosingIdentifiers(\|derivePRState(' internal/handler/github.go

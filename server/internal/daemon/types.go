@@ -3,7 +3,7 @@ package daemon
 import (
 	"encoding/json"
 
-	"github.com/multica-ai/multica/server/internal/runtimeapps"
+	"github.com/JanMori/Orchestra/server/internal/runtimeapps"
 )
 
 // AgentEntry describes a single available agent CLI.
@@ -15,7 +15,7 @@ type AgentEntry struct {
 	// (Homebrew Cask, nvm/fnm) does an in-place upgrade that deletes the old
 	// versioned directory Path points into. Empty for synthesized entries
 	// (custom runtime profiles) that carry an absolute path directly. See
-	// Daemon.resolveAgentEntry and MUL-4486.
+	// Daemon.resolveAgentEntry and ISS-4486.
 	Command string
 	Model   string // model override (optional)
 }
@@ -27,7 +27,7 @@ type Runtime struct {
 	Provider string `json:"provider"`
 	Status   string `json:"status"`
 	// ProfileID is non-empty when this runtime was registered from a
-	// workspace custom runtime profile (MUL-3284). It links the runtime row
+	// workspace custom runtime profile (ISS-3284). It links the runtime row
 	// back to the profile so the daemon can resolve the profile's
 	// command_name to the executable to launch. Built-in (provider-detected)
 	// runtimes leave this empty.
@@ -78,10 +78,10 @@ type Task struct {
 	IsLeaderTask                  bool                   `json:"is_leader_task,omitempty"`                   // true when executing in the crew-leader coordinator role
 	PriorSessionID                string                 `json:"prior_session_id,omitempty"`                 // Claude session ID from a previous task on this issue
 	PriorWorkDir                  string                 `json:"prior_work_dir,omitempty"`                   // work_dir from a previous task on this issue
-	PriorSessionResumeUnavailable bool                   `json:"prior_session_resume_unavailable,omitempty"` // MUL-5305: server signals a more recent Codex session was withheld (rollout missing) and PriorSessionID (if any) is an older fallback; the run must disclose the continuity gap even if that older session resumes cleanly. Absent/false on old servers.
+	PriorSessionResumeUnavailable bool                   `json:"prior_session_resume_unavailable,omitempty"` // ISS-5305: server signals a more recent Codex session was withheld (rollout missing) and PriorSessionID (if any) is an older fallback; the run must disclose the continuity gap even if that older session resumes cleanly. Absent/false on old servers.
 	TriggerCommentID              string                 `json:"trigger_comment_id,omitempty"`               // comment that triggered this task
-	CoalescedCommentIDs           []string               `json:"coalesced_comment_ids,omitempty"`            // MUL-4195: earlier comments folded into this run while it was still queued; the agent must address these in addition to the (newest) triggering comment. Empty for old servers / non-merged runs
-	CoalescedComments             []CoalescedCommentData `json:"coalesced_comments,omitempty"`               // MUL-4195: full detail of the folded comments (thread_id/author/created_at/content) so the prompt can address each without assuming a shared thread. Empty for old servers / non-merged runs
+	CoalescedCommentIDs           []string               `json:"coalesced_comment_ids,omitempty"`            // ISS-4195: earlier comments folded into this run while it was still queued; the agent must address these in addition to the (newest) triggering comment. Empty for old servers / non-merged runs
+	CoalescedComments             []CoalescedCommentData `json:"coalesced_comments,omitempty"`               // ISS-4195: full detail of the folded comments (thread_id/author/created_at/content) so the prompt can address each without assuming a shared thread. Empty for old servers / non-merged runs
 	TriggerThreadID               string                 `json:"trigger_thread_id,omitempty"`                // root comment ID for the triggering thread; falls back to trigger_comment_id on old servers
 	TriggerCommentContent         string                 `json:"trigger_comment_content,omitempty"`          // content of the triggering comment
 	TriggerAuthorType             string                 `json:"trigger_author_type,omitempty"`              // "agent" or "member" — author kind for the triggering comment
@@ -95,7 +95,7 @@ type Task struct {
 	ChatMessage                   string                 `json:"chat_message,omitempty"`                     // user message content for chat tasks
 	ChatMessageAttachments        []ChatAttachmentMeta   `json:"chat_message_attachments,omitempty"`         // attachments linked to the chat message; agent uses these to `multica attachment download <id>`
 	ChatIntro                     bool                   `json:"chat_intro,omitempty"`                       // true for the agent's proactive self-introduction chat (no user message); selects the self-introduction prompt in buildChatPrompt
-	RegenerateQuickActionsFor     string                 `json:"regenerate_quick_actions_for,omitempty"`     // set only by servers predating server-side quick-actions generation (MUL-5573). Read as a REFUSAL marker, never executed: see the guard in runTask
+	RegenerateQuickActionsFor     string                 `json:"regenerate_quick_actions_for,omitempty"`     // set only by servers predating server-side quick-actions generation (ISS-5573). Read as a REFUSAL marker, never executed: see the guard in runTask
 	AutopilotRunID                string                 `json:"autopilot_run_id,omitempty"`                 // non-empty for autopilot run_only tasks
 	AutopilotID                   string                 `json:"autopilot_id,omitempty"`                     // autopilot that spawned this run
 	AutopilotTitle                string                 `json:"autopilot_title,omitempty"`                  // autopilot title used as task context
@@ -130,16 +130,17 @@ type Task struct {
 	// daemon emits these into the brief under `## Task Initiator` so a
 	// workspace-visible agent can attribute the request per person. The
 	// agent's effective credentials stay owner-scoped — this is an attested
-	// identity, not a credential. See MUL-2645.
-	InitiatorType  string `json:"initiator_type,omitempty"`
-	InitiatorID    string `json:"initiator_id,omitempty"`
-	InitiatorName  string `json:"initiator_name,omitempty"`
-	InitiatorEmail string `json:"initiator_email,omitempty"`
+	// identity, not a credential. See ISS-2645.
+	InitiatorType   string `json:"initiator_type,omitempty"`
+	InitiatorID     string `json:"initiator_id,omitempty"`
+	InitiatorName   string `json:"initiator_name,omitempty"`
+	InitiatorEmail  string `json:"initiator_email,omitempty"`
+	UserAccessToken string `json:"user_access_token,omitempty"`
 	// AuthToken is the task-scoped credential the server mints at claim time.
 	// The daemon injects it into the spawned agent as ORCHESTRA_TOKEN so the
 	// agent never sees the daemon's own (often workspace-owner) credential.
 	// Empty or non-task-scoped values are fatal for writable agent tasks; the
-	// daemon must not fall back to its own token. See MUL-3292.
+	// daemon must not fall back to its own token. See ISS-3292.
 	AuthToken string `json:"auth_token,omitempty"`
 }
 
@@ -156,7 +157,7 @@ type ChatAttachmentMeta struct {
 
 // CoalescedCommentData mirrors the server-side struct (handler.CoalescedCommentData):
 // the full detail of a comment folded into this run while it was still queued
-// (MUL-4195). The prompt embeds each one directly so the agent addresses every
+// (ISS-4195). The prompt embeds each one directly so the agent addresses every
 // folded comment without assuming they all live in the triggering thread.
 type CoalescedCommentData struct {
 	ID         string `json:"id"`
@@ -262,7 +263,7 @@ type TaskResult struct {
 	EnvRoot       string `json:"-"`                    // env root dir for writing GC metadata (not sent to server)
 	FailureReason string `json:"-"`                    // classifier forwarded to FailTask on the blocked path; empty falls back to 'agent_error'
 	// SessionRolloutMissing is set when the daemon withheld this task's Codex
-	// session because its rollout was not in the store (MUL-5305). Forwarded to
+	// session because its rollout was not in the store (ISS-5305). Forwarded to
 	// the terminal report so the server clears the resume pointer and flags the
 	// continuity gap for the next claim. Not part of the wire result itself.
 	SessionRolloutMissing bool `json:"-"`

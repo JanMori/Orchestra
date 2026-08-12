@@ -7,8 +7,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
 
-	"github.com/multica-ai/multica/server/internal/daemonws"
-	"github.com/multica-ai/multica/server/internal/realtime"
+	"github.com/JanMori/Orchestra/server/internal/daemonws"
+	"github.com/JanMori/Orchestra/server/internal/realtime"
 )
 
 type RegistryOptions struct {
@@ -19,7 +19,7 @@ type RegistryOptions struct {
 	Commit   string
 
 	// BusinessSampler, when non-nil, opts the registry into the
-	// scrape-time SQL sampler from PR4 (MUL-2947). It is intentionally
+	// scrape-time SQL sampler from PR4 (ISS-2947). It is intentionally
 	// separate from Pool so existing tests (and any deployment without
 	// METRICS_ADDR) cannot accidentally start hitting the database on
 	// every /metrics scrape.

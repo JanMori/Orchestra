@@ -10,11 +10,11 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/analytics"
-	"github.com/multica-ai/multica/server/internal/logger"
-	obsmetrics "github.com/multica-ai/multica/server/internal/metrics"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/analytics"
+	"github.com/JanMori/Orchestra/server/internal/logger"
+	obsmetrics "github.com/JanMori/Orchestra/server/internal/metrics"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 var nonAlpha = regexp.MustCompile(`[^a-zA-Z]`)
@@ -763,7 +763,7 @@ func (h *Handler) DeleteWorkspace(w http.ResponseWriter, r *http.Request) {
 	// are still held when DeleteWorkspace sweeps chat_draft_restore. Without
 	// them, FinalizeDeferredCancelledChat could commit a restore for one of
 	// these sessions after the sweep's snapshot was taken: the session cascades
-	// away, the restore has no FK to follow it (MUL-3515) and no reaper, and the
+	// away, the restore has no FK to follow it (ISS-3515) and no reaper, and the
 	// user's prompt is stranded forever (#5219). The finalizer takes the same
 	// lock before inserting, so it either blocks until the session is gone and
 	// skips the insert, or commits first and the sweep sees its row.

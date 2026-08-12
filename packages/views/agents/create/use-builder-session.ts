@@ -176,7 +176,7 @@ export function useBuilderSession(options: {
 
   // Rebinds the conversation's execution runtime on the server BEFORE the draft
   // reflects the new selection. Updating the draft first is what produced
-  // MUL-5163: the picker showed runtime B while every subsequent message still
+  // ISS-5163: the picker showed runtime B while every subsequent message still
   // ran on the runtime the session was created with.
   const switchRuntime = async (runtimeId: string): Promise<string | null> => {
     if (switchingRuntime) return null;
@@ -210,7 +210,7 @@ export function useBuilderSession(options: {
   /**
    * Sends one turn.
    *
-   * `commitInput` is the composer's clear (MUL-5181): it runs the moment the
+   * `commitInput` is the composer's clear (ISS-5181): it runs the moment the
    * server has accepted the message and the caches render it, NOT after the
    * reconciling invalidations settle. Awaiting those held the user's text in
    * the box for three more round-trips while their message was already on

@@ -7,10 +7,10 @@ import (
 	"sort"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/runtimeapps"
-	"github.com/multica-ai/multica/server/internal/util"
-	sdk "github.com/multica-ai/multica/server/pkg/composio"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/runtimeapps"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	sdk "github.com/JanMori/Orchestra/server/pkg/composio"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // mcpOverlayServerName is the deterministic key under `mcpServers` used to
@@ -54,7 +54,7 @@ type mcpOverlayPayload struct {
 // `agent`, or a zero result when ANY of the gates below trip — meaning no
 // Composio session is created and no token is provisioned.
 //
-// MUL-3963: Composio MCP now FOLLOWS the agent invocation permission instead
+// ISS-3963: Composio MCP now FOLLOWS the agent invocation permission instead
 // of requiring originator == owner. The security boundary is upstream —
 // canInvokeAgent decides who may enqueue a run for this agent at all — so any
 // task that reaches dispatch has already been authorised to run the agent, and

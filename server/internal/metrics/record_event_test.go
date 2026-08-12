@@ -3,8 +3,8 @@ package metrics_test
 import (
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/analytics"
-	"github.com/multica-ai/multica/server/internal/metrics"
+	"github.com/JanMori/Orchestra/server/internal/analytics"
+	"github.com/JanMori/Orchestra/server/internal/metrics"
 )
 
 // captureSpy records the names of every event handed to Capture so tests can
@@ -16,7 +16,7 @@ func (c *captureSpy) Close()                    {}
 
 // TestRecordEventSkipsPostHogForMetricsOnly verifies that events flagged by
 // analytics.IsMetricsOnly increment a Prometheus counter but are NOT shipped to
-// PostHog. As of MUL-4127 every server-side event is metrics-only, so none of
+// PostHog. As of ISS-4127 every server-side event is metrics-only, so none of
 // them reach PostHog; only a name outside the set (a frontend event) would.
 func TestRecordEventSkipsPostHogForMetricsOnly(t *testing.T) {
 	spy := &captureSpy{}
@@ -32,12 +32,12 @@ func TestRecordEventSkipsPostHogForMetricsOnly(t *testing.T) {
 		t.Fatalf("runtime_offline did not increment a Prometheus counter")
 	}
 
-	// Product-behaviour event: since MUL-4127 it is metrics-only too — the
+	// Product-behaviour event: since ISS-4127 it is metrics-only too — the
 	// Prometheus counter still moves but nothing ships to PostHog.
 	before = metrics.SumAllCounters(m)
 	metrics.RecordEvent(spy, m, analytics.WorkspaceCreated("user-1", "ws-1"))
 	if len(spy.names) != 0 {
-		t.Fatalf("workspace_created shipped to PostHog, want 0 (metrics-only since MUL-4127): %v", spy.names)
+		t.Fatalf("workspace_created shipped to PostHog, want 0 (metrics-only since ISS-4127): %v", spy.names)
 	}
 	if metrics.SumAllCounters(m) <= before {
 		t.Fatalf("workspace_created did not increment a Prometheus counter")

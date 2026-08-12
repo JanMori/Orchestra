@@ -114,7 +114,7 @@ describe("proxy legacy workspace route redirects", () => {
 
   it("still redirects explicit legacy app routes on the public marketing host", () => {
     expect(redirectLocation("/issues/ABC-123", sessionCookies, "multica.ai")).toBe(
-      "https://multica.ai/acme/issues/ABC-123",
+      "http://localhost:5001/acme/issues/ABC-123",
     );
   });
 });

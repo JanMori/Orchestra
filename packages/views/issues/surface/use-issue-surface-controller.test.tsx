@@ -30,7 +30,7 @@ function makeIssue(
   return {
     workspace_id: "ws-1",
     number: 1,
-    identifier: "MUL-1",
+    identifier: "ISS-1",
     title: overrides.id,
     description: null,
     priority: "none",
@@ -241,7 +241,7 @@ describe("useIssueSurfaceController", () => {
     );
   });
 
-  // MUL-5477. `tableQuerySpec` is the identity every downstream consumer keys
+  // ISS-5477. `tableQuerySpec` is the identity every downstream consumer keys
   // off: the facet request, the status/group branch hooks, and — the expensive
   // one — the Table's `useQueries` branch list, which is rebuilt whenever this
   // object changes. Two of the queries feeding the spec defaulted their data to
@@ -1148,7 +1148,7 @@ describe("useIssueSurfaceController", () => {
     expect(result.current.isEmpty).toBe(true);
   });
 
-  // --- cancelled as a default status (MUL-4290) ------------------------
+  // --- cancelled as a default status (ISS-4290) ------------------------
   // Cancelled is a first-class default lifecycle status: fetched into the
   // cache, surfaced by default, narrowed (not unlocked) by the status filter,
   // and hideable like any other status.
@@ -1272,7 +1272,7 @@ describe("useIssueSurfaceController", () => {
     );
   });
 
-  // --- working-chip scope (MUL-4884, MUL-5525) ---------------------------
+  // --- working-chip scope (ISS-4884, ISS-5525) ---------------------------
   // The header chip promises "N agents working" where N is the number of agents
   // holding rows that clicking it leaves. The running-issue ids still come from
   // the working-agents endpoint and go to the server as a filter; the COUNT
@@ -1333,7 +1333,7 @@ describe("useIssueSurfaceController", () => {
       makeWorkingAgent("agent-1", ["todo-1"]),
       // Working on an issue this project does not contain. The old
       // workspace-wide chip counted it here and then opened an empty list
-      // (MUL-5525).
+      // (ISS-5525).
       makeWorkingAgent("agent-elsewhere", ["other-project-1"]),
     ]);
 

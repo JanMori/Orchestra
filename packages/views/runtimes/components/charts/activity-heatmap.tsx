@@ -12,7 +12,7 @@ const HEATMAP_WEEKS = 26;
 const CELL_SIZE = 16;
 const CELL_GAP = 3;
 // Monday-first row order, matching ISO 8601 and the rest of the Weekly
-// aggregation (see #MUL-2382). Rows labelled Mon / Wed / Fri keep the
+// aggregation (see #ISS-2382). Rows labelled Mon / Wed / Fri keep the
 // density readable.
 const DAY_LABELS = ["Mon", "", "Wed", "", "Fri", "", ""];
 const WEEKDAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];

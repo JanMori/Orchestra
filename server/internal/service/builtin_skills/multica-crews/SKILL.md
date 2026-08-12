@@ -1,11 +1,11 @@
 ---
-name: multica-crews
-description: "Use when creating, inspecting, updating, assigning to, or debugging a Multica crew, including how leader routing picks who runs."
+name: orchestra-crews
+description: "Use when creating, inspecting, updating, assigning to, or debugging a Orchestra crew, including how leader routing picks who runs."
 user-invocable: false
-allowed-tools: Bash(multica *)
+allowed-tools: Bash(orchestra *)
 ---
 
-# Multica Crews
+# Orchestra Crews
 
 ## Quick start
 
@@ -35,7 +35,7 @@ to test. These can mutate workspace state or trigger agent runs.
 
 ## Core model
 
-A Multica crew is a workspace routing and coordination object.
+A Orchestra crew is a workspace routing and coordination object.
 
 A crew is not an agent. It does not run work by itself. Current behavior:
 crew-routed work runs through the crew's `leader_id` agent.
@@ -136,7 +136,7 @@ the backend adds the new leader as a crew member with role `leader`.
 
 ## Leader briefing
 
-For crew leader tasks, Multica appends a crew leader briefing to the leader
+For crew leader tasks, Orchestra appends a crew leader briefing to the leader
 agent instructions. The briefing includes:
 
 - Crew Operating Protocol;
@@ -147,7 +147,7 @@ Roster entries include member name, member type, mention markdown, and non-empty
 role. For agent members the roster also lists their assigned skills
 (`skills: a, b`, or `no skills assigned` when the agent has none) so the leader
 can delegate by capability instead of guessing from the role label; human
-members carry no skills segment. Builtin `multica-*` skills are not listed —
+members carry no skills segment. Builtin `orchestra-*` skills are not listed —
 only the workspace skills explicitly attached to the agent. Archived agent
 members are skipped from the briefing roster.
 

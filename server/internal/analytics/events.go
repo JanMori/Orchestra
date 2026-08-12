@@ -38,7 +38,7 @@ const EventSchemaVersion = 2
 // shipped to PostHog. metrics.RecordEvent consults this set and skips the
 // PostHog Capture for these names while still incrementing the counter.
 //
-// As of MUL-4127, PostHog is no longer used for server-side product analytics:
+// As of ISS-4127, PostHog is no longer used for server-side product analytics:
 // the acquisition / activation / expansion funnel is now read straight from the
 // operational database and from these Grafana counters, so the redundant
 // PostHog copy of every product event was retired. That makes ALL server-side
@@ -53,7 +53,7 @@ const EventSchemaVersion = 2
 // entry here.
 var metricsOnlyEvents = map[string]struct{}{
 	// Product-behaviour events — DB + Grafana are the source of truth
-	// (MUL-4127); the PostHog copy was redundant.
+	// (ISS-4127); the PostHog copy was redundant.
 	EventSignup:                        {},
 	EventWorkspaceCreated:              {},
 	EventIssueCreated:                  {},
@@ -83,7 +83,7 @@ var metricsOnlyEvents = map[string]struct{}{
 }
 
 // IsMetricsOnly reports whether an event name is recorded to Prometheus but must
-// not be sent to PostHog. As of MUL-4127 this is true for every server-side
+// not be sent to PostHog. As of ISS-4127 this is true for every server-side
 // event. See metricsOnlyEvents.
 func IsMetricsOnly(name string) bool {
 	_, ok := metricsOnlyEvents[name]
@@ -503,13 +503,13 @@ func OnboardingQuestionnaireSubmitted(userID string, source []string, role strin
 // OnboardingSourceSubmitted fires when the user's acquisition source
 // transitions from unresolved to resolved — answered or explicitly
 // declined. The source question is no longer part of the onboarding
-// flow (MUL-5159): it is asked by the workspace backfill prompt after
+// flow (ISS-5159): it is asked by the workspace backfill prompt after
 // agents have completed work for the user, so this lands well after
 // `onboarding_questionnaire_submitted` (which now covers role +
 // use_case only). A dedicated event gives the backfill prompt its own
 // Grafana counter (answer/decline rate) without stalling the
 // questionnaire funnel step. Metrics-only like every server event
-// (MUL-4127); the per-user source value reaches analytics through the
+// (ISS-4127); the per-user source value reaches analytics through the
 // client-side person-property mirror in saveQuestionnaire.
 //
 // `source` stays a slice for the same v2 back-compat reason as the

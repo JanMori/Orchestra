@@ -88,13 +88,13 @@ export function preprocessIssueIdentifiers(text: string): string {
     // Dotted continuation such as `ABC-123.ts` (filename) or `ABC-123.tar.gz`:
     // a `.` immediately followed by an alphanumeric means the token is part of
     // a larger dotted name. A trailing `.` before whitespace/EOL is a sentence
-    // end ("see MUL-1.") and stays linkable.
+    // end ("see ISS-1.") and stays linkable.
     const after = text[end]
     if (after === '.' && /[A-Za-z0-9]/.test(text[end + 1] ?? '')) continue
     // Path segment such as `FOO-1/bar` or `foo/BAR-1` — a `/` on either side
     // signals a path rather than a standalone reference.
     if (after === '/' || text[start - 1] === '/') continue
-    // Embedded in a dotted name on the left (`file.MUL-1`).
+    // Embedded in a dotted name on the left (`file.ISS-1`).
     if (text[start - 1] === '.') continue
 
     result += text.slice(lastIndex, start)

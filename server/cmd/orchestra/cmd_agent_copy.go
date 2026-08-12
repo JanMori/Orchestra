@@ -9,13 +9,13 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/multica-ai/multica/server/internal/agentconfig"
-	"github.com/multica-ai/multica/server/internal/cli"
+	"github.com/JanMori/Orchestra/server/internal/agentconfig"
+	"github.com/JanMori/Orchestra/server/internal/cli"
 )
 
 // agentCopyCmd forks an existing agent's portable configuration into a brand-new
 // agent, optionally on a different runtime, leaving the source untouched. It is
-// the CLI/headless equivalent of the web "Duplicate" action (MUL-5279). The
+// the CLI/headless equivalent of the web "Duplicate" action (ISS-5279). The
 // command is a thin composition over existing endpoints — GET the source, then
 // POST a create — so it needs no dedicated server API: `POST /api/agents`
 // already binds skill_ids in the same DB transaction as the agent row, so the

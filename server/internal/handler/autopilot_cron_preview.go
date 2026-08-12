@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/multica-ai/multica/server/internal/service"
+	"github.com/JanMori/Orchestra/server/internal/service"
 )
 
 // Rejection codes let the editor say which input is at fault: a timezone the

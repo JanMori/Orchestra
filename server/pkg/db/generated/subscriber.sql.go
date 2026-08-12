@@ -48,7 +48,7 @@ type AddDelegatedSubscriberParams struct {
 	WorkspaceID pgtype.UUID `json:"workspace_id"`
 }
 
-// The delegated rule's write (MUL-5483). Eligibility and insert are ONE
+// The delegated rule's write (ISS-5483). Eligibility and insert are ONE
 // statement so they share a snapshot; callers must hold LockSubscriberWrites
 // for the same (workspace, user), which is what makes that snapshot stable.
 //
@@ -107,7 +107,7 @@ type AddIssueSubscriberParams struct {
 //
 //  1. A tombstoned row is NEVER resurrected. The WHERE on the DO UPDATE fails
 //     for an opted-out row, which degrades to DO NOTHING — so unsubscribe still
-//     sticks on a tree an agent keeps adding to (MUL-5483).
+//     sticks on a tree an agent keeps adding to (ISS-5483).
 //
 //  2. An ACTIVE 'delegated' row is upgraded when the user becomes directly
 //     involved (assigned / mentioned / commented). Without this the reason
@@ -145,7 +145,7 @@ type DeleteSubscriptionsByMemberParams struct {
 }
 
 // Drop a departing member's subscriptions across the workspace, in the same tx
-// as the member-row delete (MUL-5483 review round 7).
+// as the member-row delete (ISS-5483 review round 7).
 //
 // Same application-layer cleanup rule the surrounding revoke path already
 // applies to channel bindings and invocation grants: issue_subscriber carries
@@ -269,7 +269,7 @@ type LockActiveMemberParams struct {
 
 // Re-assert workspace membership INSIDE a serialized transaction, holding the
 // row so a concurrent revoke cannot complete underneath the caller
-// (MUL-5483 review round 8).
+// (ISS-5483 review round 8).
 //
 // The subtree-unsubscribe handler validates membership from its own MVCC
 // snapshot before it opens a transaction, which is only a statement about the
@@ -297,7 +297,7 @@ type LockSubscriberWritesParams struct {
 }
 
 // Transaction-scoped serialization boundary for (workspace, user) subscriber
-// state (MUL-5483 review round 7).
+// state (ISS-5483 review round 7).
 //
 // Three paths race over the same question — "should this user be an active
 // watcher?" — and each one is a check in one statement followed by a write in

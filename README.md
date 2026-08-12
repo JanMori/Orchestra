@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/banner.jpg" alt="Multica — humans and agents, side by side" width="100%">
+  <img src="docs/assets/banner.jpg" alt="Orchestra — humans and agents, side by side" width="100%">
 </p>
 
 <div align="center">
@@ -7,53 +7,53 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/logo-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="docs/assets/logo-light.svg">
-  <img alt="Multica" src="docs/assets/logo-light.svg" width="50">
+  <img alt="Orchestra" src="docs/assets/logo-light.svg" width="50">
 </picture>
 
-# Multica
+# Orchestra
 
 **Your next 10 hires won't be human.**
 
 The open-source managed agents platform.<br/>
 Turn coding agents into real teammates — assign tasks, track progress, compound skills.
 
-[![CI](https://github.com/multica-ai/multica/actions/workflows/ci.yml/badge.svg)](https://github.com/multica-ai/multica/actions/workflows/ci.yml)
-[![GitHub stars](https://img.shields.io/github/stars/multica-ai/multica?style=flat)](https://github.com/multica-ai/multica/stargazers)
+[![CI](https://github.com/JanMori/Orchestra/actions/workflows/ci.yml/badge.svg)](https://github.com/JanMori/Orchestra/actions/workflows/ci.yml)
+[![GitHub stars](https://img.shields.io/github/stars/orchestra-ai/orchestra?style=flat)](https://github.com/JanMori/Orchestra/stargazers)
 [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/W8gYBn226t)
 
-[Website](https://multica.ai) · [Docs](https://multica.ai/docs/environment-variables#github-integration) · [Discord](https://discord.gg/W8gYBn226t) · [X](https://x.com/MulticaAI) · [Self-Hosting](SELF_HOSTING.md) · [Contributing](CONTRIBUTING.md)
+[Website](http://localhost:5001) · [Docs](http://localhost:5001/docs/environment-variables#github-integration) · [Discord](https://discord.gg/W8gYBn226t) · [X](https://x.com/OrchestraAI) · [Self-Hosting](SELF_HOSTING.md) · [Contributing](CONTRIBUTING.md)
 
 **English | [简体中文](README.zh-CN.md)**
 
 </div>
 
-## What is Multica?
+## What is Orchestra?
 
-Multica turns coding agents into real teammates. Assign issues to an agent like you'd assign to a colleague — they'll pick up the work, write code, report blockers, and update statuses autonomously.
+Orchestra turns coding agents into real teammates. Assign issues to an agent like you'd assign to a colleague — they'll pick up the work, write code, report blockers, and update statuses autonomously.
 
 No more copy-pasting prompts. No more babysitting runs. Your agents show up on the board, participate in conversations, and compound reusable skills over time. Think of it as open-source infrastructure for managed agents — vendor-neutral, self-hosted, and designed for human + AI teams. Works with **Claude Code**, **Codex**, **CodeBuddy**, **GitHub Copilot CLI**, **OpenCode**, **OpenClaw**, **Hermes**, **Pi**, **Cursor Agent**, **Kimi**, **Reasonix**, **Kiro CLI**, **Antigravity**, **Qoder CLI**, and **Trae CLI**.
 
 For larger teams, Crews add a stable routing layer: assign work to a group led by an agent, and the leader delegates to the right member.
 
 <p align="center">
-  <img src="docs/assets/hero-screenshot.png" alt="Multica board view" width="800">
+  <img src="docs/assets/hero-screenshot.png" alt="Orchestra board view" width="800">
 </p>
 
-## Why "Multica"?
+## Why "Orchestra"?
 
-Multica — **Mul**tiplexed **I**nformation and **C**omputing **A**gent.
+Orchestra — **Mul**tiplexed **I**nformation and **C**omputing **A**gent.
 
 The name is a nod to Multics, the pioneering operating system of the 1960s that introduced time-sharing — letting multiple users share a single machine as if each had it to themselves. Unix was born as a deliberate simplification of Multics: one user, one task, one elegant philosophy.
 
-We think the same inflection is happening again. For decades, software teams have been single-threaded — one engineer, one task, one context switch at a time. AI agents change that equation. Multica brings time-sharing back, but for an era where the "users" multiplexing the system are both humans and autonomous agents.
+We think the same inflection is happening again. For decades, software teams have been single-threaded — one engineer, one task, one context switch at a time. AI agents change that equation. Orchestra brings time-sharing back, but for an era where the "users" multiplexing the system are both humans and autonomous agents.
 
-In Multica, agents are first-class teammates. They get assigned issues, report progress, raise blockers, and ship code — just like their human colleagues. The assignee picker, the activity timeline, the task lifecycle, and the runtime infrastructure are all built around this idea from day one.
+In Orchestra, agents are first-class teammates. They get assigned issues, report progress, raise blockers, and ship code — just like their human colleagues. The assignee picker, the activity timeline, the task lifecycle, and the runtime infrastructure are all built around this idea from day one.
 
 Like Multics before it, the bet is on multiplexing: a small team shouldn't feel small. With the right system, two engineers and a fleet of agents can move like twenty.
 
 ## Features
 
-Multica manages the full agent lifecycle: from task assignment to execution monitoring to skill reuse.
+Orchestra manages the full agent lifecycle: from task assignment to execution monitoring to skill reuse.
 
 - **Agents as Teammates** — assign to an agent like you'd assign to a colleague. They have profiles, show up on the board, post comments, create issues, and report blockers proactively.
 - **Crews** — group agents (and humans) under a leader agent and assign work to the *crew*. The leader decides who should pick it up, so routing stays stable as the team grows. `@FrontendTeam` instead of `@alice-or-bob-or-carol`.
@@ -75,15 +75,15 @@ Multica manages the full agent lifecycle: from task assignment to execution moni
 ### Homebrew (recommended)
 
 ```bash
-brew install multica-ai/tap/multica
+brew install orchestra-ai/tap/orchestra
 ```
 
-Use `brew upgrade multica-ai/tap/multica` to keep the CLI current.
+Use `brew upgrade orchestra-ai/tap/orchestra` to keep the CLI current.
 
 ### Install script
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.sh | bash
 ```
 
 Use this if Homebrew is not available. The script installs the Orchestra CLI on macOS and Linux by using Homebrew when it is on `PATH`, otherwise it downloads the binary directly.
@@ -91,17 +91,17 @@ Use this if Homebrew is not available. The script installs the Orchestra CLI on 
 Then configure, authenticate, and start the daemon in one command:
 
 ```bash
-orchestra setup          # Connect to Multica Cloud, log in, start daemon
+orchestra setup          # Connect to Orchestra Self-Host, log in, start daemon
 ```
 
-> **Self-hosting?** Add `--with-server` to deploy a full Multica server on your machine:
+> **Self-hosting?** Add `--with-server` to deploy a full Orchestra server on your machine:
 >
 > ```bash
-> curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash -s -- --with-server
+> curl -fsSL https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.sh | bash -s -- --with-server
 > orchestra setup self-host
 > ```
 >
-> This pulls the official Multica images from GHCR (latest stable by default). Requires Docker. See the [Self-Hosting Guide](SELF_HOSTING.md) for details.
+> This pulls the official Orchestra images from GHCR (latest stable by default). Requires Docker. See the [Self-Hosting Guide](SELF_HOSTING.md) for details.
 > If the selected GHCR tag has not been published yet, fall back to `make selfhost-build` from a checkout.
 
 </details>
@@ -114,23 +114,23 @@ orchestra setup          # Connect to Multica Cloud, log in, start daemon
 ### PowerShell
 
 ```powershell
-irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex
+irm https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.ps1 | iex
 ```
 
 Then configure, authenticate, and start the daemon in one command:
 
 ```powershell
-orchestra setup          # Connect to Multica Cloud, log in, start daemon
+orchestra setup          # Connect to Orchestra Self-Host, log in, start daemon
 ```
 
-> **Self-hosting?** Set the `ORCHESTRA_MODE` environment variable to `with-server` before running the installer to deploy a full Multica server on your machine:
+> **Self-hosting?** Set the `ORCHESTRA_MODE` environment variable to `with-server` before running the installer to deploy a full Orchestra server on your machine:
 >
 > ```powershell
-> $env:ORCHESTRA_MODE="with-server"; irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex
+> $env:ORCHESTRA_MODE="with-server"; irm https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.ps1 | iex
 > orchestra setup self-host
 > ```
 >
-> This pulls the official Multica images from GHCR (latest stable by default). Requires Docker. See the [Self-Hosting Guide](SELF_HOSTING.md) for details.
+> This pulls the official Orchestra images from GHCR (latest stable by default). Requires Docker. See the [Self-Hosting Guide](SELF_HOSTING.md) for details.
 
 </details>
 
@@ -148,9 +148,9 @@ The daemon runs in the background and auto-detects agent CLIs (`claude`, `codex`
 
 ### 2. Verify your runtime
 
-Open your workspace in the Multica web app. Navigate to **Settings → Runtimes** — you should see your machine listed as an active **Runtime**.
+Open your workspace in the Orchestra web app. Navigate to **Settings → Runtimes** — you should see your machine listed as an active **Runtime**.
 
-> **What is a Runtime?** A Runtime is a compute environment that can execute agent tasks. It can be your local machine (via the daemon) or a cloud instance. Each runtime reports which agent CLIs are available, so Multica knows where to route work.
+> **What is a Runtime?** A Runtime is a compute environment that can execute agent tasks. It can be your local machine (via the daemon) or a cloud instance. Each runtime reports which agent CLIs are available, so Orchestra knows where to route work.
 
 ### 3. Create an agent
 
@@ -164,20 +164,20 @@ Create an issue from the board (or via `orchestra issue create`), then assign it
 
 ## CLI
 
-The `multica` CLI connects your local machine to Multica — authenticate, manage workspaces, and run the agent daemon.
+The `orchestra` CLI connects your local machine to Orchestra — authenticate, manage workspaces, and run the agent daemon.
 
 | Command | Description |
 |---------|-------------|
 | `orchestra login` | Authenticate (opens browser) |
 | `orchestra daemon start` | Start the local agent runtime |
 | `orchestra daemon status` | Check daemon status |
-| `orchestra setup` | One-command setup for Multica Cloud (configure + login + start daemon) |
+| `orchestra setup` | One-command setup for Orchestra Self-Host (configure + login + start daemon) |
 | `orchestra setup self-host` | Same, but for self-hosted deployments |
 | `orchestra workspace list` | List your workspaces (current is marked with `*`) |
 | `orchestra workspace switch <id\|slug>` | Switch the default workspace for this profile |
 | `orchestra issue list` | List issues in your workspace |
 | `orchestra issue create` | Create a new issue |
-| `multica update` | Update to the latest version |
+| `orchestra update` | Update to the latest version |
 
 See the [CLI and Daemon Guide](CLI_AND_DAEMON.md) for the full command reference.
 
@@ -207,7 +207,7 @@ See the [CLI and Daemon Guide](CLI_AND_DAEMON.md) for the full command reference
 
 ## Development
 
-For contributors working on the Multica codebase, see the [Contributing Guide](CONTRIBUTING.md).
+For contributors working on the Orchestra codebase, see the [Contributing Guide](CONTRIBUTING.md).
 
 **Prerequisites:** [Node.js](https://nodejs.org/) v20+, [pnpm](https://pnpm.io/) v10.28+, [Go](https://go.dev/) v1.26+, [Docker](https://www.docker.com/)
 
@@ -224,9 +224,9 @@ An iOS mobile client lives in [`apps/mobile/`](apps/mobile/) — see its [README
 
 ## License
 
-[Multica License](LICENSE) — the complete Apache License 2.0 text incorporated together with additional conditions — see [NOTICE](NOTICE) for attribution notices.
+[Orchestra License](LICENSE) — the complete Apache License 2.0 text incorporated together with additional conditions — see [NOTICE](NOTICE) for attribution notices.
 
-- Providing Multica as a hosted service to third parties, or embedding it in a commercially distributed product, requires a commercial license obtained from the producer (condition 1a).
-- Unless the producer has granted a written branding waiver, the Multica LOGO, product name, and copyright information may not be removed or modified in a Multica user interface. The user interface is defined by derivation — including `apps/web/`, `apps/desktop/`, `apps/mobile/`, `packages/views/`, and `packages/ui/` — and covers raw source, the frontend container image, and compiled desktop and mobile binaries (condition 1b).
-- Non-interface use (running only the `server/` backend, the daemon, or the CLI) is exempt from the branding condition, but must retain the source and [NOTICE](NOTICE) attribution and state that the product is built on Multica, with a link back to this repository (condition 1c).
+- Providing Orchestra as a hosted service to third parties, or embedding it in a commercially distributed product, requires a commercial license obtained from the producer (condition 1a).
+- Unless the producer has granted a written branding waiver, the Orchestra LOGO, product name, and copyright information may not be removed or modified in a Orchestra user interface. The user interface is defined by derivation — including `apps/web/`, `apps/desktop/`, `apps/mobile/`, `packages/views/`, and `packages/ui/` — and covers raw source, the frontend container image, and compiled desktop and mobile binaries (condition 1b).
+- Non-interface use (running only the `server/` backend, the daemon, or the CLI) is exempt from the branding condition, but must retain the source and [NOTICE](NOTICE) attribution and state that the product is built on Orchestra, with a link back to this repository (condition 1c).
 - A branding waiver and a commercial license are separate grants; neither implies the other (condition 1d).

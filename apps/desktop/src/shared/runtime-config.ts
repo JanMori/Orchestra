@@ -15,16 +15,16 @@ export type RuntimeConfigResult =
 
 export const DEFAULT_RUNTIME_CONFIG: RuntimeConfig = Object.freeze({
   schemaVersion: 1,
-  apiUrl: "https://api.multica.ai",
-  wsUrl: "wss://api.multica.ai/ws",
-  appUrl: "https://multica.ai",
+  apiUrl: "http://localhost:7081",
+  wsUrl: "ws://localhost:7081/ws",
+  appUrl: "http://localhost:5001",
 });
 
 const LOCAL_DEV_RUNTIME_CONFIG: RuntimeConfig = Object.freeze({
   schemaVersion: 1,
-  apiUrl: "http://localhost:8080",
-  wsUrl: "ws://localhost:8080/ws",
-  appUrl: "http://localhost:3000",
+  apiUrl: "http://localhost:7081",
+  wsUrl: "ws://localhost:7081/ws",
+  appUrl: "http://localhost:5001",
 });
 
 export interface RuntimeConfigEnv {
@@ -93,7 +93,7 @@ export function deriveWsUrl(apiUrl: string): string {
   return trimTrailingSlash(url.toString());
 }
 
-// Convention: api hosts are exposed at `api.<web-host>` (api.multica.ai →
+// Convention: api hosts are exposed at `api.<web-host>` (localhost:7081 →
 // multica.ai, api.test.multica.ai → test.multica.ai). Strip the leading
 // `api.` label so a single `apiUrl` configuration produces the right
 // shareable web URL. Hosts that don't match the convention (no leading

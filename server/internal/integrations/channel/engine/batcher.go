@@ -6,7 +6,7 @@ import (
 )
 
 // DefaultChatRunBatchWindow is the silence window the inbound debouncer waits
-// before triggering an agent run for a chat session. 3s (MUL-2968): long
+// before triggering an agent run for a chat session. 3s (ISS-2968): long
 // enough to absorb a "forward a transcript, then type a note" burst into one
 // run, short enough that the bot's first reply is not perceptibly late.
 const DefaultChatRunBatchWindow = 3 * time.Second

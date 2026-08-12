@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-// This file is the Windows half of the MUL-5422 / #6061 regression. The
+// This file is the Windows half of the ISS-5422 / #6061 regression. The
 // cross-platform file proves the diagnostic's logic; only a real cmd.exe host
 // can prove how a batch shim actually behaves, which is where #6061's central
 // claim lived ("the error goes to the .cmd layer and Go's stderr pipe misses

@@ -55,7 +55,7 @@ func assertNoRecentContextFetchPlaceholder(t *testing.T, body string) {
 	}
 }
 
-// TestEnrichRecentContextGroupMention is the MUL-3084 core: a bare @-bot
+// TestEnrichRecentContextGroupMention is the ISS-3084 core: a bare @-bot
 // mention in a group (no quote, no forward) gets the surrounding
 // conversation inlined as a <recent_context> block ahead of the user's
 // own message. The trigger message is excluded; speakers are labeled
@@ -342,7 +342,7 @@ func TestEnrichRecentContextRendersDeletedItems(t *testing.T) {
 	}
 }
 
-// TestEnrichRecentContextResolvesNames covers the MUL-3084 follow-up:
+// TestEnrichRecentContextResolvesNames covers the ISS-3084 follow-up:
 // speakers in <recent_context> show real display names (not User 1/2),
 // and the user's own @-message is labeled with the sender's name so the
 // agent knows WHO @-mentioned it.
@@ -437,7 +437,7 @@ func TestEnrichRecentContextNameFallback(t *testing.T) {
 // then the user's prose. The quoted parent is excluded from the
 // recent_context window so it isn't duplicated.
 //
-// It also pins the MUL-3084 review fix: the quoted parent's sender
+// It also pins the ISS-3084 review fix: the quoted parent's sender
 // (ou_alice) is NOT in the recent window, yet still resolves to a real
 // name ("Alice") — i.e. quoted/forwarded senders are folded into the same
 // Contact batch as the recent-window senders, not left as "User N".

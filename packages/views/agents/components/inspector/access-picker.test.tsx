@@ -48,7 +48,7 @@ function renderPicker(
   return { ...utils, onChange };
 }
 
-describe("AccessPicker owner-only editing (MUL-3963)", () => {
+describe("AccessPicker owner-only editing (ISS-3963)", () => {
   beforeEach(() => cleanup());
   afterEach(() => cleanup());
 

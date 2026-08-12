@@ -11,55 +11,55 @@ import {
  */
 describe("preprocessIssueIdentifiers", () => {
   it("rewrites a bare identifier into a canonical mention link", () => {
-    expect(preprocessIssueIdentifiers("Related to MUL-1745")).toBe(
-      "Related to [MUL-1745](mention://issue/MUL-1745)",
+    expect(preprocessIssueIdentifiers("Related to ISS-1745")).toBe(
+      "Related to [ISS-1745](mention://issue/ISS-1745)",
     );
   });
 
   it("rewrites multiple identifiers in one string", () => {
-    expect(preprocessIssueIdentifiers("Created TES-1 and MUL-2")).toBe(
-      "Created [TES-1](mention://issue/TES-1) and [MUL-2](mention://issue/MUL-2)",
+    expect(preprocessIssueIdentifiers("Created TES-1 and ISS-2")).toBe(
+      "Created [TES-1](mention://issue/TES-1) and [ISS-2](mention://issue/ISS-2)",
     );
   });
 
   it("links an identifier at a sentence end (trailing dot + space)", () => {
-    expect(preprocessIssueIdentifiers("See MUL-1. Done.")).toBe(
-      "See [MUL-1](mention://issue/MUL-1). Done.",
+    expect(preprocessIssueIdentifiers("See ISS-1. Done.")).toBe(
+      "See [ISS-1](mention://issue/ISS-1). Done.",
     );
   });
 
   it("links identifiers wrapped in prose punctuation", () => {
-    expect(preprocessIssueIdentifiers("(MUL-1) and [MUL-2]")).toContain(
-      "([MUL-1](mention://issue/MUL-1))",
+    expect(preprocessIssueIdentifiers("(ISS-1) and [ISS-2]")).toContain(
+      "([ISS-1](mention://issue/ISS-1))",
     );
   });
 
   // --- skip: code -------------------------------------------------------
   it("skips identifiers inside inline code", () => {
-    expect(preprocessIssueIdentifiers("use `MUL-1` here")).toBe(
-      "use `MUL-1` here",
+    expect(preprocessIssueIdentifiers("use `ISS-1` here")).toBe(
+      "use `ISS-1` here",
     );
   });
 
   it("skips identifiers inside fenced code blocks", () => {
-    const input = "```\nMUL-1 in code\n```";
+    const input = "```\nISS-1 in code\n```";
     expect(preprocessIssueIdentifiers(input)).toBe(input);
   });
 
   // --- skip: existing links / mentions ----------------------------------
   it("does not double-process an existing mention link", () => {
-    const input = "[MUL-1](mention://issue/00000000-0000-0000-0000-000000000001)";
+    const input = "[ISS-1](mention://issue/00000000-0000-0000-0000-000000000001)";
     expect(preprocessIssueIdentifiers(input)).toBe(input);
   });
 
   it("skips an identifier used as a markdown link label", () => {
-    const input = "[MUL-1](https://example.com/x)";
+    const input = "[ISS-1](https://example.com/x)";
     expect(preprocessIssueIdentifiers(input)).toBe(input);
   });
 
   // --- skip: urls / filenames / paths -----------------------------------
   it("skips an identifier inside a URL", () => {
-    const input = "https://example.com/board/MUL-1";
+    const input = "https://example.com/board/ISS-1";
     expect(preprocessIssueIdentifiers(input)).toBe(input);
   });
 
@@ -80,7 +80,7 @@ describe("preprocessIssueIdentifiers", () => {
   });
 
   it("ignores a token embedded in a larger word", () => {
-    const input = "XMUL-1A stays";
+    const input = "XISS-1A stays";
     expect(preprocessIssueIdentifiers(input)).toBe(input);
   });
 
@@ -92,7 +92,7 @@ describe("preprocessIssueIdentifiers", () => {
 
 describe("isIssueIdentifier", () => {
   it("accepts a bare identifier", () => {
-    expect(isIssueIdentifier("MUL-1745")).toBe(true);
+    expect(isIssueIdentifier("ISS-1745")).toBe(true);
     expect(isIssueIdentifier("TES-1")).toBe(true);
   });
 
@@ -104,7 +104,7 @@ describe("isIssueIdentifier", () => {
 
   it("rejects lowercase and malformed tokens", () => {
     expect(isIssueIdentifier("mul-1")).toBe(false);
-    expect(isIssueIdentifier("MUL-")).toBe(false);
+    expect(isIssueIdentifier("ISS-")).toBe(false);
     expect(isIssueIdentifier("MUL1")).toBe(false);
   });
 });

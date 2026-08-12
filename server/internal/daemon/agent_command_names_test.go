@@ -25,7 +25,7 @@ import (
 // It parses agents_probe.go, which is where probeAgentCLIs now lives. It used
 // to parse config.go and silently degraded into a no-op when the probe loop
 // moved out of that file — which is how the missing "qodercli" entry survived
-// (MUL-5524). probeSourceFile is asserted to actually contain probe() calls so
+// (ISS-5524). probeSourceFile is asserted to actually contain probe() calls so
 // a future move fails loudly instead of vacuously passing.
 const probeSourceFile = "agents_probe.go"
 

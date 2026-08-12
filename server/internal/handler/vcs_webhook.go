@@ -10,9 +10,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/integrations/vcs"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/integrations/vcs"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // ── Response mappers ────────────────────────────────────────────────────────
@@ -218,9 +218,9 @@ func (h *Handler) mirrorVCSPullRequest(ctx context.Context, conn db.VcsConnectio
 	// branch-name reference, or a body closing keyword. An identifier matched
 	// ONLY by a bare body mention is reference_only — it links (so the PR shows
 	// in history) but is hidden from the issue PR list and excluded from the
-	// close aggregate, so a drive-by "Related MUL-1" neither looks like a
+	// close aggregate, so a drive-by "Related ISS-1" neither looks like a
 	// working PR nor blocks a genuine Closes sibling from advancing the issue.
-	// Mirrors the GitHub path (MUL-3739); branch is deliberately excluded from
+	// Mirrors the GitHub path (ISS-3739); branch is deliberately excluded from
 	// the closing-keyword scan there and here.
 	qualifyingIdents := map[string]struct{}{}
 	for _, id := range extractIdentifiers(ev.Title, ev.Branch) {

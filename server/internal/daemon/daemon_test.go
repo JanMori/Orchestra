@@ -20,9 +20,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/internal/daemon/execenv"
-	"github.com/multica-ai/multica/server/internal/daemon/repocache"
-	"github.com/multica-ai/multica/server/pkg/agent"
+	"github.com/JanMori/Orchestra/server/internal/daemon/execenv"
+	"github.com/JanMori/Orchestra/server/internal/daemon/repocache"
+	"github.com/JanMori/Orchestra/server/pkg/agent"
 	"github.com/pelletier/go-toml/v2"
 )
 
@@ -192,7 +192,7 @@ func TestPrepareReasonixTaskStateHome(t *testing.T) {
 	if err != nil {
 		t.Fatalf("prepareReasonixTaskStateHome: %v", err)
 	}
-	want := filepath.Join(home, ".multica", "profiles", "work", "reasonix-state", "runtime-1", "agent_2")
+	want := filepath.Join(home, ".orchestra", "profiles", "work", "reasonix-state", "runtime-1", "agent_2")
 	if got != want {
 		t.Fatalf("state home = %q, want %q", got, want)
 	}
@@ -377,7 +377,7 @@ func TestConfigureCodexTaskShellEnvironment(t *testing.T) {
 	})
 }
 
-// TestCodexTaskShellEnvInheritsRealHome pins the MUL-5578 contract at the layer
+// TestCodexTaskShellEnvInheritsRealHome pins the ISS-5578 contract at the layer
 // where the daemon assembles the environment a Codex task actually launches
 // with: HOME and the XDG base dirs reach the task's shell tools from the
 // *inherited* daemon process environment, so `gh`, `aws`, `kubectl`, and npm
@@ -398,7 +398,7 @@ func TestCodexTaskShellEnvInheritsRealHome(t *testing.T) {
 		"PATH=/usr/local/bin:/usr/bin",
 	}
 	// What runTask layers on top for a Codex task: task identity plus the
-	// task-scoped CODEX_HOME, and — since MUL-5578 — no HOME/XDG entry.
+	// task-scoped CODEX_HOME, and — since ISS-5578 — no HOME/XDG entry.
 	explicit := map[string]string{
 		"CODEX_HOME":         codexHome,
 		"ORCHESTRA_TOKEN":      "mat_task",
@@ -751,7 +751,7 @@ func TestBuildPromptContainsIssueID(t *testing.T) {
 	}
 }
 
-// TestSessionContinuityNoticeMatchesSurface locks the MUL-5722 split. The same
+// TestSessionContinuityNoticeMatchesSurface locks the ISS-5722 split. The same
 // event costs each surface something different, so it cannot be reported with
 // one sentence. The dividing question is whether the conversation can still be
 // READ, not whether it is a chat: an issue's comments and a Slack channel's
@@ -837,7 +837,7 @@ func TestSessionContinuityNoticeMatchesSurface(t *testing.T) {
 // TestBackendResumeContinuityNoticeSuppressedWhenPromptAlreadyHasIt is the
 // count guard Elon asked for, on the combination that actually occurs: the
 // codex overflow fresh retry. The daemon appends the notice to the prompt AND
-// hands the backend a notice to prepend, so before MUL-5722 one turn carried
+// hands the backend a notice to prepend, so before ISS-5722 one turn carried
 // the same paragraph twice — at full token price, from two hand-written
 // strings. Suppression is keyed on the prompt already carrying it, so the two
 // injectors cannot both fire.
@@ -1006,11 +1006,11 @@ func TestBuildPromptAutopilotRunOnly(t *testing.T) {
 	}
 
 	// The issue-command boundary is emitted ONCE, by the brief's autopilot
-	// workflow section (execenv.AutopilotIssueCommandsGuard). MUL-5696 found
+	// workflow section (execenv.AutopilotIssueCommandsGuard). ISS-5696 found
 	// that a second hand-maintained per-turn copy drifts, so the per-turn
 	// prompt must not restate it in any form.
 	if strings.Contains(prompt, "Do not run `orchestra issue get`") {
-		t.Fatalf("autopilot prompt restates the issue-command boundary the brief owns (MUL-5696)\n---\n%s", prompt)
+		t.Fatalf("autopilot prompt restates the issue-command boundary the brief owns (ISS-5696)\n---\n%s", prompt)
 	}
 	if strings.Contains(prompt, "Your assigned issue ID is:") {
 		t.Fatalf("autopilot prompt should not use issue assignment template\n---\n%s", prompt)
@@ -1045,7 +1045,7 @@ func TestBuildPromptCommentTriggered(t *testing.T) {
 		// Silence-as-valid-exit for agent-to-agent loops depends on the
 		// reply command being framed conditionally rather than as a hard
 		// requirement. Guard the phrasing so the conflict with the new
-		// workflow (MUL-1323) doesn't come back.
+		// workflow (ISS-1323) doesn't come back.
 		"If you decide to reply",
 	} {
 		if !strings.Contains(prompt, want) {
@@ -1060,7 +1060,7 @@ func TestBuildPromptCommentTriggered(t *testing.T) {
 }
 
 // TestBuildPromptCommentTriggeredByAgent covers the agent-to-agent mention
-// loop signal injected into the per-turn prompt (MUL-1323 / GH#1576). When
+// loop signal injected into the per-turn prompt (ISS-1323 / GH#1576). When
 // the triggering comment was posted by another agent, the prompt must name
 // the author, warn against sign-off @mentions, and point at silence as a
 // valid exit.
@@ -1139,7 +1139,7 @@ func TestBuildPromptCommentTriggeredNoContent(t *testing.T) {
 // TestBuildPromptCrewLeaderNoActionProhibition verifies that when a crew
 // leader is triggered by another agent's comment, the per-turn prompt
 // explicitly forbids posting a comment whose only purpose is to announce
-// no_action or "exiting silently". This is the fix for MUL-2168.
+// no_action or "exiting silently". This is the fix for ISS-2168.
 func TestBuildPromptCrewLeaderNoActionProhibition(t *testing.T) {
 	t.Parallel()
 
@@ -1739,7 +1739,7 @@ func newPinRecorder(t *testing.T) (*Daemon, *pinRecorder) {
 }
 
 // TestExecuteAndDrain_PinsResumableCodexSession pins the write-time invariant
-// (MUL-5305): a Codex session is pinned mid-flight only once its rollout exists
+// (ISS-5305): a Codex session is pinned mid-flight only once its rollout exists
 // in the task's CODEX_HOME, so the daemon never persists a resume pointer the
 // next follow-up would just discover is unrecoverable and drop.
 func TestExecuteAndDrain_PinsResumableCodexSession(t *testing.T) {
@@ -1774,7 +1774,7 @@ func TestExecuteAndDrain_PinsResumableCodexSession(t *testing.T) {
 }
 
 // TestExecuteAndDrain_SkipsPinWhenRolloutAbsent pins the negative half of the
-// write-time invariant (MUL-5305): a Codex session with no rollout in the store
+// write-time invariant (ISS-5305): a Codex session with no rollout in the store
 // is never pinned mid-flight, so a pointer the daemon cannot resume is not left
 // on the task row for the next follow-up to inherit.
 func TestExecuteAndDrain_SkipsPinWhenRolloutAbsent(t *testing.T) {
@@ -1795,7 +1795,7 @@ func TestExecuteAndDrain_SkipsPinWhenRolloutAbsent(t *testing.T) {
 }
 
 // TestExecuteAndDrain_PinsWhenRolloutAppearsAfterStatus covers the crash-
-// recovery half of MUL-5305: Codex reveals the session id on a single
+// recovery half of ISS-5305: Codex reveals the session id on a single
 // task_started status, so the pin waiter must keep watching for the life of the
 // run and pin as soon as the rollout lands — even when it flushes AFTER that one
 // status. A fixed one-shot check at status time would miss it and lose in-flight
@@ -2546,7 +2546,7 @@ func TestShouldRetryWithFreshSession(t *testing.T) {
 			want:           false,
 		},
 		{
-			// MUL-5722: a codex thread/resume whose response overflowed the
+			// ISS-5722: a codex thread/resume whose response overflowed the
 			// stdout line buffer. This is the case #5715 accidentally
 			// stranded — codex reported no rejection and is not in the
 			// undetectable set, so the gate returned false and the same
@@ -2804,7 +2804,7 @@ func TestExecuteAndDrain_ContextCancelled_ReportsCancelled(t *testing.T) {
 	}
 }
 
-// idleWatchdogBackend simulates the MUL-2225 hang: emit one message to mark
+// idleWatchdogBackend simulates the ISS-2225 hang: emit one message to mark
 // activity, then go silent forever. With a short AgentIdleWatchdog, the
 // watchdog should fire and short-circuit executeAndDrain. With no wall-clock
 // cap (opts.Timeout = 0) the drain loop imposes no deadline of its own, so the
@@ -3117,7 +3117,7 @@ func TestExecuteAndDrain_IdleWatchdog_PerRunOverrideStillUsesToolWindow(t *testi
 // stuckInFlightToolBackend models a hung tool: it emits a tool_use and then
 // goes silent forever — the matching tool_result never arrives, so inFlightTools
 // stays at 1 (e.g. a child process that never returns). With no wall-clock cap
-// (the MUL-3064 default), AgentToolWatchdog is the only thing that ends it.
+// (the ISS-3064 default), AgentToolWatchdog is the only thing that ends it.
 type stuckInFlightToolBackend struct{}
 
 func (stuckInFlightToolBackend) Execute(_ context.Context, _ string, _ agent.ExecOptions) (*agent.Session, error) {
@@ -3345,7 +3345,7 @@ func TestRegisterTaskReposAllowsProjectOnlyURL(t *testing.T) {
 	if err := d.ensureRepoReady(context.Background(), "ws-1", sourceRepo); err != nil {
 		t.Fatalf("ensureRepoReady: %v", err)
 	}
-	// ensureRepoReady refreshes settings on every call (RFC MUL-2414 §4.8; PR
+	// ensureRepoReady refreshes settings on every call (RFC ISS-2414 §4.8; PR
 	// #2847 review by Emacs) so a freshly-flipped GitHub toggle takes effect
 	// without waiting for the 30s sync tick. We expect exactly one refresh —
 	// the project-only URL still skips re-cloning because the cache is warm.
@@ -3700,7 +3700,7 @@ func TestReportTaskResult_NonCompletedHitsFailEndpoint(t *testing.T) {
 			wantFailureReason: "iteration_limit",
 		},
 		{
-			// MUL-2946: when the daemon doesn't supply a refined
+			// ISS-2946: when the daemon doesn't supply a refined
 			// reason, the comment text is run through
 			// taskfailure.Classify so the failure_reason column
 			// lands in the canonical refined taxonomy instead of
@@ -3767,7 +3767,7 @@ func TestReportTaskResult_NonCompletedHitsFailEndpoint(t *testing.T) {
 	}
 }
 
-// Regression test for the MUL-2780 incident: a short 502 burst on the
+// Regression test for the ISS-2780 incident: a short 502 burst on the
 // /complete callback used to (a) drop the task at the first failure and
 // (b) wrongly fall back to /fail, surfacing a successful run as red.
 // With the retry helper in place, a transient 502 followed by a 200 must
@@ -4415,7 +4415,7 @@ func TestWorkspaceSyncLoop_WorkspaceChangeTriggersImmediateSync(t *testing.T) {
 }
 
 // TestWorkspaceSyncLoop_DoesNotDropChangeAfterSuccessfulSync covers the
-// request-changes race from MUL-4480: a real membership hint arriving within
+// request-changes race from ISS-4480: a real membership hint arriving within
 // one second of a completed sync must trigger another sync, not be treated as
 // a duplicate of the earlier read and deferred to the 30-minute fallback.
 func TestWorkspaceSyncLoop_DoesNotDropChangeAfterSuccessfulSync(t *testing.T) {

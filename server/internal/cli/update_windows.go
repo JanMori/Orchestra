@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/multica-ai/multica/server/internal/selfexec"
+	"github.com/JanMori/Orchestra/server/internal/selfexec"
 )
 
 // oldBinarySuffix is appended to the previous executable while a new one is

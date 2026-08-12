@@ -503,7 +503,7 @@ function DiagnosticsCard({
         {canDelete && (
           // The button stays clickable even when the runtime is a live
           // local daemon (self-healing). The owner explicitly asked for
-          // it (MUL-3352) — disabling here left them looking at a button
+          // it (ISS-3352) — disabling here left them looking at a button
           // they had every permission to click but couldn't. The dialog
           // raises a self-heal banner so the user sees the trade-off
           // before confirming.

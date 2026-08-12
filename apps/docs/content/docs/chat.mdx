@@ -20,7 +20,7 @@ A chat can also carry background. Click **+** at the bottom left of the input an
 1. Open **Chat** in the sidebar.
 2. Click new and pick an agent you have permission to run.
 3. Type a message; you can also attach images or files.
-4. After you send, Multica creates a run for the message, and the reply comes back to the current conversation.
+4. After you send, Orchestra creates a run for the message, and the reply comes back to the current conversation.
 
 If the runtime is offline, the message waits until it comes back online. Once the agent is archived, or you lose permission to run it, you can't send new messages.
 
@@ -33,11 +33,11 @@ If the runtime is offline, the message waits until it comes back online. Once th
 | Letting teammates see the background and continue the discussion | **Issue** |
 | A quick look at workspace information with no work record needed | **Chat** |
 
-Direct chats created in Multica are visible only to their creator; other workspace members and admins cannot read them. Conclusions the team needs to see together should be written into an issue, a project description, or a skill.
+Direct chats created in Orchestra are visible only to their creator; other workspace members and admins cannot read them. Conclusions the team needs to see together should be written into an issue, a project description, or a skill.
 
 ## Multi-turn context
 
-A conversation tries to continue the original session in the AI coding tool, so later messages don't need to repeat earlier content. Multica stores the session ID and routes subsequent runs to a runtime that can access that session.
+A conversation tries to continue the original session in the AI coding tool, so later messages don't need to repeat earlier content. Orchestra stores the session ID and routes subsequent runs to a runtime that can access that session.
 
 If the local session no longer exists, the context can't be continued, or the previous error shouldn't be reused, the runtime starts from a fresh session. The conversation's message history is kept either way.
 

@@ -39,7 +39,7 @@ const (
 	// newline, or multiple trailing newlines. Without a fixed-width
 	// separator the cleanup path would have to renormalise the user's
 	// trailing bytes and would leave a subtle but real diff every run
-	// (see MUL-2753 review on PR #3438).
+	// (see ISS-2753 review on PR #3438).
 	//
 	// Cleanup distinguishes "file we created" (no managed separator
 	// precedes the block — write a missing file from scratch) from "file
@@ -97,7 +97,7 @@ func sanitizeNameForBriefMarkdown(name string) string {
 // an agent may want to match the initiator's address exactly, and escaping
 // `_`/`+` would corrupt it, while a valid email can't contain a newline to
 // inject a heading anyway. Emails are validated at signup, so this is
-// defense-in-depth, not the primary guard. See MUL-2645.
+// defense-in-depth, not the primary guard. See ISS-2645.
 func sanitizeEmailForBrief(email string) string {
 	email = strings.TrimSpace(email)
 	if email == "" || !strings.Contains(email, "@") {
@@ -230,7 +230,7 @@ func runtimeConfigPath(workDir, provider string) string {
 // The previous implementation called os.WriteFile unconditionally, which
 // silently truncated a repository's CLAUDE.md / AGENTS.md the
 // first time the agent was pointed at the user's own directory via the
-// local_directory project resource flow. See MUL-2753.
+// local_directory project resource flow. See ISS-2753.
 func writeRuntimeConfigFile(path, brief string) error {
 	block := runtimeMarkerBegin + "\n" + strings.TrimRight(brief, "\n") + "\n" + runtimeMarkerEnd + "\n"
 
@@ -386,7 +386,7 @@ func CleanupRuntimeConfig(workDir, provider string) error {
 // The brief is assembled by buildMetaSkillContentSlim (runtime_config_sections.go),
 // which applies kind-driven section gating + per-section prose compression.
 // This used to be gated behind the `runtime_brief_slim` feature flag against a
-// legacy verbose brief; the flag has been retired (MUL-4297) and the slim brief
+// legacy verbose brief; the flag has been retired (ISS-4297) and the slim brief
 // is now the only path.
 func buildMetaSkillContent(provider string, ctx TaskContextForEnv) string {
 	return buildMetaSkillContentSlim(provider, ctx)

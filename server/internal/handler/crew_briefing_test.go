@@ -9,8 +9,8 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // TestCrewOperatingProtocolOwnsParentStatus locks the parent-issue status
@@ -34,7 +34,7 @@ func TestCrewOperatingProtocolOwnsParentStatus(t *testing.T) {
 }
 
 // TestCrewOperatingProtocolScopesParentStatusOwnership is the guard for the
-// MUL-5156 review finding: the briefing is injected on every leader path,
+// ISS-5156 review finding: the briefing is injected on every leader path,
 // including an @crew mention on an issue assigned to someone else. Status
 // ownership must not ride along — a guest leader gets an explicit prohibition
 // instead of the grant, so the model never has to infer the boundary.

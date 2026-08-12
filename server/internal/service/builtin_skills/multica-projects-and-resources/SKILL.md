@@ -1,11 +1,11 @@
 ---
-name: multica-projects-and-resources
-description: "Use when creating, inspecting, updating, or debugging Multica projects and their resources (github_repo, local_directory)."
+name: orchestra-projects-and-resources
+description: "Use when creating, inspecting, updating, or debugging Orchestra projects and their resources (github_repo, local_directory)."
 user-invocable: false
-allowed-tools: Bash(multica *)
+allowed-tools: Bash(orchestra *)
 ---
 
-# Multica Projects and Resources
+# Orchestra Projects and Resources
 
 ## Quick start
 
@@ -22,9 +22,9 @@ comments do not create durable project resources.
 
 ## Core model
 
-A project groups work and carries durable resources. A resource is not just display metadata; it is context later injected into task briefs and `.multica/project/resources.json`.
+A project groups work and carries durable resources. A resource is not just display metadata; it is context later injected into task briefs and `.orchestra/project/resources.json`.
 
-A project's `description` is also durable context: when an issue (or a quick-create task) is bound to a project, the project description is injected into the agent's brief under `## Project Context` and written to `.multica/project/resources.json` as `project_description`. Use it for project-wide rules/context that should apply to every task in the project.
+A project's `description` is also durable context: when an issue (or a quick-create task) is bound to a project, the project description is injected into the agent's brief under `## Project Context` and written to `.orchestra/project/resources.json` as `project_description`. Use it for project-wide rules/context that should apply to every task in the project.
 
 Common resource types:
 

@@ -106,7 +106,7 @@ func TestForgejoEventKindAndParse(t *testing.T) {
 
 	pr, err := p.ParsePullRequest([]byte(`{
 		"action":"closed",
-		"pull_request":{"number":7,"title":"Fix MUL-1","state":"closed","merged":true,
+		"pull_request":{"number":7,"title":"Fix ISS-1","state":"closed","merged":true,
 			"html_url":"https://g/acme/widget/pulls/7","head":{"ref":"fix","sha":"abc"},
 			"user":{"username":"octo"},"additions":3},
 		"repository":{"name":"widget","owner":{"username":"acme"}}}`))
@@ -147,7 +147,7 @@ func TestGitlabParse(t *testing.T) {
 		"object_kind":"merge_request",
 		"user":{"username":"alice","avatar_url":"a"},
 		"project":{"path_with_namespace":"group/sub/widget"},
-		"object_attributes":{"iid":42,"title":"Add MUL-9","state":"merged","action":"merge",
+		"object_attributes":{"iid":42,"title":"Add ISS-9","state":"merged","action":"merge",
 			"source_branch":"feat","url":"https://gl/group/sub/widget/-/merge_requests/42",
 			"last_commit":{"id":"deadbeef"}}}`))
 	if err != nil {
@@ -247,7 +247,7 @@ func TestGitlabParseTimestamps(t *testing.T) {
 	pr, err := p.ParsePullRequest([]byte(`{
 		"object_kind":"merge_request",
 		"project":{"path_with_namespace":"g/r"},
-		"object_attributes":{"iid":1,"title":"MUL-1","state":"opened","action":"open",
+		"object_attributes":{"iid":1,"title":"ISS-1","state":"opened","action":"open",
 			"created_at":"2017-09-20 08:31:45 UTC","updated_at":"2017-09-21 09:00:00 UTC",
 			"last_commit":{"id":"abc"}}}`))
 	if err != nil {

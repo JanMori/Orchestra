@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/internal/middleware"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/middleware"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // withChatTestWorkspaceCtx injects the workspace+member context that the
@@ -713,7 +713,7 @@ func TestListChatMessagesPage_RejectsInvalidLimit(t *testing.T) {
 }
 
 // TestDeleteChatSession_PrunesChannelRows verifies the application-layer
-// replacement for the channel_* chat_session-FK cascade (MUL-3515 §4): deleting a
+// replacement for the channel_* chat_session-FK cascade (ISS-3515 §4): deleting a
 // chat session prunes BOTH its channel_chat_session_binding and its
 // channel_outbound_card_message rows in the same tx that deletes the session row.
 // Both are keyed by chat_session_id with no FK and no reaper, so a miss leaves a
@@ -727,7 +727,7 @@ func TestDeleteChatSession_PrunesChannelRows(t *testing.T) {
 	const channelChatID = "oc_chat_delete_binding"
 	const cardMsgID = "om_chat_delete_card"
 
-	// channel_* rows have no FK to chat_session/workspace (MUL-3515 §4), so
+	// channel_* rows have no FK to chat_session/workspace (ISS-3515 §4), so
 	// they outlive the helper's chat_session cleanup; clear by deterministic
 	// key before and after.
 	cleanChannel := func() {
@@ -795,7 +795,7 @@ VALUES ($1, 'feishu', $2, $3, 'final')
 }
 
 // TestSetChatSessionArchived_ClearsChannelBinding verifies the archive path
-// severs the external-channel link (MUL-4372): the channel engine resolves
+// severs the external-channel link (ISS-4372): the channel engine resolves
 // inbound Feishu/Slack traffic through channel_chat_session_binding without
 // checking session status, so an archived-but-still-bound session kept
 // accumulating agent replies and a stuck, uncleared unread badge. Archiving must
@@ -809,7 +809,7 @@ func TestSetChatSessionArchived_ClearsChannelBinding(t *testing.T) {
 	const appID = "cli_chat_archive_binding"
 	const channelChatID = "oc_chat_archive_binding"
 
-	// channel_* rows have no FK to chat_session/workspace (MUL-3515 §4), so they
+	// channel_* rows have no FK to chat_session/workspace (ISS-3515 §4), so they
 	// outlive the helper's chat_session cleanup; clear by deterministic key.
 	cleanChannel := func() {
 		_, _ = testPool.Exec(context.Background(),
@@ -887,7 +887,7 @@ VALUES ($1, $2, 'feishu', $3, 'p2p')
 	}
 }
 
-// TestListChatSessions_ArchivedSessionReportsZeroUnread pins the MUL-4360 fix:
+// TestListChatSessions_ArchivedSessionReportsZeroUnread pins the ISS-4360 fix:
 // ListAllChatSessionsByCreator forces unread_count/has_unread to 0 for archived
 // rows even when assistant messages sit past the read cursor, so a stuck unread
 // badge cannot survive on any surface (FAB, sidebar Chat tab, chat-window

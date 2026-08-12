@@ -41,7 +41,7 @@ func ParseSkillFrontmatter(content string) (name, description string) {
 	// consumed, while YAML block scalars (`description: |`, `description: >`)
 	// carry a trailing newline by clip chomping. Storing that newline made the
 	// imported skill differ from its own trimmed form, which the skill detail
-	// page read as an unsaved edit (MUL-5645). Normalize at the parse seam so
+	// page read as an unsaved edit (ISS-5645). Normalize at the parse seam so
 	// no import path has to remember to.
 	return strings.TrimSpace(coerceFrontmatterValue(fm["name"])),
 		strings.TrimSpace(coerceFrontmatterValue(fm["description"]))

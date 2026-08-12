@@ -9,7 +9,7 @@ import (
 // Codex tasks keep the daemon user's real HOME on every platform. Earlier
 // daemons redirected HOME/XDG into a seeded per-task `home/` directory under
 // the env root so the Linux workspace-write sandbox could write to `~`; Linux
-// now runs danger-full-access and that mechanism is gone (MUL-5578 / #6218).
+// now runs danger-full-access and that mechanism is gone (ISS-5578 / #6218).
 //
 // These tests pin the two halves that are easy to regress: the per-task home
 // must not come back, and the task-scoped CODEX_HOME — a separate, still-live

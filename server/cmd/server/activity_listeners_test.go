@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/handler"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/handler"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // listActivitiesForIssue is a test helper that fetches up to 100 activity_log
@@ -128,7 +128,7 @@ func TestActivityIssueUpdated_AssigneeChanged(t *testing.T) {
 	bus := events.New()
 	registerActivityListeners(bus, queries)
 
-	assigneeEmail := "activity-assignee-test@multica.ai"
+	assigneeEmail := "activity-assignee-test@orchestra.local"
 	assigneeID := createTestUser(t, assigneeEmail)
 	t.Cleanup(func() { cleanupTestUser(t, assigneeEmail) })
 

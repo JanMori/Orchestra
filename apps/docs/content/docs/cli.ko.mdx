@@ -12,19 +12,19 @@ Orchestra CLI는 로컬 런타임을 연결할 뿐 아니라 터미널에서 워
 **macOS / Linux**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.sh | bash
 ```
 
 Homebrew가 설치되어 있다면 다음 명령도 사용할 수 있습니다.
 
 ```bash
-brew install multica-ai/tap/multica
+brew install orchestra-ai/tap/orchestra
 ```
 
 **Windows PowerShell**
 
 ```powershell
-irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex
+irm https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.ps1 | iex
 ```
 
 설치 성공 여부를 확인합니다.
@@ -35,7 +35,7 @@ orchestra version
 
 ## 처음 연결
 
-Multica Cloud 연결:
+Orchestra Self-Host 연결:
 
 ```bash
 orchestra setup
@@ -148,13 +148,13 @@ orchestra daemon restart
 orchestra daemon status --output json
 orchestra daemon logs --follow
 
-multica runtime list
-multica runtime rename <runtime-id> "Office Mac"
-multica runtime usage <runtime-id>
-multica runtime activity <runtime-id>
+orchestra runtime list
+orchestra runtime rename <runtime-id> "Office Mac"
+orchestra runtime usage <runtime-id>
+orchestra runtime activity <runtime-id>
 ```
 
-활성 에이전트가 계속 연결된 런타임을 삭제하면 명령이 기본적으로 거부됩니다. `multica runtime delete <id> --cascade`는 에이전트의 런타임 연결을 해제하고 설정과 기록을 보존하며 활성 태스크를 취소합니다.
+활성 에이전트가 계속 연결된 런타임을 삭제하면 명령이 기본적으로 거부됩니다. `orchestra runtime delete <id> --cascade`는 에이전트의 런타임 연결을 해제하고 설정과 기록을 보존하며 활성 태스크를 취소합니다.
 
 실행 메커니즘과 사용자 지정 profile은 [데몬과 런타임](/daemon-runtimes)을 참고하세요.
 
@@ -176,7 +176,7 @@ multica runtime activity <runtime-id>
 | `config` | 현재 CLI profile의 로컬 설정 확인 또는 변경 |
 | `update`, `version` | CLI 업데이트 또는 버전 확인 |
 
-`multica chat`은 **에이전트가 현재 처리 중인 외부 채팅 대화**를 읽으며 주로 채팅 연동의 에이전트가 사용합니다. 워크스페이스의 임의 대화를 탐색하는 일반 명령이 아닙니다.
+`orchestra chat`은 **에이전트가 현재 처리 중인 외부 채팅 대화**를 읽으며 주로 채팅 연동의 에이전트가 사용합니다. 워크스페이스의 임의 대화를 탐색하는 일반 명령이 아닙니다.
 
 ## ID와 출력 형식
 
@@ -191,11 +191,11 @@ orchestra issue list --output json
 orchestra agent list --output json
 ```
 
-스크립트에서는 터미널용 표를 parsing하지 말고 JSON 출력을 사용하세요. 각 명령이 지원하는 출력 형식과 pagination 인수는 `multica <command> --help`를 기준으로 확인합니다.
+스크립트에서는 터미널용 표를 parsing하지 말고 JSON 출력을 사용하세요. 각 명령이 지원하는 출력 형식과 pagination 인수는 `orchestra <command> --help`를 기준으로 확인합니다.
 
 ## Profile과 설정
 
-기본 설정은 `~/.multica/config.json`에 저장됩니다. `--profile <name>`을 사용하면 별도의 서비스 주소, token, 기본 워크스페이스, 데몬 상태를 격리할 수 있습니다.
+기본 설정은 `~/.orchestra/config.json`에 저장됩니다. `--profile <name>`을 사용하면 별도의 서비스 주소, token, 기본 워크스페이스, 데몬 상태를 격리할 수 있습니다.
 
 ```bash
 orchestra setup self-host --profile staging \
@@ -205,7 +205,7 @@ orchestra setup self-host --profile staging \
 orchestra issue list --profile staging
 ```
 
-이름 있는 profile은 `~/.multica/profiles/<name>/config.json`에 저장됩니다. 현재 값을 확인합니다.
+이름 있는 profile은 `~/.orchestra/profiles/<name>/config.json`에 저장됩니다. 현재 값을 확인합니다.
 
 ```bash
 orchestra config show
@@ -213,12 +213,12 @@ orchestra config show --profile staging
 ```
 
 <Callout type="warning">
-CLI 설정 파일에는 사용자를 대신해 Multica에 접근할 수 있는 token이 들어 있습니다. 저장소에 commit하거나 로그에 올리거나 다른 사람과 공유하지 마세요.
+CLI 설정 파일에는 사용자를 대신해 Orchestra에 접근할 수 있는 token이 들어 있습니다. 저장소에 commit하거나 로그에 올리거나 다른 사람과 공유하지 마세요.
 </Callout>
 
 ## 명령 참조
 
-다음 표는 현재의 모든 최상위 명령을 CLI 자체 그룹 순서로 정리합니다. 모든 명령은 전역 flag `--server-url`, `--workspace-id`, `--profile`, `--debug`를 허용합니다. `--output`은 명령별로 등록되는 flag이며 기본 형식은 명령에 따라 다릅니다. `list` 계열은 기본적으로 표를 사용하고 `get`, `create` 계열은 주로 JSON을 사용합니다. 전체 인수는 `multica <command> --help`를 기준으로 확인하세요.
+다음 표는 현재의 모든 최상위 명령을 CLI 자체 그룹 순서로 정리합니다. 모든 명령은 전역 flag `--server-url`, `--workspace-id`, `--profile`, `--debug`를 허용합니다. `--output`은 명령별로 등록되는 flag이며 기본 형식은 명령에 따라 다릅니다. `list` 계열은 기본적으로 표를 사용하고 `get`, `create` 계열은 주로 JSON을 사용합니다. 전체 인수는 `orchestra <command> --help`를 기준으로 확인하세요.
 
 ### Core
 

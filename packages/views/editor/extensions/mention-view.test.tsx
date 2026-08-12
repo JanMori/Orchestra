@@ -1,5 +1,5 @@
 /**
- * Editor mention modifier-click (MUL-5456).
+ * Editor mention modifier-click (ISS-5456).
  *
  * Both mention chips render a real `<a href>`, so on web the correct move is
  * to leave a modifier-click alone and let the browser do it — that keeps
@@ -142,7 +142,7 @@ describe("MentionView issue mention", () => {
   // so the two chips can't drift apart again.
   it("leaves modifier-click to the browser when openInNewTab is absent (web)", () => {
     const push = vi.fn();
-    renderMention({ type: "issue", id: ISSUE_ID, label: "MUL-7" }, makeAdapter({ push }));
+    renderMention({ type: "issue", id: ISSUE_ID, label: "ISS-7" }, makeAdapter({ push }));
 
     const defaultNotPrevented = fireEvent.click(screen.getByTestId("issue-chip"), {
       metaKey: true,
@@ -156,7 +156,7 @@ describe("MentionView issue mention", () => {
     const push = vi.fn();
     const openInNewTab = vi.fn();
     renderMention(
-      { type: "issue", id: ISSUE_ID, label: "MUL-7" },
+      { type: "issue", id: ISSUE_ID, label: "ISS-7" },
       makeAdapter({ push, openInNewTab }),
     );
 
@@ -165,7 +165,7 @@ describe("MentionView issue mention", () => {
     });
 
     expect(defaultNotPrevented).toBe(false);
-    expect(openInNewTab).toHaveBeenCalledWith(ISSUE_PATH, "MUL-7");
+    expect(openInNewTab).toHaveBeenCalledWith(ISSUE_PATH, "ISS-7");
     expect(push).not.toHaveBeenCalled();
   });
 });

@@ -16,8 +16,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/storage"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/storage"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // extContentTypes overrides http.DetectContentType for extensions it gets wrong.
@@ -88,7 +88,7 @@ type AttachmentResponse struct {
 	//     beyond the cookies/credentials the client already has on the
 	//     resolved host).
 	//
-	// MUL-3192 — fixes the Desktop / mobile-webview regression where the
+	// ISS-3192 — fixes the Desktop / mobile-webview regression where the
 	// previous site-relative `/api/attachments/<id>/download` link only
 	// resolved when the document origin proxied /api to the API host.
 	MarkdownURL string `json:"markdown_url"`
@@ -99,7 +99,7 @@ type AttachmentResponse struct {
 
 // attachmentURLMode selects how DownloadURL is rendered on a response.
 //
-// MUL-5372 / GitHub #5999. A CloudFront-signed DownloadURL is ~800 chars, of
+// ISS-5372 / GitHub #5999. A CloudFront-signed DownloadURL is ~800 chars, of
 // which ~630 are a Policy+Signature pair that is re-minted on every request
 // (the policy embeds now+TTL at second granularity). Emitting it for every
 // attachment of every list response is expensive three times over: raw payload,
@@ -192,7 +192,7 @@ func attachmentDownloadPath(id string) string {
 
 // buildMarkdownURL chooses the durable URL the client persists into
 // markdown bodies. The contract is "absolute, no TTL, loadable as a native
-// browser resource fetch on every supported client" (MUL-3192).
+// browser resource fetch on every supported client" (ISS-3192).
 //
 // Decision:
 //
@@ -208,7 +208,7 @@ func attachmentDownloadPath(id string) string {
 //     - `a.Url` is itself an absolute http(s) URL with no signature
 //     query — defends against legacy rows backfilled while baseURL
 //     was unset, and against a freshly-signed `download_url` ever
-//     leaking into `a.Url` (the original MUL-3130 bug).
+//     leaking into `a.Url` (the original ISS-3130 bug).
 //
 //  2. Every other shape — CloudFront-signed mode, S3 presign /proxy
 //     against a private bucket without a CDN domain, raw S3 / R2 /
@@ -221,7 +221,7 @@ func attachmentDownloadPath(id string) string {
 //  3. Last-resort fallback (no `ORCHESTRA_PUBLIC_URL` configured): emit
 //     the site-relative path. Web's Next.js rewrite handles this; non-
 //     web clients on a deployment without `PublicURL` configured were
-//     already broken before MUL-3192 and stay broken here, but we
+//     already broken before ISS-3192 and stay broken here, but we
 //     don't make them worse.
 func (h *Handler) buildMarkdownURL(a db.Attachment, id string) string {
 	relPath := attachmentDownloadPath(id)
@@ -654,7 +654,7 @@ func (h *Handler) GetAttachmentByID(w http.ResponseWriter, r *http.Request) {
 		// Proxy mode has no signed storage URL to offer, so this response
 		// would otherwise hand back the auth-gated API path — which a
 		// native download on a token-mode client cannot authenticate,
-		// leaving the user with no file (MUL-5292). Mint a
+		// leaving the user with no file (ISS-5292). Mint a
 		// single-attachment, 60-second capability instead, so the same
 		// "replace the auth-gated path with something a native loader can
 		// fetch" contract holds in all three modes.
@@ -884,7 +884,7 @@ func shouldProxyAttachmentURL(rawURL string) bool {
 // frontend/backend origins — can inline-render images and iframe-preview
 // documents (PDF/HTML) fetched straight from the static route. Without these
 // headers the global "frame-ancestors 'none'" policy blocks those previews.
-// See MUL-3821 / #4477.
+// See ISS-3821 / #4477.
 func (h *Handler) ServeLocalUpload(w http.ResponseWriter, r *http.Request) {
 	local, ok := h.Storage.(*storage.LocalStorage)
 	if !ok {

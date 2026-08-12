@@ -4,7 +4,7 @@ import type { QuickAction } from "@orchestra/core/types";
 import { renderWithI18n } from "../../test/i18n";
 import { QuickActionsSection } from "./quick-actions-section";
 
-// The section's contract (MUL-5465) is mostly about being HONEST with the
+// The section's contract (ISS-5465) is mostly about being HONEST with the
 // user, so these tests target exactly that: what gets offered, and what the
 // result claims happened.
 //

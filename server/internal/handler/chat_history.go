@@ -9,10 +9,10 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 
-	"github.com/multica-ai/multica/server/internal/integrations/channel"
-	"github.com/multica-ai/multica/server/internal/integrations/slack"
-	"github.com/multica-ai/multica/server/internal/logger"
-	"github.com/multica-ai/multica/server/internal/util"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel"
+	"github.com/JanMori/Orchestra/server/internal/integrations/slack"
+	"github.com/JanMori/Orchestra/server/internal/logger"
+	"github.com/JanMori/Orchestra/server/internal/util"
 )
 
 // ChatChannelHistoryReader reads a chat session's bound IM-channel history. The
@@ -20,7 +20,7 @@ import (
 // own. Two operations back the two agent commands: ChannelOverview is the
 // channel table-of-contents (`multica chat history`), Thread reads one thread's
 // messages (`multica chat thread [id]`). Both are scoped server-side to the
-// session's own channel (MUL-3871).
+// session's own channel (ISS-3871).
 type ChatChannelHistoryReader interface {
 	ChannelOverview(ctx context.Context, chatSessionID pgtype.UUID, opts channel.HistoryOptions) (channel.HistoryPage, error)
 	Thread(ctx context.Context, chatSessionID pgtype.UUID, threadID string, opts channel.HistoryOptions) (channel.HistoryPage, error)

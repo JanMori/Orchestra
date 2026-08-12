@@ -168,7 +168,7 @@ func NewAPIClient(baseURL, workspaceID, token string) *APIClient {
 //
 // stable_attachment_urls asks bulk responses to return the stable
 // /api/attachments/{id}/download path instead of a ~800-char CloudFront
-// signature that is re-minted on every request (MUL-5372 / GitHub #5999). The
+// signature that is re-minted on every request (ISS-5372 / GitHub #5999). The
 // CLI never hands an attachment URL to a native loader — `multica attachment
 // download <id>` fetches a fresh signature from the single-attachment endpoint,
 // which keeps signing regardless of this capability — so the signature in list

@@ -443,7 +443,7 @@ describe("SwimLaneView", () => {
     expect(screen.getByText("In Progress")).toBeInTheDocument();
   });
 
-  // MUL-4290: `cancelled` is a first-class default status. Status columns come
+  // ISS-4290: `cancelled` is a first-class default status. Status columns come
   // from `visibleStatuses` in ALL_STATUSES order, so the Cancelled column
   // renders by default (ordered last) and is only dropped when the status
   // filter narrows to a subset that excludes it.
@@ -2019,7 +2019,7 @@ describe("SwimLaneView", () => {
   });
 });
 
-describe("SwimLaneView tab-session scroll restoration (MUL-4741)", () => {
+describe("SwimLaneView tab-session scroll restoration (ISS-4741)", () => {
   it("registers the outer scroller for memento capture and restores the saved offset at attach", () => {
     const adapter = {
       get: (key: string) =>

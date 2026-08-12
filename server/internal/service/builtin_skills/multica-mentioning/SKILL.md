@@ -1,13 +1,13 @@
 ---
-name: multica-mentioning
+name: orchestra-mentioning
 description: "Use when an issue comment needs to @mention someone — link to a person, trigger another agent, hand work to a crew, or broadcast with @all. Whether to mention at all is covered by the runtime brief, not here."
 user-invocable: false
-allowed-tools: Bash(multica *)
+allowed-tools: Bash(orchestra *)
 ---
 
 # Mentioning & Delegating
 
-This skill states WHAT a mention link does in the Multica backend, traced to
+This skill states WHAT a mention link does in the Orchestra backend, traced to
 source. WHETHER to mention at all — loop avoidance, staying silent on
 acknowledgements — is in your runtime brief's Mentions section; follow that and
 do not repeat it here.
@@ -38,7 +38,7 @@ above, so the backend never parses it and it can enqueue nothing — it is a
 render-only link every client makes navigable (a chip on web and desktop, an
 ordinary link that opens the project on tap on mobile). That is the whole point:
 a project reference should never be able to start a run. Use it freely to point
-at a project (see the multica-projects-and-resources skill); everything else in
+at a project (see the orchestra-projects-and-resources skill); everything else in
 this document is about the four types (plus `all`) the parser does recognize.
 
 ## Step 1 — look up the UUID with `--output json`
@@ -113,7 +113,7 @@ conversation owner). Use `@all` to announce, not to request work from the
 assignee.
 
 `@all` only suppresses those IMPLICIT routes. An EXPLICIT `@agent` / `@crew`
-mention in the same comment still fires normally (MUL-5411): a comment reading
+mention in the same comment still fires normally (ISS-5411): a comment reading
 `[@all](mention://all/all) heads up — [@Preflight](mention://agent/<uuid>)
 please take this` enqueues Preflight and nobody else. Explicit mentions win over
 the broadcast; see `computeCommentAgentTriggers` in
@@ -140,7 +140,7 @@ read. Read that array after posting — it is the only place any of this shows u
   look identical on purpose**, because the id you typed could name a private
   agent in another workspace and the reason must not confirm that it exists.
   **So when you see `invocation_not_allowed`, check the UUID against the live
-  roster BEFORE you touch any visibility or invocation setting** (MUL-5548);
+  roster BEFORE you touch any visibility or invocation setting** (ISS-5548);
   `orchestra crew member list <crew-id> --output json` returns the `member_id`
   to build the mention from. An id that matches the pattern but is NOT a valid
   UUID at all (`mention://agent/-`) is rejected by the id parser and blocked
@@ -161,13 +161,13 @@ read. Read that array after posting — it is the only place any of this shows u
   not invoke the target never learns its state.
 - **A private agent you cannot invoke:** blocked — the mention path gates on
   `canInvokeAgent` for both `@agent` and `@crew`. That is the *run* gate, not
-  the *see* gate: since MUL-3963 a workspace admin who can open a private agent
+  the *see* gate: since ISS-3963 a workspace admin who can open a private agent
   in the UI still may not trigger it, so being able to view the target says
   nothing about being able to mention it. (The `canEnqueueCrewLeader` wrapper
   is the crew assignment/promote path, not this one; the child-done wake is
-  ungated — see the multica-crews skill.)
+  ungated — see the orchestra-crews skill.)
 
-One nuance for automation (MUL-4857): when an UNATTRIBUTED autopilot run (a
+One nuance for automation (ISS-4857): when an UNATTRIBUTED autopilot run (a
 schedule/webhook dispatch has no human originator, so the A2A gate has no human
 to key on) delegates by `@mention` while working on the issue that autopilot
 created, the invoke gate falls back to the **autopilot creator** as the effective

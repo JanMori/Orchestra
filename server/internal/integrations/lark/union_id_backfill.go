@@ -9,7 +9,7 @@ import (
 // BackfillBotUnionIDs walks every active lark_installation row whose
 // bot_union_id is NULL and calls APIClient.GetBotInfo to capture and
 // persist it. This is the migration glue for installations created
-// before migration 112 added the column — see MUL-2671 group @-mention
+// before migration 112 added the column — see ISS-2671 group @-mention
 // triage. New installs already write bot_union_id during the device-
 // flow finalize, so this is a one-shot bridge, not an ongoing job.
 //

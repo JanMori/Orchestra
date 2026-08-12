@@ -17,7 +17,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/pkg/agent"
+	"github.com/JanMori/Orchestra/server/pkg/agent"
 )
 
 // batchFixture wires a Daemon against a fake server that serves a configurable
@@ -25,7 +25,7 @@ import (
 // records the runtime payload each workspace was registered with. It also
 // counts `<cli> --version` probes per executable path so a test can assert the
 // daemon probed the machine's built-in CLIs once per sync instead of once per
-// workspace (MUL-5225).
+// workspace (ISS-5225).
 type batchFixture struct {
 	daemon *Daemon
 	server *httptest.Server
@@ -51,7 +51,7 @@ type batchFixture struct {
 	// registerFail, when non-nil, makes /api/daemon/register return 500. A
 	// non-empty string key scopes the failure to that workspace ID; the empty
 	// string key fails every workspace. Used to exercise the discovery retry
-	// paths (MUL-5439).
+	// paths (ISS-5439).
 	registerFail map[string]bool
 	// profilesFail makes the runtime-profiles route return 500, reproducing the
 	// best-effort profile fetch failing while a discovery-driven registration
@@ -418,7 +418,7 @@ func newBatchFixture(t *testing.T) *batchFixture {
 	return fx
 }
 
-// TestSyncWorkspaces_ProbesBuiltinCLIsOncePerBatch is the MUL-5225 regression:
+// TestSyncWorkspaces_ProbesBuiltinCLIsOncePerBatch is the ISS-5225 regression:
 // registering N workspaces must execute each built-in agent CLI's `--version`
 // once for the machine, not once per workspace, while still sending one
 // Register call per workspace with the full built-in payload.
@@ -658,7 +658,7 @@ func TestDetectBuiltinRuntimes_DropsProviderAfterRetriesExhausted(t *testing.T) 
 // TestDetectBuiltinRuntimes_DoesNotRetrySlowProbe protects registration
 // latency. A probe that burned its whole timeout is a hung CLI, not a hiccup;
 // retrying it would double the round's worst case, which is the latency that
-// used to strand the desktop runtime step in its empty state (MUL-5119).
+// used to strand the desktop runtime step in its empty state (ISS-5119).
 func TestDetectBuiltinRuntimes_DoesNotRetrySlowProbe(t *testing.T) {
 	fx := newBatchFixture(t)
 	const probeWindow = 20 * time.Millisecond
@@ -678,7 +678,7 @@ func TestDetectBuiltinRuntimes_DoesNotRetrySlowProbe(t *testing.T) {
 	}
 }
 
-// vanishedPinnedPath lays out the MUL-4486 shape a probe retry has to reckon
+// vanishedPinnedPath lays out the ISS-4486 shape a probe retry has to reckon
 // with: a stable command name that resolves on PATH to a runnable stub, plus
 // the pinned absolute path an in-place upgrade already deleted. It returns the
 // missing pinned path and the path the self-heal re-resolves to.
@@ -720,7 +720,7 @@ func countingVersionProbe(t *testing.T, answer func(path string) (string, error)
 // TestDetectBuiltinRuntimes_DoesNotRetryWhenSelfHealBurnsTheWindow keeps the
 // slow-probe guard honest about where an attempt's time actually goes. When the
 // pinned path has vanished, resolveAgentEntry runs its own version probe on the
-// re-resolved candidate (MUL-4486) — which can burn the full 10s timeout on its
+// re-resolved candidate (ISS-4486) — which can burn the full 10s timeout on its
 // own. Timing only the outer probe would read the attempt as a fast failure
 // (the stale path fails instantly), retry, and pay the slow self-heal a second
 // time — exactly the doubled worst case the guard exists to prevent.

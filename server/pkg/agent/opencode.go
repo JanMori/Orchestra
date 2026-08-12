@@ -88,7 +88,7 @@ func (b *opencodeBackend) Execute(ctx context.Context, prompt string, opts ExecO
 	// CLI exit 1 with a usage dump before sending anything (checked against
 	// OpenCode 1.17.7). SystemPrompt is therefore never forwarded; the runtime
 	// brief reaches the agent through the per-task AGENTS.md the daemon writes
-	// into the workdir, which OpenCode loads itself (MUL-5392). Same constraint
+	// into the workdir, which OpenCode loads itself (ISS-5392). Same constraint
 	// as the DevEco backend, which was forked from this one.
 	if opts.MaxTurns > 0 {
 		b.cfg.Logger.Warn("opencode does not support --max-turns; ignoring", "maxTurns", opts.MaxTurns)

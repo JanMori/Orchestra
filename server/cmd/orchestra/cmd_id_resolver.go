@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/multica-ai/multica/server/internal/cli"
+	"github.com/JanMori/Orchestra/server/internal/cli"
 )
 
 const minShortIDPrefixLen = 4
@@ -129,7 +129,7 @@ func ambiguousIDPrefixError(kind, input string, matches []idCandidate) error {
 
 // resolveIssueRef accepts only the two canonical issue references:
 //
-//   - the human-facing issue key, e.g. "MUL-1852" (validated by
+//   - the human-facing issue key, e.g. "ISS-1852" (validated by
 //     looksLikeIssueIdentifier and resolved server-side);
 //   - the full UUID in dashed canonical form (validated by uuidRegexp).
 //

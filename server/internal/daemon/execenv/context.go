@@ -9,7 +9,7 @@ import (
 	"regexp"
 	"strings"
 
-	skillpkg "github.com/multica-ai/multica/server/internal/skill"
+	skillpkg "github.com/JanMori/Orchestra/server/internal/skill"
 	"gopkg.in/yaml.v3"
 )
 
@@ -356,7 +356,7 @@ func skillsDirPath(workDir, provider string) string {
 		// under each match. Discovery is anchored at the task workdir via
 		// `opencode run --dir <workDir>` + PWD override in opencodeBackend —
 		// without those, OpenCode walks from the daemon's inherited PWD and
-		// misses .opencode/skills + AGENTS.md entirely (MUL-2416).
+		// misses .opencode/skills + AGENTS.md entirely (ISS-2416).
 		return filepath.Join(workDir, ".opencode", "skills")
 	case "deveco":
 		// DevEco Code (Huawei's OpenCode fork) natively discovers project
@@ -370,7 +370,7 @@ func skillsDirPath(workDir, provider string) string {
 		// daemon pairs this with a per-task synthesized openclaw-config.json
 		// (see openclaw_config.go) that pins agents.defaults.workspace to
 		// workDir, so writing here is what the CLI actually scans. Before
-		// MUL-2219 this used to fall back to .agent_context/skills/, which
+		// ISS-2219 this used to fall back to .agent_context/skills/, which
 		// no openclaw scan path ever inspected.
 		return filepath.Join(workDir, "skills")
 	case "pi":
@@ -449,7 +449,7 @@ var nonAlphaNum = regexp.MustCompile(`[^a-z0-9]+`)
 // `name` is the one key Multica must own. Runtimes disagree on which field
 // identifies a skill — Claude routes on the directory name, OpenCode on the
 // frontmatter `name` — so letting the two diverge gives a single skill two
-// different invocable names depending on where it runs (MUL-5529). The slug is
+// different invocable names depending on where it runs (ISS-5529). The slug is
 // authoritative because it is what lands on disk and the only value carrying a
 // uniqueness guarantee (allocateCollisionFreeSkillDir); a frontmatter `name` is
 // author-supplied and two imported skills may both claim the same one. Every
@@ -620,7 +620,7 @@ func frontmatterBodyStart(content string) (int, bool) {
 // absent). The invariant is key presence, not value presence — `"name":`,
 // `'name':`, and a valueless `name:` are all the key, and injecting a second
 // one above any of them yields a duplicate mapping key that strict loaders
-// reject, leaving the skill unloadable rather than healed (MUL-5529). Reading
+// reject, leaving the skill unloadable rather than healed (ISS-5529). Reading
 // a plain scalar like `name:value` as the key over-detects, and deliberately
 // so: the block is already unparseable, and re-synthesis is the route that
 // repairs it.
@@ -1007,7 +1007,7 @@ func renderIssueContext(provider string, ctx TaskContextForEnv) string {
 		b.WriteString("**Trigger:** New Assignment\n\n")
 	}
 
-	// Assignment handoff note (MUL-3375): the assigner's scoping instruction for
+	// Assignment handoff note (ISS-3375): the assigner's scoping instruction for
 	// this run. Distinct from a comment — there is no thread to reply to.
 	if ctx.HandoffNote != "" {
 		b.WriteString("## Handoff Note\n\n")
@@ -1025,7 +1025,7 @@ func renderIssueContext(provider string, ctx TaskContextForEnv) string {
 // This file carries only task data (the user input). Behavioral rules and
 // guardrails live in AGENTS.md (runtime config) and the per-turn prompt to
 // avoid redundancy and conflicting instructions; the skill index lives in the
-// runtime brief like every other kind (MUL-5529).
+// runtime brief like every other kind (ISS-5529).
 func renderQuickCreateContext(ctx TaskContextForEnv) string {
 	var b strings.Builder
 	b.WriteString("# Quick Create\n\n")

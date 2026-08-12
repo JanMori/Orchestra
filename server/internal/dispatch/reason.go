@@ -1,5 +1,5 @@
 // Package dispatch holds the canonical, cross-layer vocabulary for execution
-// admission outcomes (MUL-4525). It is a leaf package (no internal deps) so both
+// admission outcomes (ISS-4525). It is a leaf package (no internal deps) so both
 // the service layer — which MAKES the admission/skip decision and therefore owns
 // the reason at its source — and the handler layer — which serializes it to the
 // wire — share one enum and can never drift.
@@ -33,7 +33,7 @@ const (
 	ReasonRuntimeOffline ReasonCode = "runtime_offline"
 	// ReasonAgentRuntimeRequired: the target is permitted but bound to no
 	// runtime at all (agent.runtime_id IS NULL), which is where an agent lands
-	// when its runtime is deleted (MUL-5559). Distinct from runtime_offline on
+	// when its runtime is deleted (ISS-5559). Distinct from runtime_offline on
 	// purpose: there is no machine to bring back, nothing will ever claim work
 	// for this agent, and the only fix is binding it to a runtime. Clients that
 	// collapse the two send the user looking for an offline computer that does

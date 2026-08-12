@@ -217,7 +217,7 @@ function IssueSurfaceContent({
           // A filtered-empty surface is NOT an empty surface. Claiming "no
           // issues here yet" and offering to create one is wrong when the rows
           // exist and a filter is hiding them — and it is the state the
-          // agents-working chip drops you into most often (MUL-5525). This
+          // agents-working chip drops you into most often (ISS-5525). This
           // branch precedes `renderEmpty` on purpose: every surface's own empty
           // copy describes the unfiltered case.
           controller.hasActiveFilters ? (

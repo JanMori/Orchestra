@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // enqueueMentionedAgentTasksForTest mirrors the production comment path for
@@ -20,7 +20,7 @@ func enqueueMentionedAgentTasksForTest(t *testing.T, ctx context.Context, issue 
 // selfMentionFixture wires the seeded "Handler Test Agent" as J plus two
 // fresh issues so we can exercise the agent-self-mention path on the @mention
 // branch of computeCommentAgentTriggers. The three tests below cover
-// the behavior we want post-MUL-2338:
+// the behavior we want post-ISS-2338:
 //
 //   - cross-issue self-mention enqueues (child→parent handoff between issues
 //     assigned to the same agent must not be swallowed)
@@ -151,7 +151,7 @@ func countQueuedOrDispatched(t *testing.T, agentID, issueID string) int {
 }
 
 // TestEnqueueMentionedAgentTasks_SelfMentionCrossIssueEnqueues is the
-// regression test for the MUL-2338 child→parent handoff. The same agent runs
+// regression test for the ISS-2338 child→parent handoff. The same agent runs
 // in a child issue, then posts a top-level comment on the parent issue (whose
 // assignee is the same agent) that @mentions itself. The comment handler MUST
 // enqueue a task on the parent issue — silently dropping the trigger was the

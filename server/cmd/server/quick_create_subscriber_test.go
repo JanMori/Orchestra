@@ -9,13 +9,13 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/service"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // Subscribing the quick-create requester moved OFF the completion path in
-// MUL-5483. It now happens at issue-creation time in the shared
+// ISS-5483. It now happens at issue-creation time in the shared
 // delegated-subscriber rule, which resolves the human from
 // origin_type='quick_create' + the origin task's originator_user_id — the same
 // origin waterfall attribution uses. That behavior is covered by

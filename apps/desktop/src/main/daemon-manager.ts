@@ -634,7 +634,7 @@ async function mintPat(jwt: string): Promise<string> {
       Authorization: `Bearer ${jwt}`,
     },
     // Omit expires_in_days → server treats as null → non-expiring PAT.
-    body: JSON.stringify({ name: "Multica Desktop" }),
+    body: JSON.stringify({ name: "Orchestra Desktop" }),
   });
   if (!res.ok) {
     const body = await res.text().catch(() => "");
@@ -647,7 +647,7 @@ async function mintPat(jwt: string): Promise<string> {
     );
   }
   const data = (await res.json()) as { token?: unknown };
-  if (typeof data.token !== "string" || !data.token.startsWith("mul_")) {
+  if (typeof data.token !== "string" || (!data.token.startsWith("tok_") && !data.token.startsWith("mul_"))) {
     throw new Error("mint PAT: response missing token");
   }
   return data.token;
@@ -658,7 +658,7 @@ async function mintPat(jwt: string): Promise<string> {
  *
  * - Input from the renderer is the user's JWT (from localStorage) plus the
  *   current user's id, so we can detect session changes.
- * - If the profile already has a cached PAT (`mul_...`) AND the sidecar user
+ * - If the profile already has a cached PAT (`tok_...`) AND the sidecar user
  *   id matches the caller, reuse it — minting fresh on every launch would
  *   accumulate garbage in the user's tokens page.
  * - On user mismatch (or first run) call POST /api/tokens with the JWT to
@@ -680,10 +680,10 @@ async function syncToken(
     !userChanged &&
     previousUserId === userId &&
     typeof config.token === "string" &&
-    config.token.startsWith("mul_");
+    (config.token.startsWith("tok_") || config.token.startsWith("mul_"));
 
   let finalToken: string;
-  if (tokenFromRenderer.startsWith("mul_")) {
+  if (tokenFromRenderer.startsWith("tok_") || tokenFromRenderer.startsWith("mul_")) {
     finalToken = tokenFromRenderer;
   } else if (sameUserWithCachedPat) {
     finalToken = config.token as string;

@@ -7,7 +7,7 @@ import { IssueChip } from "./issue-chip";
 
 interface IssueMentionCardProps {
   issueId: string;
-  /** Fallback text when issue is not in store (e.g. "MUL-7") */
+  /** Fallback text when issue is not in store (e.g. "ISS-7") */
   fallbackLabel?: string;
 }
 

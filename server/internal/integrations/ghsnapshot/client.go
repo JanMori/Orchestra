@@ -1,6 +1,6 @@
 // Package ghsnapshot fetches a GitHub pull request's CI + mergeability state
 // from the GitHub API and treats that response as the single source of truth
-// for the PR card (MUL-5265, Plan C). Webhooks and page visits only trigger a
+// for the PR card (ISS-5265, Plan C). Webhooks and page visits only trigger a
 // refresh; nothing here infers state incrementally from webhook payloads.
 //
 // The package has three layers:

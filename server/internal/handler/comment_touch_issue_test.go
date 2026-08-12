@@ -10,10 +10,10 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
-// TestCreateComment_BumpsIssueUpdatedAt pins MUL-5009: a new comment counts as
+// TestCreateComment_BumpsIssueUpdatedAt pins ISS-5009: a new comment counts as
 // activity on the issue, so updated_at advances. This is what lets the
 // "Updated date" Kanban/list sort surface recently-discussed cards, not only
 // cards whose status changed.
@@ -55,7 +55,7 @@ func TestCreateComment_BumpsIssueUpdatedAt(t *testing.T) {
 }
 
 // TestCreateComment_WorkspaceMismatchPersistsNothing pins the tenant-integrity
-// guarantee of the CreateComment CTE (MUL-5009 nit2): CreateComment is the
+// guarantee of the CreateComment CTE (ISS-5009 nit2): CreateComment is the
 // single carrier of "a comment always belongs to an issue in the same
 // workspace and always bumps it". If the passed workspace does not match the
 // target issue's workspace, the leading UPDATE matches no issue row, the

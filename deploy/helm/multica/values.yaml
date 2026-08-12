@@ -116,7 +116,7 @@ backend:
     frontendOrigin: http://multica.dev.lan
     corsAllowedOrigins: ""
     cookieDomain: ""
-    resendFromEmail: noreply@multica.ai
+    resendFromEmail: noreply@orchestra.local
     allowSignup: true
     allowedEmails: ""
     allowedEmailDomains: ""

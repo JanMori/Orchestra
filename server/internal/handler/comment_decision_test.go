@@ -80,7 +80,7 @@ func TestCommentMergeTerminalOutcome(t *testing.T) {
 // TestDecideSuppressedLeaderOutcome: the self-trigger-suppressed crew leader's
 // active-task check must never fake success — a query error is a non-success
 // internal_error, a confirmed active run defers, and a confirmed-none is
-// self_trigger_suppressed (MUL-4525, Elon round 4).
+// self_trigger_suppressed (ISS-4525, Elon round 4).
 func TestDecideSuppressedLeaderOutcome(t *testing.T) {
 	cases := []struct {
 		name       string

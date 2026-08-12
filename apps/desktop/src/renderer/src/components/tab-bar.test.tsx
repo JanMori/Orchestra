@@ -190,7 +190,7 @@ describe("TabBar hover action buttons", () => {
     expect(within(pinnedTab).getByText("Issues")).toBeTruthy();
   });
 
-  // MUL-4370: each tab renders the shared ResourceLeadingVisual keyed off its
+  // ISS-4370: each tab renders the shared ResourceLeadingVisual keyed off its
   // URL. (Which visual/title a URL resolves to is covered by the views
   // tab-presentation tests; here we only assert the strip wires it in.)
   it("renders the resource leading visual for every tab", () => {
@@ -225,14 +225,14 @@ describe("TabBar hover action buttons", () => {
 
 describe("TabBar active-tab title persistence", () => {
   it("persists the resolved title only for the active tab", () => {
-    pres.title = "MUL-1: Fixed";
+    pres.title = "ISS-1: Fixed";
     state.byWorkspace.acme.tabs = [
       { id: "tA", url: "/acme/issues/i1", title: "Issues", pinned: false },
       { id: "tB", url: "/acme/projects", title: "Projects", pinned: false },
     ];
     state.byWorkspace.acme.activeTabId = "tA";
     render(<TabBar />);
-    expect(state.updateTab).toHaveBeenCalledWith("tA", { title: "MUL-1: Fixed" });
+    expect(state.updateTab).toHaveBeenCalledWith("tA", { title: "ISS-1: Fixed" });
     expect(state.updateTab).not.toHaveBeenCalledWith("tB", expect.anything());
     expect(state.updateTab).toHaveBeenCalledTimes(1);
   });
@@ -460,18 +460,18 @@ describe("TabBar context menu", () => {
       {
         id: "tA",
         url: "/acme/issues/issue-1?comment=comment-1",
-        title: "MUL-1: Fix tabs",
+        title: "ISS-1: Fix tabs",
         pinned: false,
       },
     ];
 
     const { findByText, getByLabelText } = render(<TabBar />);
-    fireEvent.contextMenu(getByLabelText("MUL-1: Fix tabs"));
+    fireEvent.contextMenu(getByLabelText("ISS-1: Fix tabs"));
     fireEvent.click(await findByText("Open as new window"));
 
     expect(state.openIssueWindow).toHaveBeenCalledWith({
       path: "/acme/issues/issue-1?comment=comment-1",
-      title: "MUL-1: Fix tabs",
+      title: "ISS-1: Fix tabs",
     });
   });
 

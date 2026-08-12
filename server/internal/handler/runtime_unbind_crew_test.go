@@ -17,7 +17,7 @@ import (
 // ACTIVE crew still pointed at an archived leader, leaving the runtime
 // undeletable until the user archived the crew or replaced its leader.
 //
-// Since MUL-5559 the leader is not deleted at all: it is unbound and keeps
+// Since ISS-5559 the leader is not deleted at all: it is unbound and keeps
 // everything, so the RESTRICT FK is never challenged. Both the crew delete and
 // the 409 guard are therefore removed, and these tests pin the new contract —
 // crews and their leaders survive, and the runtime deletes cleanly.

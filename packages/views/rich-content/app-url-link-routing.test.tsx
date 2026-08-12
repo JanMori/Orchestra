@@ -1,5 +1,5 @@
 /**
- * MUL-5208 — a link that points back at this deployment is an in-app
+ * ISS-5208 — a link that points back at this deployment is an in-app
  * destination, not an external one.
  *
  * Chat and comments render agent-written content full of absolute URLs. When one
@@ -81,16 +81,16 @@ function renderContent(content: string) {
 
 describe("RichContent link routing", () => {
   it("routes a link to this deployment into the app instead of the browser", () => {
-    renderContent(`[MUL-1](${APP_ORIGIN}/acme/issues/MUL-1)`);
+    renderContent(`[ISS-1](${APP_ORIGIN}/acme/issues/ISS-1)`);
 
-    screen.getByText("MUL-1").click();
+    screen.getByText("ISS-1").click();
 
-    expect(navigatedPaths).toEqual(["/acme/issues/MUL-1"]);
+    expect(navigatedPaths).toEqual(["/acme/issues/ISS-1"]);
     expect(openSpy).not.toHaveBeenCalled();
   });
 
   it("still hands a genuinely external link to the browser", () => {
-    const external = "https://github.com/multica-ai/multica/pull/1";
+    const external = "https://github.com/JanMori/Orchestra/pull/1";
     renderContent(`[#1](${external})`);
 
     screen.getByText("#1").click();

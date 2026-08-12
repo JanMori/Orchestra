@@ -212,7 +212,7 @@ export const ISSUE_FLAT_PAGE_SIZE = 100;
 /**
  * Statuses fetched and paginated into the list/board cache — every lifecycle
  * status, `cancelled` included. `cancelled` is a first-class default status
- * (MUL-4290), so it lives in the cache and renders like any other column;
+ * (ISS-4290), so it lives in the cache and renders like any other column;
  * there is no separate "visible board" subset. This constant governs
  * fetch/cache membership.
  */

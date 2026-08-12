@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, type ReactNode } from "react";
 
 /**
- * Pull-based scroll restoration channel (MUL-4741 state-restoration
+ * Pull-based scroll restoration channel (ISS-4741 state-restoration
  * protocol).
  *
  * The platform (desktop tab host) captures scroll offsets when a view is

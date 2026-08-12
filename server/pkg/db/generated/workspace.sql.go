@@ -80,7 +80,7 @@ cleared_outbound_cards AS (
     WHERE chat_session_id IN (SELECT chat_session_id FROM cleared_chat_sessions)
 ),
 cleared_draft_restores AS (
-    -- chat_draft_restore is keyed by chat_session_id with no FK (MUL-3515) and has
+    -- chat_draft_restore is keyed by chat_session_id with no FK (ISS-3515) and has
     -- no reaper, while its chat_session rows cascade away with the workspace. Reach
     -- them directly through chat_session (unlike the cards above, this is not
     -- limited to channel-bound sessions) or every pending restore — each holding a
@@ -154,7 +154,7 @@ cleared_client_usage_workspace AS (
 DELETE FROM workspace WHERE workspace.id = $1
 `
 
-// The channel_* tables (MUL-3515 §4), resource-label junctions, custom issue
+// The channel_* tables (ISS-3515 §4), resource-label junctions, custom issue
 // property definitions, and quick actions carry NO FK to workspace, so — unlike the CASCADE-backed
 // tables the DELETE below sweeps — they are not cleaned up implicitly. Remove
 // their workspace-owned rows here so they commit or roll back atomically with
@@ -221,7 +221,7 @@ WHERE id = $1
 `
 
 // Lean read of the fail-closed attribution policy for the enqueue hot path
-// (MUL-4302 §3.5), avoiding a full workspace-row fetch.
+// (ISS-4302 §3.5), avoiding a full workspace-row fetch.
 func (q *Queries) GetWorkspaceAttributionFailClosed(ctx context.Context, id pgtype.UUID) (bool, error) {
 	row := q.db.QueryRow(ctx, getWorkspaceAttributionFailClosed, id)
 	var attribution_fail_closed bool
@@ -383,7 +383,7 @@ SELECT id FROM workspace WHERE id = $1 FOR UPDATE
 // LockWorkspaceForChatSessionCreate (FOR KEY SHARE) on this row first, and this
 // FOR UPDATE conflicts with it. Keeping the bar in the app layer means it does
 // not silently break if that FK is ever dropped (the codebase is moving FK
-// relationships into the application layer, MUL-3515). Lock order is
+// relationships into the application layer, ISS-3515). Lock order is
 // workspace -> chat_session -> agent_task_queue; the finalizer never touches
 // workspace, so this cannot deadlock against it.
 func (q *Queries) LockWorkspaceForDelete(ctx context.Context, id pgtype.UUID) (pgtype.UUID, error) {

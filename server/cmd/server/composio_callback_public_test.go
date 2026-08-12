@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// TestComposioCallbackIsPublic_NoCookieNot401 locks in the MUL-3843 fix: the
+// TestComposioCallbackIsPublic_NoCookieNot401 locks in the ISS-3843 fix: the
 // Composio OAuth callback must live OUTSIDE the Auth middleware group, because
 // Composio 302-redirects the user's browser to it and the cookie session is
 // frequently absent (expired session, SameSite=Strict / Safari ITP, private
@@ -30,7 +30,7 @@ func TestComposioCallbackIsPublic_NoCookieNot401(t *testing.T) {
 	body, _ := io.ReadAll(resp.Body)
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		t.Fatalf("callback returned 401 without a session — it is still behind the Auth group (regression of MUL-3843). body=%s", body)
+		t.Fatalf("callback returned 401 without a session — it is still behind the Auth group (regression of ISS-3843). body=%s", body)
 	}
 }
 

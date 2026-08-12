@@ -1,7 +1,7 @@
 // Package attributionbackfill reconciles agent_task_queue rows to the
 // Human Attribution strict invariant BEFORE migration 198 validates it.
 //
-// Background (GH #5544, MUL-4302, MUL-4897). Migration 197 installs the
+// Background (GH #5544, ISS-4302, ISS-4897). Migration 197 installs the
 // strict cross-column CHECK
 //
 //	originator_user_id IS NULL
@@ -20,14 +20,14 @@
 // A new higher-numbered migration cannot fix this: a stuck instance sits
 // with 197 applied and 198 failing, and never reaches a migration numbered
 // above 198. The fix must run at-or-before 198. cmd/migrate already exposes
-// a preMigrationHook mechanism (used for migration 103, MUL-2957) that runs
+// a preMigrationHook mechanism (used for migration 103, ISS-2957) that runs
 // idempotent work before a specific migration's SQL; this package is that
 // hook for 198.
 //
 // Scope. The strict constraint can ONLY be violated by rows where
 // originator_user_id IS NOT NULL, and for those the design invariant is
 // unambiguous: a resolved originator IS the accountable human, so
-// accountable_user_id MUST equal originator_user_id (MUL-4302 §1/§11).
+// accountable_user_id MUST equal originator_user_id (ISS-4302 §1/§11).
 // This hook therefore mirrors originator_user_id into accountable_user_id
 // for exactly those rows and stamps originator_source='backfill' where it
 // was NULL, which is precisely and only what is required to make VALIDATE

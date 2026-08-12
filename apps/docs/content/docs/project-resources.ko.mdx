@@ -16,7 +16,7 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 ## 리소스가 실행에 들어가는 방식
 
-에이전트가 프로젝트 안의 이슈를 처리하면 Multica가 프로젝트 이름, 프로젝트 설명, 리소스 목록을 실행 컨텍스트에 추가하고 작업 디렉터리에 `.multica/project/resources.json`을 기록합니다.
+에이전트가 프로젝트 안의 이슈를 처리하면 Orchestra가 프로젝트 이름, 프로젝트 설명, 리소스 목록을 실행 컨텍스트에 추가하고 작업 디렉터리에 `.orchestra/project/resources.json`을 기록합니다.
 
 워크스페이스에 연결된 저장소 목록은 항상 실행 컨텍스트에 포함됩니다. 프로젝트에 연결된 저장소는 그중 이 작업 묶음에서 사용할 코드와 기본 ref를 지정합니다.
 
@@ -26,7 +26,7 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 프로젝트를 열고 **리소스**에서 "리소스 추가"를 선택합니다. 워크스페이스에 이미 연결된 저장소를 고르거나 Git URL을 붙여 넣을 수 있습니다. 워크스페이스 저장소는 **설정 → 코드 저장소**에서 관리합니다. GitHub를 연결한 뒤 같은 페이지에서 **GitHub에서 선택**을 통해 App에 승인된 저장소를 가져올 수 있습니다.
 
-저장소는 GitHub로 제한되지 않습니다. 런타임이 접근할 수 있는 Git URL이라면 모두 저장소 리소스로 사용할 수 있습니다. 자체 배포한 Multica에서는 **설정 → 연동 → Git 코드 호스팅**에서 자체 호스팅 Forgejo, Gitea, GitLab을 연결할 수도 있습니다. [자체 호스팅 Git 코드 호스팅](/vcs-integration)을 참고하세요.
+저장소는 GitHub로 제한되지 않습니다. 런타임이 접근할 수 있는 Git URL이라면 모두 저장소 리소스로 사용할 수 있습니다. 자체 배포한 Orchestra에서는 **설정 → 연동 → Git 코드 호스팅**에서 자체 호스팅 Forgejo, Gitea, GitLab을 연결할 수도 있습니다. [자체 호스팅 Git 코드 호스팅](/vcs-integration)을 참고하세요.
 
 프로젝트를 만들 때 **Repos**에서 바로 저장소를 선택할 수도 있습니다. 하나의 프로젝트에 여러 GitHub 저장소를 연결할 수 있습니다.
 
@@ -52,7 +52,7 @@ import { Callout } from "fumadocs-ui/components/callout";
 프로젝트 하나에는 같은 데몬에서 로컬 디렉터리를 최대 하나만 연결할 수 있습니다. 팀의 서로 다른 컴퓨터에서는 같은 프로젝트에 각자의 디렉터리를 연결할 수 있습니다.
 
 <Callout type="warning">
-로컬 디렉터리는 격리된 환경이 아닙니다. 에이전트가 현재 브랜치와 커밋하지 않은 파일을 직접 보고 수정합니다. Multica는 브랜치 전환, stash, commit, push, PR 생성을 자동으로 수행하지 않습니다.
+로컬 디렉터리는 격리된 환경이 아닙니다. 에이전트가 현재 브랜치와 커밋하지 않은 파일을 직접 보고 수정합니다. Orchestra는 브랜치 전환, stash, commit, push, PR 생성을 자동으로 수행하지 않습니다.
 </Callout>
 
 ## 로컬 디렉터리 직렬 실행
@@ -65,9 +65,9 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 ## 실행 중 기록되는 내용
 
-에이전트가 만든 코드 변경 외에도 런타임이 현재 AI 코딩 도구에 필요한 지시 파일과 `.multica/project/resources.json`을 디렉터리에 기록할 수 있습니다. 버전 관리에 포함하고 싶지 않다면 `.gitignore`에 추가하세요.
+에이전트가 만든 코드 변경 외에도 런타임이 현재 AI 코딩 도구에 필요한 지시 파일과 `.orchestra/project/resources.json`을 디렉터리에 기록할 수 있습니다. 버전 관리에 포함하고 싶지 않다면 `.gitignore`에 추가하세요.
 
-Multica가 실행 환경을 정리할 때 연결된 로컬 디렉터리는 삭제하지 않습니다. 에이전트가 이 디렉터리에 만든 변경은 터미널에서 AI 코딩 도구를 직접 실행해 만든 변경과 성격이 같으므로 동일하게 검토해야 합니다.
+Orchestra가 실행 환경을 정리할 때 연결된 로컬 디렉터리는 삭제하지 않습니다. 에이전트가 이 디렉터리에 만든 변경은 터미널에서 AI 코딩 도구를 직접 실행해 만든 변경과 성격이 같으므로 동일하게 검토해야 합니다.
 
 ## CLI로 리소스 관리
 
@@ -75,13 +75,13 @@ Multica가 실행 환경을 정리할 때 연결된 로컬 디렉터리는 삭�
 # 프로젝트를 만들면서 저장소 연결
 orchestra project create \
   --title "Agent UX" \
-  --repo https://github.com/multica-ai/multica
+  --repo https://github.com/orchestra-ai/orchestra
 
 # 리소스 확인 및 추가
 orchestra project resource list <project-id>
 orchestra project resource add <project-id> \
   --type github_repo \
-  --url https://github.com/multica-ai/multica \
+  --url https://github.com/orchestra-ai/orchestra \
   --ref main
 
 # 지정한 데몬의 로컬 디렉터리 연결

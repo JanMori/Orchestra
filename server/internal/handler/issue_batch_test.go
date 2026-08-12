@@ -186,7 +186,7 @@ func deleteTestIssue(t *testing.T, id string) {
 	testHandler.DeleteIssue(w, req)
 }
 
-// --- MUL-4155: batch cross-stage child-done aggregation ---
+// --- ISS-4155: batch cross-stage child-done aggregation ---
 //
 // A single batch that finishes sub-issues spanning multiple stages must
 // evaluate the parent stage barrier ONCE against the batch's final committed
@@ -319,7 +319,7 @@ func triggerCommentIDForAgentTask(t *testing.T, issueID, agentID string) string 
 	return id
 }
 
-// TestBatchChildDoneCrossStage_OneComment is the MUL-4155 core. A single batch
+// TestBatchChildDoneCrossStage_OneComment is the ISS-4155 core. A single batch
 // that finishes children across two stages must produce exactly ONE accurate
 // system comment on the parent — announcing the highest stage closed by the
 // final state, never a stale "Stage 2 is next" — and the parent assignee's

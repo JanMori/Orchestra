@@ -18,8 +18,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
-	"github.com/multica-ai/multica/server/internal/auth"
-	"github.com/multica-ai/multica/server/internal/cli"
+	"github.com/JanMori/Orchestra/server/internal/auth"
+	"github.com/JanMori/Orchestra/server/internal/cli"
 )
 
 // loginTokenPrefixes are the token prefixes `orchestra login --token` accepts.
@@ -27,7 +27,7 @@ import (
 // with a Multica Cloud Node PAT (`mcn_`) even though the server happily
 // authenticates both kinds. Keep this list in sync with the prefix branches
 // in server/internal/middleware/auth.go.
-var loginTokenPrefixes = []string{"mul_", auth.CloudPATPrefix}
+var loginTokenPrefixes = []string{"tok_", "mul_", auth.CloudPATPrefix}
 
 // validateLoginTokenPrefix returns nil if token starts with one of the
 // CLI-recognised PAT prefixes, or an error describing the accepted set.

@@ -9,8 +9,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // SubscriberResponse is the JSON shape returned for each issue subscriber.
@@ -120,7 +120,7 @@ func (h *Handler) UnsubscribeFromIssue(w http.ResponseWriter, r *http.Request) {
 
 // UnsubscribeFromIssueSubtree leaves this issue AND every descendant, and —
 // via the ancestor opt-out check the delegated rule runs — keeps future
-// children of this tree from re-subscribing the user (MUL-5483).
+// children of this tree from re-subscribing the user (ISS-5483).
 //
 // This is a SEPARATE ROUTE rather than a flag on /unsubscribe on purpose.
 // Frontend staging deploys automatically on merge while backend staging is
@@ -170,7 +170,7 @@ func (h *Handler) unsubscribeFromIssue(w http.ResponseWriter, r *http.Request, s
 	// broadcast. The lock keys on the UUID value, and clients dedupe on the
 	// user_id string, so an uppercase request must not spell either one
 	// differently from the delegated rule's canonical form
-	// (MUL-5483 review round 8).
+	// (ISS-5483 review round 8).
 	targetUserID = uuidToString(parseUUID(targetUserID))
 
 	// Every issue this call actually left. The subtree variant reports the whole
@@ -184,7 +184,7 @@ func (h *Handler) unsubscribeFromIssue(w http.ResponseWriter, r *http.Request, s
 		// delegated rule's eligibility check. Both take the same
 		// (workspace, user) lock for the length of their transaction; without
 		// it a child created between the tombstone write and the rule's read
-		// comes back as an active watcher (MUL-5483 review round 7).
+		// comes back as an active watcher (ISS-5483 review round 7).
 		ids, err := h.unsubscribeSubtreeSerialized(r.Context(), workspaceID, issue.ID, targetUserType, targetUserID)
 		if errors.Is(err, errTargetNoLongerMember) {
 			writeError(w, http.StatusForbidden, "target user is not a member of this workspace")
@@ -249,7 +249,7 @@ func (h *Handler) unsubscribeSubtreeSerialized(
 	// member row, and writing a tombstone behind it would leave an opt-out that
 	// outlives the membership and is inherited on re-invite. Re-assert it here,
 	// holding the row, now that the lock guarantees no revoke can interleave
-	// (MUL-5483 review round 8).
+	// (ISS-5483 review round 8).
 	//
 	// Members only: an agent target has no member row, and revoke's subscription
 	// cleanup is member-scoped, so the outlives-membership problem does not

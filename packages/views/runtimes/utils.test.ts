@@ -321,7 +321,7 @@ describe("estimateCost", () => {
     // Dash-normalized 5.6 ids must also miss: the real Codex slug is dotted
     // (`gpt-5.6-luna`) and this resolver does NOT dash-normalize non-claude
     // ids, so a dashed variant surfaces as unmapped — matching the backend's
-    // literal-dot alias in server/internal/metrics/pricing.go (MUL-4347).
+    // literal-dot alias in server/internal/metrics/pricing.go (ISS-4347).
     expect(isModelPriced("gpt-5-6-luna")).toBe(false);
     expect(isModelPriced("gpt-5-6-sol")).toBe(false);
     expect(
@@ -1179,7 +1179,7 @@ describe("aggregateByWeek", () => {
   });
 
   it("emits trailing calendar weeks pinned to today, dropping older populated weeks", () => {
-    // Regression for MUL-2382 weekly window scoping:
+    // Regression for ISS-2382 weekly window scoping:
     // before the fix, aggregateByWeek built buckets only for weeks that had
     // data and the caller did `.slice(-weekCount)`. With sparse data (an old
     // populated week far outside the selected window plus an empty stretch

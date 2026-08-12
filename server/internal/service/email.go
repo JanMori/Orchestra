@@ -117,7 +117,7 @@ func resolveFromEmail(smtpHost string) string {
 		if resendFrom != "" {
 			return resendFrom
 		}
-		return "noreply@multica.ai"
+		return "noreply@orchestra.local"
 	}
 	if smtpFrom := strings.TrimSpace(os.Getenv("SMTP_FROM_EMAIL")); smtpFrom != "" {
 		return smtpFrom
@@ -368,7 +368,7 @@ func (s *EmailService) SendVerificationCode(to, code string) error {
 func (s *EmailService) SendInvitationEmail(to, inviterName, workspaceName, invitationID string) error {
 	appURL := strings.TrimSpace(os.Getenv("FRONTEND_ORIGIN"))
 	if appURL == "" {
-		appURL = "https://multica.ai"
+		appURL = "http://localhost:5001"
 	}
 	inviteURL := fmt.Sprintf("%s/invite/%s", appURL, invitationID)
 

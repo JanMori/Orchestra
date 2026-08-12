@@ -34,7 +34,7 @@ describe("IssueChip", () => {
           data: [
             {
               id: "issue-1",
-              identifier: "MUL-3405",
+              identifier: "ISS-3405",
               title: "A very long issue title that should stay inside a narrow chat bubble",
               status: "todo",
             },
@@ -48,7 +48,7 @@ describe("IssueChip", () => {
   it("caps the chip to its parent container and truncates the title", () => {
     render(<IssueChip issueId="issue-1" />);
 
-    const chip = screen.getByText("MUL-3405").closest(".issue-mention");
+    const chip = screen.getByText("ISS-3405").closest(".issue-mention");
     expect(chip).toHaveClass("min-w-0", "max-w-full");
     expect(screen.getByText("A very long issue title that should stay inside a narrow chat bubble"))
       .toHaveClass("min-w-0", "truncate");
@@ -58,11 +58,11 @@ describe("IssueChip", () => {
     render(
       <IssueChip
         issueId="missing-issue"
-        fallbackLabel="MUL-999999999999999999999999999999999"
+        fallbackLabel="ISS-999999999999999999999999999999999"
       />,
     );
 
-    expect(screen.getByText("MUL-999999999999999999999999999999999"))
+    expect(screen.getByText("ISS-999999999999999999999999999999999"))
       .toHaveClass("min-w-0", "truncate");
   });
 });

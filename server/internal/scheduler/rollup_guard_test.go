@@ -15,7 +15,7 @@ import (
 // separate binaries and runs them in parallel against the SAME DATABASE_URL.
 // Both mutate that one singleton row and contend for the function's own
 // advisory lock 4246. Without a cross-process guard they interleave and fail
-// flakily (MUL-3980): TestPgCronConcurrentNoDoubleWrite forces the watermark
+// flakily (ISS-3980): TestPgCronConcurrentNoDoubleWrite forces the watermark
 // back and expects exactly one of six concurrent callers to advance it, but a
 // handler rollup tick concurrently pushes the same watermark past the window,
 // so this test sees winners=0.

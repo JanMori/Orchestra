@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // insertCommentForScopeTest inserts a member comment on issueID in the given
@@ -31,7 +31,7 @@ func insertCommentForScopeTest(t *testing.T, ctx context.Context, issueID, works
 // enqueueIssueTaskWithTrigger enqueues a real task for (issueID, agentID) via the
 // production TaskService.EnqueueTaskForIssue path — the path that snapshots
 // trigger_summary and resolves the originator from the triggering comment — so
-// the MUL-4252 workspace scoping is exercised end-to-end rather than bypassed
+// the ISS-4252 workspace scoping is exercised end-to-end rather than bypassed
 // with a hand-written row. Returns the created task id.
 func enqueueIssueTaskWithTrigger(t *testing.T, ctx context.Context, agentID, issueID, triggerCommentID string) string {
 	t.Helper()
@@ -84,7 +84,7 @@ func claimTriggerFieldsForTest(t *testing.T, runtimeID string) (taskID, triggerC
 // TestClaimDeliversSameWorkspaceTriggerComment is the positive path: a triggering
 // comment in the task's own workspace must still be snapshotted into
 // trigger_summary at enqueue and embedded (content + summary) in the claim
-// response. The MUL-4252 workspace-scoped lookups must not regress delivery.
+// response. The ISS-4252 workspace-scoped lookups must not regress delivery.
 func TestClaimDeliversSameWorkspaceTriggerComment(t *testing.T) {
 	if testHandler == nil || testPool == nil {
 		t.Skip("database not available")
@@ -109,7 +109,7 @@ func TestClaimDeliversSameWorkspaceTriggerComment(t *testing.T) {
 	}
 }
 
-// TestClaimDoesNotLeakForeignWorkspaceTriggerCommentOrSummary is the MUL-4252
+// TestClaimDoesNotLeakForeignWorkspaceTriggerCommentOrSummary is the ISS-4252
 // guard, exercised through the real enqueue + claim path. A task whose
 // trigger_comment_id points at a comment owned by a DIFFERENT workspace must
 // leak neither the full body (claim-time fetch) nor the truncated summary

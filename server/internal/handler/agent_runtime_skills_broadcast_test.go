@@ -6,12 +6,12 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // TestSetAgentRuntimeSkillEnabledBroadcastsAgentStatus guards the realtime
-// invalidation path for runtime-skill toggles (Howard review on MUL-5101):
+// invalidation path for runtime-skill toggles (Howard review on ISS-5101):
 // persisting a disabled_runtime_skills override must publish an "agent:status"
 // event so every other open web/desktop/mobile client invalidates
 // workspaceKeys.agents and drops its stale toggle state — mirroring the

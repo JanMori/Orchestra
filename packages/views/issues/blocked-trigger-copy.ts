@@ -1,6 +1,6 @@
 import type { useT } from "../i18n";
 
-// Localized copy for a blocked @agent / @crew trigger outcome (MUL-4525 §2),
+// Localized copy for a blocked @agent / @crew trigger outcome (ISS-4525 §2),
 // shared by the composer preview chip and the post-send toast so both name the
 // same reason the same way. `reason_code` is the enumeration-safe wire code; the
 // label it maps to never reveals the target's identity — the caller supplies the
@@ -10,11 +10,11 @@ import type { useT } from "../i18n";
 // is deliberately ambiguous server-side (see dispatch/reason.go): it covers BOTH
 // "you may not invoke this target" and "this id resolved to nothing here". Copy
 // that blamed permission alone sent people to audit agent visibility settings over
-// what was really a mistyped mention uuid (MUL-5548), so both labels name the two
+// what was really a mistyped mention uuid (ISS-5548), so both labels name the two
 // possibilities instead.
 //
 // `agent_runtime_required` and `runtime_offline` are kept apart for the same
-// reason (MUL-5559): an unbound agent has no machine to reconnect, so "runtime
+// reason (ISS-5559): an unbound agent has no machine to reconnect, so "runtime
 // offline" copy sends the user looking for a computer that does not exist. The
 // fix it needs is binding the agent to a runtime.
 type IssuesT = ReturnType<typeof useT<"issues">>["t"];

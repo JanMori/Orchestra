@@ -22,7 +22,7 @@ WHERE workspace_id = $1;
 
 -- name: DeleteChatPinnedAgentsBySystemRuntimeAgents :exec
 -- Scoped to the system agents a runtime delete hard-deletes. User agents keep
--- their pins: since MUL-5559 they survive their runtime as unbound agents.
+-- their pins: since ISS-5559 they survive their runtime as unbound agents.
 DELETE FROM chat_pinned_agent
 WHERE agent_id IN (
     SELECT id FROM agent WHERE runtime_id = $1 AND kind = 'system'

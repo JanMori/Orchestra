@@ -34,11 +34,11 @@ describe("resolveTabPresentation — direct resources", () => {
     });
     expect(
       present("/acme/issues/i1", {
-        issue: { identifier: "MUL-1", title: "Fix", status: "in_progress" },
+        issue: { identifier: "ISS-1", title: "Fix", status: "in_progress" },
       }),
     ).toEqual({
       visual: { kind: "issue-status", status: "in_progress" },
-      title: { kind: "text", text: "MUL-1: Fix" },
+      title: { kind: "text", text: "ISS-1: Fix" },
     });
   });
 
@@ -138,19 +138,19 @@ describe("resolveTabPresentation — containers keep their icon, title tracks se
       title: { kind: "nav", navKey: "inbox" },
     });
     // Selected but not yet resolved → still Inbox, never a stale title.
-    expect(present("/acme/inbox?issue=MUL-9")).toEqual({
+    expect(present("/acme/inbox?issue=ISS-9")).toEqual({
       visual: { kind: "icon", icon: "Inbox" },
       title: { kind: "nav", navKey: "inbox" },
     });
     // Selected issue → Inbox icon + issue title (distinct from a direct issue,
     // which would show a status icon).
     expect(
-      present("/acme/inbox?issue=MUL-9", {
-        inboxSelection: { kind: "issue", identifier: "MUL-9", title: "Bug" },
+      present("/acme/inbox?issue=ISS-9", {
+        inboxSelection: { kind: "issue", identifier: "ISS-9", title: "Bug" },
       }),
     ).toEqual({
       visual: { kind: "icon", icon: "Inbox" },
-      title: { kind: "text", text: "MUL-9: Bug" },
+      title: { kind: "text", text: "ISS-9: Bug" },
     });
     // Selected non-issue notification → its display title.
     expect(

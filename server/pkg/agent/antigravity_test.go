@@ -77,7 +77,7 @@ func TestBuildAntigravityArgsNoCapUsesLargePrintTimeout(t *testing.T) {
 
 	// timeout <= 0 means "no wall-clock cap", but agy's --print-timeout DEFAULTS
 	// to 5m when omitted, so dropping the flag silently caps every turn at 5
-	// minutes and kills any run whose build/tests outlive it (MUL-3570). "No cap"
+	// minutes and kills any run whose build/tests outlive it (ISS-3570). "No cap"
 	// must therefore be expressed by passing a value large enough to defer to the
 	// daemon's idle/tool watchdogs — NOT by omitting the flag.
 	args := buildAntigravityArgs(
@@ -323,7 +323,7 @@ func TestReadAntigravityConversationIDMissingFile(t *testing.T) {
 // lines (as agy streams to stdout), writes the printmode.go "timed out after N
 // polls" marker into the --log-file the daemon handed it, prints agy's
 // user-facing "Error: timed out waiting for response" line, and EXITS 0 — exactly
-// the sequence that made a stalled turn look "completed" (MUL-3570).
+// the sequence that made a stalled turn look "completed" (ISS-3570).
 func fakeAgyPrintTimeoutScript() string {
 	return `#!/bin/sh
 log=""
@@ -365,7 +365,7 @@ exit 0
 }
 
 // TestAntigravityBackendPrintTimeoutSurfacesAsTimeout is the end-to-end guard for
-// MUL-3570: agy aborts a long turn by printing its timeout sentinel and exiting
+// ISS-3570: agy aborts a long turn by printing its timeout sentinel and exiting
 // 0, so the backend must classify the result as a timeout (not a truncated
 // "completed") while still preserving the narration printed before the cut-off.
 func TestAntigravityBackendPrintTimeoutSurfacesAsTimeout(t *testing.T) {
@@ -623,7 +623,7 @@ func TestReadAntigravityTranscriptOutputResumeReturnsCurrentTurnOnly(t *testing.
 // fakeAgyEmptyStdoutScript reproduces agy 1.0.14's regressed print mode: the
 // process logs its CLI app data directory and the conversation id, writes
 // NOTHING to stdout, and exits 0 — the "PlannerResponse without ModifiedResponse"
-// case (MUL-3726). The real reply lives only in the conversation transcript,
+// case (ISS-3726). The real reply lives only in the conversation transcript,
 // which the test seeds under appDataDir.
 func fakeAgyEmptyStdoutScript(appDataDir, conversationID string) string {
 	return `#!/bin/sh
@@ -643,7 +643,7 @@ exit 0
 }
 
 // TestAntigravityBackendRecoversEmptyStdoutFromTranscript is the end-to-end
-// guard for MUL-3726: agy 1.0.14 can complete a turn with empty stdout while the
+// guard for ISS-3726: agy 1.0.14 can complete a turn with empty stdout while the
 // real reply lives only in the conversation transcript. The backend must recover
 // that text into Result.Output instead of returning a blank "completed" run.
 func TestAntigravityBackendRecoversEmptyStdoutFromTranscript(t *testing.T) {

@@ -10,9 +10,9 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/auth"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/auth"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 func uuidToString(u pgtype.UUID) string { return util.UUIDToString(u) }
@@ -69,7 +69,7 @@ func Auth(queries *db.Queries, patCache *auth.PATCache, cloudPAT *auth.CloudPATV
 			// tricked by a client that strips or forges X-Agent-ID /
 			// X-Task-ID. Human-only endpoints (e.g. agent env
 			// management) reject requests authenticated this way; see
-			// `actorSourceFromRequest`. MUL-2600.
+			// `actorSourceFromRequest`. ISS-2600.
 			if strings.HasPrefix(tokenString, "mat_") {
 				if queries == nil {
 					http.Error(w, `{"error":"invalid token"}`, http.StatusUnauthorized)
@@ -144,7 +144,7 @@ func Auth(queries *db.Queries, patCache *auth.PATCache, cloudPAT *auth.CloudPATV
 				// stamp of "task_token" — both are server-set,
 				// authoritative, and stripped from any client-
 				// supplied value at the top of this middleware. Same
-				// rationale as MUL-2600: a machine credential
+				// rationale as ISS-2600: a machine credential
 				// (running agent or running cloud node) must not be
 				// treated as the owner having approved an account-
 				// level action.
@@ -153,8 +153,8 @@ func Auth(queries *db.Queries, patCache *auth.PATCache, cloudPAT *auth.CloudPATV
 				return
 			}
 
-			// PAT: tokens starting with "mul_"
-			if strings.HasPrefix(tokenString, "mul_") {
+			// PAT: tokens starting with "tok_" or legacy "mul_"
+			if strings.HasPrefix(tokenString, "tok_") || strings.HasPrefix(tokenString, "mul_") {
 				hash := auth.HashToken(tokenString)
 
 				// Cache hit: TTL has not expired, the token was valid the

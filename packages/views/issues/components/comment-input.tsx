@@ -46,7 +46,7 @@ function CommentInput({ issueId, onSubmit }: CommentInputProps) {
   const [isEmpty, setIsEmpty] = useState(() => !initialDraft?.trim());
   const [suppressedAgentIds, setSuppressedAgentIds] = useState<Set<string>>(() => new Set());
   const triggerPreview = useCommentTriggerPreview({ issueId, content });
-  // Uploads for this composer session (MUL-5181). Owned by the module-level
+  // Uploads for this composer session (ISS-5181). Owned by the module-level
   // coordinator and persisted in the draft store, so closing/scrolling the
   // composer away no longer drops an in-flight upload — its result lands in the
   // draft. `attachments` (completed rows) drives both the submit `attachment_ids`
@@ -115,11 +115,11 @@ function CommentInput({ issueId, onSubmit }: CommentInputProps) {
     });
   }, []);
 
-  // Await-then-render send (MUL-5181): the shared hook reads the markdown,
+  // Await-then-render send (ISS-5181): the shared hook reads the markdown,
   // guards empty/in-flight, re-checks the upload gate, locks + spins via
   // `submitting`, and clears only once the server accepts — a failed send keeps
   // the draft instead of silently dropping it.
-  // Stale-submit guard (MUL-5181 P0): if this composer unmounts mid-submit
+  // Stale-submit guard (ISS-5181 P0): if this composer unmounts mid-submit
   // (issue detail closed) and the user reopens and types a new draft under the
   // same key, the late success may only clear the draft it submitted.
   const mountedRef = useRef(true);
@@ -150,7 +150,7 @@ function CommentInput({ issueId, onSubmit }: CommentInputProps) {
       const pending = editorRef.current?.flushPendingUpdate?.();
       if (pending != null) setDraft(draftKey, pending);
       submittedEntryRef.current = useCommentDraftStore.getState().drafts[draftKey];
-      // Bind only uploads the BODY still references (MUL-5181): deleting an
+      // Bind only uploads the BODY still references (ISS-5181): deleting an
       // inline image really unbinds it. Uploads that finished after a close
       // are written back into the body by the settle handler, so surviving
       // files are referenced too — never silently attached.
@@ -167,7 +167,7 @@ function CommentInput({ issueId, onSubmit }: CommentInputProps) {
       );
     },
     onAccepted: () => {
-      // Success may only consume the entry it submitted (MUL-5181 P0): edits
+      // Success may only consume the entry it submitted (ISS-5181 P0): edits
       // made while the request was in flight — or by a reopened composer after
       // this one unmounted — survive both in the store and in the editor.
       // Flush the pending debounce first so typing still inside the window is

@@ -9,14 +9,14 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/analytics"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/issueguard"
-	"github.com/multica-ai/multica/server/internal/issueposition"
-	obsmetrics "github.com/multica-ai/multica/server/internal/metrics"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/analytics"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/issueguard"
+	"github.com/JanMori/Orchestra/server/internal/issueposition"
+	obsmetrics "github.com/JanMori/Orchestra/server/internal/metrics"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // IssueService is the single service-layer entry point for creating issues.
@@ -531,7 +531,7 @@ func classifyOrigin(issue db.Issue, opts IssueCreateOpts) (source, taskID, autop
 	switch issue.OriginType.String {
 	case "quick_create", "agent_create":
 		// Both link the issue back to the agent_task_queue row that created it
-		// (agent_create is the ordinary agent `issue create` path, MUL-4305);
+		// (agent_create is the ordinary agent `issue create` path, ISS-4305);
 		// surface that task id and keep the manual source label.
 		return analytics.SourceManual, originID, ""
 	case "autopilot":

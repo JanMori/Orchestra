@@ -913,7 +913,7 @@ const PaginatedBoardColumn = memo(function PaginatedBoardColumn({
 /**
  * The property-grouped board derives its columns from the status-bucketed
  * pool, which pages per status. Property columns have no per-column
- * pagination yet (tracked in MUL-4493), so this strip keeps every issue
+ * pagination yet (tracked in ISS-4493), so this strip keeps every issue
  * REACHABLE: one sentinel per status that still has server rows loads the
  * pool further and the property columns re-derive. Without it, rows beyond
  * a status's loaded page silently never join any column (review round 3).

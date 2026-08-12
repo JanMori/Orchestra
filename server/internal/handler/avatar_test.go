@@ -11,7 +11,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
-	"github.com/multica-ai/multica/server/internal/storage"
+	"github.com/JanMori/Orchestra/server/internal/storage"
 )
 
 // withAvatarStorage swaps the handler's storage/config for one test and
@@ -349,7 +349,7 @@ func TestServeAvatar_ProxiesPrivateHostBody(t *testing.T) {
 }
 
 // ---------------------------------------------------------------------------
-// Authorization boundary (MUL-5393 review)
+// Authorization boundary (ISS-5393 review)
 // ---------------------------------------------------------------------------
 //
 // Naming a storage object is not permission to publish it. These cover the

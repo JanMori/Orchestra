@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // TimelineEntry represents a single entry in the issue timeline, which can be
@@ -134,7 +134,7 @@ type timelinePaginatedResponse struct {
 // When the hard cap fires each list is independently reduced to its newest
 // entries and X-Timeline-Truncated names which kinds were affected. Comment
 // threads cut by the window are completed afterwards within a bounded context
-// budget; a thread that cannot be completed is omitted as one unit (MUL-5492).
+// budget; a thread that cannot be completed is omitted as one unit (ISS-5492).
 func (h *Handler) ListTimeline(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	issue, ok := h.loadIssueForUser(w, r, id)

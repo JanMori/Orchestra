@@ -9,7 +9,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/multica-ai/multica/server/pkg/skillbundle"
+	"github.com/JanMori/Orchestra/server/pkg/skillbundle"
 )
 
 type SkillBundleCache struct {

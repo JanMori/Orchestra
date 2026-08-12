@@ -6,7 +6,7 @@
 // It deliberately does NOT wrap the SDK in another HTTP client — it composes
 // *sdk.Client directly through the SDK interface so tests can drop in a fake.
 //
-// MVP scope (MUL-3720): toolkits are discovered dynamically. The
+// MVP scope (ISS-3720): toolkits are discovered dynamically. The
 // toolkit→auth-config mapping is resolved at request time from Composio's
 // /auth_configs endpoint (cached briefly), so a toolkit becomes connectable the
 // moment an auth config is enabled for it in the Composio dashboard — no env
@@ -22,11 +22,11 @@ import (
 	"sync"
 	"time"
 
-	sdk "github.com/multica-ai/multica/server/pkg/composio"
+	sdk "github.com/JanMori/Orchestra/server/pkg/composio"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // Service-level errors surfaced to the handler layer.
@@ -97,11 +97,11 @@ type Config struct {
 	// StateSecret signs the connect-state HMAC. Required (non-empty).
 	StateSecret []byte
 	// CallbackBaseURL is the absolute, public base URL of THIS API, with no
-	// trailing slash (e.g. "https://multica.ai"). The Composio callback
+	// trailing slash (e.g. "http://localhost:5001"). The Composio callback
 	// URL is built as CallbackBaseURL + CallbackPath. Required.
 	CallbackBaseURL string
 	// FrontendBaseURL is the web app base used to build the post-callback
-	// browser redirect (e.g. "https://multica.ai"). May be empty, in which
+	// browser redirect (e.g. "http://localhost:5001"). May be empty, in which
 	// case CallbackRedirect returns a site-relative path.
 	FrontendBaseURL string
 	// StateTTL overrides the default connect-state lifetime. Zero uses
@@ -204,7 +204,7 @@ type MCPSession struct {
 // exactly the fields the Settings UI renders plus a Connectable flag.
 //
 // Connectable means the project has an enabled auth config for the toolkit, so
-// BeginConnect would succeed. Since MUL-4009 ListToolkits only returns
+// BeginConnect would succeed. Since ISS-4009 ListToolkits only returns
 // connectable toolkits, so this is always true on the wire; the field is
 // retained for backward compatibility with older desktop clients that branch on
 // it (removing it would make them treat every entry as non-connectable).
@@ -485,7 +485,7 @@ func rowToConnection(row db.UserComposioConnection) Connection {
 
 // ListToolkits returns only the Composio toolkits the project can actually
 // connect (those with an enabled auth config). Toolkits with no enabled auth
-// config are filtered out entirely (MUL-4009): a card the user can't act on is
+// config are filtered out entirely (ISS-4009): a card the user can't act on is
 // noise, and the old "Not configured" grey label existed only to avoid a dead
 // button — dropping the entry removes the need for it. It fetches all pages
 // (capped by maxToolkitPages) so the UI gets the complete connectable list in

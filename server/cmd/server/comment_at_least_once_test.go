@@ -7,7 +7,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // coalescedCommentIDs returns the coalesced_comment_ids of the most recent
@@ -43,7 +43,7 @@ func containsID(ids []string, want string) bool {
 	return false
 }
 
-// TestConsecutiveCommentsMergeNotDropped is the MUL-4195 regression test.
+// TestConsecutiveCommentsMergeNotDropped is the ISS-4195 regression test.
 //
 // Before the fix, a second/third comment posted while the agent already had a
 // queued task was silently DROPPED by the HasPendingTaskForIssueAndAgent dedup:
@@ -96,7 +96,7 @@ func TestConsecutiveCommentsMergeNotDropped(t *testing.T) {
 }
 
 // TestGetLatestMemberCommentForIssueSince pins the completion-reconciliation
-// query (MUL-4195): it must surface member comments newer than the run's
+// query (ISS-4195): it must surface member comments newer than the run's
 // started_at anchor and ignore agent-authored comments (the anti-loop rule).
 func TestGetLatestMemberCommentForIssueSince(t *testing.T) {
 	if testPool == nil {
@@ -180,7 +180,7 @@ func pgUUIDToText(u pgtype.UUID) string {
 }
 
 // TestMergeCommentIntoPendingTask_RecomputesOriginatorAndSkipsDispatched is the
-// MUL-4195 second-round regression test for the merge query. It pins two
+// ISS-4195 second-round regression test for the merge query. It pins two
 // properties:
 //
 //   - Recompute-on-merge (review must-fix #1): folding a DIFFERENT member's
@@ -311,7 +311,7 @@ func taskOriginator(t *testing.T, issueID, agentID string) string {
 	return originator
 }
 
-// TestMergeCommentIntoPendingTask_TargetsQueuedNotDeferred is the MUL-4195
+// TestMergeCommentIntoPendingTask_TargetsQueuedNotDeferred is the ISS-4195
 // round-4 regression test. When a `(issue, agent)` pair has BOTH an older
 // queued task (the run about to be claimed) and a newer deferred
 // assignee-fallback task, a new comment's merge must land on the QUEUED task —

@@ -24,7 +24,7 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 ## 分配后的执行流程
 
-Multica 会为智能体创建一条[执行任务](/tasks)。在线运行时领取任务后，会调用本机的 AI 编程工具；进度、评论和结果随后显示在 issue 中。
+Orchestra 会为智能体创建一条[执行任务](/tasks)。在线运行时领取任务后，会调用本机的 AI 编程工具；进度、评论和结果随后显示在 issue 中。
 
 运行时暂时离线时，任务留在队列中等待；任务绑定该运行时，不会转移到其他电脑执行。
 
@@ -39,7 +39,7 @@ Multica 会为智能体创建一条[执行任务](/tasks)。在线运行时领�
 
 执行过程中，智能体应按约定管理 issue 状态（通常 `todo` → `in_progress`，交付后再到 `in_review`）——这些动作以智能体的身份出现在时间线中。task 的生命周期和 issue 状态是分开的：task 完成本身不会改变 issue 状态。
 
-负责人是[小组](/crews)时，同样的约定适用：Multica 入队的是队长，队长首次接单时把父 issue 推到 `in_progress`，成员工作期间保持不变；整体目标达成后才推到 `in_review`——第一次成功派活不等于完成。
+负责人是[小组](/crews)时，同样的约定适用：Orchestra 入队的是队长，队长首次接单时把父 issue 推到 `in_progress`，成员工作期间保持不变；整体目标达成后才推到 `in_review`——第一次成功派活不等于完成。
 
 ## 只分配，暂时不启动
 

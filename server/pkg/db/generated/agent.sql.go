@@ -437,7 +437,7 @@ RETURNING id, agent_id, issue_id, status, priority, dispatched_at, started_at, c
 // caller can reconcile each agent's status and broadcast task:cancelled events
 // (#1587). Prior :exec form silently dropped that info, leaving agents stuck at
 // status="working" with no self-correction. Only issue-deletion cleanup calls
-// this now; a status flip to cancelled/done no longer does (MUL-4465).
+// this now; a status flip to cancelled/done no longer does (ISS-4465).
 func (q *Queries) CancelAgentTasksByIssue(ctx context.Context, issueID pgtype.UUID) ([]AgentTaskQueue, error) {
 	rows, err := q.db.Query(ctx, cancelAgentTasksByIssue, issueID)
 	if err != nil {
@@ -1457,7 +1457,7 @@ type CompleteAgentTaskParams struct {
 	RetiredSessionID      pgtype.Text `json:"retired_session_id"`
 }
 
-// session_rollout_missing (MUL-5305): when true the daemon withheld this task's
+// session_rollout_missing (ISS-5305): when true the daemon withheld this task's
 // Codex session because its rollout was never written to the store. Forcing
 // session_id NULL and flagging the row happen in THIS terminal transaction so an
 // auto-retry created and woken by the same commit can never observe the bad
@@ -1913,7 +1913,7 @@ type CreateDeferredAgentTaskParams struct {
 // Attribution is resolved and stamped at creation (not at promotion), from the
 // same trigger comment as the primary task, so the fallback assignee's run
 // carries a non-NULL source and evidence rather than bypassing attribution
-// (MUL-4302 §2).
+// (ISS-4302 §2).
 func (q *Queries) CreateDeferredAgentTask(ctx context.Context, arg CreateDeferredAgentTaskParams) (AgentTaskQueue, error) {
 	row := q.db.QueryRow(ctx, createDeferredAgentTask,
 		arg.AgentID,
@@ -2175,7 +2175,7 @@ type CreateQuickCreateTaskParams struct {
 // daemon detects this variant via context.type == "quick_create".
 // The requester who opened the quick-create modal is a direct_human originator
 // and accountable; attribution provenance is stamped so this path is not a
-// NULL-source enqueue bypass (MUL-4302 §2).
+// NULL-source enqueue bypass (ISS-4302 §2).
 func (q *Queries) CreateQuickCreateTask(ctx context.Context, arg CreateQuickCreateTaskParams) (AgentTaskQueue, error) {
 	row := q.db.QueryRow(ctx, createQuickCreateTask,
 		arg.AgentID,
@@ -2304,9 +2304,9 @@ type CreateRetryTaskParams struct {
 // originator_user_id is inherited so the Composio overlay decision sees the
 // same top-of-chain human across the retry: the user behind the original
 // run has not changed. The Composio overlay follows the agent's invocation
-// permission and uses the agent owner's connection (MUL-3963); originator is
+// permission and uses the agent owner's connection (ISS-3963); originator is
 // carried for A2A/audit, not as an originator == agent.owner_id gate.
-// A system retry is NOT a new attribution event (MUL-4302 §5): it inherits the
+// A system retry is NOT a new attribution event (ISS-4302 §5): it inherits the
 // parent's accountable human, source label, delegation lineage, rule version,
 // and trigger evidence UNCHANGED, and records retry_of_task_id = p.id so retry
 // and manual rerun stay separable in reporting. parent_task_id keeps its
@@ -2314,7 +2314,7 @@ type CreateRetryTaskParams struct {
 // attribution-facing lineage column.
 //
 // chat_input_task_id is inherited straight from the parent so the whole retry
-// chain keeps consuming the ORIGINAL root input batch (MUL-4351): the root
+// chain keeps consuming the ORIGINAL root input batch (ISS-4351): the root
 // direct task set it to its own id, every descendant copies that value, and a
 // claim always reads the same user messages. A plain copy (not
 // COALESCE(parent.chat_input_task_id, parent.id)) is deliberate: legacy/channel
@@ -2332,14 +2332,14 @@ type CreateRetryTaskParams struct {
 // as 'deferred' with that fire_at and stays inert until the existing
 // PromoteDueDeferredTasksForRuntime sweeper (run promote-first on every claim
 // poll) flips it to 'queued'. Used for provider_network's final attempt so it
-// waits ~5s instead of firing back-to-back with the immediate retry (MUL-4910).
+// waits ~5s instead of firing back-to-back with the immediate retry (ISS-4910).
 // NULL keeps the historical behaviour: an immediately-claimable 'queued' child.
 //
 // max_attempts overrides the inherited budget when non-NULL (NULL inherits
 // p.max_attempts unchanged). Callers persist the reason-aware effective ceiling
 // here so the row stays self-consistent — e.g. provider_network's chain records
 // attempt=3, max_attempts=3 rather than leaking attempt=3, max_attempts=2 to the
-// task API (MUL-4910). The Go retryAttemptCeiling already refuses to raise a
+// task API (ISS-4910). The Go retryAttemptCeiling already refuses to raise a
 // disabled (max_attempts<=1) task, so this only ever widens, never revives.
 func (q *Queries) CreateRetryTask(ctx context.Context, arg CreateRetryTaskParams) (AgentTaskQueue, error) {
 	row := q.db.QueryRow(ctx, createRetryTask,
@@ -2447,7 +2447,7 @@ type ExpireStaleQueuedTasksParams struct {
 }
 
 // Fails tasks that have been sitting in 'queued' for longer than the TTL.
-// This is the cleanup arm of the MUL-1899 "queued backlog" fix: even with the
+// This is the cleanup arm of the ISS-1899 "queued backlog" fix: even with the
 // new dispatch-time admission gate that refuses to enqueue when the runtime
 // is offline, we still need to drain the historical 87k+ doomed rows and
 // handle edge cases where a runtime goes offline AFTER a task is already
@@ -2655,7 +2655,7 @@ type FailAgentTaskParams struct {
 // failure_reason is a coarse classifier consumed by the auto-retry path;
 // 'agent_error' is the safe default when the daemon doesn't supply one.
 //
-// session_rollout_missing (MUL-5305): when true the daemon withheld this task's
+// session_rollout_missing (ISS-5305): when true the daemon withheld this task's
 // Codex session (its rollout was missing). Force session_id NULL — overriding
 // the COALESCE that would otherwise preserve a stale mid-flight pin — and flag
 // the row, in the SAME transaction that creates and wakes the auto-retry, so the
@@ -2773,7 +2773,7 @@ type FailStaleTasksParams struct {
 //     @runtime_stale_secs is treated as alive and is NOT killed by this
 //     wall-clock backstop, even after `started_at` exceeds the running
 //     timeout. This is what lets healthy multi-hour research / training runs
-//     survive on self-hosted deployments (MUL-4107): the daemon side is
+//     survive on self-hosted deployments (ISS-4107): the daemon side is
 //     bounded only by inactivity watchdogs (idle / per-tool), so the
 //     server-side wall clock must not shadow that with a coarser cap.
 //
@@ -3217,7 +3217,7 @@ WHERE session_id NOT IN (SELECT session_id FROM retired_sessions)
                AND COALESCE(error, '') ~* 'role[^a-z0-9]{0,2}assistant|assistant message|message at position|messages\.[0-9]|messages\[[0-9]')
     )
   )
-  -- MUL-5722: a resume that overflowed the reader names no session, so it can
+  -- ISS-5722: a resume that overflowed the reader names no session, so it can
   -- only be excluded by time, not by matching the failed row. Drop every
   -- session whose last terminal activity predates the newest such failure: one
   -- of them IS the oversized thread, and the row that would tell us which is
@@ -3250,7 +3250,7 @@ type GetLastTaskSessionRow struct {
 // daemon restart, runtime offline, or sweeper timeout), and the daemon pins
 // the resume pointer mid-flight via UpdateAgentTaskSession. Without this,
 // an auto-retry of a mid-run failure would silently start a fresh
-// conversation and lose the in-flight context — exactly what MUL-1128's B
+// conversation and lose the in-flight context — exactly what ISS-1128's B
 // branch is meant to fix.
 //
 // A cancelled task is in exactly the same position, and excluding it was the
@@ -3269,7 +3269,7 @@ type GetLastTaskSessionRow struct {
 // force_fresh_session=true purely as a rollback-safe signal: an OLD claim
 // handler that predates the rerun_of_task_id branch falls back to this query,
 // and force_fresh_session=true makes it start clean instead of resuming the
-// wrong execution (MUL-4869).
+// wrong execution (ISS-4869).
 //
 // Tasks that ended in a known "poisoned" terminal state are also excluded
 // here so even auto-retry does not inherit the bad session. The daemon
@@ -3281,11 +3281,11 @@ type GetLastTaskSessionRow struct {
 // (oversized image, malformed base64, etc.), a Codex semantic inactivity
 // timeout whose recorded session may replay the same stuck state, a context
 // window overflow that would immediately overflow again on resume, or a Codex
-// thread/resume response too large to read back (MUL-5722). Keep this
+// thread/resume response too large to read back (ISS-5722). Keep this
 // list in sync with resumeUnsafeFailureReason and GetLastChatTaskSession.
 //
 // The error-text ILIKE clause is defense-in-depth for the api_invalid_request
-// shape: a legacy row tagged 'agent_error' (pre-MUL-1921), a deploy-window
+// shape: a legacy row tagged 'agent_error' (pre-ISS-1921), a deploy-window
 // row that the old code wrote between migration and rollout, or a future
 // error format that escapes the daemon classifier all still get filtered
 // here as long as the canonical Anthropic 400 marker is present in the
@@ -3317,7 +3317,7 @@ type GetLastTaskSessionRow struct {
 // exactly as narrow as classifyPoisonedError and the Kiro detector — an
 // unrelated error that only mentions image dimensions is NOT excluded.
 //
-// MUL-5722 needed a different shape, and the reason is worth stating because
+// ISS-5722 needed a different shape, and the reason is worth stating because
 // the first attempt got it wrong: a row-level guard like the ones above CANNOT
 // work for an overflowed resume. That failure happens before the turn starts,
 // so the backend has no session id to report and the row lands with session_id
@@ -3385,7 +3385,7 @@ ORDER BY COALESCE(completed_at, started_at, dispatched_at, created_at) DESC
 LIMIT 1
 `
 
-// Chat-session counterpart of GetLatestTaskRolloutMissing (MUL-5305): reports
+// Chat-session counterpart of GetLatestTaskRolloutMissing (ISS-5305): reports
 // whether the most recent terminal task on this chat session withheld its Codex
 // session because the rollout was missing. When true the next chat claim resumed
 // an older session (or none), so it must disclose the continuity gap.
@@ -3439,7 +3439,7 @@ type GetLatestTaskRolloutMissingParams struct {
 }
 
 // Reports whether the most recent terminal task for (agent_id, issue_id)
-// withheld its Codex session because the rollout was missing (MUL-5305). When
+// withheld its Codex session because the rollout was missing (ISS-5305). When
 // true, GetLastTaskSession fell back to an older session, so the next run must
 // disclose that the most recent turn's context could not be carried over. Any
 // later task that records a real session resets this to FALSE by being the new
@@ -3580,7 +3580,7 @@ type HasActiveTaskForIssueAndAgentParams struct {
 	AgentID pgtype.UUID `json:"agent_id"`
 }
 
-// MUL-4195: true when the (issue, agent) pair has any non-terminal task in a
+// ISS-4195: true when the (issue, agent) pair has any non-terminal task in a
 // state whose completion will run completion reconciliation — queued,
 // dispatched, running, waiting_local_directory, or the explicitly-marked
 // channel-media deferred state. Used by the comment enqueue
@@ -4117,7 +4117,7 @@ ORDER BY created_at ASC
 // rows, which carry no kind filter of their own: a system carrier runs real
 // tasks and books real usage, so a per-agent rollup returns it whether or not
 // any list endpoint will ever name it. Those surfaces need the full population
-// to decide what to hide (MUL-5409). Do NOT use this to build a user-facing
+// to decide what to hide (ISS-5409). Do NOT use this to build a user-facing
 // agent list — `kind = 'system'` must stay out of every picker and assignee
 // surface.
 func (q *Queries) ListAllAgentsAnyKind(ctx context.Context, workspaceID pgtype.UUID) ([]Agent, error) {
@@ -4427,7 +4427,7 @@ WHERE runtime_id = ANY($1::uuid[]) AND status = 'queued'
 ORDER BY priority DESC, created_at ASC
 `
 
-// Batch variant of ListQueuedClaimCandidatesByRuntime (MUL-4257): returns
+// Batch variant of ListQueuedClaimCandidatesByRuntime (ISS-4257): returns
 // queued claim candidates across every runtime_id in the input set in ONE round
 // trip, so a daemon can list candidates for all of its runtimes with a single
 // query instead of one per runtime. Ordering matches the singular query
@@ -4674,7 +4674,7 @@ WHERE a.workspace_id = $1
 //   - Each agent's most recent OUTCOME task (completed / failed) — NOT part of
 //     presence since #1823; it is the "last activity" line the Crew hover card
 //     renders (agent-live-peek-card.tsx). Kept in this response because shipped
-//     desktop builds read it from here; see MUL-5436 for the plan to move it to
+//     desktop builds read it from here; see ISS-5436 for the plan to move it to
 //     a dedicated lazy endpoint.
 //
 // Cancelled tasks are excluded from the outcome half on purpose: cancel is a
@@ -5157,7 +5157,7 @@ SET coalesced_comment_ids = (
     ),
     trigger_comment_id = $1::uuid,
     trigger_summary = COALESCE($2, trigger_summary),
-    -- Re-attribution is ATOMIC (MUL-4302): folding a newly-arrived comment moves the
+    -- Re-attribution is ATOMIC (ISS-4302): folding a newly-arrived comment moves the
     -- WHOLE attribution snapshot to that comment's human — person columns, source
     -- label, delegation lineage, rule version, and evidence — computed by the caller
     -- as one attribution.Result. Re-stamping only the person columns would leave a
@@ -5218,7 +5218,7 @@ type MergeCommentIntoPendingTaskRow struct {
 	CoalescedCommentIds []pgtype.UUID `json:"coalesced_comment_ids"`
 }
 
-// MUL-4195: fold a newly-arrived comment into an existing task for (issue,
+// ISS-4195: fold a newly-arrived comment into an existing task for (issue,
 // agent) that has NOT yet been claimed, instead of letting the
 // HasPendingTaskForIssueAndAgent dedup silently DROP it. The task's prior
 // trigger_comment_id becomes a coalesced ("also cover") comment and
@@ -5226,7 +5226,7 @@ type MergeCommentIntoPendingTaskRow struct {
 // the latest deliberate instruction while the single run is still told to
 // address every folded comment.
 //
-// Target is restricted to a pre-claim task on purpose (MUL-4195 review rounds
+// Target is restricted to a pre-claim task on purpose (ISS-4195 review rounds
 // 2–4). This merge is reached when HasPendingTaskForIssueAndAgent matched a
 // 'queued'/'dispatched' task, or the channel-media deferred task described
 // below. 'dispatched' is deliberately NOT a
@@ -5242,7 +5242,7 @@ type MergeCommentIntoPendingTaskRow struct {
 // plan; the claim path records the actual embedded subset in
 // delivered_comment_ids.
 //
-// Recompute-on-merge (MUL-4195 review must-fix #1): originator_user_id,
+// Recompute-on-merge (ISS-4195 review must-fix #1): originator_user_id,
 // runtime_mcp_overlay and runtime_connected_apps are re-stamped to the NEW
 // trigger comment's originator (computed by the caller). Earlier this only
 // repointed the trigger and kept the old originator's overlay/attribution, so a
@@ -5440,7 +5440,7 @@ WHERE runtime_id = ANY($1::uuid[])
 RETURNING id, agent_id, issue_id, status, priority, dispatched_at, started_at, completed_at, result, error, created_at, context, runtime_id, session_id, work_dir, trigger_comment_id, chat_session_id, autopilot_run_id, attempt, max_attempts, parent_task_id, failure_reason, trigger_summary, force_fresh_session, is_leader_task, wait_reason, initiator_user_id, handoff_note, prepare_lease_expires_at, crew_id, runtime_mcp_overlay, escalation_for_task_id, fire_at, originator_user_id, runtime_connected_apps, coalesced_comment_ids, delivered_comment_ids, chat_input_task_id, chat_finalize_deferred_at, originator_source, delegated_from_task_id, retry_of_task_id, rerun_of_task_id, rule_version_id, trigger_evidence_kind, trigger_evidence_ref_id, accountable_user_id, session_rollout_missing, retired_session_id, quick_actions_disabled, regenerate_quick_actions_for
 `
 
-// Batch variant of PromoteDueDeferredTasksForRuntime (MUL-4257): promotes all
+// Batch variant of PromoteDueDeferredTasksForRuntime (ISS-4257): promotes all
 // due deferred tasks across the runtime set in one UPDATE.
 func (q *Queries) PromoteDueDeferredTasksForRuntimes(ctx context.Context, runtimeIds []pgtype.UUID) ([]AgentTaskQueue, error) {
 	rows, err := q.db.Query(ctx, promoteDueDeferredTasksForRuntimes, runtimeIds)
@@ -5541,7 +5541,7 @@ type RebindAgentBuilderRuntimeParams struct {
 //
 // Callers MUST hold LockChatSessionForRuntimeBind on the owning chat_session for
 // the whole transaction, otherwise a concurrent send can stamp a task with the
-// pre-switch runtime after the pending-task check has already passed (MUL-5163).
+// pre-switch runtime after the pending-task check has already passed (ISS-5163).
 //
 // chat_session.runtime_id is deliberately left untouched: the daemon only resumes
 // a stored provider session when chat_session.runtime_id matches the claiming
@@ -5701,7 +5701,7 @@ type ReclaimStaleDispatchedTasksForRuntimesParams struct {
 	MaxTasks          int32         `json:"max_tasks"`
 }
 
-// Batch variant of ReclaimStaleDispatchedTaskForRuntime (MUL-4257): re-delivers
+// Batch variant of ReclaimStaleDispatchedTaskForRuntime (ISS-4257): re-delivers
 // up to @max_tasks tasks across the whole runtime set in one round trip, so a
 // machine-level batch claim recovers lost-response dispatches for every runtime
 // it hosts without one query per runtime. Same eligibility as the singular
@@ -5976,7 +5976,7 @@ type RegisterPlannedCommentForActiveTaskRow struct {
 // attribution. A queued target must therefore go through the ATOMIC
 // MergeCommentIntoPendingTask (which re-stamps trigger/originator/accountable/
 // overlay), never a bare planned append — otherwise a second member's comment
-// could execute under the first member's identity/connected-apps (MUL-4302).
+// could execute under the first member's identity/connected-apps (ISS-4302).
 // Only claim-receipt statuses (already-built delivered set) are safe planned-id
 // targets.
 func (q *Queries) RegisterPlannedCommentForActiveTask(ctx context.Context, arg RegisterPlannedCommentForActiveTaskParams) (RegisterPlannedCommentForActiveTaskRow, error) {

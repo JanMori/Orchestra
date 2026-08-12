@@ -10,10 +10,10 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
-	"github.com/multica-ai/multica/server/internal/logger"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/logger"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // Per-issue metadata is a small JSONB KV map agents use to record pipeline
@@ -27,7 +27,7 @@ import (
 //
 // All mutations are single-key atomic. UpdateIssue does NOT touch metadata —
 // any whole-blob overwrite would race with concurrent agent writes (see the
-// design discussion on MUL-2017).
+// design discussion on ISS-2017).
 const (
 	maxIssueMetadataKeys = 50
 )

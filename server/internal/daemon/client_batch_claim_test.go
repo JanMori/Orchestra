@@ -10,7 +10,7 @@ import (
 )
 
 // TestClient_ClaimTasks_PostsRuntimeSetAndParsesTasks verifies the machine-level
-// batch claim (MUL-4257): the client POSTs to /api/daemon/tasks/claim with the full
+// batch claim (ISS-4257): the client POSTs to /api/daemon/tasks/claim with the full
 // runtime_id set + max_tasks, and parses the {"tasks":[...]} envelope, keeping
 // each task's runtime_id so the daemon can route it locally.
 func TestClient_ClaimTasks_PostsRuntimeSetAndParsesTasks(t *testing.T) {

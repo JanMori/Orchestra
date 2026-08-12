@@ -19,11 +19,7 @@ services:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-orchestra} -d ${POSTGRES_DB:-orchestra}",
-        ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-orchestra} -d ${POSTGRES_DB:-orchestra}" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -77,7 +73,7 @@ services:
       COOKIE_DOMAIN: ${COOKIE_DOMAIN:-}
       APP_ENV: ${APP_ENV:-production}
       ORCHESTRA_DEV_VERIFICATION_CODE: ${ORCHESTRA_DEV_VERIFICATION_CODE:-}
-      ORCHESTRA_APP_URL: ${ORCHESTRA_APP_URL:-http://localhost:5001}
+      ORCHESTRA_APP_URL: ${ORCHESTRA_APP_URL:-http://localhost:7081}
       ORCHESTRA_SHUTDOWN_HOLD_DURATION: ${ORCHESTRA_SHUTDOWN_HOLD_DURATION:-}
       ALLOW_SIGNUP: ${ALLOW_SIGNUP:-true}
       ALLOWED_EMAILS: ${ALLOWED_EMAILS:-}

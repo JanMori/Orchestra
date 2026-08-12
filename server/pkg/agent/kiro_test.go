@@ -605,7 +605,7 @@ func TestKiroBackendTreatsCompletedCommentAddWithNonTerminalTitleAsCompleted(t *
 
 // fakeKiroACPRealGPT56SolCloseErrorScript reproduces the EXACT ACP frame shape
 // captured from a live kiro-cli 2.12.3 + gpt-5.6-sol session (see #5509 /
-// MUL-4860). Three things about this shape broke the older guards:
+// ISS-4860). Three things about this shape broke the older guards:
 //   - the shell tool_call title is "Running: <cmd>" with kind "execute", which
 //     normalizes to "running" — NOT "terminal";
 //   - the command lives in rawInput.command alongside __tool_use_purpose;

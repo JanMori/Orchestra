@@ -1288,7 +1288,7 @@ func TestHTTPClient_BindingPromptValidation(t *testing.T) {
 // then resolves the bot's union_id via /open-apis/contact/v3/users/
 // {open_id}?user_id_type=open_id. Both identifiers are persisted on
 // the installation row; the union_id is what the WS decoder uses to
-// route inbound @-mentions in multi-bot group chats (MUL-2671). The
+// route inbound @-mentions in multi-bot group chats (ISS-2671). The
 // other fields on the bot/v3/info response (display name, avatar,
 // IP whitelist) are deliberately dropped on the floor.
 func TestHTTPClient_GetBotInfo_HappyPath(t *testing.T) {

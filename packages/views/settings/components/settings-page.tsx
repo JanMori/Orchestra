@@ -155,7 +155,7 @@ export function SettingsPage({ extraAccountTabs }: SettingsPageProps = {}) {
       {/* Structural navigation; bounded setting groups remain in the content surface.
           Stays on the content surface color (no shell tint): the desktop's active
           tab merges into the card top, and a tinted panel under the first tabs
-          breaks that seam (MUL-4439). Zoning comes from the divider instead. */}
+          breaks that seam (ISS-4439). Zoning comes from the divider instead. */}
       <div className="shrink-0 overflow-x-auto border-b border-surface-border p-2 md:w-56 md:overflow-y-auto md:border-b-0 md:border-r md:p-4">
         <h1 className="sr-only text-body font-semibold md:not-sr-only md:mb-4 md:px-2">{t(($) => $.page.title)}</h1>
         <TabsList

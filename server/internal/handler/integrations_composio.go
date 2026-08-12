@@ -8,16 +8,16 @@ import (
 	"strings"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/multica-ai/multica/server/internal/featureflags"
-	composio "github.com/multica-ai/multica/server/internal/integrations/composio"
+	"github.com/JanMori/Orchestra/server/internal/featureflags"
+	composio "github.com/JanMori/Orchestra/server/internal/integrations/composio"
 )
 
-// Composio integration handlers (MUL-3720, Stage 2 MVP). A Composio connection
+// Composio integration handlers (ISS-3720, Stage 2 MVP). A Composio connection
 // belongs to a user, not a workspace, so these handlers live outside the
 // workspace-membership group. The four management endpoints (connect/init,
 // toolkits, connections, delete) are user-scoped (requireUserID) and sit under
 // the Auth middleware. ComposioCallback is the exception: it is a public route
-// (outside the Auth group, see router.go / MUL-3843) because the browser often
+// (outside the Auth group, see router.go / ISS-3843) because the browser often
 // arrives without a session cookie — its identity comes from the signed state,
 // not requireUserID. The whole block returns 503 when h.Composio is nil
 // (COMPOSIO_API_KEY unset), matching the Lark/GitHub "integration not
@@ -44,7 +44,7 @@ type ComposioConnectionResponse struct {
 }
 
 // ComposioToolkitResponse is the wire shape for one toolkit in the catalog.
-// Since MUL-4009 the catalog only contains connectable toolkits, so
+// Since ISS-4009 the catalog only contains connectable toolkits, so
 // `connectable` is always true. The field is retained for backward
 // compatibility with older desktop clients that branch on it (dropping it would
 // make them treat every entry as non-connectable and hide the Connect button).
@@ -101,7 +101,7 @@ func (h *Handler) ComposioConnectInit(w http.ResponseWriter, r *http.Request) {
 // ComposioCallback (GET /api/integrations/composio/callback) is the browser
 // redirect target Composio sends the user back to after the hosted flow. It is
 // registered as a PUBLIC route (outside the Auth middleware group — see
-// router.go / MUL-3843), because the browser frequently lands here without a
+// router.go / ISS-3843), because the browser frequently lands here without a
 // session cookie (expired session, SameSite/ITP stripping, private window,
 // self-hosted callback subdomain). Identity therefore comes solely from the
 // HMAC-signed `state` query param, which CompleteCallback verifies before
@@ -163,7 +163,7 @@ func (h *Handler) ListComposioConnections(w http.ResponseWriter, r *http.Request
 }
 
 // ListComposioToolkits (GET /api/integrations/composio/toolkits) returns the
-// connectable Composio toolkits for the Settings UI to render. Since MUL-4009
+// connectable Composio toolkits for the Settings UI to render. Since ISS-4009
 // the service filters out toolkits with no enabled auth config in the project,
 // so every entry here is connectable; the `connectable` flag is kept on the
 // wire for backward compatibility. The catalog itself is project-global (not

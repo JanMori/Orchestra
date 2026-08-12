@@ -69,7 +69,7 @@ export function useIssueActions(issue: Issue | null): UseIssueActionsResult {
       // Assigning to an agent/crew may start a run. Route through the
       // pre-trigger confirm modal (preview + optional handoff note + "暂不开始"),
       // which applies the change itself — the four entry points share this one
-      // backend-driven flow instead of guessing (MUL-3375). Every other field
+      // backend-driven flow instead of guessing (ISS-3375). Every other field
       // change (status, priority, member assign, unassign) applies directly.
       //
       // Backlog is the parking lot: assigning a backlog issue never starts a run

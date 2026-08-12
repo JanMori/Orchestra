@@ -6,14 +6,14 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/analytics"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/handler"
-	obsmetrics "github.com/multica-ai/multica/server/internal/metrics"
-	"github.com/multica-ai/multica/server/internal/service"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/analytics"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/handler"
+	obsmetrics "github.com/JanMori/Orchestra/server/internal/metrics"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 const (
@@ -42,7 +42,7 @@ const (
 	// staleThresholdSeconds): a running task whose runtime is still
 	// heartbeating is NEVER killed by this wall clock, even after the timeout
 	// elapses. This is what lets healthy multi-hour research / training runs
-	// survive on self-hosted deployments (MUL-4107) — the daemon itself
+	// survive on self-hosted deployments (ISS-4107) — the daemon itself
 	// decides stuck-vs-long-running via its inactivity watchdogs (idle/tool),
 	// so the server-side wall clock is only a defensive backstop for the
 	// pathological case where a runtime row somehow retains status='online'
@@ -53,7 +53,7 @@ const (
 	runningTimeoutSeconds = 9000.0
 	// queuedTTLSeconds expires tasks that have been sitting in 'queued'
 	// for longer than this without ever being claimed. This is the cleanup
-	// arm of the MUL-1899 backlog fix: even with the dispatch-time
+	// arm of the ISS-1899 backlog fix: even with the dispatch-time
 	// admission gate that blocks new enqueues against offline runtimes,
 	// tasks already on the queue when a runtime drops off (or that lost
 	// the race against a runtime that went offline mid-tick) need a
@@ -64,7 +64,7 @@ const (
 	queuedTTLSeconds = 2 * 3600.0
 	// queuedExpireBatchSize caps how many queued rows a single sweeper tick
 	// transitions to failed. Keeps the sweep transaction short even when
-	// the historical backlog is large (~89k at MUL-1899 baseline). At 30s
+	// the historical backlog is large (~89k at ISS-1899 baseline). At 30s
 	// ticks and 500 rows/tick we drain 60k rows/hour worst case — plenty
 	// of headroom for the documented backlog without monopolising DB CPU.
 	queuedExpireBatchSize = 500
@@ -267,7 +267,7 @@ func gcRuntimes(ctx context.Context, queries *db.Queries, bus *events.Bus) {
 // The daemon-dead case is primarily handled upstream by sweepStaleRuntimes
 // in the same tick; this function is a defensive backstop for the residual
 // edge where a runtime row lingers online-with-stale-heartbeat past the
-// wall clock (MUL-4107).
+// wall clock (ISS-4107).
 func sweepStaleTasks(ctx context.Context, queries *db.Queries, taskSvc *service.TaskService, bus *events.Bus) {
 	failedTasks, err := queries.FailStaleTasks(ctx, db.FailStaleTasksParams{
 		DispatchTimeoutSecs: dispatchTimeoutSeconds,
@@ -291,7 +291,7 @@ func sweepStaleTasks(ctx context.Context, queries *db.Queries, taskSvc *service.
 
 // sweepExpiredQueuedTasks fails tasks that have been sitting in 'queued' for
 // longer than the TTL. Companion to the dispatch-time admission gate added
-// in MUL-1899: that gate prevents new doomed enqueues; this gate drains the
+// in ISS-1899: that gate prevents new doomed enqueues; this gate drains the
 // historical backlog and catches the race where a runtime goes offline AFTER
 // a task is already queued. Capped to queuedExpireBatchSize per tick so a
 // big backlog can't monopolise the DB.

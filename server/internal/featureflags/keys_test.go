@@ -12,7 +12,7 @@ func TestResourceLabelsCompatDecisionStaysEnabled(t *testing.T) {
 	}
 }
 
-// MUL-5345: hang stack capture is gone from this build, but v0.4.13–v0.4.18 are
+// ISS-5345: hang stack capture is gone from this build, but v0.4.13–v0.4.18 are
 // installed and still hold a debugger channel open on every renderer whenever
 // this key arrives as `true`. Those clients are fail-closed on absence, so NOT
 // publishing the key is what disarms them — re-adding it would put a flag flip

@@ -13,7 +13,7 @@ import (
 
 	"github.com/mattn/go-shellwords"
 
-	"github.com/multica-ai/multica/server/internal/cli"
+	"github.com/JanMori/Orchestra/server/internal/cli"
 )
 
 const (
@@ -23,7 +23,7 @@ const (
 	// DefaultAgentTimeout is the optional absolute wall-clock cap on a single
 	// agent run. 0 = no cap: a run is bounded only by the inactivity watchdogs
 	// (DefaultAgentIdleWatchdog / DefaultAgentToolWatchdog), so a session that keeps emitting events is
-	// never killed merely for running long (MUL-3064). Operators who want a
+	// never killed merely for running long (ISS-3064). Operators who want a
 	// hard ceiling for cost/resource control can set ORCHESTRA_AGENT_TIMEOUT.
 	DefaultAgentTimeout                   = 0
 	DefaultCodexSemanticInactivityTimeout = 10 * time.Minute
@@ -43,7 +43,7 @@ const (
 	// forever, so this watchdog is its sole liveness net. The previous 5 min default
 	// killed legitimate long assistant outputs (e.g. RFC-length writeups)
 	// where the model streams a single message for many minutes without any
-	// daemon-visible activity — see MUL-2300. 30 min keeps the safety net for
+	// daemon-visible activity — see ISS-2300. 30 min keeps the safety net for
 	// truly stuck runs (dockerd hang) while leaving headroom for long writes.
 	// Set ORCHESTRA_AGENT_IDLE_WATCHDOG=0 to disable.
 	DefaultAgentIdleWatchdog = 30 * time.Minute
@@ -54,7 +54,7 @@ const (
 	// legitimately runs silently for many minutes — but with no wall-clock cap
 	// (DefaultAgentTimeout = 0) a backend that emits tool_use and never the
 	// matching tool_result would otherwise run forever. This is the backstop for
-	// that stuck-tool case (MUL-3064). Set ORCHESTRA_AGENT_TOOL_WATCHDOG=0 to
+	// that stuck-tool case (ISS-3064). Set ORCHESTRA_AGENT_TOOL_WATCHDOG=0 to
 	// disable, in which case an in-flight tool never force-stops the run.
 	DefaultAgentToolWatchdog              = 2 * time.Hour
 	DefaultRuntimeName                    = "Local Agent"
@@ -92,7 +92,7 @@ type Config struct {
 	LaunchedBy                     string                // "desktop" when spawned by the Electron app, empty for standalone
 	Profile                        string                // profile name (empty = default)
 	Agents                         map[string]AgentEntry // keyed by provider: claude, codebuddy, codex, copilot, opencode, openclaw, hermes, pi, cursor, kimi, reasonix, kiro, antigravity, qoder, qoderclicn, traecli, grok, qwen, qwenpaw
-	WorkspacesRoot                 string                // base path for execution envs (default: ~/multica_workspaces)
+	WorkspacesRoot                 string                // base path for execution envs (default: ~/orchestra_workspaces)
 	KeepEnvAfterTask               bool                  // preserve env after task for debugging
 	HealthPort                     int                   // local HTTP port for health checks (default: 19514)
 	MaxConcurrentTasks             int                   // max tasks running in parallel (default: 20)
@@ -122,7 +122,7 @@ type Config struct {
 	QwenpawArgs                    []string
 
 	// ProfileCommandOverrides maps a custom runtime profile_id -> the absolute
-	// executable path to use for that profile on THIS machine (MUL-3284).
+	// executable path to use for that profile on THIS machine (ISS-3284).
 	// Sourced from the local CLI config (cli.CLIConfig.ProfileCommandOverrides),
 	// written by `multica runtime profile set-path`. appendProfileRuntimes
 	// prefers a matching, executable override over resolving the profile's
@@ -207,7 +207,7 @@ func LoadConfig(overrides Overrides) (Config, error) {
 		if oc := openclawOverrideFrom(cliCfg); oc != nil {
 			applyOpenclawOverride(oc)
 		}
-		// Per-machine custom-runtime command path overrides (MUL-3284).
+		// Per-machine custom-runtime command path overrides (ISS-3284).
 		// Copy into our own map so later mutation of the loaded config can't
 		// alias daemon state, and so an empty map normalizes to nil.
 		if len(cliCfg.ProfileCommandOverrides) > 0 {
@@ -222,7 +222,7 @@ func LoadConfig(overrides Overrides) (Config, error) {
 	}
 
 	// Discover installed agent CLIs. Extracted so the periodic workspace sync
-	// can re-run the same discovery on a live daemon (MUL-5439).
+	// can re-run the same discovery on a live daemon (ISS-5439).
 	agents := probeAgentCLIs()
 	if len(agents) == 0 && !overrides.AllowNoAgents {
 		return Config{}, fmt.Errorf("no agent CLI found: install claude, codebuddy, codex, copilot, opencode, deveco, openclaw, hermes, pi, cursor-agent, kimi, reasonix, kiro-cli, agy, qodercli, qoderclicn, traecli, grok, qwen, or qwenpaw and ensure it is on PATH")
@@ -379,7 +379,7 @@ func LoadConfig(overrides Overrides) (Config, error) {
 		runtimeName = overrides.RuntimeName
 	}
 
-	// Workspaces root: override > env > default (~/multica_workspaces or ~/multica_workspaces_<profile>)
+	// Workspaces root: override > env > default (~/orchestra_workspaces or ~/orchestra_workspaces_<profile>)
 	workspacesRoot, err := ResolveWorkspacesRoot(profile, overrides.WorkspacesRoot)
 	if err != nil {
 		return Config{}, err
@@ -427,14 +427,14 @@ func LoadConfig(overrides Overrides) (Config, error) {
 
 	// Auto-update config: default -> env override -> CLI override.
 	//
-	// Default is opt-in on Multica Cloud (api.multica.ai) and opt-out for
+	// Default is opt-in on Multica Cloud (localhost:7081) and opt-out for
 	// self-hosted instances. Self-host operators frequently run a fork with
 	// their own patches, and silently upgrading their daemon to an upstream
 	// GitHub release would clobber that work; they also commonly stay on an
 	// older server build, which a fresh CLI may no longer talk to. Keeping
-	// auto-update off by default for self-host avoids both footguns (MUL-2381).
+	// auto-update off by default for self-host avoids both footguns (ISS-2381).
 	// Operators on either side can flip the default with ORCHESTRA_DAEMON_AUTO_UPDATE.
-	autoUpdateEnabled := boolFromEnv("ORCHESTRA_DAEMON_AUTO_UPDATE", isOfficialCloudServer(serverBaseURL))
+	autoUpdateEnabled := boolFromEnv("ORCHESTRA_DAEMON_AUTO_UPDATE", false)
 	if overrides.DisableAutoUpdate {
 		autoUpdateEnabled = false
 	}
@@ -497,25 +497,6 @@ func LoadConfig(overrides Overrides) (Config, error) {
 	}, nil
 }
 
-// officialCloudHost is the hostname of Multica's hosted cloud. It's the only
-// origin we treat as "official" for the auto-update default — staging,
-// preview, and any future *.multica.ai subdomains are deliberately excluded
-// so they inherit the safer self-host default until explicitly opted in.
-const officialCloudHost = "api.multica.ai"
-
-// isOfficialCloudServer reports whether the resolved server base URL points
-// at Multica's hosted cloud. Used to pick the auto-update default: cloud
-// users run a server that publishes the matching CLI release, so opt-in
-// self-update is safe; self-host users may run a fork or pin to an older
-// server, so the default flips to off. Matching is host-only and
-// case-insensitive — port and path are ignored.
-func isOfficialCloudServer(baseURL string) bool {
-	u, err := url.Parse(strings.TrimSpace(baseURL))
-	if err != nil {
-		return false
-	}
-	return strings.EqualFold(u.Hostname(), officialCloudHost)
-}
 
 // NormalizeServerBaseURL converts a WebSocket or HTTP URL to a base HTTP URL.
 func NormalizeServerBaseURL(raw string) (string, error) {
@@ -543,8 +524,8 @@ func NormalizeServerBaseURL(raw string) (string, error) {
 
 // ResolveWorkspacesRoot returns the absolute path that the daemon and CLI
 // should treat as the workspaces root. Resolution order: explicit override >
-// ORCHESTRA_WORKSPACES_ROOT env > default ($HOME/multica_workspaces, or
-// $HOME/multica_workspaces_<profile> for a named profile). Read-only callers
+// ORCHESTRA_WORKSPACES_ROOT env > default ($HOME/orchestra_workspaces, or
+// $HOME/orchestra_workspaces_<profile> for a named profile). Read-only callers
 // (e.g. `orchestra daemon disk-usage`) use this directly so they pick the same
 // directory the running daemon would have picked.
 func ResolveWorkspacesRoot(profile, override string) (string, error) {
@@ -558,9 +539,9 @@ func ResolveWorkspacesRoot(profile, override string) (string, error) {
 			return "", fmt.Errorf("resolve home directory: %w (set ORCHESTRA_WORKSPACES_ROOT to override)", err)
 		}
 		if profile != "" {
-			root = filepath.Join(home, "multica_workspaces_"+profile)
+			root = filepath.Join(home, "orchestra_workspaces_"+profile)
 		} else {
-			root = filepath.Join(home, "multica_workspaces")
+			root = filepath.Join(home, "orchestra_workspaces")
 		}
 	}
 	abs, err := filepath.Abs(root)
@@ -639,7 +620,7 @@ func resolveAgentExecutablePath(cmd string) (string, error) {
 // executable, using the exact check the agent backends apply at launch
 // (exec.LookPath). A pinned AgentEntry.Path that fails this has vanished from
 // disk — typically because a version manager did an in-place upgrade and
-// deleted the old versioned directory the path pointed into (MUL-4486).
+// deleted the old versioned directory the path pointed into (ISS-4486).
 func agentExecutablePresent(path string) bool {
 	if path == "" {
 		return false
@@ -704,7 +685,7 @@ func isMulticaHooksDir(dir string) bool {
 	if err != nil || home == "" {
 		return false
 	}
-	return samePathDir(dir, filepath.Join(home, ".multica", "hooks"))
+	return samePathDir(dir, filepath.Join(home, ".orchestra", "hooks"))
 }
 
 func samePathDir(a, b string) bool {

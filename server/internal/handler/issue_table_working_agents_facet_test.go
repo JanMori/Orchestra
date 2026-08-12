@@ -52,7 +52,7 @@ func workingAgentsFacetRequest(scope, filters map[string]any) *http.Request {
 	})
 }
 
-// MUL-5525. The header chip's count used to come from a workspace-wide
+// ISS-5525. The header chip's count used to come from a workspace-wide
 // projection while the list came from the surface's own compiled query, so a
 // project page could advertise "2 agents working" and then open an empty list.
 // The `working_agents` facet answers the same question against the same scope

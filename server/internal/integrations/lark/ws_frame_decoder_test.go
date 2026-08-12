@@ -101,7 +101,7 @@ func TestLarkJSONFrameDecoderGroupMentionDiscrimination(t *testing.T) {
 	})
 }
 
-// TestLarkJSONFrameDecoderGroupMentionUnionID exercises the MUL-2671
+// TestLarkJSONFrameDecoderGroupMentionUnionID exercises the ISS-2671
 // fix: in a multi-bot group chat the per-app `mentions[].id.open_id`
 // is structurally inverted across WS perspectives, so we route on
 // `union_id` (the stable, cross-app identifier captured at install
@@ -456,7 +456,7 @@ func TestLarkJSONFrameDecoderMediaMessageKeepsPlaceholderAndContent(t *testing.T
 
 // TestLarkJSONFrameDecoderPostMessageFlattened verifies that a rich-text
 // `post` message is flattened to plain text end-to-end through Decode —
-// the MUL-2951 example. Body.content is the JSON-encoded post object; we
+// the ISS-2951 example. Body.content is the JSON-encoded post object; we
 // marshal a Go string to get the correctly-escaped content field.
 func TestLarkJSONFrameDecoderPostMessageFlattened(t *testing.T) {
 	t.Parallel()

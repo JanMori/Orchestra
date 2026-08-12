@@ -19,7 +19,7 @@ const editorDefaultValues = vi.hoisted(() => ({
 let mockUploadIdSeq = 0;
 
 vi.mock("@orchestra/core/api", () => ({
-  // Uploads flow through the coordinator, which calls api.uploadFile (MUL-5181).
+  // Uploads flow through the coordinator, which calls api.uploadFile (ISS-5181).
   api: { uploadFile: apiUploadFile },
   dispatchReasonCode: () => undefined,
 }));
@@ -212,7 +212,7 @@ describe("comment edit — draft snapshot", () => {
   });
 });
 
-// MUL-4808 — comment edit had no upload gate: saving mid-upload persisted the
+// ISS-4808 — comment edit had no upload gate: saving mid-upload persisted the
 // edit with the pending image stripped out of the body and its id unbound.
 describe("comment edit — upload submit gate", () => {
   function startPendingUpload(container: HTMLElement) {

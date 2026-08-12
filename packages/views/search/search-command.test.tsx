@@ -400,17 +400,17 @@ describe("SearchCommand", () => {
       { id: "issue-2", visitedAt: 900 },
     ];
     mockAllIssues.current = [
-      { id: "issue-1", identifier: "MUL-1", title: "First issue", status: "todo" },
-      { id: "issue-2", identifier: "MUL-2", title: "Second issue", status: "done" },
+      { id: "issue-1", identifier: "ISS-1", title: "First issue", status: "todo" },
+      { id: "issue-2", identifier: "ISS-2", title: "Second issue", status: "done" },
     ];
 
     renderSearch();
 
     expect(screen.getByText("Recent")).toBeInTheDocument();
     expect(screen.getByText("First issue")).toBeInTheDocument();
-    expect(screen.getByText("MUL-1")).toBeInTheDocument();
+    expect(screen.getByText("ISS-1")).toBeInTheDocument();
     expect(screen.getByText("Second issue")).toBeInTheDocument();
-    expect(screen.getByText("MUL-2")).toBeInTheDocument();
+    expect(screen.getByText("ISS-2")).toBeInTheDocument();
   });
 
   it("shows New Issue / New Project under Commands and triggers the modal store", async () => {
@@ -460,7 +460,7 @@ describe("SearchCommand", () => {
       .mockImplementation(mockClipboardWrite);
     mockPathname.current = "/ws-test/issues/issue-1";
     mockAllIssues.current = [
-      { id: "issue-1", identifier: "MUL-42", title: "Demo", status: "todo" },
+      { id: "issue-1", identifier: "ISS-42", title: "Demo", status: "todo" },
     ];
     renderSearch();
 
@@ -484,11 +484,11 @@ describe("SearchCommand", () => {
     await user.type(input2, "copy");
     const idItem = await screen.findByText(
       (_, el) =>
-        el?.textContent === "Copy Identifier (MUL-42)" && el?.tagName === "SPAN",
+        el?.textContent === "Copy Identifier (ISS-42)" && el?.tagName === "SPAN",
     );
     await user.click(idItem);
-    expect(mockClipboardWrite).toHaveBeenCalledWith("MUL-42");
-    expect(mockToastSuccess).toHaveBeenCalledWith("Copied MUL-42");
+    expect(mockClipboardWrite).toHaveBeenCalledWith("ISS-42");
+    expect(mockToastSuccess).toHaveBeenCalledWith("Copied ISS-42");
 
     writeSpy.mockRestore();
   });
@@ -509,7 +509,7 @@ describe("SearchCommand", () => {
     const user = userEvent.setup();
     mockPathname.current = "/ws-test/issues/issue-1";
     mockAllIssues.current = [
-      { id: "issue-1", identifier: "MUL-42", title: "Demo", status: "todo" },
+      { id: "issue-1", identifier: "ISS-42", title: "Demo", status: "todo" },
     ];
     mockTimeline.current = [
       { type: "activity", id: "act-1", actor_type: "member", actor_id: "u1", created_at: "2026-01-01T00:00:00Z", action: "status_changed" },
@@ -540,7 +540,7 @@ describe("SearchCommand", () => {
     const user = userEvent.setup();
     mockPathname.current = "/ws-test/issues/issue-1";
     mockAllIssues.current = [
-      { id: "issue-1", identifier: "MUL-42", title: "Demo", status: "todo" },
+      { id: "issue-1", identifier: "ISS-42", title: "Demo", status: "todo" },
     ];
     mockTimeline.current = [
       { type: "comment", id: "root-1", actor_type: "member", actor_id: "u1", created_at: "2026-01-01T01:00:00Z", parent_id: null },
@@ -630,7 +630,7 @@ describe("SearchCommand", () => {
       { id: "deleted-issue", visitedAt: 900 },
     ];
     mockAllIssues.current = [
-      { id: "issue-1", identifier: "MUL-1", title: "Existing issue", status: "in_progress" },
+      { id: "issue-1", identifier: "ISS-1", title: "Existing issue", status: "in_progress" },
     ];
 
     renderSearch();
@@ -660,7 +660,7 @@ describe("SearchCommand", () => {
           id: "issue-assigned",
           workspace_id: "ws-test",
           number: 101,
-          identifier: "MUL-101",
+          identifier: "ISS-101",
           title: "Assigned search result",
           description: null,
           status: "in_review",
@@ -709,7 +709,7 @@ describe("SearchCommand", () => {
     mockAllIssues.current = [
       {
         id: "issue-1",
-        identifier: "MUL-1",
+        identifier: "ISS-1",
         title: "Recent assigned issue",
         status: "done",
         assignee_type: "agent",
@@ -732,7 +732,7 @@ describe("SearchCommand", () => {
           id: "issue-snippet",
           workspace_id: "ws-test",
           number: 99,
-          identifier: "MUL-99",
+          identifier: "ISS-99",
           title: "HTML rendering pipeline",
           description: null,
           status: "todo",

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 func msg(role, content string) db.ChatMessage {
@@ -42,7 +42,7 @@ func eq(a, b []string) bool {
 
 // TestTrailingUserMessages pins the message-selection logic behind the daemon
 // chat prompt: the agent must receive every user message since its last reply
-// (the MUL-2968 debounce can land several before one run fires), not just the
+// (the ISS-2968 debounce can land several before one run fires), not just the
 // most recent one.
 func TestTrailingUserMessages(t *testing.T) {
 	cases := []struct {

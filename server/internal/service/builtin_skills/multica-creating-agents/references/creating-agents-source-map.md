@@ -13,7 +13,7 @@ go test ./internal/service -run TestCreatingAgentsSkillCoversAgentCreationContra
 go test ./internal/service -run TestBuiltinSkillsConformToTemplate
 ```
 
-## CLI entry points — `server/cmd/multica/cmd_agent.go`
+## CLI entry points — `server/cmd/orchestra/cmd_agent.go`
 
 | Contract | Line | Behavior | Safe check |
 |---|---|---|---|
@@ -34,7 +34,7 @@ go test ./internal/service -run TestBuiltinSkillsConformToTemplate
 | `agent env get` | 1024 | `GET /api/agents/{id}/env` (1034) | `orchestra agent env get --help` |
 | `agent env set` | 1059 | `PUT /api/agents/{id}/env` with full `custom_env` map (1079) | `orchestra agent env set --help` |
 
-## Copy command — `server/cmd/multica/cmd_agent_copy.go`
+## Copy command — `server/cmd/orchestra/cmd_agent_copy.go`
 
 | Contract | Line | Behavior | Safe check |
 |---|---|---|---|
@@ -61,14 +61,14 @@ only.
 | Contract | Line | Behavior |
 |---|---|---|
 | `maxAgentDescriptionLength = 255` | 31 | Cap is 255 **Unicode code points** (comment: counted via `utf8.RuneCountInString`, matches Postgres `char_length`) |
-| `AgentResponse` omits plaintext `custom_env` | 33–53 | Exposes only `has_custom_env` (52) and `custom_env_key_count` (53); comment cites MUL-2600 |
+| `AgentResponse` omits plaintext `custom_env` | 33–53 | Exposes only `has_custom_env` (52) and `custom_env_key_count` (53); comment cites ISS-2600 |
 | `CreateAgentRequest` fields | 930–970 | Includes `model`, `thinking_level`, and Codex `service_tier` alongside the profile/runtime/permission inputs |
 | `name` required | 623–625 | 400 "name is required" |
 | `description` ≤ 255 code points | 627–629 | `utf8.RuneCountInString(req.Description) > maxAgentDescriptionLength` → 400 |
 | `runtime_id` required | 631–633 | `if req.RuntimeID == ""` → 400 "runtime_id is required" |
 | `runtime_id` must resolve in workspace | 642–658 | parsed + `GetAgentRuntimeForWorkspace`; unknown → 400 "invalid runtime_id" |
-| `thinking_level` provider-level validation | 896–903 | `!agent.IsKnownThinkingValue(runtime.Provider, req.ThinkingLevel)` → 400; fixed providers use an enum, Codex/OpenCode use safe-token syntax, and per-model gaps are deferred to daemon (MUL-2339) |
-| `thinking_level` rejection copy | `agent.go` `thinkingLevelRejection` / `existingThinkingLevelRejection` | Splits "runtime has no reasoning control" from "unrecognised token" so a runtime-capability 400 does not read as a typo; both carry-over branches point at `thinking_level=""` (MUL-5770) |
+| `thinking_level` provider-level validation | 896–903 | `!agent.IsKnownThinkingValue(runtime.Provider, req.ThinkingLevel)` → 400; fixed providers use an enum, Codex/OpenCode use safe-token syntax, and per-model gaps are deferred to daemon (ISS-2339) |
+| `thinking_level` rejection copy | `agent.go` `thinkingLevelRejection` / `existingThinkingLevelRejection` | Splits "runtime has no reasoning control" from "unrecognised token" so a runtime-capability 400 does not read as a typo; both carry-over branches point at `thinking_level=""` (ISS-5770) |
 | `service_tier` provider-level validation | `agent.go` create/update paths | Non-empty values are Codex-only safe tokens; exact per-model support is daemon-owned |
 | Defaults: `{}` config/env, `[]` args | 688–701 | `RuntimeConfig`→`{}`, `CustomEnv`→`{}`, `CustomArgs`→`[]` when nil, before insert |
 | `visibility` default | 635–636 | `if req.Visibility == "" { req.Visibility = "private" }` — access-control field, not the runtime prompt |
@@ -98,8 +98,8 @@ only.
 | Codex discovery version gate | `thinking.go` 280, 306–337 | `codex debug models --bundled` is used only for parseable versions ≥0.122.0; unsupported versions and command/parse/empty failures return the static model + thinking fallback |
 | Codex catalog projection | `thinking.go` `parseCodexModelCatalog` | Hidden models are excluded; visible model, reasoning, and `service_tiers` metadata are preserved |
 | Per-model thinking validation | `thinking.go` 547–640 | `ValidateThinkingLevel` accepts only values in the explicit model's `Thinking.SupportedLevels`; an empty Codex model fails closed because its effective `config.toml` model is unknown |
-| Dynamic Codex token gate | `thinking.go` 642–710 | Server persistence accepts syntactically safe Codex tokens so new catalog values do not require a Multica release; exact support remains a daemon-local per-model check |
-| Runtime reasoning capability | `thinking.go` `ThinkingControlSupported` | True for the fixed-enum providers plus Codex/OpenCode. False for runtimes with no effort dial on the surface the daemon drives — Hermes' ACP adapter never carries `reasoning_config` onto a session, so its CLI-level `agent.reasoning_effort` cannot be reached from Multica (verified against Hermes Agent v0.18.2, MUL-5770) |
+| Dynamic Codex token gate | `thinking.go` 642–710 | Server persistence accepts syntactically safe Codex tokens so new catalog values do not require a Orchestra release; exact support remains a daemon-local per-model check |
+| Runtime reasoning capability | `thinking.go` `ThinkingControlSupported` | True for the fixed-enum providers plus Codex/OpenCode. False for runtimes with no effort dial on the surface the daemon drives — Hermes' ACP adapter never carries `reasoning_config` onto a session, so its CLI-level `agent.reasoning_effort` cannot be reached from Orchestra (verified against Hermes Agent v0.18.2, ISS-5770) |
 | Per-model service-tier validation | `thinking.go` `ValidateServiceTier` | Accepts only a tier advertised for the explicit Codex model; empty model fails closed because config.toml is unknown |
 | Daemon invalid-combination handling | `internal/daemon/daemon.go` 3860–3892 | Before execution, invalid `(provider, model, thinking_level)` combinations log a warning and omit the override rather than failing the task |
 
@@ -108,8 +108,8 @@ only.
 | Contract | Line | Behavior |
 |---|---|---|
 | `authorizeAgentEnv` gate | 76 | loads agent, then applies the two checks below |
-| Agent actors denied | 90–94 | `if actorType == "agent"` → 403 "agents may not access env management endpoints" (MUL-2600 impersonation guard); runs FIRST, so an agent is denied even when its backing human owns the target agent |
-| Agent owner or ws owner/admin | 96–103 | `requireWorkspaceRole(..., "owner", "admin", "member")` then `canManageAgentEnv` → 403 otherwise (MUL-5438) |
+| Agent actors denied | 90–94 | `if actorType == "agent"` → 403 "agents may not access env management endpoints" (ISS-2600 impersonation guard); runs FIRST, so an agent is denied even when its backing human owns the target agent |
+| Agent owner or ws owner/admin | 96–103 | `requireWorkspaceRole(..., "owner", "admin", "member")` then `canManageAgentEnv` → 403 otherwise (ISS-5438) |
 | `canManageAgentEnv` predicate | 120 | workspace owner/admin, or `agent.owner_id == member.user_id`; a NULL `owner_id` never matches |
 
 ## Routes — `server/cmd/server/router.go`

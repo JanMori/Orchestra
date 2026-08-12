@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// The MUL-4899 delivery contract. Two orthogonal properties are pinned here and
+// The ISS-4899 delivery contract. Two orthogonal properties are pinned here and
 // must not be collapsed:
 //
 //   - The invariant ("never link a local path") is ALWAYS-ON — every task kind,
@@ -121,7 +121,7 @@ func TestBriefSurfaceDeliveryPolicy(t *testing.T) {
 // The Attachments section owns that framing — it is what `## Output` cannot
 // express, because Output does not know an attachment felt shared. The
 // no-clickable-local-path rule itself belongs to Output and used to be restated
-// here verbatim; MUL-5442 replaced the restatement with a pointer, so this test
+// here verbatim; ISS-5442 replaced the restatement with a pointer, so this test
 // pins the framing plus the pointer and lets the delivery tests above own the
 // rule.
 func TestBriefInboundAttachmentIsNotADeliverable(t *testing.T) {

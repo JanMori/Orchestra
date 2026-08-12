@@ -23,9 +23,9 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/multica-ai/multica/server/internal/auth"
-	"github.com/multica-ai/multica/server/internal/storage"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/auth"
+	"github.com/JanMori/Orchestra/server/internal/storage"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // createHandlerTestChatSession seeds a chat_session row owned by testUserID
@@ -593,7 +593,7 @@ func TestAttachmentPreviewCSPHeader_AllowsConfiguredFrontendOrigins(t *testing.T
 }
 
 func newDownloadRouter() http.Handler {
-	// Mirrors the production router after MUL-3130: the download
+	// Mirrors the production router after ISS-3130: the download
 	// route is registered under Auth-only with no
 	// RequireWorkspaceMember wrapper. The handler self-resolves the
 	// workspace from the attachment row and enforces membership
@@ -781,7 +781,7 @@ func TestDownloadAttachment_BareNavigationWithWorkspaceSlugQueryPassesMiddleware
 }
 
 // TestDownloadAttachment_BareNavigationServesMemberWithoutWorkspaceHeaders
-// is the regression test for MUL-3130: a markdown image rendered as
+// is the regression test for ISS-3130: a markdown image rendered as
 // `<img src="/api/attachments/<id>/download">` produces a native browser
 // resource load that cannot attach X-Workspace-Slug / X-Workspace-ID
 // headers. After the fix the handler self-resolves the workspace from
@@ -1547,7 +1547,7 @@ func TestIsTextPreviewable(t *testing.T) {
 	}
 }
 
-// MUL-3192 — buildMarkdownURL must emit a durable, absolute-when-possible
+// ISS-3192 — buildMarkdownURL must emit a durable, absolute-when-possible
 // URL that loads natively in any client (web, desktop, mobile webview).
 // `download_url` may be a short-lived signed URL and is unsafe to persist;
 // `markdown_url` is the contract for "ok to embed in markdown body".
@@ -1564,7 +1564,7 @@ func TestIsTextPreviewable(t *testing.T) {
 //   - signed URL (CloudFront-signed leaked
 //     into a.Url somehow) ................... reject as durable, fall through
 //                                              to API endpoint to avoid
-//                                              re-opening MUL-3130
+//                                              re-opening ISS-3130
 
 func TestBuildMarkdownURL_PublicCdnAbsoluteURLReusedVerbatim(t *testing.T) {
 	origPublic := testHandler.cfg.PublicURL
@@ -1598,7 +1598,7 @@ func TestBuildMarkdownURL_PublicCdnAbsoluteURLReusedVerbatim(t *testing.T) {
 	}
 }
 
-// MUL-3192 review must-fix 1 — `att.url` for a private S3 / R2 / MinIO
+// ISS-3192 review must-fix 1 — `att.url` for a private S3 / R2 / MinIO
 // bucket is absolute https + unsigned but is NOT publicly readable. The
 // generic "absolute http(s) without signature" check would have wrongly
 // persisted it; the gate now also requires `Storage.CdnDomain()` to be
@@ -1781,7 +1781,7 @@ func TestIsDurablePublicURL(t *testing.T) {
 // the public /uploads/* static route. That route inherits the global
 // "frame-ancestors 'none'" CSP from the middleware, which blocks iframe
 // previews; ServeLocalUpload must overwrite it with the same relaxed preview
-// policy the /api/attachments download endpoint uses. See MUL-3821 / #4477.
+// policy the /api/attachments download endpoint uses. See ISS-3821 / #4477.
 func TestServeLocalUpload_RelaxesFrameAncestorsForPreview(t *testing.T) {
 	dir := t.TempDir()
 	key := "workspaces/ws-1/preview.pdf"

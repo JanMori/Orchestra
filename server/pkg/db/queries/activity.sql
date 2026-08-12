@@ -13,7 +13,7 @@
 -- made a busy issue's timeline appear to stop at some point in the past with no
 -- indication anything was missing. Activity is machine-paced (description
 -- autosave, every agent run, status/assignee changes), so this was reachable in
--- normal use, not only on pathological issues (MUL-5492).
+-- normal use, not only on pathological issues (ISS-5492).
 SELECT * FROM (
     SELECT * FROM activity_log
     WHERE issue_id = $1

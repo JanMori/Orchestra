@@ -40,7 +40,7 @@ import (
 // re-using it on a reconnect would yield an auth rejection that looks
 // like a Lark outage. The connector calls Endpoint() once per Run.
 //
-// PersonalAgent compatibility — OPEN RISK (MUL-2671 review thread):
+// PersonalAgent compatibility — OPEN RISK (ISS-2671 review thread):
 // the official Feishu docs describe long-conn mode as "supports
 // 企业自建应用 only". The PersonalAgent device-flow archetype is not
 // listed as supported; live confirmation is pending. If the bootstrap

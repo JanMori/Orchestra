@@ -7,7 +7,7 @@ package channel
 // messages). The agent never sees a per-platform API: the server resolves the
 // session's binding to a channel type and dispatches to that platform's reader,
 // which returns these normalized shapes. Adding a platform is "implement a
-// reader"; the agent-facing contract never changes (MUL-3871).
+// reader"; the agent-facing contract never changes (ISS-3871).
 
 // HistoryRole is the normalized author kind of a fetched message, mirroring the
 // chat_message.role domain the agent already reasons about.

@@ -26,7 +26,7 @@ const makeUser = (
 ) => ({
   id: "user-1",
   name: "Test",
-  email: "test@multica.ai",
+  email: "test@orchestra.local",
   avatar_url: null,
   onboarded_at: null,
   onboarding_questionnaire: { source: ["search"] },

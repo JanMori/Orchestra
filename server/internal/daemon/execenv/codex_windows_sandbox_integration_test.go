@@ -4,10 +4,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/multica-ai/multica/server/pkg/agent"
+	"github.com/JanMori/Orchestra/server/pkg/agent"
 )
 
-// TestWindowsSandboxHonorsShellQuotedCustomArg is the MUL-4957 round-3 must-fix
+// TestWindowsSandboxHonorsShellQuotedCustomArg is the ISS-4957 round-3 must-fix
 // 2 integration test. A `-c windows.sandbox=...` opt-in supplied shell-quoted
 // (as users commonly type custom_args) reaches Codex normalized by
 // agent.NormalizeCodexLaunchArgs; the Windows sandbox decision must consume the

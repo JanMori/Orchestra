@@ -99,7 +99,7 @@ func TestOpenclawExecuteCompletesWhenCLINeverExits(t *testing.T) {
 	bin := writeOpenclawStub(t, completeOpenclawResult, true)
 	b := newOpenclawTestBackend(bin)
 
-	// No per-run timeout in ExecOptions, matching production since MUL-3064
+	// No per-run timeout in ExecOptions, matching production since ISS-3064
 	// made the run timeout opt-in: completion must come from the protocol
 	// boundary, not from a deadline. The ctx bound only keeps the test finite.
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)

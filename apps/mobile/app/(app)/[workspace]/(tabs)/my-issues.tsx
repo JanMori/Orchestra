@@ -2,7 +2,7 @@
  * "My Issues" tab. Three scopes — assigned / created / agents — mirroring
  * web's `packages/views/my-issues/components/my-issues-page.tsx:48-65`. The
  * `agents` scope label is "Agents and Crews" because the backend predicate
- * (`involves_user_id`, MUL-2397) surfaces both the user's owned agents and
+ * (`involves_user_id`, ISS-2397) surfaces both the user's owned agents and
  * crews they're involved in (member / leader / has an owned agent inside).
  *
  * Issues are grouped by status using SectionList in `BOARD_STATUSES` order;
@@ -50,7 +50,7 @@ import { THEME } from "@/lib/theme";
 // must fit in 343pt usable space, so the agents scope renders "Agents" — the
 // full "Agents and Crews" label (~135pt) blows past safe limits and breaks
 // under Dynamic Type. Semantics unchanged: same backend predicate
-// (`involves_user_id`, MUL-2397) covers owned agents + related crews; the
+// (`involves_user_id`, ISS-2397) covers owned agents + related crews; the
 // empty state copy still says "agents or crews".
 const SCOPES: { value: MyIssuesScope; label: string }[] = [
   { value: "assigned", label: "Assigned" },

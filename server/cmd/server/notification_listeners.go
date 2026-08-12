@@ -6,11 +6,11 @@ import (
 	"log/slog"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/handler"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/handler"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // mention represents a parsed @mention from markdown content (local alias).
@@ -75,7 +75,7 @@ var parentBubbleNotifTypes = map[string]bool{
 }
 
 // delegatedAlwaysNotifTypes are the events a DELEGATED subscriber (reason=
-// 'delegated' — an agent created this issue on their behalf, MUL-5483) receives
+// 'delegated' — an agent created this issue on their behalf, ISS-5483) receives
 // unconditionally: they are either addressed at the human directly, or they are
 // exceptions that stall the work until a human looks.
 var delegatedAlwaysNotifTypes = map[string]bool{
@@ -112,7 +112,7 @@ var delegatedStatusNotify = map[string]bool{
 // the signal a delegated watcher needs, and there is one per piece of real work.
 // An earlier cut suppressed those and synthesized a single "the whole batch
 // finished" roll-up from sibling state instead. That was both the wrong shape
-// (see the MUL-5483 thread) and redundant: the human is subscribed to the PARENT
+// (see the ISS-5483 thread) and redundant: the human is subscribed to the PARENT
 // as well, so when the agent moves the parent to in_review/done that transition
 // delivers here — which is the natural "the tree is done" signal. Deriving it
 // from children was reinventing a notification the platform already sends.
@@ -318,7 +318,7 @@ func notifySubscribers(
 	// (reason='creator', full delivery) while their agent filed the children
 	// (reason='delegated', reduced). Without this the tier suppresses nothing
 	// in the one case it exists for — an agent-built tree under a parent the
-	// human is watching (MUL-5483).
+	// human is watching (ISS-5483).
 	for id := range tierSuppressed {
 		parentExclude[id] = true
 	}
@@ -857,7 +857,7 @@ func registerNotificationListeners(bus *events.Bus, queries *db.Queries) {
 			return
 		}
 
-		// Platform-authored system comments (MUL-2538 child-done parent
+		// Platform-authored system comments (ISS-2538 child-done parent
 		// notify) must NOT create inbox rows or parse mentions from their
 		// body — the comment is a controlled platform signal, not a human
 		// commenter. Mention parsing is the dangerous bit: if the body

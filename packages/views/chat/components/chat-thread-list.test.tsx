@@ -141,7 +141,7 @@ describe("ChatThreadList archive delegation", () => {
   });
 });
 
-describe("ChatThreadList no_response preview (MUL-4351)", () => {
+describe("ChatThreadList no_response preview (ISS-4351)", () => {
   it("shows a localized 'no text reply' preview instead of the fallback body", () => {
     const session = makeSession({
       id: "nr1",

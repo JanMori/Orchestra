@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/multica-ai/multica/server/internal/analytics"
-	"github.com/multica-ai/multica/server/internal/featureflags"
+	"github.com/JanMori/Orchestra/server/internal/analytics"
+	"github.com/JanMori/Orchestra/server/internal/featureflags"
 )
 
 type AppConfig struct {
@@ -17,7 +17,7 @@ type AppConfig struct {
 	// enabled). When true, a raw storage URL on the CDN domain is NOT
 	// publicly fetchable — renderers must not pick it as a native
 	// <img>/<video> source and should fall back to the per-attachment
-	// API endpoint or a freshly signed download_url instead (MUL-3254).
+	// API endpoint or a freshly signed download_url instead (ISS-3254).
 	// Omitted when false so older clients see the previous shape.
 	CdnSigned bool `json:"cdn_signed,omitempty"`
 	// Public auth config consumed by the web app at runtime so self-hosted
@@ -86,7 +86,7 @@ func (h *Handler) GetConfig(w http.ResponseWriter, r *http.Request) {
 	config.FeatureFlags = featureflags.EvaluateFrontendPublicFlags(r.Context(), h.FeatureFlags)
 	// Only surface the build version on self-hosted deployments. The managed
 	// cloud is continuously deployed and its users can't choose the build, so
-	// the Help popover's version row would just be noise there (MUL-4108).
+	// the Help popover's version row would just be noise there (ISS-4108).
 	if !isOfficialCloudDeployment() {
 		config.ServerVersion = h.cfg.ServerVersion
 	}
@@ -113,7 +113,11 @@ func daemonSetupURLsFromEnv() (string, string) {
 	}
 
 	if serverURL == "" {
-		serverURL = appURL
+		if strings.Contains(appURL, ":5001") {
+			serverURL = strings.Replace(appURL, ":5001", ":7081", 1)
+		} else {
+			serverURL = appURL
+		}
 	}
 	if isOfficialCloudDaemonConfig(appURL) {
 		return "", ""
@@ -138,20 +142,20 @@ func normalizePublicURL(raw string) string {
 }
 
 // isOfficialCloudDaemonConfig reports whether this deployment is the official
-// Multica Cloud, identified by its frontend host alone (multica.ai). The
+// Multica Cloud, identified by its frontend host alone (localhost:5001). The
 // daemon setup for the managed cloud is always
-// `orchestra setup` (which hardcodes api.multica.ai), so the per-deployment URLs
+// `orchestra setup` (which hardcodes localhost:7081), so the per-deployment URLs
 // must be omitted from /api/config even when ORCHESTRA_PUBLIC_URL is unset or
-// misconfigured. Previously this also required serverURL==api.multica.ai, so a
+// misconfigured. Previously this also required serverURL==localhost:7081, so a
 // cloud deployment that forgot ORCHESTRA_PUBLIC_URL fell through and emitted a
-// `setup self-host --server-url https://multica.ai` command — pointing the
+// `setup self-host --server-url http://localhost:5001` command — pointing the
 // daemon's backend at the frontend (no /health, no WebSocket proxy).
 func isOfficialCloudDaemonConfig(appURL string) bool {
-	return urlHostEquals(appURL, "multica.ai")
+	return urlHostEquals(appURL, "localhost:5001")
 }
 
 // isOfficialCloudDeployment reports whether this server is the official Multica
-// Cloud, reusing the same frontend-host signal as the daemon setup (multica.ai).
+// Cloud, reusing the same frontend-host signal as the daemon setup (localhost:5001).
 // Managed-cloud-only behavior — such as suppressing the Help popover's
 // server-version row, which only matters to self-hosted operators — is gated on
 // this.

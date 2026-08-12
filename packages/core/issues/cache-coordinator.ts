@@ -53,7 +53,7 @@ export type IssueTableRowCache = IssueTableRowsResponse;
  *     visible list is what made drags flicker)
  *   card present, no longer matches the list's filter → surgical REMOVE
  *     (bucket total decremented) — the "issue left this surface" case that a
- *     filter-blind patch used to leave behind (MUL-3669)
+ *     filter-blind patch used to leave behind (ISS-3669)
  *   card present, membership undecidable client-side (involves / my:all) →
  *     patch + mark the key stale
  *   card absent, change can't affect this list → skip
@@ -517,7 +517,7 @@ function queryKeyHasUpdatedAtSort(key: QueryKey): boolean {
  * Refetch every loaded issue list/board ordered by "Updated date" so a card
  * whose `updated_at` just advanced re-sorts to its true slot. Used by events
  * that bump `updated_at` without carrying the new timestamp or a field patch:
- * `comment:created` (MUL-5009) and the property/metadata WS events, all of
+ * `comment:created` (ISS-5009) and the property/metadata WS events, all of
  * which advance the issue's `updated_at` server-side but bypass the
  * coordinator's field-diff path. Covers status boards, flat tables, AND
  * assignee-grouped boards (workspace + My Issues); only `updated_at`-sorted

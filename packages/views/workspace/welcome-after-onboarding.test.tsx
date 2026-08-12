@@ -27,7 +27,7 @@ const TEST_RESOURCES = {
 const mockUser = {
   id: "user-1",
   name: "Test",
-  email: "test@multica.ai",
+  email: "test@orchestra.local",
   avatar_url: null,
   onboarded_at: "2026-01-01T00:00:00Z",
   onboarding_questionnaire: {},
@@ -405,12 +405,12 @@ describe("WelcomeAfterOnboarding", () => {
       mockCreateIssue
         .mockResolvedValueOnce({
           id: "issue-install",
-          identifier: "MUL-1",
+          identifier: "ISS-1",
           workspace_id: "ws-1",
         })
         .mockResolvedValueOnce({
           id: "issue-agent",
-          identifier: "MUL-2",
+          identifier: "ISS-2",
           workspace_id: "ws-1",
         });
       mockCreateComment.mockResolvedValueOnce({ id: "comment-1" });
@@ -443,14 +443,14 @@ describe("WelcomeAfterOnboarding", () => {
       expect(firstCall![0].assignee_id).toBe("user-1");
 
       // Second createIssue call: agent-guide (Step 2), body must embed
-      // install-runtime mention chip pointing at MUL-1 / issue-install.
+      // install-runtime mention chip pointing at ISS-1 / issue-install.
       const [secondCall] = mockCreateIssue.mock.calls.slice(1);
       expect(secondCall![0].title).toBe(
         "Step 2 — Create your first Multica Agent",
       );
       expect(secondCall![0].status).toBe("todo");
       expect(secondCall![0].description).toContain(
-        "[MUL-1](mention://issue/issue-install)",
+        "[ISS-1](mention://issue/issue-install)",
       );
 
       // Follow-up comment posted on install-runtime as a mention chip
@@ -458,7 +458,7 @@ describe("WelcomeAfterOnboarding", () => {
       const [commentIssueId, commentContent] =
         mockCreateComment.mock.calls[0]!;
       expect(commentIssueId).toBe("issue-install");
-      expect(commentContent).toContain("[MUL-2](mention://issue/issue-agent)");
+      expect(commentContent).toContain("[ISS-2](mention://issue/issue-agent)");
     });
 
     it("silently dismisses without showing the Modal when provisioning fails", async () => {
@@ -482,12 +482,12 @@ describe("WelcomeAfterOnboarding", () => {
       mockCreateIssue
         .mockResolvedValueOnce({
           id: "issue-install",
-          identifier: "MUL-1",
+          identifier: "ISS-1",
           workspace_id: "ws-1",
         })
         .mockResolvedValueOnce({
           id: "issue-agent",
-          identifier: "MUL-2",
+          identifier: "ISS-2",
           workspace_id: "ws-1",
         });
       mockCreateComment.mockResolvedValueOnce({ id: "comment-1" });
@@ -518,7 +518,7 @@ describe("WelcomeAfterOnboarding", () => {
         "runtime이 online 상태가 되면",
       );
       expect(guideCall![0].description).toContain(
-        "[MUL-1](mention://issue/issue-install)",
+        "[ISS-1](mention://issue/issue-install)",
       );
 
       const [commentIssueId, commentContent] =
@@ -526,7 +526,7 @@ describe("WelcomeAfterOnboarding", () => {
       expect(commentIssueId).toBe("issue-install");
       expect(commentContent).toContain("다음 단계:");
       expect(commentContent).toContain(
-        "[MUL-2](mention://issue/issue-agent)",
+        "[ISS-2](mention://issue/issue-agent)",
       );
     });
 
@@ -534,12 +534,12 @@ describe("WelcomeAfterOnboarding", () => {
       mockCreateIssue
         .mockResolvedValueOnce({
           id: "issue-install",
-          identifier: "MUL-1",
+          identifier: "ISS-1",
           workspace_id: "ws-1",
         })
         .mockResolvedValueOnce({
           id: "issue-agent",
-          identifier: "MUL-2",
+          identifier: "ISS-2",
           workspace_id: "ws-1",
         });
       mockCreateComment.mockResolvedValueOnce({ id: "comment-1" });
@@ -568,7 +568,7 @@ describe("WelcomeAfterOnboarding", () => {
       );
       expect(guideCall![0].description).toContain("runtime が online になったら");
       expect(guideCall![0].description).toContain(
-        "[MUL-1](mention://issue/issue-install)",
+        "[ISS-1](mention://issue/issue-install)",
       );
 
       const [commentIssueId, commentContent] =
@@ -576,7 +576,7 @@ describe("WelcomeAfterOnboarding", () => {
       expect(commentIssueId).toBe("issue-install");
       expect(commentContent).toContain("次のステップ:");
       expect(commentContent).toContain(
-        "[MUL-2](mention://issue/issue-agent)",
+        "[ISS-2](mention://issue/issue-agent)",
       );
     });
   });

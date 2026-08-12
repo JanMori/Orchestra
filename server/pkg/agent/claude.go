@@ -15,7 +15,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/multica-ai/multica/server/pkg/taskfailure"
+	"github.com/JanMori/Orchestra/server/pkg/taskfailure"
 )
 
 // claudeTerminateGraceNanos optionally overrides, in nanoseconds, how long a
@@ -741,7 +741,7 @@ func buildClaudeArgs(opts ExecOptions, logger *slog.Logger) []string {
 	// SystemPrompt is intentionally not forwarded as --append-system-prompt:
 	// Claude Code loads the per-task CLAUDE.md the daemon writes into the
 	// workdir, so inlining the same runtime brief would duplicate it on every
-	// turn. Verified against Claude Code 2.1.220 (MUL-5392).
+	// turn. Verified against Claude Code 2.1.220 (ISS-5392).
 	if opts.ResumeSessionID != "" {
 		args = append(args, "--resume", opts.ResumeSessionID)
 	}
@@ -1087,7 +1087,7 @@ func cleanupMcpConfigTemp(path string) {
 // detectVersionTimeout bounds a single `<cli> --version` probe. Version
 // detection runs inside the daemon's blocking preflight (registerRuntimesForWorkspace),
 // so a CLI that never returns from `--version` — e.g. a brew-installed claude
-// wedged by a bun regression (MUL-3812) — would otherwise stall the whole
+// wedged by a bun regression (ISS-3812) — would otherwise stall the whole
 // registration loop, the daemon would never flip /health from "starting" to
 // "running", and *every* runtime on the host would appear disconnected. A real
 // `--version` returns well under this bound even on a cold cache or with

@@ -3,8 +3,8 @@ package daemon
 import (
 	"strings"
 
-	"github.com/multica-ai/multica/server/pkg/agent"
-	"github.com/multica-ai/multica/server/pkg/taskfailure"
+	"github.com/JanMori/Orchestra/server/pkg/agent"
+	"github.com/JanMori/Orchestra/server/pkg/taskfailure"
 )
 
 // FailureReason values for tasks whose session is "poisoned" — i.e.
@@ -30,7 +30,7 @@ import (
 //     The thread only grows, so every later resume overflows identically.
 //     Detected via classifyResumeUnsafeTransport.
 //
-// MUL-2946: ReasonIterationLimit and ReasonAPIInvalidRequest are aliased
+// ISS-2946: ReasonIterationLimit and ReasonAPIInvalidRequest are aliased
 // to the canonical taskfailure values so the daemon and the in-flight
 // classifier (used by every other failure path) share a single source
 // of truth. agent_fallback_message and codex_semantic_inactivity are
@@ -50,7 +50,7 @@ const (
 // one-sentence affairs; a long output that happens to mention a marker
 // is almost certainly a real conclusion (e.g. a code-review reply
 // quoting these strings, like the one currently quoting them in
-// MUL-1630). The cap intentionally errs on the side of NOT classifying
+// ISS-1630). The cap intentionally errs on the side of NOT classifying
 // — a missed poisoned task gets retried by user action, but a
 // false-positive turns a successful task into a failure and a system
 // comment.
@@ -177,7 +177,7 @@ func classifyPoisonedError(errMsg string) (string, bool) {
 // serializes the whole thread into that one response and its rollout file only
 // ever grows, so every future resume of the same thread reproduces the same
 // overflow. Leaving it as the (agent, issue) resume pointer is what turned this
-// into a permanent stall (MUL-5722).
+// into a permanent stall (ISS-5722).
 //
 // This is the backstop for the in-turn recovery, not a replacement for it. The
 // codex backend reports the same failure as Result.ResumeRejected, which lets

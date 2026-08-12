@@ -726,7 +726,7 @@ describe("IssueDetail (shared)", () => {
     // ContentEditor drops pending debounced updates on unmount by default
     // (so cancelled comment drafts aren't resurrected), and only this
     // explicit opt-in keeps a paste-then-close from losing the image
-    // markdown and its attachment_ids bind (MUL-3254). The flush behavior
+    // markdown and its attachment_ids bind (ISS-3254). The flush behavior
     // itself is covered in content-editor.test.tsx; this pins the wiring.
     renderIssueDetail();
 
@@ -1758,7 +1758,7 @@ describe("IssueDetail (shared)", () => {
   });
 
   // Deliberately drives the real Base UI DropdownMenu rather than a stub: the
-  // bug these tests pin (MUL-5710) was a handler wired to `onSelect`, which
+  // bug these tests pin (ISS-5710) was a handler wired to `onSelect`, which
   // typechecks because Menu.Item's props extend the whole div attribute set,
   // then lands on the DOM as the native text-selection event and never fires.
   // Only the real menu reproduces that; any hand-rolled mock hides it.
@@ -1777,7 +1777,7 @@ describe("IssueDetail (shared)", () => {
       mockApiObj.listIssueSubscribers.mockResolvedValue(subscribedAsMember);
       // The menu only exists when there is a sub-tree for its second item to
       // act on. A childless issue renders a direct button instead — covered
-      // by the "no sub-issues" tests below (MUL-5714).
+      // by the "no sub-issues" tests below (ISS-5714).
       mockApiObj.listChildIssues.mockResolvedValue({
         issues: [{ ...mockIssue, id: "child-1", parent_issue_id: "issue-1" }],
       });
@@ -1846,7 +1846,7 @@ describe("IssueDetail (shared)", () => {
 
   // The reported bug: on an issue with no sub-issues the only way to leave was
   // a menu whose second item pointed at a sub-tree that does not exist
-  // (MUL-5714).
+  // (ISS-5714).
   describe("unsubscribe without sub-issues", () => {
     const subscribedAsMember = [
       {
@@ -1925,7 +1925,7 @@ describe("IssueDetail (shared)", () => {
       // reaches an enabled button — the in-flight guard is what stops it. Two
       // overlapping toggles is the one case the mutation's whole-list snapshot
       // cannot survive: the second snapshots the first one's optimistic patch
-      // and rolls back to it (MUL-5714).
+      // and rolls back to it (ISS-5714).
       fireEvent.click(button);
       fireEvent.click(button);
 
@@ -1974,7 +1974,7 @@ describe("IssueDetail (shared)", () => {
   // which reads as "not subscribed" for everyone. Rendering that default
   // showed a Subscribe button to people who were already subscribed, and a
   // click landing in that window sent a subscribe instead of the unsubscribe
-  // they meant (MUL-5714).
+  // they meant (ISS-5714).
   describe("subscription state before the query resolves", () => {
     afterEach(() => {
       document.body.innerHTML = "";
@@ -2006,7 +2006,7 @@ describe("IssueDetail (shared)", () => {
   // Clicking one of those rows sends an explicit subscribe, which rewrites the
   // target's reason to 'manual' and clears any opt-out scope
   // (server/pkg/db/queries/subscriber.sql), discarding a delegated
-  // subscription or a deliberate opt-out (MUL-5714).
+  // subscription or a deliberate opt-out (ISS-5714).
   describe("subscriber picker before the query resolves", () => {
     // The picker sits next to the subscribe control in the Activity header.
     // Anchor on the heading, not on that control — the whole point of these

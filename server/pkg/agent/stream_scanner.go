@@ -15,7 +15,7 @@ import (
 // a transport failure — the session itself is fine, we just cannot read it.
 //
 // 32 MiB was picked as the follow-up to GH#4520, where the previous 10 MiB
-// bound broke `thread/resume` for long Codex threads (MUL-5722). It is
+// bound broke `thread/resume` for long Codex threads (ISS-5722). It is
 // headroom, not a guarantee: a thread can still outgrow any fixed cap, so
 // the recovery path matters more than the number.
 const agentStreamMaxLineBytes = 32 * 1024 * 1024

@@ -1,6 +1,6 @@
 # Self-Hosting Guide
 
-Deploy Multica on your own infrastructure in minutes.
+Deploy Orchestra on your own infrastructure in minutes.
 
 ## Architecture
 
@@ -10,7 +10,7 @@ Deploy Multica on your own infrastructure in minutes.
 | **Frontend** | Web application | Next.js 16 |
 | **Database** | Primary data store | PostgreSQL 17 with pgvector |
 
-Each user who runs AI agents locally also installs the **`multica` CLI** and runs the **agent daemon** on their own machine.
+Each user who runs AI agents locally also installs the **`orchestra` CLI** and runs the **agent daemon** on their own machine.
 
 ## Quick Install (Recommended)
 
@@ -23,7 +23,7 @@ Two commands to set up everything — server, CLI, and configuration.
 
 ```bash
 # 1. Install CLI + provision the self-host server
-curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash -s -- --with-server
+curl -fsSL https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.sh | bash -s -- --with-server
 
 # 2. Configure CLI, authenticate, and start the daemon
 orchestra setup self-host
@@ -36,14 +36,14 @@ orchestra setup self-host
 
 ```powershell
 # 1. Install CLI + provision the self-host server
-$env:ORCHESTRA_MODE="with-server"; irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex
+$env:ORCHESTRA_MODE="with-server"; irm https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.ps1 | iex
 
 # 2. Configure CLI, authenticate, and start the daemon
 orchestra setup self-host
 ```
 </details>
 
-This installs the `multica` CLI, checks out the latest self-host assets, pulls the official Multica images from GHCR, and configures everything for localhost.
+This installs the `orchestra` CLI, checks out the latest self-host assets, pulls the official Orchestra images from GHCR, and configures everything for localhost.
 
 Open http://localhost:3000. To log in, configure `RESEND_API_KEY` in `.env` for email-based codes (recommended), or leave Resend unset and copy the generated code from the backend logs. See [Step 2 — Log In](#step-2--log-in) for details.
 
@@ -52,7 +52,7 @@ Open http://localhost:3000. To log in, configure `RESEND_API_KEY` in `.env` for 
 > **CLI only?** If the self-host server is already running and you only need the CLI on a macOS/Linux machine, install it with Homebrew:
 >
 > ```bash
-> brew install multica-ai/tap/multica
+> brew install orchestra-ai/tap/orchestra
 > ```
 
 ---
@@ -66,8 +66,8 @@ If you prefer to run each step manually:
 **Prerequisites:** Docker and Docker Compose.
 
 ```bash
-git clone https://github.com/multica-ai/multica.git
-cd multica
+git clone https://github.com/JanMori/Orchestra.git
+cd orchestra
 make selfhost
 ```
 
@@ -75,7 +75,7 @@ make selfhost
 
 By default it pulls the latest stable release images from GHCR. To build the backend/web from your current checkout instead, run `make selfhost-build`.
 If the selected GHCR tag has not been published yet, `make selfhost` now tells you to fall back to `make selfhost-build`.
-`make selfhost-build` uses local `multica-backend:dev` / `multica-web:dev` tags, so it does not overwrite the pulled `:latest` images.
+`make selfhost-build` uses local `orchestra-backend:dev` / `orchestra-web:dev` tags, so it does not overwrite the pulled `:latest` images.
 
 Once ready:
 
@@ -105,7 +105,7 @@ Each team member who wants to run AI agents locally needs to:
 ### a) Install the CLI and an AI agent
 
 ```bash
-brew install multica-ai/tap/multica
+brew install orchestra-ai/tap/orchestra
 ```
 
 You also need at least one AI agent CLI installed:
@@ -163,30 +163,30 @@ orchestra daemon status
 
 ## Kubernetes Deployment (Alternative)
 
-If you already run a Kubernetes cluster, you can deploy Multica there instead of Docker Compose using the released OCI Helm chart at `oci://ghcr.io/multica-ai/charts/multica` or the source chart at [`deploy/helm/multica/`](deploy/helm/multica/). It targets a typical k3s / k8s setup with an Ingress controller and a default `ReadWriteOnce` StorageClass — authored against k3s + Traefik + `local-path`, and should work on any cluster with minor tweaks.
+If you already run a Kubernetes cluster, you can deploy Orchestra there instead of Docker Compose using the released OCI Helm chart at `oci://ghcr.io/orchestra-ai/charts/orchestra` or the source chart at [`deploy/helm/orchestra/`](deploy/helm/orchestra/). It targets a typical k3s / k8s setup with an Ingress controller and a default `ReadWriteOnce` StorageClass — authored against k3s + Traefik + `local-path`, and should work on any cluster with minor tweaks.
 
 The chart creates the following resources in the target namespace:
 
-- `multica-postgres` — `pgvector/pgvector:pg17` backed by a 10Gi PVC
-- `multica-backend` — Go API/WS server. Backed by a 5Gi `ReadWriteOnce` uploads PVC by default; set `backend.uploads.persistence.enabled=false` when you have configured S3 (`backend.config.s3Bucket`) and don't want the chart to declare the PVC at all.
-- `multica-frontend` — Next.js standalone server
+- `orchestra-postgres` — `pgvector/pgvector:pg17` backed by a 10Gi PVC
+- `orchestra-backend` — Go API/WS server. Backed by a 5Gi `ReadWriteOnce` uploads PVC by default; set `backend.uploads.persistence.enabled=false` when you have configured S3 (`backend.config.s3Bucket`) and don't want the chart to declare the PVC at all.
+- `orchestra-frontend` — Next.js standalone server
 - Two `Ingress` resources: one for the web host, one for the backend host
-- `multica-config` ConfigMap (rendered from `values.yaml`)
+- `orchestra-config` ConfigMap (rendered from `values.yaml`)
 
-The `multica-secrets` Secret is **not** managed by the chart — you create it once with `kubectl` so real values never need to land in git.
+The `orchestra-secrets` Secret is **not** managed by the chart — you create it once with `kubectl` so real values never need to land in git.
 
-> **Runtime frontend upstreams:** current `multica-web` images read `REMOTE_API_URL` and `DOCS_URL` when the Next.js server runs, so API/docs upstream changes do not require a web rebuild. The chart defaults `REMOTE_API_URL` to this release's backend Service. `frontend.compatibility.backendAlias` exists only for legacy images that still baked `REMOTE_API_URL=http://backend:8080` at build time.
+> **Runtime frontend upstreams:** current `orchestra-web` images read `REMOTE_API_URL` and `DOCS_URL` when the Next.js server runs, so API/docs upstream changes do not require a web rebuild. The chart defaults `REMOTE_API_URL` to this release's backend Service. `frontend.compatibility.backendAlias` exists only for legacy images that still baked `REMOTE_API_URL=http://backend:8080` at build time.
 
 > **Prerequisites:** `kubectl` and `helm` (v3.13+ for `--take-ownership`, or v4+) configured for the target cluster, an Ingress controller (Traefik / NGINX), and a default StorageClass.
 
 ### Step 1 — Point hostnames at the cluster
 
-The chart defaults to `multica.dev.lan` (web) and `api.multica.dev.lan` (backend). Pick one of:
+The chart defaults to `orchestra.dev.lan` (web) and `api.orchestra.dev.lan` (backend). Pick one of:
 
 - **`/etc/hosts`** on every machine that needs access (developer laptops + the machine running the daemon):
 
   ```text
-  192.168.1.206  multica.dev.lan api.multica.dev.lan
+  192.168.1.206  orchestra.dev.lan api.orchestra.dev.lan
   ```
 
   Replace `192.168.1.206` with any node IP where your Ingress controller's Service is reachable.
@@ -198,15 +198,15 @@ To use different hostnames, override the matching values at install time (see [S
 ### Step 2 — Create the namespace
 
 ```bash
-kubectl create namespace multica
+kubectl create namespace orchestra
 ```
 
-### Step 3 — Create the `multica-secrets` Secret
+### Step 3 — Create the `orchestra-secrets` Secret
 
 The chart references this Secret by name. Create it once with random values:
 
 ```bash
-kubectl -n multica create secret generic multica-secrets \
+kubectl -n orchestra create secret generic orchestra-secrets \
   --from-literal=JWT_SECRET="$(openssl rand -hex 32)" \
   --from-literal=POSTGRES_PASSWORD="$(openssl rand -hex 16)" \
   --from-literal=RESEND_API_KEY="" \
@@ -220,9 +220,9 @@ Leave optional values empty for now — you can fill them in later (see [Step 5 
 ### Step 4 — Install the chart
 
 ```bash
-helm install multica oci://ghcr.io/multica-ai/charts/multica \
+helm install orchestra oci://ghcr.io/orchestra-ai/charts/orchestra \
   --version <chart-version> \
-  -n multica
+  -n orchestra
 ```
 
 Released chart versions strip the leading `v` from the Git tag. For example, release tag `v0.3.5` publishes chart version `0.3.5`; the chart defaults the backend and frontend image tags to `v0.3.5`.
@@ -230,35 +230,35 @@ Released chart versions strip the leading `v` from the Git tag. For example, rel
 To override defaults, export the chart values, edit them, and pass them with `-f`:
 
 ```bash
-helm show values oci://ghcr.io/multica-ai/charts/multica \
+helm show values oci://ghcr.io/orchestra-ai/charts/orchestra \
   --version <chart-version> > my-values.yaml
 # edit my-values.yaml — e.g. change ingress hosts, image tags, resource limits
-helm install multica oci://ghcr.io/multica-ai/charts/multica \
+helm install orchestra oci://ghcr.io/orchestra-ai/charts/orchestra \
   --version <chart-version> \
-  -n multica \
+  -n orchestra \
   -f my-values.yaml
 ```
 
 When developing from a checkout, use the local chart path instead:
 
 ```bash
-helm install multica deploy/helm/multica -n multica
+helm install orchestra deploy/helm/orchestra -n orchestra
 ```
 
 Watch the pods come up:
 
 ```bash
-kubectl -n multica get pods -w
+kubectl -n orchestra get pods -w
 ```
 
 On a cold cluster the backend can sit `Running` but not `Ready` for a few minutes while it waits on PostgreSQL and runs migrations — a startupProbe absorbs this, so the pod should not restart. Once the backend reports `Ready`, migrations have completed and `/healthz` returns OK:
 
 ```bash
-curl -H "Host: api.multica.dev.lan" http://<ingress-ip>/healthz
+curl -H "Host: api.orchestra.dev.lan" http://<ingress-ip>/healthz
 # {"status":"ok","checks":{"db":"ok","migrations":"ok"}}
 ```
 
-Then open http://multica.dev.lan in your browser.
+Then open http://orchestra.dev.lan in your browser.
 
 ### Step 5 — Log In
 
@@ -267,9 +267,9 @@ The chart defaults to `APP_ENV=production` (set in `values.yaml` under `backend.
 - **Recommended (production):** patch the Secret with a real Resend key, then restart the backend:
 
   ```bash
-  kubectl -n multica patch secret multica-secrets --type=merge \
+  kubectl -n orchestra patch secret orchestra-secrets --type=merge \
     -p '{"stringData":{"RESEND_API_KEY":"re_xxx"}}'
-  kubectl -n multica rollout restart deploy/multica-backend
+  kubectl -n orchestra rollout restart deploy/orchestra-backend
   ```
 
   Real verification codes will be sent to the email address you enter. See [Advanced Configuration → Email](SELF_HOSTING_ADVANCED.md#email-required-for-authentication).
@@ -277,19 +277,19 @@ The chart defaults to `APP_ENV=production` (set in `values.yaml` under `backend.
 - **Without email configured:** the verification code is generated server-side and printed to the backend pod logs (look for `[DEV] Verification code for ...:`). Useful for one-off testing.
 
   ```bash
-  kubectl -n multica logs -f deploy/multica-backend | grep "Verification code"
+  kubectl -n orchestra logs -f deploy/orchestra-backend | grep "Verification code"
   ```
 
 - **Deterministic local/private testing:** set `backend.config.appEnv: development` in your values file and `ORCHESTRA_DEV_VERIFICATION_CODE=888888` in the Secret, then `helm upgrade` and restart. This fixed code is ignored when `APP_ENV=production`.
 
   ```bash
-  helm upgrade multica oci://ghcr.io/multica-ai/charts/multica \
+  helm upgrade orchestra oci://ghcr.io/orchestra-ai/charts/orchestra \
     --version <chart-version> \
-    -n multica \
+    -n orchestra \
     -f my-values.yaml --set backend.config.appEnv=development
-  kubectl -n multica patch secret multica-secrets --type=merge \
+  kubectl -n orchestra patch secret orchestra-secrets --type=merge \
     -p '{"stringData":{"ORCHESTRA_DEV_VERIFICATION_CODE":"888888"}}'
-  kubectl -n multica rollout restart deploy/multica-backend
+  kubectl -n orchestra rollout restart deploy/orchestra-backend
   ```
 
 `ALLOW_SIGNUP`, `DISABLE_WORKSPACE_CREATION`, and `GOOGLE_CLIENT_ID` likewise live under `backend.config.*` in `values.yaml` (as `allowSignup`, `disableWorkspaceCreation`, and `googleClientId`). After `helm upgrade`, the backend pod will roll automatically because the ConfigMap hash changes; the web UI reads all three from `/api/config` at runtime, so no web rebuild is needed.
@@ -302,8 +302,8 @@ The daemon runs on your local machine, not in the cluster. Install the CLI and a
 
 ```bash
 orchestra setup self-host \
-  --server-url http://api.multica.dev.lan \
-  --app-url http://multica.dev.lan
+  --server-url http://api.orchestra.dev.lan \
+  --app-url http://orchestra.dev.lan
 ```
 
 Make sure the machine running the daemon has the same `/etc/hosts` (or DNS) entries from [Step 1](#step-1--point-hostnames-at-the-cluster).
@@ -313,15 +313,15 @@ Make sure the machine running the daemon has the same `/etc/hosts` (or DNS) entr
 To pull the latest images without changing the chart version when your values still use the mutable `latest` image tag:
 
 ```bash
-kubectl -n multica rollout restart deploy/multica-backend deploy/multica-frontend
+kubectl -n orchestra rollout restart deploy/orchestra-backend deploy/orchestra-frontend
 ```
 
-To upgrade to a specific Multica release, upgrade to the matching chart version. The released chart defaults its app images to the matching Git tag:
+To upgrade to a specific Orchestra release, upgrade to the matching chart version. The released chart defaults its app images to the matching Git tag:
 
 ```bash
-helm upgrade multica oci://ghcr.io/multica-ai/charts/multica \
+helm upgrade orchestra oci://ghcr.io/orchestra-ai/charts/orchestra \
   --version <chart-version> \
-  -n multica \
+  -n orchestra \
   -f my-values.yaml
 ```
 
@@ -338,28 +338,28 @@ images:
 Then run the same upgrade command with `-f my-values.yaml`:
 
 ```bash
-helm upgrade multica oci://ghcr.io/multica-ai/charts/multica \
+helm upgrade orchestra oci://ghcr.io/orchestra-ai/charts/orchestra \
   --version <chart-version> \
-  -n multica \
+  -n orchestra \
   -f my-values.yaml
 ```
 
 To roll back if an upgrade goes sideways:
 
 ```bash
-helm -n multica rollback multica
+helm -n orchestra rollback orchestra
 ```
 
-> **Upgrading from `v0.3.4` to `v0.3.5+` fails with `refusing to drop legacy daily rollups: ...`?** As of MUL-2957 the `migrate up` command runs an idempotent monthly-slice backfill automatically before applying migration `103`, so a clean upgrade is a single `helm upgrade` + backend rollout. If you are still on a pre-MUL-2957 binary or the auto-hook fails, run the standalone backfill against the same database the chart is using (`kubectl -n multica exec deploy/multica-backend -- ./backfill_task_usage_hourly --sleep-between-slices=2s`), then restart the backend deployment to re-apply migrations. See [Advanced Configuration → Usage Dashboard Rollup](SELF_HOSTING_ADVANCED.md#usage-dashboard-rollup) for the full recovery flow.
+> **Upgrading from `v0.3.4` to `v0.3.5+` fails with `refusing to drop legacy daily rollups: ...`?** As of MUL-2957 the `migrate up` command runs an idempotent monthly-slice backfill automatically before applying migration `103`, so a clean upgrade is a single `helm upgrade` + backend rollout. If you are still on a pre-MUL-2957 binary or the auto-hook fails, run the standalone backfill against the same database the chart is using (`kubectl -n orchestra exec deploy/orchestra-backend -- ./backfill_task_usage_hourly --sleep-between-slices=2s`), then restart the backend deployment to re-apply migrations. See [Advanced Configuration → Usage Dashboard Rollup](SELF_HOSTING_ADVANCED.md#usage-dashboard-rollup) for the full recovery flow.
 
 ### Tearing down
 
 ```bash
 # Remove the workloads but keep the PVCs and the Secret
-helm -n multica uninstall multica
+helm -n orchestra uninstall orchestra
 
 # Wipe everything, including PostgreSQL data and uploads
-kubectl delete namespace multica
+kubectl delete namespace orchestra
 ```
 
 ---
@@ -407,7 +407,7 @@ If you already have a `pg_cron` job in production, the safe sequence to retire i
      FROM cron.job WHERE jobname = 'rollup_task_usage_hourly';
    ```
 
-3. Leave the `pg_cron` extension itself installed unless you are sure no other workload depends on it. The bundled `pgvector/pgvector:pg17` image does **not** ship `pg_cron`, so nothing in Multica's default install needs it; uninstalling `pg_cron` from a custom image that other workloads still use is a separate decision.
+3. Leave the `pg_cron` extension itself installed unless you are sure no other workload depends on it. The bundled `pgvector/pgvector:pg17` image does **not** ship `pg_cron`, so nothing in Orchestra's default install needs it; uninstalling `pg_cron` from a custom image that other workloads still use is a separate decision.
 
 External cron / systemd timer / Kubernetes `CronJob` setups that call `SELECT rollup_task_usage_hourly()` directly can be retired the same way — once `sys_cron_executions` shows steady SUCCESS rows from the in-process scheduler, the external job is redundant and can be removed.
 
@@ -416,7 +416,7 @@ External cron / systemd timer / Kubernetes `CronJob` setups that call `SELECT ro
 If you installed via the install script:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash -s -- --stop
+curl -fsSL https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.sh | bash -s -- --stop
 ```
 
 If you cloned the repo manually:
@@ -429,15 +429,15 @@ make selfhost-stop
 orchestra daemon stop
 ```
 
-## Switching to Multica Cloud
+## Reconfiguring Self-Host CLI
 
-If you've been self-hosting and want to switch your CLI to [Multica Cloud](https://multica.ai):
+If you need to reconfigure your local CLI for self-hosting:
 
 ```bash
-orchestra setup
+orchestra setup self-host --server-url http://localhost:7081 --app-url http://localhost:5001
 ```
 
-This reconfigures the CLI for multica.ai, re-authenticates, and restarts the daemon. You will be prompted before overwriting the existing configuration.
+This reconfigures the CLI for self-hosted backend, auto-provisions access, and restarts the daemon. You will be prompted before overwriting the existing configuration.
 
 > Your local Docker services are unaffected. Stop them separately if you no longer need them.
 
@@ -460,8 +460,8 @@ If the selected GHCR tag has not been published yet, fall back to `make selfhost
 If you prefer running Docker Compose steps manually instead of `make selfhost`:
 
 ```bash
-git clone https://github.com/multica-ai/multica.git
-cd multica
+git clone https://github.com/JanMori/Orchestra.git
+cd orchestra
 cp .env.example .env
 ```
 

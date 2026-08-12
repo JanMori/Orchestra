@@ -198,7 +198,7 @@ function AttachmentChipView({ item, onRemove, onRetry }: AttachmentChipProps) {
       // Non-image file chip: open the canonical download URL in Safari.
       // `downloadUrl` comes from `api.uploadFile(...).download_url`, which
       // on non-CloudFront deployments is a server-relative path like
-      // `/api/attachments/{id}/download` (MUL-2976). RN's `Linking.openURL`
+      // `/api/attachments/{id}/download` (ISS-2976). RN's `Linking.openURL`
       // requires an absolute http(s) URL — `Cannot open URL` otherwise — so
       // resolve against `EXPO_PUBLIC_API_URL` first. Already-absolute
       // CloudFront/presigned URLs pass through unchanged. `null` (no

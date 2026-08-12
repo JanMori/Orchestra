@@ -14,7 +14,7 @@ import (
 // claude, codex, and opencode backends so the daemon can advertise them to the
 // UI without hard-coding (and getting wrong) what's installed locally.
 //
-// MUL-2339: we deliberately do not flatten Claude's `low|medium|high|
+// ISS-2339: we deliberately do not flatten Claude's `low|medium|high|
 // xhigh|max` and Codex's `none|minimal|low|medium|high|xhigh|max|ultra`
 // onto a shared enum. OpenCode exposes provider-specific model variants through
 // `opencode run --variant`, and those names can be extended by local
@@ -517,7 +517,7 @@ var codebuddyFlagEffortValues = map[string]bool{
 // annotateCodebuddyThinkingFromACP fills in each model's effort catalog from the
 // `thought_level` config option carried by the SAME `session/new` response the
 // models came from — so the effort catalog costs no extra process at all. It
-// replaces a second regex pass over `codebuddy --help` (MUL-5549).
+// replaces a second regex pass over `codebuddy --help` (ISS-5549).
 //
 // CodeBuddy advertises one effort set for the whole CLI rather than per model,
 // so every entry shares it. Levels the `--effort` flag would reject are dropped,
@@ -614,7 +614,7 @@ func parseACPCodebuddyEffort(raw json.RawMessage) (levels []string, defaultLevel
 //     file's Codex header for why that's avoided), so an empty codex model
 //     fails closed: the daemon drops the level rather than injecting one that
 //     may not fit. Users who need a specific effort must pick an explicit
-//     model. (MUL-4347 review.)
+//     model. (ISS-4347 review.)
 //   - other providers: empty model resolves to the catalog's Default entry
 //     so a default-model task with a valid thinking_level isn't misjudged as
 //     "unknown model → reject" (the misjudgement flagged in an earlier
@@ -777,7 +777,7 @@ var thinkingDynamicCatalogProviders = map[string]bool{
 // effort dial on the surface the daemon speaks to it over, so there is nothing
 // to inject and nothing a different spelling would fix.
 //
-// Hermes is the instructive case (MUL-5770). The Hermes CLI does support
+// Hermes is the instructive case (ISS-5770). The Hermes CLI does support
 // reasoning effort — `agent.reasoning_effort` in `<HERMES_HOME>/config.yaml`,
 // checked against its own `minimal|low|medium|high|xhigh|max|ultra` set — but
 // Multica drives Hermes over ACP (`hermes acp`), and its ACP adapter does not

@@ -6,12 +6,12 @@ description: Connect a computer, create your first agent, and have it complete i
 import { Callout } from "fumadocs-ui/components/callout";
 
 <Callout type="info">
-Before an agent can execute, the computer that runs it needs at least one [supported AI coding tool](/providers) installed and signed in — for example Claude Code, Codex, or Cursor. Multica does not ship these tools.
+Before an agent can execute, the computer that runs it needs at least one [supported AI coding tool](/providers) installed and signed in — for example Claude Code, Codex, or Cursor. Orchestra does not ship these tools.
 </Callout>
 
 ## 1. Sign in and open your workspace
 
-Sign in on the web ([multica.ai](https://multica.ai)) or with [Multica Desktop](https://multica.ai/download). Email verification codes and Google are both supported.
+Sign in on the web ([localhost:5001](http://localhost:5001)) or with [Orchestra Desktop](/docs). Email verification codes and Google are both supported.
 
 - **Desktop**: can connect this computer automatically.
 - **Web**: connect from the command line in the next step.
@@ -26,14 +26,14 @@ Agents execute work on the computers you connect. Open **Configure → Runtimes*
   **macOS / Linux**
 
   ```bash
-  curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash
+  curl -fsSL https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.sh | bash
   orchestra setup
   ```
 
   **Windows PowerShell**
 
   ```powershell
-  irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex
+  irm https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.ps1 | iex
   orchestra setup
   ```
 
@@ -66,9 +66,9 @@ Click **New Issue** at the top of the sidebar (or press `C`). In the default age
 
 1. Under **Created by**, select the agent you just created.
 2. Describe the work in a sentence or two, for example "Explain how this workspace can be used."
-3. Submit. Multica creates the issue, sets the agent as the assignee, and starts executing immediately.
+3. Submit. Orchestra creates the issue, sets the agent as the assignee, and starts executing immediately.
 
-![New issue dialog in agent mode: Created by set to Multica Assistant](/images/docs/quickstart-new-issue.png)
+![New issue dialog in agent mode: Created by set to Orchestra Assistant](/images/docs/quickstart-new-issue.png)
 
 ## 5. Watch progress and results
 
@@ -90,6 +90,6 @@ For more cases, see [Troubleshooting](/troubleshooting).
 
 ## Next steps
 
-- [Core concepts](/concepts) — meet all of Multica's core objects in three minutes.
-- [How Multica works](/how-multica-works) — how issues, agents, runtimes, and each run relate.
+- [Core concepts](/concepts) — meet all of Orchestra's core objects in three minutes.
+- [How Orchestra works](/how-orchestra-works) — how issues, agents, runtimes, and each run relate.
 - [Put agents to work](/triggering-agents) — beyond assignment: @-mentions, chat, and Autopilots.

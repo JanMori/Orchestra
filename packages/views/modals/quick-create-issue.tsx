@@ -310,7 +310,7 @@ export function AgentCreatePanel({
   // Daemon CLI version gate. The agent-create flow needs the runtime's
   // bundled orchestra CLI to be ≥ MIN_QUICK_CREATE_CLI_VERSION; older
   // daemons handle attachments and partial-failure retries incorrectly
-  // (see PR #1851 / MUL-1496). Pre-check on the picker so the user gets
+  // (see PR #1851 / ISS-1496). Pre-check on the picker so the user gets
   // immediate feedback instead of waiting for the inbox failure; the
   // server re-validates as the trust boundary. Dev-built daemons
   // (git-describe shape) are exempted inside checkQuickCreateCliVersion
@@ -349,7 +349,7 @@ export function AgentCreatePanel({
   const [sentCount, setSentCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const uploadGate = useUploadGate(editorRef);
-  // Coordinator-owned uploads in the shared draft pool (MUL-5181, L2): a file
+  // Coordinator-owned uploads in the shared draft pool (ISS-5181, L2): a file
   // pasted into the prompt survives dialog close and mode switches, aborts on
   // logout, and is dropped after a reload. `gate` widens the editor gate with
   // the pool's placeholders.
@@ -374,7 +374,7 @@ export function AgentCreatePanel({
   // (single-flight ref, submit-time upload re-check, lock+spin, await→boolean,
   // clear only on acceptance). The prompt IS the editor content, so this maps
   // onto the hook directly.
-  // Stale-submit guard (MUL-5181 P0): the issue draft is a SINGLETON store.
+  // Stale-submit guard (ISS-5181 P0): the issue draft is a SINGLETON store.
   // A late success from a dialog the user closed mid-submit must not clear a
   // newer draft typed after reopening — see ManualCreatePanel for the rule.
   const mountedRef = useRef(true);

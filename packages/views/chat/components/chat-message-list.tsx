@@ -74,7 +74,7 @@ interface ChatMessageListProps {
   quickActionsDisabled?: boolean;
   /**
    * Regenerate the follow-up suggestions for the session's latest assistant
-   * turn (the "refresh" affordance, MUL-5149). Only offered on that turn —
+   * turn (the "refresh" affordance, ISS-5149). Only offered on that turn —
    * regeneration resumes the newest provider state, so an older turn's pills
    * can't be refreshed in place.
    */
@@ -95,7 +95,7 @@ interface ChatMessageListProps {
 // and remounts the whole Header/Footer subtree each time. During task
 // streaming that tore down and rebuilt the entire live timeline — every row
 // and every Markdown parse — on every `task:message` event, freezing the
-// renderer for seconds at a time (MUL-3960). Per-render data flows through
+// renderer for seconds at a time (ISS-3960). Per-render data flows through
 // Virtuoso's `context` prop instead, which reaches these components as an
 // ordinary prop (re-render, not remount).
 
@@ -111,7 +111,7 @@ interface ChatListContext {
  * One Virtuoso row. A live (still-streaming) task and the persisted assistant
  * message it becomes share ONE key — `task:<taskId>` — so the handoff replaces
  * this item's data in place instead of unmounting a Footer subtree and mounting
- * a different row (MUL-4922). That identity is what keeps an already-rendered
+ * a different row (ISS-4922). That identity is what keeps an already-rendered
  * Mermaid diagram or HTML iframe mounted across task completion.
  */
 type ChatRenderItem =
@@ -255,7 +255,7 @@ export function ChatMessageList({
   };
 
   // Every image in this session, in message order, so opening one lets the
-  // reader page through the rest (MUL-5752). Built from the message data, not
+  // reader page through the rest (ISS-5752). Built from the message data, not
   // from what Virtuoso currently has mounted.
   //
   // Persisted messages only: a task transcript's own attachments live behind a
@@ -466,7 +466,7 @@ const MessageBubble = memo(function MessageBubble({
 
 /**
  * Assistant turn body — renders BOTH the in-flight (live) and the persisted
- * form of one task (MUL-4922).
+ * form of one task (ISS-4922).
  *
  * `message` is undefined while the task streams and becomes the persisted
  * `chat_message` when it lands. Both forms are rendered by this one component,
@@ -539,7 +539,7 @@ function AssistantMessage({
     );
   }
 
-  // no_response path (MUL-4351): the agent completed this direct-chat turn
+  // no_response path (ISS-4351): the agent completed this direct-chat turn
   // without any text. Keep whatever tool/thinking timeline the run produced and
   // show a localized "no text reply" notice instead of an empty markdown block.
   const isNoResponse = message?.message_kind === "no_response";
@@ -640,7 +640,7 @@ function QuickActions({
   // it on success, and useQuickActionsPendingTimeout clears it from the query
   // cache if no supplement ever arrives. So `pending` going false is what stops
   // the spinner — no component-local "expired" flag that only masks the UI while
-  // the cache stays stuck (MUL-5149 review).
+  // the cache stays stuck (ISS-5149 review).
   const blocked = disabled || submitting || regenerating || pending;
 
   const handleSelect = async (action: ChatQuickAction) => {
@@ -753,7 +753,7 @@ function QuickActionsSkeleton() {
   // No local timeout: the shared pending marker drives visibility, and
   // useQuickActionsPendingTimeout clears it from the query cache if no
   // chat:quick_actions ever resolves it — so this unmounts on its own instead
-  // of only hiding itself while the cache stays stuck (MUL-5149 review).
+  // of only hiding itself while the cache stays stuck (ISS-5149 review).
   return (
     <div className="mt-2 border-t border-border/40 pt-2 animate-in fade-in duration-300">
       <div className="flex flex-wrap items-center gap-2" aria-hidden="true">
@@ -768,7 +768,7 @@ function QuickActionsSkeleton() {
 
 // Muted, localized notice shown in place of assistant text when a turn
 // completed with no reply (message_kind === "no_response"). Explains the empty
-// turn instead of rendering a blank bubble (MUL-4351).
+// turn instead of rendering a blank bubble (ISS-4351).
 function NoResponseNotice() {
   const { t } = useT("chat");
   return (
@@ -793,7 +793,7 @@ function MessageFooter({
   isPending: boolean;
 }) {
   // A no_response turn has nothing to copy, and its caption uses a neutral
-  // "Finished in Xs" instead of "Replied in Xs" (MUL-4351).
+  // "Finished in Xs" instead of "Replied in Xs" (ISS-4351).
   const isNoResponse = message.message_kind === "no_response";
   const showCopy = !isPending && !isNoResponse;
   if (message.elapsed_ms == null && !showCopy) return null;
@@ -1047,7 +1047,7 @@ function OuterProcessFold({
   // Open while the task streams (so the user watches progress), collapsed once
   // it settles. This used to fall out of a remount: the live TimelineView was
   // torn down and the persisted one mounted closed. The row is now stable
-  // across that handoff (MUL-4922) — which is the point, it keeps Mermaid and
+  // across that handoff (ISS-4922) — which is the point, it keeps Mermaid and
   // HTML blocks alive — so the collapse has to be expressed directly.
   const [open, setOpen] = useState(!!isStreaming);
   const wasStreaming = useRef(!!isStreaming);

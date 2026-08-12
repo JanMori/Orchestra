@@ -1,8 +1,8 @@
 // Package engine is the channel-agnostic runtime that DRIVES the
 // channel.Channel adapters defined in the parent channel package. Stage-1
-// (MUL-3515) shipped the abstraction (Channel / InboundMessage /
+// (ISS-3515) shipped the abstraction (Channel / InboundMessage /
 // OutboundMessage / Registry) but no engine consumed it; this package is
-// that engine — the "通用引擎" of MUL-3620, generalized out of the
+// that engine — the "通用引擎" of ISS-3620, generalized out of the
 // Feishu-specific lark.Hub / lark.Dispatcher.
 //
 // It provides:

@@ -680,7 +680,7 @@ function TaskRow({
               <span className="text-destructive">{failureLabel}</span>
             </>
           )}
-          {/* Accountable member (MUL-4302 §9): whose behalf this run is on.
+          {/* Accountable member (ISS-4302 §9): whose behalf this run is on.
               A leading separator keeps the avatar on the same middot rhythm as
               the rest of the meta line instead of glued to the duration. The
               guard mirrors the badge's own render condition (avatar-only needs

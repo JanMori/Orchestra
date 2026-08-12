@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/middleware"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/middleware"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 func notificationPreferenceRequest(

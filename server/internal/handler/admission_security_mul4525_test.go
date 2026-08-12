@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/dispatch"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/dispatch"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // seedSecurityTestOwner creates a throwaway workspace member to own an agent, so
@@ -34,7 +34,7 @@ func seedSecurityTestOwner(t *testing.T, label string) string {
 }
 
 // readReasonCode pulls the stable reason_code out of a structured blocked-admission
-// response body (MUL-4525).
+// response body (ISS-4525).
 func readReasonCode(t *testing.T, body []byte) string {
 	t.Helper()
 	var resp struct {
@@ -47,7 +47,7 @@ func readReasonCode(t *testing.T, body []byte) string {
 	return resp.ReasonCode
 }
 
-// TestSendChatMessage_InvokeRevokedAfterSessionCreate is the MUL-4525 must-fix 3
+// TestSendChatMessage_InvokeRevokedAfterSessionCreate is the ISS-4525 must-fix 3
 // chat acceptance test: a session created while the user could invoke the agent
 // must stop sending the instant that invoke permission is revoked — even though
 // the user (a workspace owner) can still VIEW the transcript. The refusal is a
@@ -172,7 +172,7 @@ func TestSendChatMessage_InvokeRevokedAfterSessionCreate(t *testing.T) {
 	}
 }
 
-// TestRerunIssue_PrivateHistoricalAgent is the MUL-4525 must-fix 3 rerun
+// TestRerunIssue_PrivateHistoricalAgent is the ISS-4525 must-fix 3 rerun
 // acceptance test, driven through the REAL handler + canInvokeAgent (not an
 // injected callback): a user who can see the issue but cannot invoke its private
 // agent is refused with a structured 403 and mutates nothing; the agent's owner

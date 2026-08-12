@@ -15,8 +15,8 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 
-	"github.com/multica-ai/multica/server/internal/integrations/channel"
-	"github.com/multica-ai/multica/server/internal/util"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel"
+	"github.com/JanMori/Orchestra/server/internal/util"
 )
 
 // Installation is the channel-agnostic view of one channel_installation
@@ -80,7 +80,7 @@ var ErrLeaseNotAcquired = errors.New("engine: ws lease held elsewhere")
 type InstallationStore interface {
 	// ListActiveInstallations returns every active installation across ALL
 	// channel types. There is no per-platform filter here — that hard-coded
-	// "feishu" was the whole limitation MUL-3620 removes.
+	// "feishu" was the whole limitation ISS-3620 removes.
 	ListActiveInstallations(ctx context.Context) ([]Installation, error)
 
 	// AcquireWSLease grants or renews the lease, or returns

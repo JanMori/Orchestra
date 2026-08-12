@@ -5,11 +5,11 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/handler"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/handler"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // firstFixtureAgent returns an agent in the test workspace along with its
@@ -51,7 +51,7 @@ func createAgentTaskWithOriginator(t *testing.T, agentID, runtimeID string, orig
 
 // createAgentOriginIssue inserts an issue whose creator is an agent and whose
 // provenance points at originTask — the exact row shape the ordinary agent
-// `issue create` path produces (MUL-4305).
+// `issue create` path produces (ISS-4305).
 func createAgentOriginIssue(t *testing.T, agentID, originType string, originTask pgtype.UUID, parent pgtype.UUID) string {
 	t.Helper()
 	ctx := context.Background()
@@ -107,7 +107,7 @@ func subscriberReason(t *testing.T, queries *db.Queries, issueID, userType, user
 	return ""
 }
 
-// TestDelegatedSubscribe_AgentCreatedSubIssue is MUL-5483's headline case. Every
+// TestDelegatedSubscribe_AgentCreatedSubIssue is ISS-5483's headline case. Every
 // pre-existing auto-subscribe rule keys on ACTOR identity, so an agent-created,
 // agent-assigned sub-issue ends up with a full subscriber list and zero members
 // to notify. The human the run is attributed to must be subscribed instead.
@@ -264,7 +264,7 @@ func TestUnsubscribeIsDurableAgainstAutoRules(t *testing.T) {
 // churn and nothing else: a child FINISHING is real signal, one per piece of work
 // a reviewer has to act on. An earlier cut suppressed those in favour of a
 // synthesized "whole batch finished" roll-up; that machinery is gone (see the
-// MUL-5483 thread), and the tree-level signal comes from the parent's own status
+// ISS-5483 thread), and the tree-level signal comes from the parent's own status
 // transition, which this same rule delivers.
 func TestDeliverToSubscriber_DelegatedTier(t *testing.T) {
 	cases := []struct {

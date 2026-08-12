@@ -3,7 +3,7 @@
  * agent-create flow (Quick Create modal) requires the daemon's bundled
  * orchestra CLI to be at least this version — older daemons either
  * double-create issues on partial CLI failures, drop quick-create attachment
- * bindings, or mishandle pasted screenshot URLs (see PR #1851 / MUL-1496).
+ * bindings, or mishandle pasted screenshot URLs (see PR #1851 / ISS-1496).
  *
  * Both the frontend pre-validation in the modal and the server's
  * `/api/issues/quick-create` handler enforce this; the server is the
@@ -92,7 +92,7 @@ export function readRuntimeCliVersion(metadata: Record<string, unknown> | undefi
  * Frontend mirror of the server's `MinHandoffCLIVersion` soft gate
  * (`server/pkg/agent/version.go`). The assignment handoff note is only rendered
  * into the run's opening prompt by daemons at or above this orchestra CLI version
- * (MUL-3375); older daemons silently drop it. Unlike the quick-create gate this
+ * (ISS-3375); older daemons silently drop it. Unlike the quick-create gate this
  * never blocks the assignment — the UI just grays out the note box and warns.
  *
  * Keep in lockstep with the server constant; the two are enforced independently

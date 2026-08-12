@@ -6,7 +6,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-// TestDelegatedSubscriber_AgentCreateInheritsHuman is the core MUL-5483 case:
+// TestDelegatedSubscriber_AgentCreateInheritsHuman is the core ISS-5483 case:
 // an agent files a sub-issue while running on a human's behalf, so that human
 // inherits visibility of it under the reduced 'delegated' tier.
 func TestDelegatedSubscriber_AgentCreateInheritsHuman(t *testing.T) {

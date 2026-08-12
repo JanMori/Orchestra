@@ -10,7 +10,7 @@ import (
 )
 
 // TestCreateComment_WorkerAgentCommentWakesCrewLeader_MUL4015 pins the
-// full CreateComment behavior for the scenario reported in MUL-4015:
+// full CreateComment behavior for the scenario reported in ISS-4015:
 //
 //   - Issue is assigned to a crew (leader L).
 //   - L delegates work by @-mentioning a distinct worker agent W. That
@@ -174,7 +174,7 @@ func TestCreateComment_WorkerAgentCommentDoesNotWakeLeader_WhenLeaderTaskPending
 }
 
 // TestCreateComment_WorkerAgentCommentWakesPrivateCrewLeader_MUL4015 pins
-// the private-leader case of the MUL-4015 regression. The default agent
+// the private-leader case of the ISS-4015 regression. The default agent
 // permission_mode is 'private' (owner-only invocation), so this is the common
 // production shape when the assigning member ALSO owns the crew's leader.
 //
@@ -226,14 +226,14 @@ func TestCreateComment_WorkerAgentCommentWakesPrivateCrewLeader_MUL4015(t *testi
 		return agentID
 	}
 
-	leaderID := privateAgent("MUL-4015 Private Leader")
-	workerID := privateAgent("MUL-4015 Private Worker")
+	leaderID := privateAgent("ISS-4015 Private Leader")
+	workerID := privateAgent("ISS-4015 Private Worker")
 
 	// Crew with the private leader.
 	var crewID string
 	if err := testPool.QueryRow(ctx, `
 		INSERT INTO crew (workspace_id, name, description, leader_id, creator_id)
-		VALUES ($1, 'MUL-4015 Private Crew', '', $2, $3)
+		VALUES ($1, 'ISS-4015 Private Crew', '', $2, $3)
 		RETURNING id
 	`, testWorkspaceID, leaderID, testUserID).Scan(&crewID); err != nil {
 		t.Fatalf("create private crew: %v", err)
@@ -247,7 +247,7 @@ func TestCreateComment_WorkerAgentCommentWakesPrivateCrewLeader_MUL4015(t *testi
 	var issueID string
 	if err := testPool.QueryRow(ctx, `
 		INSERT INTO issue (workspace_id, creator_type, creator_id, title, assignee_type, assignee_id)
-		VALUES ($1, 'member', $2, 'private crew worker-comment MUL-4015', 'crew', $3)
+		VALUES ($1, 'member', $2, 'private crew worker-comment ISS-4015', 'crew', $3)
 		RETURNING id
 	`, testWorkspaceID, testUserID, crewID).Scan(&issueID); err != nil {
 		t.Fatalf("create private crew issue: %v", err)
@@ -353,7 +353,7 @@ func TestCreateComment_WorkerAgentCommentWakesPrivateCrewLeader_MUL4015(t *testi
 		t.Fatalf("count queued leader tasks: %v", err)
 	}
 	if leaderTasksQueued != 1 {
-		t.Fatalf("after worker done: expected 1 queued leader task for private L, got %d — leader→worker→leader loop broken for private leader (MUL-4015)",
+		t.Fatalf("after worker done: expected 1 queued leader task for private L, got %d — leader→worker→leader loop broken for private leader (ISS-4015)",
 			leaderTasksQueued)
 	}
 }

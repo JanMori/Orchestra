@@ -38,7 +38,7 @@ func parseFrontmatter(t *testing.T, content string) map[string]any {
 // a valueless `name:` are the same top-level key as a bare `name: x`, so a
 // block carrying any of them already has a name. Misreading them as nameless
 // injects a second `name` above the malformed block — a duplicate mapping key,
-// so the output stays unloadable instead of being healed (MUL-5529).
+// so the output stays unloadable instead of being healed (ISS-5529).
 func TestEnsureSkillFrontmatterReSynthesizesInvalidYAML(t *testing.T) {
 	t.Parallel()
 
@@ -111,7 +111,7 @@ func TestEnsureSkillFrontmatterReSynthesizesInvalidYAMLWithEmptyDescription(t *t
 // `name` cannot be left alone because runtimes disagree on which field
 // identifies a skill (OpenCode: frontmatter `name`; Claude: directory name), so
 // an upstream value that differs from the slug makes the skill answer to two
-// names depending on the runtime (MUL-5529).
+// names depending on the runtime (ISS-5529).
 func TestEnsureSkillFrontmatterRetargetsNameAndKeepsOtherKeys(t *testing.T) {
 	t.Parallel()
 

@@ -53,7 +53,7 @@ type crewBriefingClaimFixture struct {
 	RuntimeID string
 	AgentID   string // crew leader, has the runtime and empty instructions
 	CrewID   string
-	IssueID   string // assignee_type='agent' (NOT crew) — reproduces MUL-3724
+	IssueID   string // assignee_type='agent' (NOT crew) — reproduces ISS-3724
 }
 
 func newCrewBriefingClaimFixture(t *testing.T, ctx context.Context, name string) crewBriefingClaimFixture {
@@ -63,7 +63,7 @@ func newCrewBriefingClaimFixture(t *testing.T, ctx context.Context, name string)
 	// Leader agent + an issue assigned to that agent (assignee_type='agent').
 	agentID, issueID := createClaimReclaimAgentAndIssue(t, ctx, runtimeID, name+" leader")
 	// Force empty instructions so the test asserts the briefing alone — this
-	// mirrors MUL-3724 where the leader's own instructions were blank.
+	// mirrors ISS-3724 where the leader's own instructions were blank.
 	if _, err := testPool.Exec(ctx, `UPDATE agent SET instructions = '' WHERE id = $1`, agentID); err != nil {
 		t.Fatalf("clear leader instructions: %v", err)
 	}
@@ -113,7 +113,7 @@ func enqueueClaimTask(t *testing.T, ctx context.Context, fx crewBriefingClaimFix
 	return taskID
 }
 
-// TestClaim_LeaderTaskFromCommentMention_InjectsBriefing is the MUL-3724
+// TestClaim_LeaderTaskFromCommentMention_InjectsBriefing is the ISS-3724
 // reproduction: a leader task (is_leader_task=true) carrying a crew_id, on an
 // issue assigned to a plain AGENT (not the crew). The pre-fix gate
 // (issue.assignee_type='crew') would NOT inject the briefing here, so the

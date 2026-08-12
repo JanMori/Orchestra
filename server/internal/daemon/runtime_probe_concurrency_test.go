@@ -8,7 +8,7 @@ import (
 )
 
 // TestDetectBuiltinRuntimes_ProbesRunConcurrently proves the registration
-// version probes fan out instead of running serially (MUL-5119). Each stubbed
+// version probes fan out instead of running serially (ISS-5119). Each stubbed
 // `--version` probe blocks briefly and records the peak number of in-flight
 // probes; a serial loop would never exceed 1 and would take N×block, while the
 // parallel path overlaps them and finishes in roughly one block.

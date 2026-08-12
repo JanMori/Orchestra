@@ -1,7 +1,7 @@
 // Package secretbox provides authenticated symmetric encryption for
 // secrets stored at rest — primarily Lark `app_secret` and any future
 // per-tenant secret column that must not appear in plaintext in a DB
-// dump (MUL-2671 §4.4).
+// dump (ISS-2671 §4.4).
 //
 // Construction: AES-256-GCM with a per-message 12-byte random nonce
 // prepended to the ciphertext. GCM provides both confidentiality and

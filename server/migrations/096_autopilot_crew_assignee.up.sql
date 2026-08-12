@@ -1,4 +1,4 @@
--- Autopilot: support assigning to a crew (MUL-2429).
+-- Autopilot: support assigning to a crew (ISS-2429).
 --
 -- Path A "Crew-as-Leader": when an autopilot's assignee is a crew, dispatch
 -- still resolves to a single agent (crew.leader_id) — same semantics as a

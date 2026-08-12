@@ -164,7 +164,7 @@ func (m *Manager) runJob(ctx context.Context, job *JobSpec, now time.Time) error
 	//     this sweep harmlessly: whichever wins, the row leaves
 	//     RUNNING.
 	//
-	// MUL-2957 review: see张大彪's blocker #1.
+	// ISS-2957 review: see张大彪's blocker #1.
 	if affected, err := markStaleAsFailed(ctx, m.pool, job.Name, now); err != nil {
 		m.logger.Warn("scheduler: mark stale failed",
 			"job", job.Name, "error", err)
@@ -252,7 +252,7 @@ func (m *Manager) plansForTick(
 			// strand the FAILED row until max_attempts is reached
 			// elsewhere — which never happens in steady state.
 			//
-			// (MUL-2957 review: see张大彪's retry blocker.)
+			// (ISS-2957 review: see张大彪's retry blocker.)
 			start = info.PlanTime
 		case info.Found:
 			// Latest stored plan is SUCCESS, RUNNING, or FAILED with

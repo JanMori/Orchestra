@@ -17,9 +17,9 @@ func TestClassifyEmptyAndWhitespace(t *testing.T) {
 }
 
 // TestClassifyRules walks every classifier rule with a real-world
-// sample taken from MUL-1949's db-boy production analysis (top error
+// sample taken from ISS-1949's db-boy production analysis (top error
 // prefixes from `agent_task_queue.error` over a 7-day window). When
-// MUL-1949's SQL grows a new rule, add a fixture here so the in-flight
+// ISS-1949's SQL grows a new rule, add a fixture here so the in-flight
 // classifier and the offline backfill stay in lock-step.
 //
 // One test case per rule is the minimum bar; rules with notable
@@ -107,7 +107,7 @@ func TestClassifyRules(t *testing.T) {
 		{"connectionrefused single", "ConnectionRefused", ReasonAgentProviderNetwork},
 		{"dns", "dns lookup failed", ReasonAgentProviderNetwork},
 		{"i/o timeout", "read tcp 1.2.3.4:443: i/o timeout", ReasonAgentProviderNetwork},
-		// MUL-5370: every Go-side context deadline used to land in
+		// ISS-5370: every Go-side context deadline used to land in
 		// agent_error.unknown, which is not on the retry allowlist — a
 		// transient stall became a terminal failure with a useless label.
 		{"context deadline exceeded", "context deadline exceeded", ReasonAgentProviderNetwork},
@@ -176,7 +176,7 @@ func TestClassifyRules(t *testing.T) {
 }
 
 // TestClassifyOrderingPriorities pins the rule precedence between
-// overlapping rules. These cases caught regressions during MUL-2946 PR1
+// overlapping rules. These cases caught regressions during ISS-2946 PR1
 // review: the SQL CASE ordering matters and a naive Go switch could
 // silently route them differently.
 func TestClassifyOrderingPriorities(t *testing.T) {
@@ -277,7 +277,7 @@ func TestClassifyAlwaysReturnsAgentSide(t *testing.T) {
 	}
 }
 
-// TestNormalizeDaemonReason is the mixed-version regression for MUL-5370.
+// TestNormalizeDaemonReason is the mixed-version regression for ISS-5370.
 //
 // The daemon-side fix labels a failed skill-bundle download structurally, but
 // installed daemons upgrade on their own cadence. An un-upgraded daemon reports
@@ -312,7 +312,7 @@ func TestNormalizeDaemonReason(t *testing.T) {
 			want:   ReasonSkillBundleUnavailable,
 		},
 		{
-			name:   "pre-MUL-1949 coarse reason is upgraded",
+			name:   "pre-ISS-1949 coarse reason is upgraded",
 			reason: "agent_error",
 			raw:    legacyErr,
 			want:   ReasonSkillBundleUnavailable,
@@ -375,7 +375,7 @@ func TestNormalizeDaemonReason(t *testing.T) {
 			want:   ReasonAgentContextOverflow,
 		},
 		{
-			name:   "pre-MUL-1949 coarse reason on the overflow is upgraded",
+			name:   "pre-ISS-1949 coarse reason on the overflow is upgraded",
 			reason: "agent_error",
 			raw:    "API Error: The model has reached its context window limit.",
 			want:   ReasonAgentContextOverflow,

@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/pkg/taskfailure"
+	"github.com/JanMori/Orchestra/server/pkg/taskfailure"
 )
 
 func TestSkillBundleResolveTimeout(t *testing.T) {
@@ -232,7 +232,7 @@ func TestEnsureTaskSkillBundles_AcceptsServerSideSkillUpdate(t *testing.T) {
 	}
 }
 
-// TestEnsureTaskSkillBundles_DeadlineIsLabelledStructurally is the MUL-5370
+// TestEnsureTaskSkillBundles_DeadlineIsLabelledStructurally is the ISS-5370
 // regression. A stalled bundle download used to surface as the bare string
 // "resolve skill bundles: context deadline exceeded", which taskfailure.Classify
 // could only file under agent_error.unknown — a bucket that is NOT on the

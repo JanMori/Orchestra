@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * RichContent — the ONE product-level readonly content renderer (MUL-4922).
+ * RichContent — the ONE product-level readonly content renderer (ISS-4922).
  *
  * Chat (user message, live assistant, persisted assistant, timeline text),
  * Issue descriptions and Comments all render through this component. There is
@@ -86,7 +86,7 @@ export type RichContentPhase = "streaming" | "settled";
 // components map. The map must stay referentially stable: react-markdown
 // re-runs the whole subtree when `components` changes identity, which rewrites
 // every highlighted <code>'s innerHTML and collapses an active text selection
-// inside a code block (MUL-3621).
+// inside a code block (ISS-3621).
 
 const ClosedFenceContext = createContext<ReadonlySet<number>>(new Set<number>());
 
@@ -512,7 +512,7 @@ export const RichContent = memo(function RichContent({
   // fresh `dangerouslySetInnerHTML` object each time; React then rewrites the
   // highlighted innerHTML even though the string is byte-identical, tearing
   // down every hljs <span> and collapsing any active text selection inside a
-  // code block (MUL-3621). A stable element reference lets React bail out.
+  // code block (ISS-3621). A stable element reference lets React bail out.
   const markdown = useMemo(
     () => (
       <ClosedFenceContext.Provider value={closedFences}>

@@ -122,7 +122,7 @@ func TestDetectVersionFailsForMissingBinary(t *testing.T) {
 	}
 }
 
-// TestDetectVersionTimesOutOnHang guards MUL-3812: a CLI whose `--version`
+// TestDetectVersionTimesOutOnHang guards ISS-3812: a CLI whose `--version`
 // never returns (e.g. a brew-installed claude wedged by a bun regression) must
 // not stall version detection forever. The daemon detects every runtime's
 // version sequentially inside its blocking preflight, so an unbounded probe
@@ -181,7 +181,7 @@ func TestDetectVersionTimesOutOnHang(t *testing.T) {
 			t.Fatalf("detection took %v; expected it to be bounded by the timeout", elapsed)
 		}
 	case <-time.After(10 * time.Second):
-		t.Fatal("DetectVersion did not return: version probe is unbounded (regression of MUL-3812)")
+		t.Fatal("DetectVersion did not return: version probe is unbounded (regression of ISS-3812)")
 	}
 }
 
@@ -222,7 +222,7 @@ func TestRunContextZeroTimeoutHasNoDeadline(t *testing.T) {
 	// A zero (or negative) timeout must NOT impose a wall-clock deadline:
 	// liveness is delegated to the daemon's inactivity watchdog so an actively
 	// streaming long-running session is never killed merely for running long
-	// (MUL-3064).
+	// (ISS-3064).
 	for _, d := range []time.Duration{0, -time.Second} {
 		ctx, cancel := runContext(context.Background(), d)
 		if _, ok := ctx.Deadline(); ok {

@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/multica-ai/multica/server/internal/runtimeapps"
+	"github.com/JanMori/Orchestra/server/internal/runtimeapps"
 )
 
-// This file holds the runtime brief assembler — the post-MUL-3560 path
+// This file holds the runtime brief assembler — the post-ISS-3560 path
 // that `buildMetaSkillContent` delegates to. It used to be one of two
 // paths gated by the `runtime_brief_slim` feature flag against a legacy
-// verbose brief; the flag was retired in MUL-4297 and this is now the
+// verbose brief; the flag was retired in ISS-4297 and this is now the
 // only brief.
 //
 // Layout:
@@ -32,7 +32,7 @@ import (
 //     Comment Formatting, Always Use CLI, Background Task Safety, Task Initiator,
 //     Repositories, Output are all tightened. Test-asserted phrases either
 //     survive verbatim or are renegotiated to new semantic anchors in the
-//     same PR (MUL-5442 established that discipline); no assertion is
+//     same PR (ISS-5442 established that discipline); no assertion is
 //     dropped without a replacement.
 //
 // Background Task Safety is emitted by `writeBackgroundTaskSafetySlim`
@@ -45,14 +45,14 @@ func writeHeader(b *strings.Builder) {
 }
 
 // writeBackgroundTaskSafetySlim emits the Background Task Safety section
-// in its judgment form (MUL-5442): three paragraphs — the platform fact
+// in its judgment form (ISS-5442): three paragraphs — the platform fact
 // everything else derives from (turn exit is task-terminal, no wakeup
 // exists, never background-and-yield), the external-systems/CI boundary
 // with its single explicit-ask exception, and the persistent-service
 // handoff contract. The pinned anchors the tests assert are the fact,
 // each boundary, both exceptions, and the handoff triple.
 //
-// MUL-5223: the external-work boundary alone did not stop agents from
+// ISS-5223: the external-work boundary alone did not stop agents from
 // blocking on CI. Two holes are closed here. First, the boundary was
 // stated as a concept while the section's only concrete "how to wait"
 // example was a blocking foreground call — and `gh pr checks --watch` is
@@ -70,7 +70,7 @@ func writeHeader(b *strings.Builder) {
 // auto-merge is not a wait and stays allowed — only waiting for it to
 // land is banned.
 //
-// MUL-5274 adds one narrow lifetime exception: a user-requested local
+// ISS-5274 adds one narrow lifetime exception: a user-requested local
 // development/test service may be handed off after its readiness and cleanup
 // contract are complete. It is not a future result or wakeup. The brief keeps
 // this separate from tests, builds, monitors, and CI polling, which remain
@@ -85,14 +85,14 @@ func writeHeader(b *strings.Builder) {
 // dropped: the boundary paragraph carries its own scope ("are not
 // run-owned").
 //
-// MUL-5442 stage 2 (owner-authorized judgment rewrite): enforcement details
+// ISS-5442 stage 2 (owner-authorized judgment rewrite): enforcement details
 // a frontier model derives from the platform fact were deliberately dropped
 // — the run-owned work enumeration, the tool-promise enumeration, the
 // wait/collect split rule, the persistent-service scope bullet, the
 // auto-merge and snapshot elaborations. Their pins were retired in the same
-// change. The incident history above (MUL-5223, MUL-5274, MUL-4091) remains
+// change. The incident history above (ISS-5223, ISS-5274, ISS-4091) remains
 // the WHY for what stays: the named --watch/watch/poll ban and merge-gate
-// denial survive because MUL-5223 proved the principle alone did not stop
+// denial survive because ISS-5223 proved the principle alone did not stop
 // CI-watching, and the handoff paragraph is review-locked verbatim
 // (URL/logs/stop triple, general cleanup handle) — do not reword it without
 // a fresh review decision.
@@ -154,14 +154,14 @@ func writeRequestingUser(b *strings.Builder, ctx TaskContextForEnv) {
 }
 
 // BuildTaskInitiatorBlock renders the Task Initiator block for the per-turn
-// user message. Both MUL-2645 test-pinned phrases ("apply any per-person
+// user message. Both ISS-2645 test-pinned phrases ("apply any per-person
 // privacy or access rules" and "credentials stay scoped to the runtime
 // owner") are kept.
 //
 // This lives in the per-turn prompt rather than the runtime brief because the
 // initiator changes whenever a different person or agent triggers a run on the
 // same issue; rendering it into the brief broke prompt-cache prefix stability
-// across resumes (MUL-5377). Returns "" when no initiator name resolves.
+// across resumes (ISS-5377). Returns "" when no initiator name resolves.
 func BuildTaskInitiatorBlock(initiatorType, initiatorName, initiatorEmail string) string {
 	safeInitiator := sanitizeNameForBriefMarkdown(initiatorName)
 	if safeInitiator == "" {
@@ -195,7 +195,7 @@ func writeWorkspaceContext(b *strings.Builder, ctx TaskContextForEnv) {
 // BuildConnectedAppsBlock renders the Connected Apps block for the per-turn
 // user message. The app set is per-run state (runtime MCP overlays are
 // resolved at enqueue time), so it cannot live in the runtime brief without
-// breaking prompt-cache prefix stability across resumes (MUL-5377).
+// breaking prompt-cache prefix stability across resumes (ISS-5377).
 // Returns "" when no app resolves.
 func BuildConnectedAppsBlock(apps []runtimeapps.ConnectedApp) string {
 	if len(apps) == 0 {
@@ -250,7 +250,7 @@ func sanitizeBriefCodeToken(s string) string {
 // create/update tasks" intro phrase, and `orchestra issue comment add
 // --help`.
 //
-// The fold-aware `--full` flag from MUL-3555 is documented inline on the
+// The fold-aware `--full` flag from ISS-3555 is documented inline on the
 // comment-list bullet so the slim brief preserves the same agent
 // behaviour as the legacy brief on that path.
 func writeAvailableCommands(b *strings.Builder, ctx TaskContextForEnv) {
@@ -270,9 +270,9 @@ func writeAvailableCommands(b *strings.Builder, ctx TaskContextForEnv) {
 	b.WriteString("- `orchestra repo checkout <url> [--ref <branch-or-sha>]` — repository checkout on a dedicated branch.\n\n")
 	// Crew maintenance is crew-leader surface: an agent that leads no crew
 	// has no crew to change roles in, so this shipped to every run as dead
-	// weight (MUL-5442). IsCrewLeader is agent configuration, not per-run
+	// weight (ISS-5442). IsCrewLeader is agent configuration, not per-run
 	// state, so gating on it keeps the brief byte-stable across runs of one
-	// session (MUL-5377) — the same reason the workflow already branches on it.
+	// session (ISS-5377) — the same reason the workflow already branches on it.
 	if ctx.IsCrewLeader {
 		b.WriteString("### Crew maintenance\n")
 		b.WriteString("- `orchestra crew member set-role <crew-id> --member-id <id> --member-type <agent|member> --role <role> [--output json]` — change role in place (use this instead of remove+add).\n\n")
@@ -287,7 +287,7 @@ func writeAvailableCommandsQuickCreate(b *strings.Builder) {
 	b.WriteString("## Available Commands\n\n")
 	b.WriteString("**Use `--output json` for structured data.** For anything beyond `issue create`, run `multica --help` or `multica <command> --help`.\n\n")
 	b.WriteString("### Core\n")
-	b.WriteString("- `orchestra issue create --title \"...\" [--description \"...\" | --description-file <path> | --description-stdin] [--priority X] [--status X] [--assignee X | --assignee-id <uuid>] [--parent <issue-id>] [--stage N] [--project <project-id>] [--due-date <YYYY-MM-DD>] [--attachment <path>]` — Create a new issue; `--attachment` may be repeated. For agent-authored long descriptions, prefer `--description-file <path>` over `--description-stdin` (flags after a HEREDOC terminator can be silently swallowed, #4182). Write that file inside your working directory (e.g. `./description.md`), never `/tmp` or shared paths, and treat a failed write as fatal — the CLI rejects a path outside the workdir so a stale file from another run can't leak in (MUL-4252).\n\n")
+	b.WriteString("- `orchestra issue create --title \"...\" [--description \"...\" | --description-file <path> | --description-stdin] [--priority X] [--status X] [--assignee X | --assignee-id <uuid>] [--parent <issue-id>] [--stage N] [--project <project-id>] [--due-date <YYYY-MM-DD>] [--attachment <path>]` — Create a new issue; `--attachment` may be repeated. For agent-authored long descriptions, prefer `--description-file <path>` over `--description-stdin` (flags after a HEREDOC terminator can be silently swallowed, #4182). Write that file inside your working directory (e.g. `./description.md`), never `/tmp` or shared paths, and treat a failed write as fatal — the CLI rejects a path outside the workdir so a stale file from another run can't leak in (ISS-4252).\n\n")
 }
 
 // writeIssueBodyFormatting emits the default Markdown hierarchy for issue
@@ -308,10 +308,10 @@ func writeIssueBodyFormatting(b *strings.Builder) {
 func writeCommentFormatting(b *strings.Builder) {
 	b.WriteString("## Comment Formatting\n\n")
 	if runtimeGOOS == "windows" {
-		b.WriteString("On Windows, **always write the comment body to a UTF-8 file with your file-write tool first, then post it with `--content-file <path>`** — do NOT pipe via `--content-stdin` (Windows PowerShell 5.1's `$OutputEncoding` may replace non-ASCII characters with `?`). Never use inline `--content` for agent-authored comments. Write the file inside your working directory, never `/tmp` or shared paths (MUL-4252). Keep the same `--parent` value from the trigger comment when replying. Delete the temp file (`Remove-Item ./reply.md`) after posting; do not rely on `\\n` escapes.\n\n")
+		b.WriteString("On Windows, **always write the comment body to a UTF-8 file with your file-write tool first, then post it with `--content-file <path>`** — do NOT pipe via `--content-stdin` (Windows PowerShell 5.1's `$OutputEncoding` may replace non-ASCII characters with `?`). Never use inline `--content` for agent-authored comments. Write the file inside your working directory, never `/tmp` or shared paths (ISS-4252). Keep the same `--parent` value from the trigger comment when replying. Delete the temp file (`Remove-Item ./reply.md`) after posting; do not rely on `\\n` escapes.\n\n")
 		return
 	}
-	b.WriteString("For issue comments, **always write the comment body to a UTF-8 file with your file-write tool first, then post it with `--content-file <path>`**. Never use inline `--content` for agent-authored comments (MUL-2904); never use `--content-stdin` HEREDOCs alongside other flags (#4182). Write the file inside your working directory, never `/tmp` or shared paths (MUL-4252). Keep the same `--parent` value from the trigger comment when replying; delete the temp file (`rm ./reply.md`) after posting; do not rely on `\\n` escapes.\n\n")
+	b.WriteString("For issue comments, **always write the comment body to a UTF-8 file with your file-write tool first, then post it with `--content-file <path>`**. Never use inline `--content` for agent-authored comments (ISS-2904); never use `--content-stdin` HEREDOCs alongside other flags (#4182). Write the file inside your working directory, never `/tmp` or shared paths (ISS-4252). Keep the same `--parent` value from the trigger comment when replying; delete the temp file (`rm ./reply.md`) after posting; do not rely on `\\n` escapes.\n\n")
 }
 
 // writeRepositories emits the Repositories section when at least one repo
@@ -379,7 +379,7 @@ func writeIssueMetadata(b *strings.Builder) {
 // forbid. It and workflow step 4 were added together in #3802 and each carried
 // its own list; the lists then disagreed — this one named status changes, the
 // step named issue create/update and delegation, and neither contained the
-// other. MUL-5442 merges them here so adding an action type is a one-place
+// other. ISS-5442 merges them here so adding an action type is a one-place
 // edit. Step 4 keeps only what this section cannot express: the delegation-only
 // role's "stop once the delegation is delivered" rule.
 func writeInstructionPrecedence(b *strings.Builder) {
@@ -392,7 +392,7 @@ func writeInstructionPrecedence(b *strings.Builder) {
 // The SessionContinuityNotice* family tells the agent a resume the task
 // expected could not be honored. The daemon has already cleared the resume
 // flags, so without this the run would silently reappear as a brand-new
-// conversation (MUL-4424).
+// conversation (ISS-4424).
 //
 // There are three because the surfaces lose different things, and saying so
 // accurately matters more than saying it loudly. The question that separates
@@ -417,7 +417,7 @@ func writeInstructionPrecedence(b *strings.Builder) {
 //
 // Emitted into the per-turn user message rather than the runtime brief: it is
 // true of one run and false of the next on the same issue, so rendering it into
-// the brief broke prompt-cache prefix stability across resumes (MUL-5377).
+// the brief broke prompt-cache prefix stability across resumes (ISS-5377).
 const SessionContinuityNoticeIssue = "## Session Continuity Notice\n\n" +
 	"This run was meant to continue an earlier conversation, but that provider session could not be restored, so you are on a fresh one. The issue and its full comment history are unaffected — that record is the authoritative version of this conversation, and reading it (which your workflow already requires) reconstructs it. What is gone is only your own working memory from earlier turns: what you already tried, what you ruled out, and how far you had got. Re-derive what you need instead of assuming it, and do not claim continuity the record cannot back up. Do not open your reply by announcing this — raise it only where it actually matters, such as when the user refers to reasoning you never wrote down.\n\n"
 
@@ -440,7 +440,7 @@ func writeWorkflowHeader(b *strings.Builder) {
 //
 // Room shape is run context rather than an agent/provider invariant, so it is
 // emitted by daemon.BuildPrompt instead of fragmenting this cached brief across
-// group, direct, and unknown-audience chat sessions (MUL-5377, MUL-5442).
+// group, direct, and unknown-audience chat sessions (ISS-5377, ISS-5442).
 func writeWorkflowChat(b *strings.Builder) {
 	b.WriteString("**You are in chat mode.**\n\n")
 	b.WriteString("- Respond conversationally and helpfully to the user's message\n")
@@ -465,7 +465,7 @@ func writeWorkflowQuickCreate(b *strings.Builder) {
 // AutopilotIssueCommandsGuard is the run-only autopilot issue-command boundary,
 // shared verbatim by the runtime brief (writeWorkflowAutopilot) and the
 // per-turn prompt (daemon.buildAutopilotPrompt). Both land in the same context
-// window; MUL-5696 found the two hand-maintained copies had drifted into an
+// window; ISS-5696 found the two hand-maintained copies had drifted into an
 // unconditional ban on one surface and a conditional one on the other.
 const AutopilotIssueCommandsGuard = "Do not run `orchestra issue get`, `orchestra issue comment add`, or `orchestra issue status` for this run unless the autopilot instructions explicitly tell you to create or update an issue"
 
@@ -503,7 +503,7 @@ func writeWorkflowAutopilot(b *strings.Builder, ctx TaskContextForEnv) {
 // One section, not two, because this text lands in messages[0] — ahead of the
 // whole conversation — and any divergence between the first run and later runs
 // on the same resumed session throws away the prompt cache for the entire
-// history (MUL-5377). So nothing here may depend on which trigger fired this
+// history (ISS-5377). So nothing here may depend on which trigger fired this
 // turn, and no per-run identifier (trigger comment id, thread id, new-comment
 // delta, reply targets) may be interpolated. Those travel in the per-turn user
 // message instead; see daemon.buildCommentPrompt.
@@ -513,7 +513,7 @@ func writeWorkflowAutopilot(b *strings.Builder, ctx TaskContextForEnv) {
 // "own the status arc" and "do not touch the status" can never be read as
 // peer instructions with no arbitration.
 //
-// Step 3 asks for a roots scan first, not `--recent 10` (MUL-5372). `--recent N`
+// Step 3 asks for a roots scan first, not `--recent 10` (ISS-5372). `--recent N`
 // caps THREADS, not comments: each returned thread carries its root plus every
 // descendant with no depth cap, so on an issue with fewer than N root threads it
 // returns the entire comment history. Because this step is mandatory and fires on
@@ -593,7 +593,7 @@ func writeWorkflowIssue(b *strings.Builder, ctx TaskContextForEnv) {
 
 // writeSubIssueCreation emits the Sub-issue Creation section.
 //
-// MUL-5442 demotes the full todo/backlog/stage playbook to the
+// ISS-5442 demotes the full todo/backlog/stage playbook to the
 // multica-working-on-issues built-in skill: the semantics are only needed at
 // the moment an agent is about to create sub-issues, and that moment is
 // exactly what triggers the skill. The brief keeps the one-line map so the
@@ -609,7 +609,7 @@ func writeSubIssueCreation(b *strings.Builder) {
 // daemon writes and builds its own listing from their frontmatter, so repeating
 // the descriptions here bought a second, more expensive copy of what the model
 // already had — measured at ~3,100 tokens per brief on a real task, 40% of the
-// whole brief — and no extra routing signal (MUL-5529).
+// whole brief — and no extra routing signal (ISS-5529).
 //
 // The index itself stays because it is the one skill listing Multica controls.
 // Each CLI's own listing is theirs: its format, and whether it exists at all,
@@ -651,7 +651,7 @@ func writeMentions(b *strings.Builder) {
 func writeAttachments(b *strings.Builder) {
 	b.WriteString("## Attachments\n\n")
 	b.WriteString("Fetch issue/comment attachments via the authenticated CLI (`multica attachment --help`); never open Multica resource URLs directly.\n")
-	// Closes the inbound half of the MUL-4899 loop: an attachment the agent
+	// Closes the inbound half of the ISS-4899 loop: an attachment the agent
 	// just downloaded is the most tempting local path to echo back, because it
 	// came from the conversation and *feels* shared. It is not — the download
 	// landed in this run's private workdir.
@@ -668,7 +668,7 @@ func writeAlwaysUseCLI(b *strings.Builder) {
 // writeDeliveryInvariant emits the always-on delivery contract, shared by every
 // task kind.
 //
-// MUL-4899: agents were writing runtime-local paths into deliverables as
+// ISS-4899: agents were writing runtime-local paths into deliverables as
 // clickable links (`[screenshot](/Users/agent/work/shot.png)`). Two things were
 // wrong with that and the brief stated neither: the link is dead for every
 // reader (the path exists only on the machine that ran the agent), and on
@@ -695,12 +695,12 @@ func writeOutput(b *strings.Builder, kind taskKind, ctx TaskContextForEnv) {
 	case kindQuickCreate:
 		b.WriteString("This is a quick-create task. There is NO existing issue to comment on. Your final stdout is captured automatically and the platform writes the user's success/failure inbox notification based on whether `orchestra issue create` succeeded.\n\n")
 		b.WriteString("- Do NOT call `orchestra issue comment add` — the issue you just created has no conversation context for this run.\n")
-		b.WriteString("- Print exactly one final line: `Created <identifier-or-id>: <title>` after a successful `orchestra issue create`, using the created issue's `identifier` from JSON output (fall back to its `id`; never assume a workspace issue prefix such as `MUL-`).\n")
+		b.WriteString("- Print exactly one final line: `Created <identifier-or-id>: <title>` after a successful `orchestra issue create`, using the created issue's `identifier` from JSON output (fall back to its `id`; never assume a workspace issue prefix such as `ISS-`).\n")
 		b.WriteString("- On CLI failure, exit with the CLI error as the only output — the platform turns it into a `quick_create_failed` inbox item for the user.\n\n")
 		b.WriteString("**Delivering files here:** your stdout is text-only. A file that belongs to the new issue goes on the `orchestra issue create` call itself via `--attachment <path>`; never put its path in the description or in your stdout line.\n")
 	case kindChat:
 		b.WriteString("This is a chat session. Your reply is delivered directly to the chat window the user is reading.\n\n")
-		// Two-layer channel policy (MUL-4899). This is the DELIVERY layer: any
+		// Two-layer channel policy (ISS-4899). This is the DELIVERY layer: any
 		// non-empty channel type means the reply leaves Multica for an external
 		// IM platform, where `attachment upload` has nothing to bind to. The
 		// orthogonal HISTORY layer (which read commands exist) is Slack-only and
@@ -724,9 +724,9 @@ func writeOutput(b *strings.Builder, kind taskKind, ctx TaskContextForEnv) {
 	writeDeliveryInvariant(b)
 }
 
-// buildMetaSkillContentSlim is the post-MUL-3560 brief assembler.
+// buildMetaSkillContentSlim is the post-ISS-3560 brief assembler.
 // Called from buildMetaSkillContent (runtime_config.go). The
-// `runtime_brief_slim` flag that once gated it was retired in MUL-4297.
+// `runtime_brief_slim` flag that once gated it was retired in ISS-4297.
 //
 // The Section × Kind matrix encoded below (skip = elide section, keep
 // = always emit, △ = data-driven inside the helper):
@@ -756,7 +756,7 @@ func buildMetaSkillContentSlim(provider string, ctx TaskContextForEnv) string {
 	// Session Continuity Notice, Task Initiator and Connected Apps used to be
 	// rendered here. They are per-run values, so emitting them into this file
 	// broke prompt-cache prefix stability on every resume; they now travel in
-	// the per-turn user message (daemon.BuildPrompt) instead. See MUL-5377.
+	// the per-turn user message (daemon.BuildPrompt) instead. See ISS-5377.
 	writeHeader(&b)
 	writeBackgroundTaskSafetySlim(&b)
 	writeAgentIdentity(&b, ctx)

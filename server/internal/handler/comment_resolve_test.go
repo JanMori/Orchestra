@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // resolveCommentHTTP drives the POST /api/comments/{id}/resolve handler and
@@ -161,7 +161,7 @@ func newResolveTestFixture(t *testing.T) resolveTestFixture {
 }
 
 // TestResolveComment_ReplacesPriorThreadResolution is the core regression for
-// MUL-3180: a thread must have at most one resolved comment, and resolving a new
+// ISS-3180: a thread must have at most one resolved comment, and resolving a new
 // one atomically clears the previous resolution (instead of leaving two resolved
 // rows that the UI only papered over).
 func TestResolveComment_ReplacesPriorThreadResolution(t *testing.T) {

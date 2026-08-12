@@ -14,7 +14,7 @@ function makeIssue(id: string, overrides: Partial<Issue> = {}): Issue {
     id,
     workspace_id: "ws-1",
     number,
-    identifier: `MUL-${number}`,
+    identifier: `ISS-${number}`,
     title: `Issue ${id}`,
     description: null,
     status: "todo",
@@ -158,9 +158,9 @@ describe("table calculations and CSV", () => {
     expect(
       buildIssueTableCsv(
         ["Identifier", "Title"],
-        [["MUL-1", 'Ship, "verify"\nnext']],
+        [["ISS-1", 'Ship, "verify"\nnext']],
       ),
-    ).toBe('Identifier,Title\r\nMUL-1,"Ship, ""verify""\nnext"');
+    ).toBe('Identifier,Title\r\nISS-1,"Ship, ""verify""\nnext"');
   });
 
   it("neutralizes spreadsheet formulas in headers and string cells", () => {

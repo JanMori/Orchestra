@@ -108,12 +108,8 @@ export function LoginPage({
 }: LoginPageProps) {
   const { t } = useT("auth");
   const qc = useQueryClient();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [step, setStep] = useState<"form" | "code" | "cli_confirm">("form");
   const [account, setAccount] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
@@ -202,60 +198,10 @@ export function LoginPage({
     [account, password, onSuccess, cliCallback, onTokenObtained, qc, t],
   );
 
-  const handleRegister = useCallback(
-    async (e?: React.FormEvent) => {
-      e?.preventDefault();
-      if (!email) {
-        setError(t(($) => $.common.email_required));
-        return;
-      }
-      if (!password || password.length < 6) {
-        setError(t(($) => $.common.password_min_length));
-        return;
-      }
-      setLoading(true);
-      setError("");
-      try {
-        const emailName = email && email.includes("@") ? (email.split("@")[0] ?? "User") : (email || "User");
-        const computedName: string = name || emailName || "User";
-        const regPayload: { name: string; email: string; username?: string; password: string } = {
-          name: computedName || "User",
-          email: email || "",
-          password,
-        };
-        if (username) regPayload.username = username;
-
-        if (cliCallback) {
-          const { token } = await api.register(regPayload);
-          localStorage.setItem("multica_token", token);
-          api.setToken(token);
-          onTokenObtained?.();
-          redirectToCliCallback(cliCallback.url, token, cliCallback.state);
-          return;
-        }
-
-        await useAuthStore.getState().register(regPayload);
-        const wsList = await api.listWorkspaces();
-        qc.setQueryData(workspaceKeys.list(), wsList);
-        onTokenObtained?.();
-        onSuccess();
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : t(($) => $.errors.signup_failed),
-        );
-      } finally {
-        setLoading(false);
-      }
-    },
-    [name, email, username, password, onSuccess, cliCallback, onTokenObtained, qc, t],
-  );
-
   const handleVerify = useCallback(
     async (value: string) => {
       if (value.length !== 6) return;
-      const targetEmail = email || account;
+      const targetEmail = account;
       setLoading(true);
       setError("");
       try {
@@ -283,12 +229,12 @@ export function LoginPage({
         setLoading(false);
       }
     },
-    [email, account, onSuccess, cliCallback, onTokenObtained, qc, t],
+    [account, onSuccess, cliCallback, onTokenObtained, qc, t],
   );
 
   const handleResend = async () => {
     if (cooldown > 0) return;
-    const targetEmail = email || account;
+    const targetEmail = account;
     setError("");
     try {
       await useAuthStore.getState().sendCode(targetEmail);
@@ -402,7 +348,7 @@ export function LoginPage({
               {t(($) => $.verify.title)}
             </CardTitle>
             <CardDescription>
-              {t(($) => $.verify.description, { email: email || account })}
+              {t(($) => $.verify.description, { email: account })}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-4">
@@ -470,125 +416,41 @@ export function LoginPage({
         <CardHeader className="text-center">
           {logo && <div className="mx-auto mb-4">{logo}</div>}
           <CardTitle className="text-display-sm">
-            {mode === "signin"
-              ? t(($) => $.signin.title)
-              : t(($) => $.signin.signup_title)}
+            {t(($) => $.signin.title)}
           </CardTitle>
           <CardDescription>
-            {mode === "signin"
-              ? t(($) => $.signin.description)
-              : t(($) => $.signin.signup_description)}
+            {t(($) => $.signin.description)}
           </CardDescription>
-          <div className="mt-3 flex rounded-lg border p-1">
-            <button
-              type="button"
-              onClick={() => {
-                setMode("signin");
-                setError("");
-              }}
-              className={`flex-1 rounded-md py-1 text-caption font-medium transition-colors ${
-                mode === "signin"
-                  ? "bg-accent text-accent-foreground shadow-xs"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {t(($) => $.signin.tab_signin)}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMode("signup");
-                setError("");
-              }}
-              className={`flex-1 rounded-md py-1 text-caption font-medium transition-colors ${
-                mode === "signup"
-                  ? "bg-accent text-accent-foreground shadow-xs"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {t(($) => $.signin.tab_signup)}
-            </button>
-          </div>
         </CardHeader>
         <CardContent>
-          {mode === "signin" ? (
-            <form id="auth-form" onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="login-account">{t(($) => $.signin.account)}</Label>
-                <Input
-                  id="login-account"
-                  type="text"
-                  placeholder={t(($) => $.signin.account_placeholder)}
-                  value={account}
-                  onChange={(e) => setAccount(e.target.value)}
-                  autoFocus
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="login-password">{t(($) => $.signin.password)}</Label>
-                <Input
-                  id="login-password"
-                  type="password"
-                  placeholder={t(($) => $.signin.password_placeholder)}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              {error && (
-                <p className="text-body text-destructive">{error}</p>
-              )}
-            </form>
-          ) : (
-            <form id="auth-form" onSubmit={handleRegister} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="signup-name">{t(($) => $.signin.name)}</Label>
-                <Input
-                  id="signup-name"
-                  type="text"
-                  placeholder={t(($) => $.signin.name_placeholder)}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="signup-email">{t(($) => $.common.email)}</Label>
-                <Input
-                  id="signup-email"
-                  type="email"
-                  placeholder={t(($) => $.common.email_placeholder)}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="signup-username">{t(($) => $.signin.username)}</Label>
-                <Input
-                  id="signup-username"
-                  type="text"
-                  placeholder={t(($) => $.signin.username_placeholder)}
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="signup-password">{t(($) => $.signin.password)}</Label>
-                <Input
-                  id="signup-password"
-                  type="password"
-                  placeholder={t(($) => $.signin.password_placeholder)}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              {error && (
-                <p className="text-body text-destructive">{error}</p>
-              )}
-            </form>
-          )}
+          <form id="auth-form" onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="login-account">{t(($) => $.signin.account)}</Label>
+              <Input
+                id="login-account"
+                type="text"
+                placeholder={t(($) => $.signin.account_placeholder)}
+                value={account}
+                onChange={(e) => setAccount(e.target.value)}
+                autoFocus
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="login-password">{t(($) => $.signin.password)}</Label>
+              <Input
+                id="login-password"
+                type="password"
+                placeholder={t(($) => $.signin.password_placeholder)}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            {error && (
+              <p className="text-body text-destructive">{error}</p>
+            )}
+          </form>
         </CardContent>
         <CardFooter className="flex flex-col gap-3">
           <Button
@@ -596,17 +458,11 @@ export function LoginPage({
             form="auth-form"
             className="w-full"
             size="lg"
-            disabled={
-              mode === "signin"
-                ? !account || !password || loading
-                : !email || !password || loading
-            }
+            disabled={!account || !password || loading}
           >
             {loading
               ? t(($) => $.signin.sending)
-              : mode === "signin"
-                ? t(($) => $.signin.continue)
-                : t(($) => $.signin.signup_submit)}
+              : t(($) => $.signin.continue)}
           </Button>
           {(google || onGoogleLogin) && (
             <Button

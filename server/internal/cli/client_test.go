@@ -429,7 +429,7 @@ func TestNormalizeGOOS(t *testing.T) {
 }
 
 // TestSetHeaders_AdvertisesStableAttachmentURLs is the only test that proves
-// Phase 1 of MUL-5372 is actually switched on.
+// Phase 1 of ISS-5372 is actually switched on.
 //
 // The server-side tests verify that a request carrying
 // `X-Client-Capabilities: stable_attachment_urls` gets stable attachment paths,

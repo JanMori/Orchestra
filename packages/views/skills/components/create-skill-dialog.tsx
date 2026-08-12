@@ -38,7 +38,6 @@ import { Label } from "@orchestra/ui/components/ui/label";
 import { Textarea } from "@orchestra/ui/components/ui/textarea";
 import { useScrollFade } from "@orchestra/ui/hooks/use-scroll-fade";
 import { cn } from "@orchestra/ui/lib/utils";
-import { openExternal } from "../../platform";
 import { RuntimeLocalSkillImportPanel } from "./runtime-local-skill-import-panel";
 import { useT } from "../../i18n";
 import { isNameConflictError } from "../lib/utils";
@@ -251,12 +250,10 @@ function detectUrlSource(url: string): DetectedSource {
 function SourceCard({
   label,
   exampleHost,
-  browseUrl,
   active,
 }: {
   label: string;
   exampleHost: string;
-  browseUrl: string;
   active: boolean;
 }) {
   return (
@@ -266,13 +263,9 @@ function SourceCard({
       }`}
     >
       <div className="text-caption font-medium">{label}</div>
-      <button
-        type="button"
-        onClick={() => openExternal(browseUrl)}
-        className="mt-0.5 block max-w-full truncate text-left font-mono text-caption text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
-      >
+      <div className="mt-0.5 max-w-full truncate font-mono text-caption text-muted-foreground">
         {exampleHost}
-      </button>
+      </div>
     </div>
   );
 }
@@ -353,19 +346,16 @@ function UrlForm({
             <SourceCard
               label="ClawHub"
               exampleHost="clawhub.ai/owner/skill"
-              browseUrl="https://clawhub.ai"
               active={source === "clawhub"}
             />
             <SourceCard
               label="Skills.sh"
               exampleHost="skills.sh/owner/repo/skill"
-              browseUrl="https://skills.sh"
               active={source === "skills.sh"}
             />
             <SourceCard
               label="GitHub"
               exampleHost="github.com/owner/repo"
-              browseUrl="https://github.com"
               active={source === "github"}
             />
           </div>

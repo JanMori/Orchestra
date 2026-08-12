@@ -19,11 +19,11 @@ import (
 	"github.com/spf13/cobra"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 
-	"github.com/multica-ai/multica/server/internal/cli"
-	"github.com/multica-ai/multica/server/internal/daemon"
-	logger_pkg "github.com/multica-ai/multica/server/internal/logger"
-	"github.com/multica-ai/multica/server/internal/selfexec"
-	"github.com/multica-ai/multica/server/internal/util"
+	"github.com/JanMori/Orchestra/server/internal/cli"
+	"github.com/JanMori/Orchestra/server/internal/daemon"
+	logger_pkg "github.com/JanMori/Orchestra/server/internal/logger"
+	"github.com/JanMori/Orchestra/server/internal/selfexec"
+	"github.com/JanMori/Orchestra/server/internal/util"
 )
 
 var daemonCmd = &cobra.Command{
@@ -299,6 +299,13 @@ func requireDaemonAuth(profile string) error {
 		return fmt.Errorf("load CLI config: %w", err)
 	}
 	if cfg.Token == "" {
+		if cfg.ServerURL != "" {
+			if token, tokenErr := cli.FetchDaemonSetupToken(cfg.ServerURL); tokenErr == nil && token != "" {
+				cfg.Token = token
+				_ = cli.SaveCLIConfigForProfile(cfg, profile)
+				return nil
+			}
+		}
 		loginHint := "orchestra login"
 		if profile != "" {
 			loginHint = fmt.Sprintf("orchestra login --profile %s", profile)
@@ -1803,7 +1810,7 @@ func profilesRootDir() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(home, ".multica", "profiles"), nil
+	return filepath.Join(home, ".orchestra", "profiles"), nil
 }
 
 func samePath(a, b string) bool {

@@ -161,7 +161,7 @@ var allFileBasedProviders = []string{
 }
 
 // TestPrepareThenCleanupSidecarsRoundTripEmptyWorkdir is the headline
-// invariant the issue (MUL-2784) calls out: a user repo that contained
+// invariant the issue (ISS-2784) calls out: a user repo that contained
 // nothing related to Multica before a task ran must contain nothing
 // related to Multica after the task finishes — no .agent_context/,
 // no .claude/skills/, no .multica/, no stub directories. The test

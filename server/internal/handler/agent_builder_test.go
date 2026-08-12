@@ -13,8 +13,8 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 
-	"github.com/multica-ai/multica/server/internal/service"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 func TestAgentBuilderInstructionsConstrainModelsToRuntimeCatalog(t *testing.T) {
@@ -386,7 +386,7 @@ func insertChatMessage(t *testing.T, sessionID, role, content string) {
 
 // The studio stopped deleting builder sessions on navigation, so this list is
 // the only route back to one. It must carry the carrier's runtime: the client
-// seeds its picker from it, and a wrong answer reintroduces MUL-5163 (picker
+// seeds its picker from it, and a wrong answer reintroduces ISS-5163 (picker
 // shows A while every message runs on B).
 func TestListAgentBuilderSessionsReturnsCarrierRuntime(t *testing.T) {
 	if testHandler == nil {
@@ -1216,7 +1216,7 @@ func TestSwitchAgentBuilderRuntimeEnforcesRuntimeAndSessionOwnership(t *testing.
 	// anyone's private runtime.
 	var plainMemberID string
 	if err := testPool.QueryRow(ctx, `
-		INSERT INTO "user" (name, email) VALUES ('Builder Switch Plain Member', 'builder-switch-plain@multica.ai')
+		INSERT INTO "user" (name, email) VALUES ('Builder Switch Plain Member', 'builder-switch-plain@orchestra.local')
 		RETURNING id
 	`).Scan(&plainMemberID); err != nil {
 		t.Fatalf("create plain member user: %v", err)

@@ -6,12 +6,12 @@ description: 连接一台电脑，创建你的第一个智能体，并让它完�
 import { Callout } from "fumadocs-ui/components/callout";
 
 <Callout type="info">
-智能体执行前，运行它的电脑上需要有至少一款已安装并登录的[支持的 AI 编程工具](/providers)，例如 Claude Code、Codex 或 Cursor。Multica 不自带这些工具。
+智能体执行前，运行它的电脑上需要有至少一款已安装并登录的[支持的 AI 编程工具](/providers)，例如 Claude Code、Codex 或 Cursor。Orchestra 不自带这些工具。
 </Callout>
 
 ## 1. 登录，进入工作区
 
-用 Web（[multica.ai](https://multica.ai)）或 [Multica Desktop](https://multica.ai/download) 登录，支持邮箱验证码和 Google。
+用 Web（[localhost:5001](http://localhost:5001)）或 [Orchestra Desktop](/docs) 登录，支持邮箱验证码和 Google。
 
 - **Desktop**：可以自动连接这台电脑。
 - **Web**：需要在下一步通过命令行连接。
@@ -26,14 +26,14 @@ import { Callout } from "fumadocs-ui/components/callout";
   **macOS / Linux**
 
   ```bash
-  curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash
+  curl -fsSL https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.sh | bash
   orchestra setup
   ```
 
   **Windows PowerShell**
 
   ```powershell
-  irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex
+  irm https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.ps1 | iex
   orchestra setup
   ```
 
@@ -66,9 +66,9 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 1. 在 **创建者** 中选择刚创建的智能体；
 2. 用一两句话描述要做的事，例如"介绍一下这个工作区可以怎么用"；
-3. 提交。Multica 会创建 issue、把智能体设为负责人并立即开始执行。
+3. 提交。Orchestra 会创建 issue、把智能体设为负责人并立即开始执行。
 
-![新建 issue 弹窗的智能体模式：Created by 已选中 Multica Assistant](/images/docs/quickstart-new-issue.png)
+![新建 issue 弹窗的智能体模式：Created by 已选中 Orchestra Assistant](/images/docs/quickstart-new-issue.png)
 
 ## 5. 查看进度和结果
 
@@ -90,6 +90,6 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 ## 接下来
 
-- [核心概念](/concepts) — 三分钟认识 Multica 的全部核心对象。
-- [Multica 的工作方式](/how-multica-works) — 理解 issue、智能体、运行时和每次执行之间的关系。
+- [核心概念](/concepts) — 三分钟认识 Orchestra 的全部核心对象。
+- [Orchestra 的工作方式](/how-orchestra-works) — 理解 issue、智能体、运行时和每次执行之间的关系。
 - [让智能体开始工作](/triggering-agents) — 除了分配，还有 @评论、对话和自动化三种触发方式。

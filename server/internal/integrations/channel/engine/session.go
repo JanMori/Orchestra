@@ -11,12 +11,12 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 
-	"github.com/multica-ai/multica/server/internal/integrations/channel"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // This file is the SHARED, channel-agnostic chat-session service every IM
-// adapter reuses (MUL-3516). It was lifted out of the Feishu-specific
+// adapter reuses (ISS-3516). It was lifted out of the Feishu-specific
 // lark.chatSessionService so that adding an IM never re-implements the
 // session/append/`/issue` machinery — the platform adapter contributes only a
 // channel_type, its session titles, and (because enrichment is

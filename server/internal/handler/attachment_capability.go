@@ -10,10 +10,10 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/multica-ai/multica/server/internal/auth"
+	"github.com/JanMori/Orchestra/server/internal/auth"
 )
 
-// Attachment download capabilities — MUL-5292.
+// Attachment download capabilities — ISS-5292.
 //
 // A native download is a browser-level request: Electron's
 // webContents.downloadURL (and an <img> in a cross-site webview) carries

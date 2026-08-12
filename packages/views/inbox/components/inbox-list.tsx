@@ -18,7 +18,7 @@ import { useT } from "../../i18n";
  * identical scroller. Rows are virtualized via react-virtuoso so only the
  * visible window (plus a small overscan) is mounted — the notification list
  * can grow long and every row otherwise carries an avatar + hover card, so
- * mounting all of them inflates the tab-switch commit (MUL-4474).
+ * mounting all of them inflates the tab-switch commit (ISS-4474).
  *
  * Virtualization changes exactly one thing: whether an off-screen row is in
  * the DOM. Selection, hover, archive, and scroll semantics are unchanged —
@@ -80,7 +80,7 @@ export function InboxList({
   );
 
   // Arrow keys move the selection instead of scrolling the container — what
-  // every mail-style list does (MUL-5622). Bound to the scroll container
+  // every mail-style list does (ISS-5622). Bound to the scroll container
   // rather than the document so it only fires while focus is inside the list:
   // pressing Down while reading the issue detail must not swap the row out
   // from under the reader.
@@ -182,7 +182,7 @@ export function InboxList({
   // While the callback ref hasn't handed the scroll element over yet (the first
   // render after a remount), seed a bounded slice of real rows so the list
   // never paints blank; once it's set, mount the Virtuoso with a matching
-  // `initialItemCount` so the measurement frame keeps those rows (MUL-4750).
+  // `initialItemCount` so the measurement frame keeps those rows (ISS-4750).
   return (
     <div
       ref={setScrollEl}

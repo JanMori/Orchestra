@@ -5,11 +5,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
-// Regression tests for the second half of MUL-5492: `issue:updated` used to
+// Regression tests for the second half of ISS-5492: `issue:updated` used to
 // broadcast prev_description alongside the new description, so every debounced
 // description autosave pushed TWO full copies of the description to every
 // connection in the workspace — including users who did not have the issue open.

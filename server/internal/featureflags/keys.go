@@ -3,12 +3,12 @@ package featureflags
 import (
 	"context"
 
-	"github.com/multica-ai/multica/server/pkg/featureflag"
+	"github.com/JanMori/Orchestra/server/pkg/featureflag"
 )
 
 const (
 	// ComposioMCPApps gates the Composio app management UI and — together with
-	// the MUL-3963 permission_mode / invocation_targets access model it depends
+	// the ISS-3963 permission_mode / invocation_targets access model it depends
 	// on — the aligned Private / Public-to picker in the agent create flow.
 	// The access model exists to gate Composio sharing, so the two ship on the
 	// same switch.

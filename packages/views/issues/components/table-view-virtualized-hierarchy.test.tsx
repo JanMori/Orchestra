@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  *
- * MUL-5477 regression coverage for the PRODUCTION Table path.
+ * ISS-5477 regression coverage for the PRODUCTION Table path.
  *
  * Production mounts the Table with `virtualizeRows` (table-view.tsx) and
  * `tableHierarchy` defaults to on (view-store.ts), so every parent row carries
@@ -11,7 +11,7 @@
  * reports a zero-height viewport and the real one would render nothing.
  *
  * This file supplies the missing layout instead of removing the virtualizer,
- * because the virtualizer is what closes the circuit MUL-5477 runs around:
+ * because the virtualizer is what closes the circuit ISS-5477 runs around:
  * `serverDisplayRows` feeds the row list, the row list feeds the virtualizer's
  * `getItemKey`, and a new-but-equal row list makes the virtualizer re-key,
  * notify and re-render — which rebuilds the row list again. Any dependency of
@@ -193,7 +193,7 @@ function makeIssue(id: string): Issue {
     id,
     workspace_id: "ws-1",
     number: 1,
-    identifier: `MUL-${id}`,
+    identifier: `ISS-${id}`,
     title: `Task ${id}`,
     description: null,
     status: "todo",
@@ -327,12 +327,12 @@ describe("Table view on the production virtualized hierarchy path", () => {
 
     // The virtualizer is real, so rows appear only if it saw a viewport. This is
     // the part every other Table test skips by replacing it.
-    await screen.findByText("MUL-a");
+    await screen.findByText("ISS-a");
     // Depth 1 arrives only by a branch sentinel activating its own query.
-    await waitFor(() => expect(screen.queryByText("MUL-a1")).toBeTruthy(), {
+    await waitFor(() => expect(screen.queryByText("ISS-a1")).toBeTruthy(), {
       timeout: 5000,
     });
-    await waitFor(() => expect(screen.queryByText("MUL-c2")).toBeTruthy(), {
+    await waitFor(() => expect(screen.queryByText("ISS-c2")).toBeTruthy(), {
       timeout: 5000,
     });
 

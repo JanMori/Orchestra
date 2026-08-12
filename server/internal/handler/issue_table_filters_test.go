@@ -148,7 +148,7 @@ func TestListIssues_TableFacetsAreServerSide(t *testing.T) {
 	if err := testPool.QueryRow(ctx, `SELECT number FROM issue WHERE id = $1`, issueB).Scan(&issueBNumber); err != nil {
 		t.Fatalf("read issue number: %v", err)
 	}
-	assertList("&q="+url.QueryEscape(fmt.Sprintf("MUL-%d", issueBNumber)), issueB)
+	assertList("&q="+url.QueryEscape(fmt.Sprintf("ISS-%d", issueBNumber)), issueB)
 	assertList(
 		"&statuses=todo&priorities=high&include_no_assignee=true&label_ids="+labelA+"&top_level_only=true",
 		issueA,

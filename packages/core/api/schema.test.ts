@@ -140,7 +140,7 @@ describe("ApiClient schema fallback", () => {
       id: "issue-1",
       workspace_id: "ws-1",
       number: 1,
-      identifier: "MUL-1",
+      identifier: "ISS-1",
       title: "Created",
       description: null,
       status: "todo",
@@ -257,7 +257,7 @@ describe("ApiClient schema fallback", () => {
     });
 
     it("accepts an old-server row without assignee_type or derived fields", async () => {
-      // Pre-MUL-2429 servers omit assignee_type; servers older than the
+      // Pre-ISS-2429 servers omit assignee_type; servers older than the
       // list-derived-fields change omit trigger_kinds/next_run_at/
       // last_run_status. Both must parse, not fall back.
       stubFetchJson({ autopilots: [baseAutopilot], total: 1 });

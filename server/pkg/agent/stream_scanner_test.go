@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-// TestAgentStreamScannerReadsPastOldTenMiBCap is the regression for MUL-5722 /
+// TestAgentStreamScannerReadsPastOldTenMiBCap is the regression for ISS-5722 /
 // GH#4520: Codex serializes a whole thread into the single `thread/resume`
 // response line, and the previous 10 MiB bound turned any thread past that
 // size into a permanent "bufio.Scanner: token too long" resume failure.

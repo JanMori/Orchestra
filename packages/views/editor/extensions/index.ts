@@ -176,7 +176,7 @@ export interface EditorExtensionsOptions {
   slashCommandMode?: "skill" | "command";
   /**
    * Quick actions offered in the "command" `/` menu, plus the resolver that
-   * turns a pick into the text it would post (MUL-5465). Both are functions so
+   * turns a pick into the text it would post (ISS-5465). Both are functions so
    * the editor is created once while still reading live data; the setup layer
    * owns React Query access. Omit on composers with no issue context.
    */
@@ -251,7 +251,7 @@ export function createEditorExtensions(
     createMarkdownCopyExtension(),
     FileCardExtension,
     // Must precede the mention and slash pickers: it supplies the "the user
-    // typed this trigger" signal their `shouldShow` reads (MUL-5429).
+    // typed this trigger" signal their `shouldShow` reads (ISS-5429).
     SuggestionTriggerArmingExtension,
     BaseMentionExtension.configure({
       HTMLAttributes: { class: "mention" },

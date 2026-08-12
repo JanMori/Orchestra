@@ -6,15 +6,15 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // Delete-time channel cleanup fixtures. These pin the #4810 fix on the OTHER
 // half of "auto-reclaim on delete": deleting a workspace, or hard-deleting an
 // archived agent on runtime teardown, must sweep the channel_installation rows
 // (and every dependent row) their owners left behind — channel_* has no FK to
-// workspace/agent (MUL-3515 §4), so nothing else would.
+// workspace/agent (ISS-3515 §4), so nothing else would.
 const (
 	ccWS         = "cc000000-0000-4000-8000-000000000001"
 	ccRuntime    = "cc000000-0000-4000-8000-000000000003"
@@ -134,7 +134,7 @@ func assertInstallationIntact(t *testing.T, ctx context.Context, pool *pgxpool.P
 
 // TestDeleteChannelInstallationsBySystemRuntimeAgents: runtime teardown hard-
 // deletes only the SYSTEM agents on the runtime (user agents are unbound and
-// keep everything since MUL-5559), so this cleanup must sweep exactly those
+// keep everything since ISS-5559), so this cleanup must sweep exactly those
 // agents' installations and dependents. The archived user agent in the fixture
 // is the regression: sweeping it would take a working bot away from an agent
 // that is still there.

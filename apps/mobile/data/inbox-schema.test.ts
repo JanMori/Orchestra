@@ -13,7 +13,7 @@ import { InboxListSchema } from "./schemas";
  * `details` map in server/cmd/server/notification_listeners.go is typed
  * `map[string]string`, so a non-string value is a compile error there.
  *
- * Why both halves exist: during MUL-5483 a new inbox type was added and the
+ * Why both halves exist: during ISS-5483 a new inbox type was added and the
  * mobile label map was updated so `tsc` passed — but a NUMBER went into
  * `details.child_count`, and `details` is `z.record(z.string(), z.string())`.
  * Because the endpoint parses an ARRAY, one bad row fails the whole parse and

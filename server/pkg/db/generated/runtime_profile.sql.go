@@ -60,7 +60,7 @@ type CreateRuntimeProfileParams struct {
 	Enabled        bool        `json:"enabled"`
 }
 
-// Custom Runtime profiles (MUL-3284). Workspace-level definitions of a custom
+// Custom Runtime profiles (ISS-3284). Workspace-level definitions of a custom
 // runtime; see migration 120 for the table. Relational integrity (workspace,
 // created_by) is enforced in the application layer — there are no DB FKs.
 func (q *Queries) CreateRuntimeProfile(ctx context.Context, arg CreateRuntimeProfileParams) (RuntimeProfile, error) {

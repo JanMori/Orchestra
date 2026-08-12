@@ -190,7 +190,7 @@ func TestStaticProviderCustomAttribute(t *testing.T) {
 }
 
 // TestStaticProviderVariantOnlyWhenEnabled is the regression test for the
-// review feedback from MUL-3615: a Rule with Variant="experiment-v2" but
+// review feedback from ISS-3615: a Rule with Variant="experiment-v2" but
 // enabled=false (deny match, percent miss, default-off) MUST surface
 // Variant="off", not the on-variant. Otherwise a caller branching on
 // Variant() would route control users into the experiment arm.

@@ -165,7 +165,7 @@ describe("FeedbackModal", () => {
     });
   });
 
-  // MUL-4808 — Feedback refused to submit mid-upload inside the handler, but
+  // ISS-4808 — Feedback refused to submit mid-upload inside the handler, but
   // the Send button stayed enabled, so the only signal was a toast fired after
   // a click that looked like it should have worked.
   describe("upload submit gate", () => {

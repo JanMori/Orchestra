@@ -86,7 +86,7 @@ func RegionOrDefault(s string) Region {
 // these constants to keep dashboards / queries consistent.
 //
 // All drop_reason values are recorded WITHOUT message body — see
-// MUL-2671 §4.7 (drop-audit policy).
+// ISS-2671 §4.7 (drop-audit policy).
 type DropReason string
 
 const (

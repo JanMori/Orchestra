@@ -267,7 +267,7 @@ describe("RuntimeDetail visibility section", () => {
     expect(screen.queryByText("Private")).not.toBeInTheDocument();
   });
 
-  // MUL-3352: an owner viewing an online local (self-healing) runtime
+  // ISS-3352: an owner viewing an online local (self-healing) runtime
   // used to see a disabled Delete button with only a hover tooltip
   // explaining why. The new contract: the button is always clickable
   // for owner/admin; the dialog now carries the self-heal warning.

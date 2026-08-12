@@ -10,7 +10,7 @@ import (
 // reuse-eligibility marker for a normal (non-local) issue env, carrying the
 // owning workspace/issue/agent. This is the artifact shouldReusePriorWorkdir
 // keys off so a follow-up claimed before .gc_meta.json is written can still
-// prove the workdir is a safe reuse target (MUL-4886).
+// prove the workdir is a safe reuse target (ISS-4886).
 func TestPrepareManagedIssueEnvWritesProvenance(t *testing.T) {
 	root := t.TempDir()
 	env, err := Prepare(PrepareParams{

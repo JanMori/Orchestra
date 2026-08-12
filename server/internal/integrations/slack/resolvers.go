@@ -9,9 +9,9 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 
-	"github.com/multica-ai/multica/server/internal/integrations/channel"
-	"github.com/multica-ai/multica/server/internal/integrations/channel/engine"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel/engine"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // This file is the Slack ResolverSet: the platform-specific seams the
@@ -30,7 +30,7 @@ const originSlackChat = "slack_chat"
 // engine.OutboundReplier to disable them (the inbound pipeline — route,
 // identity, dedup, session, /issue, run trigger — is fully functional without
 // it). typing shows the "processing" reaction on ingest; pass nil to disable it
-// (MUL-3874). (MUL-3666 wired the replier; stage 3 had both nil.)
+// (ISS-3874). (ISS-3666 wired the replier; stage 3 had both nil.)
 func NewSlackResolverSet(q *db.Queries, tx engine.TxStarter, replier engine.OutboundReplier, typing *TypingIndicatorManager) engine.ResolverSet {
 	set := engine.ResolverSet{
 		Installation: &installationResolver{q: q},
@@ -204,7 +204,7 @@ func (r *identityResolver) ResolveSender(ctx context.Context, inst engine.Resolv
 		}
 		// Not linked to THIS installation. Before prompting, reuse a link the same
 		// Slack user already made to another installation of the same team in this
-		// workspace (MUL-3911): one link per Slack workspace, not per app.
+		// workspace (ISS-3911): one link per Slack workspace, not per app.
 		cand, ok, ferr := r.reusableBinding(ctx, inst, senderID)
 		if ferr != nil {
 			return engine.ResolvedIdentity{}, ferr
@@ -252,7 +252,7 @@ func (r *identityResolver) ResolveSender(ctx context.Context, inst engine.Resolv
 
 // reusableBinding looks for a link the same Slack user already made to ANOTHER
 // installation of the SAME workspace + SAME Slack team, so a second app in one
-// Slack workspace need not re-prompt (MUL-3911). ok=false (nil error) means "no
+// Slack workspace need not re-prompt (ISS-3911). ok=false (nil error) means "no
 // reuse — prompt to link": the installation records no team (legacy), its
 // Platform is not a ChannelInstallation, or no matching binding exists.
 func (r *identityResolver) reusableBinding(ctx context.Context, inst engine.ResolvedInstallation, senderID string) (db.ChannelUserBinding, bool, error) {

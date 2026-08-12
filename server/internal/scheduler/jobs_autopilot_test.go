@@ -6,7 +6,7 @@ import (
 )
 
 // TestAdvancedNextRunStrictlyAfterPlanTime is the regression guard for
-// MUL-3749's boundary case: the post-dispatch next_run_at write-back must
+// ISS-3749's boundary case: the post-dispatch next_run_at write-back must
 // land on the slot AFTER the one that just fired, even when this app
 // instance's local clock lags the DB clock that judged the plan due.
 // Anchoring naively on time.Now() alone could recompute the just-fired

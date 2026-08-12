@@ -6,12 +6,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // TestCreateComment_CrewMentionStampsCrewIDOnLeaderTask locks the enqueue
-// side of the MUL-3730 fix: when a comment @mentions a crew, the leader task
+// side of the ISS-3730 fix: when a comment @mentions a crew, the leader task
 // it enqueues must carry crew_id on the task row, so the daemon claim handler
 // can locate the crew and inject the briefing (keyed off is_leader_task +
 // crew_id, not issue assignee). The issue here is NOT assigned to the crew —
@@ -85,7 +85,7 @@ func TestCreateComment_CrewMentionStampsCrewIDOnLeaderTask(t *testing.T) {
 }
 
 // TestCreateRetryTask_InheritsCrewID locks the retry-clone contract for the
-// MUL-3730 fix: a retried leader task must inherit crew_id from its parent so
+// ISS-3730 fix: a retried leader task must inherit crew_id from its parent so
 // the crew-leader briefing keeps being injected across retries. Parallels
 // TestCreateRetryTask_InheritsIsLeaderTask.
 func TestCreateRetryTask_InheritsCrewID(t *testing.T) {

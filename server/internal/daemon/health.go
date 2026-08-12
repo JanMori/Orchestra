@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/multica-ai/multica/server/internal/daemon/repocache"
+	"github.com/JanMori/Orchestra/server/internal/daemon/repocache"
 )
 
 // HealthResponse is returned by the daemon's local health endpoint.
@@ -40,7 +40,7 @@ type HealthResponse struct {
 	//
 	// Without it, "CLI not installed" and "CLI installed but rejected" both
 	// render as an absent runtime, which is what made GH #6077 unactionable for
-	// the reporter (MUL-5439).
+	// the reporter (ISS-5439).
 	SkippedAgents map[string]string `json:"skipped_agents,omitempty"`
 	// ReloadPendingReason explains why the daemon has confirmed a multica
 	// version change on disk but hasn't restarted into it yet — it was busy at

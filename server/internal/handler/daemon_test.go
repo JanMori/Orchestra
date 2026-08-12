@@ -16,12 +16,12 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
-	"github.com/multica-ai/multica/server/internal/auth"
-	"github.com/multica-ai/multica/server/internal/daemonws"
-	"github.com/multica-ai/multica/server/internal/middleware"
-	"github.com/multica-ai/multica/server/internal/service"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/auth"
+	"github.com/JanMori/Orchestra/server/internal/daemonws"
+	"github.com/JanMori/Orchestra/server/internal/middleware"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 func TestLogClaimEndpointSlowIncludesPayloadFields(t *testing.T) {
@@ -310,7 +310,7 @@ func claimChatIntroForTest(t *testing.T, runtimeID string) (string, bool, string
 	return resp.Task.ID, resp.Task.ChatIntro, w.Body.String()
 }
 
-// TestClaimTaskByRuntime_ChatIntroGateClearsAfterUserReplies pins the MUL-4259
+// TestClaimTaskByRuntime_ChatIntroGateClearsAfterUserReplies pins the ISS-4259
 // fix: an is_agent_intro session drives the self-introduction prompt only on
 // its first, message-less turn. Once the creator has replied, later turns on
 // the same (still is_agent_intro) session must claim with chat_intro=false so
@@ -737,7 +737,7 @@ func TestClaimTaskByRuntime_SkillBundleRefsAndResolve(t *testing.T) {
 // TestClaimTaskByRuntime_PopulatesWorkspaceContext verifies the claim
 // response carries workspace.context so the daemon can inject the
 // workspace-level system prompt into every agent brief. Regression coverage
-// for MUL-2542: before this fix the field was never plumbed through, so
+// for ISS-2542: before this fix the field was never plumbed through, so
 // even workspaces that had set a context got an empty brief.
 func TestClaimTaskByRuntime_PopulatesWorkspaceContext(t *testing.T) {
 	if testHandler == nil || testPool == nil {
@@ -1857,7 +1857,7 @@ func TestGetDaemonWorkspaceRepos_VersionIgnoresOrderAndDescription(t *testing.T)
 //   - delete the stale old row so there's exactly one runtime per machine,
 //   - record the legacy daemon_id on the new row for traceability.
 //
-// This is the acceptance path from MUL-975: hostname drift must no longer
+// This is the acceptance path from ISS-975: hostname drift must no longer
 // orphan agents on stale runtime rows.
 func TestDaemonRegister_MergesLegacyDaemonIDRuntime(t *testing.T) {
 	if testHandler == nil {
@@ -2817,7 +2817,7 @@ func TestClaimTaskByRuntime_TaskWorkspaceMismatch_CancelsAndRejects(t *testing.T
 	}
 }
 
-// Regression test for MUL-1198: comment-triggered tasks that finish without
+// Regression test for ISS-1198: comment-triggered tasks that finish without
 // the agent posting any comment must still deliver a synthesized result
 // comment, threaded under the trigger. Before the fix, CompleteTask exempted
 // comment-triggered tasks from the auto-synthesis path, so a Claude Code /
@@ -2874,7 +2874,7 @@ func TestCompleteTask_CommentTriggered_SynthesizesCommentWhenAgentSilent(t *test
 	t.Cleanup(func() { testPool.Exec(ctx, `DELETE FROM agent_task_queue WHERE id = $1`, taskID) })
 
 	agentFinalOutput := fmt.Sprintf(
-		"sure, see MUL-3310, issue/MUL-3310, feature/MUL-3310, and [MUL-3310](mention://issue/%s)",
+		"sure, see ISS-3310, issue/ISS-3310, feature/ISS-3310, and [ISS-3310](mention://issue/%s)",
 		issueID,
 	)
 
@@ -3547,7 +3547,7 @@ func TestClaimTask_IssuePriorSessionRuntimeGuard(t *testing.T) {
 	}
 }
 
-// TestClaimTask_ManualRetryReusesWorkdir is the MUL-4869 claim-layer contract: a
+// TestClaimTask_ManualRetryReusesWorkdir is the ISS-4869 claim-layer contract: a
 // manual retry (rerun_of_task_id set) ALWAYS hands back the source task's
 // workdir, and resumes the session only when the source failure did not poison
 // the conversation AND the source ran on the claiming runtime. The rerun row's
@@ -3745,7 +3745,7 @@ func TestClaimTask_ChatPriorSessionRuntimeGuard(t *testing.T) {
 }
 
 // TestClaimTask_ChatDeliversAllUnansweredUserMessages pins the fix for the
-// regression the MUL-2968 debounce exposed: when several user messages are
+// regression the ISS-2968 debounce exposed: when several user messages are
 // debounced into a single run, the agent must receive ALL of them, not just
 // the most recent. Before the fix the daemon prompt was the single latest
 // user message, so "看上海天气" then "还有青岛" answered only Qingdao.
@@ -3824,9 +3824,9 @@ func TestClaimTask_ChatDeliversAllUnansweredUserMessages(t *testing.T) {
 	}
 }
 
-// TestClaimTask_ChatPopulatesInitiator verifies MUL-2645 for chat tasks: the
+// TestClaimTask_ChatPopulatesInitiator verifies ISS-2645 for chat tasks: the
 // claim response surfaces the STORED task initiator (initiator_user_id captured
-// at enqueue), NOT chat_session.creator_id. This is the MUL-2645 review fix: for
+// at enqueue), NOT chat_session.creator_id. This is the ISS-2645 review fix: for
 // Lark group chats the session creator is the installer, not the sender, so the
 // claim must read the stored sender. The test pins this by making the creator a
 // DIFFERENT user (the "installer") from the stored initiator (the sender) and
@@ -3841,7 +3841,7 @@ func TestClaimTask_ChatPopulatesInitiator(t *testing.T) {
 	// A separate user stands in for the Lark group session creator (installer).
 	var installerID string
 	if err := testPool.QueryRow(ctx, `
-		INSERT INTO "user" (name, email) VALUES ('Installer User', 'installer-test@multica.ai')
+		INSERT INTO "user" (name, email) VALUES ('Installer User', 'installer-test@orchestra.local')
 		RETURNING id
 	`).Scan(&installerID); err != nil {
 		t.Fatalf("setup: create installer user: %v", err)
@@ -4288,7 +4288,7 @@ func installFreshMembershipCache(t *testing.T) {
 // deletes it on test cleanup. Returns the user id as a string.
 func createEphemeralUser(t *testing.T, label string) string {
 	t.Helper()
-	email := fmt.Sprintf("membership-cache-%s-%s@multica.ai", label, uuid.NewString())
+	email := fmt.Sprintf("membership-cache-%s-%s@orchestra.local", label, uuid.NewString())
 	var userID string
 	if err := testPool.QueryRow(context.Background(), `
 		INSERT INTO "user" (name, email) VALUES ($1, $2) RETURNING id
@@ -4647,7 +4647,7 @@ func TestClaimTaskByRuntime_CommentTaskPopulatesNewCommentCount(t *testing.T) {
 	}
 }
 
-// TestClaimTaskByRuntime_CommentTaskPopulatesInitiator verifies MUL-2645: the
+// TestClaimTaskByRuntime_CommentTaskPopulatesInitiator verifies ISS-2645: the
 // claim response surfaces the triggering comment's member author as the task
 // initiator (type + id + name + email), so a workspace-visible agent learns who
 // actually asked rather than seeing the runtime owner. createCommentTriggeredClaimTask

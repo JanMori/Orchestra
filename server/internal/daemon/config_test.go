@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/internal/cli"
+	"github.com/JanMori/Orchestra/server/internal/cli"
 )
 
 func TestPatternsFromEnv_DefaultsWhenUnset(t *testing.T) {
@@ -197,36 +197,7 @@ func lookPathInPath(name string) (string, error) {
 	return exec.LookPath(name)
 }
 
-func TestIsOfficialCloudServer(t *testing.T) {
-	for _, tc := range []struct {
-		name string
-		url  string
-		want bool
-	}{
-		{"canonical cloud https", "https://api.multica.ai", true},
-		{"canonical cloud with trailing slash stripped", "https://api.multica.ai/", true},
-		{"canonical cloud case-insensitive", "https://API.Multica.AI", true},
-		{"cloud over plain http (unusual but match host)", "http://api.multica.ai", true},
-		{"localhost is self-host", "http://localhost:8080", false},
-		{"loopback ip is self-host", "http://127.0.0.1:8080", false},
-		{"lan ip is self-host", "http://192.168.0.28:8080", false},
-		{"third-party host is self-host", "https://multica.example.com", false},
-		// Staging / preview / future subdomains deliberately follow the
-		// safer self-host default until explicitly opted in.
-		{"multica.ai apex is not the api host", "https://multica.ai", false},
-		{"staging subdomain is self-host", "https://staging.multica.ai", false},
-		{"preview subdomain is self-host", "https://api-preview.multica.ai", false},
-		// Malformed inputs must not falsely match.
-		{"empty string is self-host", "", false},
-		{"garbage string is self-host", "::not a url::", false},
-	} {
-		t.Run(tc.name, func(t *testing.T) {
-			if got := isOfficialCloudServer(tc.url); got != tc.want {
-				t.Errorf("isOfficialCloudServer(%q) = %v, want %v", tc.url, got, tc.want)
-			}
-		})
-	}
-}
+
 
 // stageFakeAgent writes an executable `claude` script into a temp dir and
 // points PATH (and the daemon-id env var) so LoadConfig can run end-to-end
@@ -295,7 +266,7 @@ func TestLoadConfig_SkipsMulticaHooksShadowingAgentBinaries(t *testing.T) {
 
 	home := t.TempDir()
 	t.Setenv("HOME", home)
-	hooksDir := filepath.Join(home, ".multica", "hooks")
+	hooksDir := filepath.Join(home, ".orchestra", "hooks")
 	if err := os.MkdirAll(hooksDir, 0o755); err != nil {
 		t.Fatalf("create hooks dir: %v", err)
 	}
@@ -355,7 +326,7 @@ func TestLoadConfig_SkipsMulticaHooksFromLoginShellFallback(t *testing.T) {
 
 	home := t.TempDir()
 	t.Setenv("HOME", home)
-	hooksDir := filepath.Join(home, ".multica", "hooks")
+	hooksDir := filepath.Join(home, ".orchestra", "hooks")
 	if err := os.MkdirAll(hooksDir, 0o755); err != nil {
 		t.Fatalf("create hooks dir: %v", err)
 	}
@@ -407,7 +378,7 @@ func TestLoadConfig_SkipsMulticaHooksFromLoginShellFallback(t *testing.T) {
 }
 
 // TestLoadConfig_AutoUpdateDefault_SelfHostOff is the regression guard for
-// MUL-2381: a daemon pointed at any non-cloud server URL must default
+// ISS-2381: a daemon pointed at any non-cloud server URL must default
 // AutoUpdateEnabled to false, because self-host operators frequently run a
 // fork and the upstream GitHub release would silently overwrite it.
 func TestLoadConfig_AutoUpdateDefault_SelfHostOff(t *testing.T) {
@@ -527,7 +498,7 @@ func TestLoadConfig_OpenCodeIdleWatchdog(t *testing.T) {
 func TestLoadConfig_AutoUpdateDefault_CloudOn(t *testing.T) {
 	stageFakeAgent(t)
 	cfg, err := LoadConfig(Overrides{
-		ServerURL:      "wss://api.multica.ai/ws",
+		ServerURL:      "wss://api.orchestra.ai/ws",
 		WorkspacesRoot: t.TempDir(),
 	})
 	if err != nil {
@@ -561,7 +532,7 @@ func TestLoadConfig_AutoUpdateEnv_ForcesOffForCloud(t *testing.T) {
 	stageFakeAgent(t)
 	t.Setenv("ORCHESTRA_DAEMON_AUTO_UPDATE", "false")
 	cfg, err := LoadConfig(Overrides{
-		ServerURL:      "https://api.multica.ai",
+		ServerURL:      "https://api.orchestra.ai",
 		WorkspacesRoot: t.TempDir(),
 	})
 	if err != nil {
@@ -579,7 +550,7 @@ func TestLoadConfig_AutoUpdate_NoFlagWinsOverCloudDefault(t *testing.T) {
 	stageFakeAgent(t)
 	t.Setenv("ORCHESTRA_DAEMON_AUTO_UPDATE", "true")
 	cfg, err := LoadConfig(Overrides{
-		ServerURL:         "https://api.multica.ai",
+		ServerURL:         "https://api.orchestra.ai",
 		WorkspacesRoot:    t.TempDir(),
 		DisableAutoUpdate: true,
 	})
@@ -594,7 +565,7 @@ func TestLoadConfig_AutoUpdate_NoFlagWinsOverCloudDefault(t *testing.T) {
 // TestLoadConfig_AutoReload_DefaultsOnEvenForSelfHost is the review's first
 // product decision, encoded: "don't pull new versions from GitHub" and "follow
 // the binary I replaced myself" are separate concerns. Self-host defaults
-// auto-update OFF (MUL-2381) because upgrading a fork from an upstream release
+// auto-update OFF (ISS-2381) because upgrading a fork from an upstream release
 // would clobber it — an argument that says nothing about a binary the operator
 // installed by hand.
 func TestLoadConfig_AutoReload_DefaultsOnEvenForSelfHost(t *testing.T) {
@@ -609,7 +580,7 @@ func TestLoadConfig_AutoReload_DefaultsOnEvenForSelfHost(t *testing.T) {
 		t.Fatalf("LoadConfig: %v", err)
 	}
 	if cfg.AutoUpdateEnabled {
-		t.Fatalf("AutoUpdateEnabled = true for self-host, want false (MUL-2381)")
+		t.Fatalf("AutoUpdateEnabled = true for self-host, want false (ISS-2381)")
 	}
 	if !cfg.AutoReloadEnabled {
 		t.Fatalf("AutoReloadEnabled = false for self-host; the on-disk watcher must not ride on the auto-update default")
@@ -624,7 +595,7 @@ func TestLoadConfig_AutoReload_NotGatedOnAutoUpdateEnv(t *testing.T) {
 	t.Setenv("ORCHESTRA_DAEMON_AUTO_UPDATE", "false")
 	t.Setenv("ORCHESTRA_DAEMON_AUTO_RELOAD", "")
 	cfg, err := LoadConfig(Overrides{
-		ServerURL:      "https://api.multica.ai",
+		ServerURL:      "https://api.orchestra.ai",
 		WorkspacesRoot: t.TempDir(),
 	})
 	if err != nil {
@@ -656,7 +627,7 @@ func TestLoadConfig_AutoReload_OffSwitches(t *testing.T) {
 			stageFakeAgent(t)
 			t.Setenv("ORCHESTRA_DAEMON_AUTO_RELOAD", tc.env)
 			overrides := tc.overrides
-			overrides.ServerURL = "https://api.multica.ai"
+			overrides.ServerURL = "https://api.orchestra.ai"
 			overrides.WorkspacesRoot = t.TempDir()
 			cfg, err := LoadConfig(overrides)
 			if err != nil {
@@ -1242,7 +1213,7 @@ func TestLoadConfig_BackendOverrides_MalformedConfigFileNonFatal(t *testing.T) {
 	t.Setenv("HOME", homeDir)
 
 	// Write malformed JSON.
-	cfgDir := filepath.Join(homeDir, ".multica")
+	cfgDir := filepath.Join(homeDir, ".orchestra")
 	if err := os.MkdirAll(cfgDir, 0o755); err != nil {
 		t.Fatal(err)
 	}

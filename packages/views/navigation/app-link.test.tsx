@@ -94,9 +94,9 @@ describe("AppLink", () => {
     const openInNewTab = vi.fn();
     const adapter = makeAdapter({ openInNewTab });
 
-    renderLink(adapter, { href: "/issues", newTabTitle: "MUL-7" });
+    renderLink(adapter, { href: "/issues", newTabTitle: "ISS-7" });
     fireEvent.click(screen.getByText("go"), { metaKey: true });
-    expect(openInNewTab).toHaveBeenCalledWith("/issues", "MUL-7");
+    expect(openInNewTab).toHaveBeenCalledWith("/issues", "ISS-7");
   });
 
   describe("target=_blank (open-in-new-tab links)", () => {
@@ -108,10 +108,10 @@ describe("AppLink", () => {
       renderLink(adapter, {
         href: "/issues",
         target: "_blank",
-        newTabTitle: "MUL-7",
+        newTabTitle: "ISS-7",
       });
       fireEvent.click(screen.getByText("go"));
-      expect(openInNewTab).toHaveBeenCalledWith("/issues", "MUL-7", {
+      expect(openInNewTab).toHaveBeenCalledWith("/issues", "ISS-7", {
         activate: true,
       });
       expect(push).not.toHaveBeenCalled();
@@ -193,9 +193,9 @@ describe("AppLink", () => {
       const openInNewTab = vi.fn();
       const adapter = makeAdapter({ openInNewTab });
 
-      renderLink(adapter, { href: "/issues", newTabTitle: "MUL-7" });
+      renderLink(adapter, { href: "/issues", newTabTitle: "ISS-7" });
       auxClick(screen.getByText("go"));
-      expect(openInNewTab).toHaveBeenCalledWith("/issues", "MUL-7");
+      expect(openInNewTab).toHaveBeenCalledWith("/issues", "ISS-7");
     });
 
     it("without an adapter (web) neither pushes nor prevents default, so the browser's native background tab still opens", () => {
@@ -216,10 +216,10 @@ describe("AppLink", () => {
       renderLink(adapter, {
         href: "/issues",
         target: "_blank",
-        newTabTitle: "MUL-7",
+        newTabTitle: "ISS-7",
       });
       auxClick(screen.getByText("go"));
-      expect(openInNewTab).toHaveBeenCalledWith("/issues", "MUL-7");
+      expect(openInNewTab).toHaveBeenCalledWith("/issues", "ISS-7");
     });
 
     it.each([

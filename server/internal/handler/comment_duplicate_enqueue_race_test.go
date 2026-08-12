@@ -9,8 +9,8 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 const (
@@ -301,7 +301,7 @@ func TestCommentEnqueueRaceDifferentHeadNotCoalesced(t *testing.T) {
 // TestRegisterPlannedCommentForActiveTaskExcludesQueued is the regression for
 // Elon round-3 must-fix 2: a planned-only append must never target a QUEUED task
 // (it has no claim receipt, so the append would be delivered at claim time and
-// bypass the atomic re-attribution a queued fold requires — MUL-4302). Only
+// bypass the atomic re-attribution a queued fold requires — ISS-4302). Only
 // claim-receipt statuses (dispatched/running/waiting_local_directory) are valid
 // planned-id targets; a queued task must miss so the caller routes it to the
 // atomic merge instead.

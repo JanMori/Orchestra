@@ -18,9 +18,9 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// MUL-2956 — concurrent migration race test.
+// ISS-2956 — concurrent migration race test.
 //
-// PR multica-ai/multica#3658 (MUL-2923) added a Postgres advisory lock
+// PR multica-ai/multica#3658 (ISS-2923) added a Postgres advisory lock
 // around the migration loop to serialize concurrent runners. This file
 // is the live-Postgres test that proves the lock is actually doing its
 // job. We run N goroutines that all call runMigrations against the same
@@ -42,7 +42,7 @@ import (
 //     wait, and only after the external holder releases does the lock
 //     get acquired. This catches the regression where the lock would
 //     get attached to a random pooled connection (the bug fixed in
-//     MUL-2923 / #3658) and effectively become a no-op.
+//     ISS-2923 / #3658) and effectively become a no-op.
 //
 // The test connects to whatever DATABASE_URL points at (default
 // postgres://multica:multica@localhost:5432/multica?sslmode=disable),
@@ -330,7 +330,7 @@ func TestRunMigrationsConcurrentAlreadyApplied(t *testing.T) {
 //     start unblocking and finish in well under the test timeout.
 //
 // If the advisory lock had regressed back to attaching to a random
-// pooled connection (the original MUL-2923 bug), the side-held lock
+// pooled connection (the original ISS-2923 bug), the side-held lock
 // would not actually block a fresh pool.Acquire from grabbing its own
 // connection without the lock, and the goroutines would all complete
 // while the lock was still "held" — which is exactly what this test

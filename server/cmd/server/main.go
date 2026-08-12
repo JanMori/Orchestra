@@ -12,17 +12,17 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/multica-ai/multica/server/internal/analytics"
-	"github.com/multica-ai/multica/server/internal/daemonws"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/handler"
-	"github.com/multica-ai/multica/server/internal/logger"
-	obsmetrics "github.com/multica-ai/multica/server/internal/metrics"
-	"github.com/multica-ai/multica/server/internal/realtime"
-	"github.com/multica-ai/multica/server/internal/scheduler"
-	"github.com/multica-ai/multica/server/internal/service"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/featureflag"
+	"github.com/JanMori/Orchestra/server/internal/analytics"
+	"github.com/JanMori/Orchestra/server/internal/daemonws"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/handler"
+	"github.com/JanMori/Orchestra/server/internal/logger"
+	obsmetrics "github.com/JanMori/Orchestra/server/internal/metrics"
+	"github.com/JanMori/Orchestra/server/internal/realtime"
+	"github.com/JanMori/Orchestra/server/internal/scheduler"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/featureflag"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -244,7 +244,7 @@ func main() {
 	daemonHub := daemonws.NewHub()
 	var daemonWakeup service.TaskWakeupNotifier = daemonHub
 
-	// MUL-1138: when REDIS_URL is set, route fanout through a Redis relay so
+	// ISS-1138: when REDIS_URL is set, route fanout through a Redis relay so
 	// multiple API nodes can deliver each other's events. Without it the hub
 	// is the sole broadcaster and the server stays single-node (legacy).
 	// Runtime local-skill stores and realtime relay traffic use separate Redis
@@ -436,11 +436,11 @@ func main() {
 	if h.WebhookDeliveryWorker != nil {
 		go h.WebhookDeliveryWorker.Run(sweepCtx)
 	}
-	// GitHub PR-card API snapshot pipeline (MUL-5265): worker pool + TTL sweeper.
+	// GitHub PR-card API snapshot pipeline (ISS-5265): worker pool + TTL sweeper.
 	// No-op when unconfigured (no App private key).
 	h.PRRefresh.Start(sweepCtx)
 
-	// Channel inbound supervisor (MUL-3620): holds the §4.4 WS lease per
+	// Channel inbound supervisor (ISS-3620): holds the §4.4 WS lease per
 	// installation and drives each channel.Channel. It is built
 	// unconditionally (it is channel-agnostic, not Lark-specific), so it
 	// always exists here; with no platform registered or no installation
@@ -459,7 +459,7 @@ func main() {
 		go h.ChannelMediaReconciler.Run(sweepCtx)
 	}
 
-	// MUL-2957: DB-backed execution scheduler. The scheduler turns the
+	// ISS-2957: DB-backed execution scheduler. The scheduler turns the
 	// `sys_cron_executions` table into the distributed lease + audit
 	// log for internal periodic jobs. The first job is
 	// `rollup_task_usage_hourly`, which replaces the previously
@@ -477,7 +477,7 @@ func main() {
 	if err := schedulerMgr.Register(scheduler.TaskUsageHourlyJob(pool)); err != nil {
 		slog.Warn("scheduler: failed to register task_usage_hourly rollup job", "error", err)
 	}
-	// MUL-3551: scheduled-Autopilot dispatch runs on the same DB-backed
+	// ISS-3551: scheduled-Autopilot dispatch runs on the same DB-backed
 	// scheduler. The job owns its plan_times via PlansForScope (each
 	// trigger has its own cron expression, so the Cadence planner does
 	// not fit). Crash recovery, occurrence-level idempotency, lease

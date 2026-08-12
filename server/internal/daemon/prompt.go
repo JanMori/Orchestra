@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/multica-ai/multica/server/internal/daemon/execenv"
+	"github.com/JanMori/Orchestra/server/internal/daemon/execenv"
 )
 
 // sessionContinuityNoticeFor picks the notice matching what this surface
 // actually lost. See the constants in execenv for the full reasoning; the
 // question is whether the conversation is still READABLE, not whether it is a
 // chat — an issue's comments and a Slack channel's history both are, a web
-// chat's and a Feishu channel's are not (MUL-5722).
+// chat's and a Feishu channel's are not (ISS-5722).
 func sessionContinuityNoticeFor(task Task) string {
 	if task.ChatSessionID == "" {
 		return execenv.SessionContinuityNoticeIssue
@@ -29,7 +29,7 @@ func sessionContinuityNoticeFor(task Task) string {
 // Only one notice may reach a turn. Two paths can produce it — the daemon,
 // which appends it to the prompt whenever it already knows the resume is gone,
 // and the backend, which is the only one that can see a live resume RPC being
-// rejected mid-run. Before MUL-5722 both fired on the codex overflow retry, so
+// rejected mid-run. Before ISS-5722 both fired on the codex overflow retry, so
 // the same paragraph was paid for twice in one turn and maintained as two
 // hand-written strings. Deriving the backend's copy from the daemon's, and
 // suppressing it exactly when the prompt already said it, makes a duplicate
@@ -65,7 +65,7 @@ const (
 // messages[0], ahead of the entire conversation, so rendering these there threw
 // away the prompt cache for the whole history on every resume. Appending them
 // to the per-turn user message puts them after the cached prefix instead, where
-// changing them costs only this turn's own tokens (MUL-5377).
+// changing them costs only this turn's own tokens (ISS-5377).
 //
 // Returns "" when none of the blocks apply.
 func perTurnContextBlocks(task Task) string {
@@ -84,12 +84,12 @@ func perTurnContextBlocks(task Task) string {
 // through to comment-triggered tasks' per-turn reply template; that template
 // is provider-agnostic AND host-agnostic now (every OS → write a UTF-8 file,
 // post with `--content-file`) because the shell-layer corruption it guards
-// against is not specific to any one provider or host (MUL-2904, #4182).
+// against is not specific to any one provider or host (ISS-2904, #4182).
 func BuildPrompt(task Task, provider string) string {
 	body := buildPromptBody(task, provider)
 	// Run-scoped context is appended, never prepended: everything ahead of it
 	// is stable across runs of a resumed session, and appending keeps it after
-	// the cached prefix (MUL-5377).
+	// the cached prefix (ISS-5377).
 	if blocks := perTurnContextBlocks(task); blocks != "" {
 		if !strings.HasSuffix(body, "\n\n") {
 			body += "\n"
@@ -116,7 +116,7 @@ func buildPromptBody(task Task, provider string) string {
 	b.WriteString("You are running as a local coding agent for a Multica workspace.\n\n")
 	fmt.Fprintf(&b, "Your assigned issue ID is: %s\n\n", task.IssueID)
 	b.WriteString(turnModeOwnership)
-	// Assignment handoff (MUL-3375): a free-text instruction the person who
+	// Assignment handoff (ISS-3375): a free-text instruction the person who
 	// assigned/promoted this issue left for you. Frame it as a handoff, not a
 	// comment to reply to — there is no comment thread to answer here.
 	if task.HandoffNote != "" {
@@ -152,7 +152,7 @@ func buildQuickCreatePrompt(task Task) string {
 	b.WriteString("     CC exception: `orchestra issue create` has no `--subscriber` flag, and the platform auto-subscribes members whose `[@Name](mention://member/<uuid>)` link appears in the description. When the user wrote \"cc @Y\", strip the verbal \"cc\" wrapper from the User request body and append a final `CC: <mention link(s)>` line to the description so the cc routing still fires.\n\n")
 	b.WriteString("  2. **Context** — include ONLY when the input cited external resources AND you successfully fetched them AND they produced verifiable facts worth recording. Summarize facts only (e.g. \"PR #45 changes auth to JWT\"), not interpretation or unsolicited reference implementations. If you have nothing factual to add, omit the section entirely — never use it as an apology log for resources you could not fetch.\n\n")
 	b.WriteString("  Hard rules: never invent requirements, implementation details, or acceptance criteria the user did not express; never reduce multi-sentence input to a single vague sentence; never echo the title.\n\n")
-	b.WriteString("  Passing the description: a short, single-line body with no code, quotes, backticks, `$()`, or other special characters may go inline via `--description \"...\"`. Anything multi-line, or containing code snippets / file paths / quotes / backticks / `$()` / special characters, or otherwise long — which quick-create descriptions usually are — MUST be written to `./description.md` and passed with `--description-file ./description.md`; passing rich text inline lets the shell rewrite or truncate it (MUL-2904). That file MUST live inside your current working directory (e.g. `./description.md`) — never `/tmp` or any machine-shared path, where a different run may have left a stale file that would silently become this issue's description. If the file write fails for any reason, stop and fix it; never run `--description-file` against a file whose write did not succeed.\n\n")
+	b.WriteString("  Passing the description: a short, single-line body with no code, quotes, backticks, `$()`, or other special characters may go inline via `--description \"...\"`. Anything multi-line, or containing code snippets / file paths / quotes / backticks / `$()` / special characters, or otherwise long — which quick-create descriptions usually are — MUST be written to `./description.md` and passed with `--description-file ./description.md`; passing rich text inline lets the shell rewrite or truncate it (ISS-2904). That file MUST live inside your current working directory (e.g. `./description.md`) — never `/tmp` or any machine-shared path, where a different run may have left a stale file that would silently become this issue's description. If the file write fails for any reason, stop and fix it; never run `--description-file` against a file whose write did not succeed.\n\n")
 
 	// priority
 	if task.QuickCreatePriority != "" {
@@ -225,7 +225,7 @@ func buildQuickCreatePrompt(task Task) string {
 	// output format
 	b.WriteString("Output format:\n")
 	b.WriteString("- Run exactly one `orchestra issue create --output json` invocation. Do not retry for any reason — even on non-zero exit. The issue may already exist; another attempt would create a duplicate.\n")
-	b.WriteString("- Parse the JSON response to read the created issue's `identifier` (preferred) or `id` (fallback). Do not scrape human output and do not assume any workspace issue prefix such as `MUL-`; workspaces can use custom prefixes.\n")
+	b.WriteString("- Parse the JSON response to read the created issue's `identifier` (preferred) or `id` (fallback). Do not scrape human output and do not assume any workspace issue prefix such as `ISS-`; workspaces can use custom prefixes.\n")
 	b.WriteString("- After success, print exactly one line: `Created <identifier-or-id>: <title>` and exit. No commentary, no follow-up tool calls.\n")
 	b.WriteString("- Do NOT call `orchestra issue get` or `orchestra issue comment add` — there is no issue to query or comment on.\n")
 	b.WriteString("- On CLI error or JSON parse error, exit with the error as the only output. The platform writes a failure notification automatically.\n")
@@ -260,7 +260,7 @@ func buildCommentPrompt(task Task, provider string) string {
 		}
 		fmt.Fprintf(&b, "[NEW COMMENT] %s just left a new comment. Focus on THIS comment — do not confuse it with previous ones:\n\n", authorLabel)
 		fmt.Fprintf(&b, "> %s\n\n", task.TriggerCommentContent)
-		// MUL-4195: comments that arrived before this run started were folded
+		// ISS-4195: comments that arrived before this run started were folded
 		// into it rather than dropped. The trigger above is the newest; the
 		// agent must ALSO address these earlier ones so no deliberate user
 		// instruction is silently lost. Prefer the embedded detail so the agent
@@ -295,13 +295,13 @@ func buildCommentPrompt(task Task, provider string) string {
 			}
 			fmt.Fprintf(&b, "\nIf you need the surrounding discussion for any of them, fetch its thread with `orchestra issue comment list %s --thread <thread-id> --tail 30 --output json` using the thread id shown above.\n\n", task.IssueID)
 		} else if len(task.CoalescedCommentIDs) > 0 {
-			// MUL-5442: this fallback used to send the agent at `--recent 30`.
+			// ISS-5442: this fallback used to send the agent at `--recent 30`.
 			// That flag caps THREADS, not comments, and every returned thread
 			// carries all of its descendants — so on an issue with fewer than 30
 			// root threads it returned the entire comment history to locate a
 			// handful of ids. It also contradicted the brief's own catch-up step,
 			// which tells the agent to read in two bounded steps and never make
-			// one bulk pull (MUL-5372): the platform was recommending exactly the
+			// one bulk pull (ISS-5372): the platform was recommending exactly the
 			// shape it forbids elsewhere.
 			//
 			// The replacement is a per-id lookup, which is what makes it
@@ -355,7 +355,7 @@ func buildCommentPrompt(task Task, provider string) string {
 	}
 	// Reply routing. When this run coalesced comments spanning MORE THAN ONE
 	// root thread, answer each thread in its own thread instead of dumping one
-	// merged comment (MUL-4348). Same-thread follow-ups collapse to a single
+	// merged comment (ISS-4348). Same-thread follow-ups collapse to a single
 	// group upstream, so they keep the ordinary single-parent path below and can
 	// never be split into duplicate replies.
 	if targets := commentReplyThreads(task); len(targets) >= 2 {
@@ -372,7 +372,7 @@ func buildCommentPrompt(task Task, provider string) string {
 // yields a single group, so same-thread follow-ups get exactly one consolidated
 // reply and can never be split into duplicates; comments from different root
 // threads yield one group each so the agent replies inside each thread instead
-// of merging them into one blob (MUL-4348).
+// of merging them into one blob (ISS-4348).
 //
 // The reply for each thread targets the NEWEST comment that triggered this run
 // in that thread (coalesced comments arrive oldest-first and the trigger is the
@@ -432,7 +432,7 @@ func buildChatPrompt(task Task) string {
 	// Proactive self-introduction: the agent was just created and is opening the
 	// conversation. There is no user message to reply to — the agent sends the
 	// first message so the thread reads as the agent messaging its creator, not
-	// the creator prompting the agent (MUL-4230).
+	// the creator prompting the agent (ISS-4230).
 	if task.ChatIntro {
 		var b strings.Builder
 		b.WriteString("You are running as a chat assistant for a Multica workspace.\n")
@@ -454,7 +454,7 @@ func buildChatPrompt(task Task) string {
 	default:
 		b.WriteString("Audience: direct room.\n\n")
 	}
-	// Channel awareness (MUL-3871). When the session is backed by an IM channel,
+	// Channel awareness (ISS-3871). When the session is backed by an IM channel,
 	// the agent must KNOW it is operating inside that channel — otherwise an ask
 	// like "what did you just talk about" sends it to read Multica instead of the
 	// channel conversation. A web-only chat session gets no such block — its
@@ -467,11 +467,11 @@ func buildChatPrompt(task Task) string {
 	// there would send the agent down a path that always fails. A Feishu run works
 	// from the context the inbound enricher already injected, so it gets the
 	// awareness statement without the commands, and ChatInThread — which only ever
-	// picks between those two commands — does not apply to it (MUL-4899).
+	// picks between those two commands — does not apply to it (ISS-4899).
 	//
 	// The no-narration rule is a THIRD axis and belongs to neither half: it is a
 	// property of delivering to an IM channel at all, so it is emitted for every
-	// channel type. #4776 introduced it that way; the MUL-4899 split moved it into
+	// channel type. #4776 introduced it that way; the ISS-4899 split moved it into
 	// the Slack branch along with the read commands it happened to mention, which
 	// silently dropped it for Feishu/Lark (GH #6006).
 	if task.ChatChannelType != "" {
@@ -552,7 +552,7 @@ func buildChatPrompt(task Task) string {
 	// that platform, not the Multica chat UI, so this binding does not apply.
 	// This is the DELIVERY layer of the channel policy and keys off "is there a
 	// channel at all", unlike the history block above which is Slack-only; the
-	// two layers must not be collapsed into one condition (MUL-4899). The brief's
+	// two layers must not be collapsed into one condition (ISS-4899). The brief's
 	// `## Output` section states the same policy for every surface.
 	if task.ChatChannelType == "" {
 		b.WriteString("\nTo include a file or image you produced in your reply, run `multica attachment upload <local-path>`. The file binds to your reply automatically and appears as an attachment card below it even if you paste nothing. The command also returns a `markdown` snippet you may paste on its own line to place the item where you want it (files render as a card, images inline).\n")
@@ -604,6 +604,6 @@ func buildAutopilotPrompt(task Task) string {
 	// The issue-command boundary (execenv.AutopilotIssueCommandsGuard) is NOT
 	// restated here: the brief's autopilot workflow section is its single
 	// emission point, and a second hand-maintained per-turn copy is exactly
-	// how the two surfaces drifted into conflict before (MUL-5696).
+	// how the two surfaces drifted into conflict before (ISS-5696).
 	return b.String()
 }

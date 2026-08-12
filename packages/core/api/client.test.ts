@@ -13,7 +13,7 @@ describe("ApiClient pull-request response schema", () => {
     repo_owner: "acme",
     repo_name: "widget",
     number: 7,
-    title: "MUL-1: fix",
+    title: "ISS-1: fix",
     state: "open",
     html_url: "https://github.example/acme/widget/pull/7",
     branch: "fix/mul-1",
@@ -307,7 +307,7 @@ describe("ApiClient server Table query", () => {
                 parent: {
                   id: "parent-1",
                   number: 10,
-                  identifier: "MUL-10",
+                  identifier: "ISS-10",
                   title: "Parent",
                   status: "todo",
                 },
@@ -1592,7 +1592,7 @@ describe("ApiClient", () => {
       expect(body.get("comment_id")).toBeNull();
     });
 
-    it("threads an AbortSignal into fetch so the coordinator can cancel it (MUL-5181)", async () => {
+    it("threads an AbortSignal into fetch so the coordinator can cancel it (ISS-5181)", async () => {
       const fetchMock = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ id: "att-1", url: "https://cdn/x" }), {
           status: 200,
@@ -1793,7 +1793,7 @@ describe("ApiClient model discovery response schema", () => {
 });
 
 /**
- * Mixed-version contract for subtree unsubscribe (MUL-5483).
+ * Mixed-version contract for subtree unsubscribe (ISS-5483).
  *
  * Web/desktop staging deploys on merge while the backend is deployed by hand,
  * so this client routinely runs against an older server. Subtree unsubscribe

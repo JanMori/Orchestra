@@ -5,7 +5,7 @@ import (
 )
 
 // TestProbeAgentCLIs_QoderResolvesViaLoginShell locks down the fix for the
-// Qoder discovery gap reported from the desktop app (MUL-5524).
+// Qoder discovery gap reported from the desktop app (ISS-5524).
 //
 // Every other provider is probed through the shared probe() helper, which falls
 // back to the user's login shell when the daemon's own PATH can't see a bare

@@ -984,7 +984,7 @@ function SwimLaneViewImpl({
   const [activeIssue, setActiveIssue] = useState<Issue | null>(null);
   // The outer scroll box is the customScrollParent for the lane Virtuoso.
   const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null);
-  // Pull-based scroll restoration (MUL-4741): same wiring as board/list/
+  // Pull-based scroll restoration (ISS-4741): same wiring as board/list/
   // issue-detail — ref-attach assigns the saved offset pre-paint, and the
   // lane Virtuoso is born at it via initialScrollTop.
   const restoredScrollTop = useRestoredScrollOffset("swimlane");
@@ -1481,7 +1481,7 @@ function SwimLaneViewImpl({
           {/* Seed a bounded slice of real lanes while the scroll ref hasn't
               settled after a remount, so the lane area never paints blank; once
               it's set, mount the Virtuoso with a matching `initialItemCount` to
-              survive the measurement frame (MUL-4750). */}
+              survive the measurement frame (ISS-4750). */}
           {scrollEl ? (
             <Virtuoso
               customScrollParent={scrollEl}

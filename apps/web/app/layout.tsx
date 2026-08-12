@@ -72,7 +72,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.multica.ai"),
+  metadataBase: new URL("http://localhost:5001"),
   title: {
     default: "Orchestra — Project Management for Human + Agent Teams",
     template: "%s | Orchestra",

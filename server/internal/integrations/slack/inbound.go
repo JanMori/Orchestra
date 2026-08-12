@@ -7,7 +7,7 @@ import (
 
 	"github.com/slack-go/slack/slackevents"
 
-	"github.com/multica-ai/multica/server/internal/integrations/channel"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel"
 )
 
 // This file holds the platform-neutral translation from a Slack Events API

@@ -14,14 +14,14 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/multica-ai/multica/server/internal/cli"
-	"github.com/multica-ai/multica/server/internal/daemon/execenv"
+	"github.com/JanMori/Orchestra/server/internal/cli"
+	"github.com/JanMori/Orchestra/server/internal/daemon/execenv"
 )
 
 // freshAgentEnvSetCmd returns a standalone cobra.Command with the three
 // --custom-env* flags registered identically to agentEnvSetCmd, so
 // resolveCustomEnv-shaped tests can mutate flag state without leaking
-// across subtests. After MUL-2600 the same three flags are registered
+// across subtests. After ISS-2600 the same three flags are registered
 // on `agent create` and `agent env set` (NOT on `agent update`), but
 // the parser they drive is shared, so a single fresh-command helper
 // covers both call sites.
@@ -400,7 +400,7 @@ func TestResolveToken_AgentContextSkipsConfig(t *testing.T) {
 		t.Setenv("ORCHESTRA_TASK_ID", "")
 		t.Setenv("ORCHESTRA_TOKEN", "")
 		t.Setenv("ORCHESTRA_DAEMON_PORT", "")
-		t.Setenv("ORCHESTRA_SERVER_URL", "https://api.multica.ai")
+		t.Setenv("ORCHESTRA_SERVER_URL", "http://localhost:7081")
 
 		if got := resolveToken(testCmd()); got != "mul_profile_token" {
 			t.Fatalf("resolveToken() = %q, want profile token (SERVER_URL is not a daemon identity signal)", got)
@@ -593,7 +593,7 @@ func TestParseCustomEnv(t *testing.T) {
 
 // TestAgentUpdateNoFieldsErrorPointsAtEnvCommand invokes runAgentUpdate
 // with no flags set and asserts the resulting "no fields" error
-// directs the user toward the new env subcommand. After MUL-2600 the
+// directs the user toward the new env subcommand. After ISS-2600 the
 // --custom-env* flags are gone from `agent update`; the hint must
 // surface their replacement so users discover the new audited path.
 func TestAgentUpdateNoFieldsErrorPointsAtEnvCommand(t *testing.T) {
@@ -635,7 +635,7 @@ func TestAgentUpdateNoFieldsErrorPointsAtEnvCommand(t *testing.T) {
 func TestAgentUpdateDoesNotExposeCustomEnvFlags(t *testing.T) {
 	for _, flag := range []string{"custom-env", "custom-env-stdin", "custom-env-file"} {
 		if agentUpdateCmd.Flag(flag) != nil {
-			t.Errorf("agent update must NOT expose --%s after MUL-2600; use `orchestra agent env set` instead", flag)
+			t.Errorf("agent update must NOT expose --%s after ISS-2600; use `orchestra agent env set` instead", flag)
 		}
 	}
 }

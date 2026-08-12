@@ -124,7 +124,7 @@ export function InboxListItem({
             <InboxDetailLabel item={item} />
           </p>
           <div className="flex shrink-0 items-center gap-1.5">
-            {/* Badge only, no hover card (MUL-5189). "An agent is on this"
+            {/* Badge only, no hover card (ISS-5189). "An agent is on this"
                 is worth showing while triaging; the card behind it adds only
                 elapsed time, which does not change whether you open the row.
                 The row already carries the ActorAvatar hover card on the

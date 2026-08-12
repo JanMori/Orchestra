@@ -7,13 +7,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // TestCanUseRuntimeForAgent_Pure exercises the pure predicate behind the
 // CreateAgent / UpdateAgent runtime gate. The truth table mirrors the issue
-// (MUL-2062) acceptance criteria: workspace owner / admin can use any
+// (ISS-2062) acceptance criteria: workspace owner / admin can use any
 // runtime, runtime owners can use their own runtime regardless of
 // visibility, and any member can use a public runtime; everyone else gets
 // denied for a private runtime owned by someone else.
@@ -172,7 +172,7 @@ func TestCreateAgent_RejectsPrivateRuntimeForNonOwner(t *testing.T) {
 		t.Fatalf("CreateAgent as runtime owner: expected 201, got %d: %s", w.Code, w.Body.String())
 	}
 
-	// Plain member: this is the hole MUL-2062 closes — must be 403.
+	// Plain member: this is the hole ISS-2062 closes — must be 403.
 	w = httptest.NewRecorder()
 	testHandler.CreateAgent(w, newRequestAs(plainMemberID, http.MethodPost, "/api/agents", body("runtime-visibility-test-plain-member")))
 	if w.Code != http.StatusForbidden {

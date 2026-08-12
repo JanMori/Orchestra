@@ -71,7 +71,7 @@ WHERE agent_id IN (
 `
 
 // Scoped to the system agents a runtime delete hard-deletes. User agents keep
-// their pins: since MUL-5559 they survive their runtime as unbound agents.
+// their pins: since ISS-5559 they survive their runtime as unbound agents.
 func (q *Queries) DeleteChatPinnedAgentsBySystemRuntimeAgents(ctx context.Context, runtimeID pgtype.UUID) error {
 	_, err := q.db.Exec(ctx, deleteChatPinnedAgentsBySystemRuntimeAgents, runtimeID)
 	return err

@@ -49,7 +49,7 @@ export function WorkspaceRouteLayout() {
   // Workspace routes require auth. App.tsx renders <DesktopLoginPage>
   // instead of the shell whenever `user` is null, so this tree never mounts
   // unauthenticated — the old in-router bounce to /login was dead defensive
-  // code and violated MUL-4741 invariant 1 (only the Coordinator navigates).
+  // code and violated ISS-4741 invariant 1 (only the Coordinator navigates).
   // The `!user` early return below keeps the defense without navigating.
 
   const { data: workspace, isFetched: listFetched } = useQuery({

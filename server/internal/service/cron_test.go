@@ -136,7 +136,7 @@ func TestNextOccurrenceAfterUTCIgnoresWallClock(t *testing.T) {
 }
 
 // TestNextOccurrenceAdvancesPastFiredSlot locks in the property the
-// scheduler's next_run_at write-back relies on (MUL-3749): once a
+// scheduler's next_run_at write-back relies on (ISS-3749): once a
 // recurring trigger fires at a slot, the next computed occurrence is the
 // FOLLOWING slot, strictly after the one that just fired — never the same
 // instant. Regression guard for the bug where next_run_at froze at a past

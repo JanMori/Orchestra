@@ -17,28 +17,28 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
 
-	"github.com/multica-ai/multica/server/internal/analytics"
-	"github.com/multica-ai/multica/server/internal/auth"
-	"github.com/multica-ai/multica/server/internal/cloudruntime"
-	"github.com/multica-ai/multica/server/internal/daemonws"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/featureflags"
-	"github.com/multica-ai/multica/server/internal/handler"
-	"github.com/multica-ai/multica/server/internal/integrations/channel"
-	"github.com/multica-ai/multica/server/internal/integrations/channel/engine"
-	composiointeg "github.com/multica-ai/multica/server/internal/integrations/composio"
-	"github.com/multica-ai/multica/server/internal/integrations/lark"
-	"github.com/multica-ai/multica/server/internal/integrations/slack"
-	obsmetrics "github.com/multica-ai/multica/server/internal/metrics"
-	"github.com/multica-ai/multica/server/internal/middleware"
-	"github.com/multica-ai/multica/server/internal/realtime"
-	"github.com/multica-ai/multica/server/internal/service"
-	"github.com/multica-ai/multica/server/internal/storage"
-	"github.com/multica-ai/multica/server/internal/util"
-	"github.com/multica-ai/multica/server/internal/util/secretbox"
-	composiosdk "github.com/multica-ai/multica/server/pkg/composio"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/featureflag"
+	"github.com/JanMori/Orchestra/server/internal/analytics"
+	"github.com/JanMori/Orchestra/server/internal/auth"
+
+	"github.com/JanMori/Orchestra/server/internal/daemonws"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/featureflags"
+	"github.com/JanMori/Orchestra/server/internal/handler"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel/engine"
+	composiointeg "github.com/JanMori/Orchestra/server/internal/integrations/composio"
+	"github.com/JanMori/Orchestra/server/internal/integrations/lark"
+	"github.com/JanMori/Orchestra/server/internal/integrations/slack"
+	obsmetrics "github.com/JanMori/Orchestra/server/internal/metrics"
+	"github.com/JanMori/Orchestra/server/internal/middleware"
+	"github.com/JanMori/Orchestra/server/internal/realtime"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	"github.com/JanMori/Orchestra/server/internal/storage"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	"github.com/JanMori/Orchestra/server/internal/util/secretbox"
+	composiosdk "github.com/JanMori/Orchestra/server/pkg/composio"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/featureflag"
 )
 
 var defaultOrigins = []string{
@@ -76,7 +76,7 @@ var corsAllowedHeaders = []string{
 // exactly like the server never sent it.
 //
 // Referencing the handler constant rather than re-typing the string keeps a
-// rename from quietly switching the signal off (MUL-5492).
+// rename from quietly switching the signal off (ISS-5492).
 var corsExposedHeaders = []string{
 	handler.HeaderCommentsTruncated,
 	handler.HeaderTimelineTruncated,
@@ -220,8 +220,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 		VCSIntegrationEnabled:    os.Getenv("ORCHESTRA_VCS_INTEGRATION_ENABLED") == "true",
 		PublicURL:                strings.TrimRight(strings.TrimSpace(os.Getenv("ORCHESTRA_PUBLIC_URL")), "/"),
 		TrustedProxies:           parseTrustedProxies(os.Getenv("ORCHESTRA_TRUSTED_PROXIES")),
-		CloudRuntimeFleetURL:     cloudRuntimeFleetURLFromEnv(),
-		CloudRuntimeFleetTimeout: envDuration("ORCHESTRA_CLOUD_FLEET_TIMEOUT", 35*time.Second),
+
 		AttachmentDownloadMode:   os.Getenv("ATTACHMENT_DOWNLOAD_MODE"),
 		AttachmentDownloadURLTTL: envDuration("ATTACHMENT_DOWNLOAD_URL_TTL", 30*time.Minute),
 		AttachmentFrameAncestors: origins,
@@ -236,14 +235,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 	h.TaskService.FeatureFlags = opts.FeatureFlags
 	h.TaskService.Metrics = opts.BusinessMetrics
 	h.IssueService.Metrics = opts.BusinessMetrics
-	if opts.BusinessMetrics != nil {
-		// Wire the BusinessMetrics receiver into the cloud runtime client
-		// so every outbound Fleet/Gateway request feeds the
-		// multica_cloudruntime_request_* histograms.
-		if client, ok := h.CloudRuntime.(*cloudruntime.Client); ok {
-			client.SetRecorder(opts.BusinessMetrics)
-		}
-	}
+
 	if opts.DaemonWakeup != nil {
 		h.TaskService.Wakeup = opts.DaemonWakeup
 		if notifier, ok := opts.DaemonWakeup.(handler.RuntimeProfileRefreshNotifier); ok {
@@ -268,7 +260,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 		h.WebhookAbsoluteIPRateLimiter = handler.NewRedisWebhookAbsoluteIPRateLimiter(rdb, handler.DefaultWebhookAbsoluteIPRateLimit())
 	}
 
-	// Channel engine (MUL-3620): the platform-agnostic inbound runtime.
+	// Channel engine (ISS-3620): the platform-agnostic inbound runtime.
 	// Built UNCONDITIONALLY — it drives any channel.Channel, not just
 	// Feishu, so it must not depend on the Lark master key (a future
 	// Slack-only deployment has no Lark key). Platform adapters register a
@@ -282,7 +274,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 	channelRegistry := channel.NewRegistry()
 	channelRouter := engine.NewRouter(h.IssueService, h.TaskService, queries, engine.RouterConfig{Logger: slog.Default()})
 	// Debounce the per-session run trigger so a burst of messages collapses
-	// into one agent run instead of one per message (MUL-2968).
+	// into one agent run instead of one per message (ISS-2968).
 	channelRouter.EnableRunBatching(engine.DefaultChatRunBatchWindow)
 	h.ChannelRouter = channelRouter
 	// Media intent-ledger reconciler: settles uploaded-but-unbound objects.
@@ -352,7 +344,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 				h.LarkAPIClient = larkClient
 
 				// Channel-backed store: routes the lark package's DB seams
-				// onto the channel_* tables (MUL-3515). Interface-wired
+				// onto the channel_* tables (ISS-3515). Interface-wired
 				// consumers (patcher, typing indicator, dispatcher, hub,
 				// backfills) take it directly; the constructor-based services
 				// wrap *db.Queries internally, so they keep taking queries.
@@ -402,7 +394,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 					resolverReplier = replier
 				}
 
-				// Feishu adapter (MUL-3620): the WSLongConnConnector talks
+				// Feishu adapter (ISS-3620): the WSLongConnConnector talks
 				// Lark's long-conn protocol over gorilla/websocket and wraps
 				// every read with a ctx-cancel watchdog so lease loss /
 				// shutdown breaks the blocking ReadMessage in bounded time —
@@ -436,7 +428,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 				// HTTP listener boot. New installs already write
 				// bot_union_id during the device-flow finalize, so this
 				// is bridge code — it will simply find no rows to update
-				// on a fresh deployment and exit. MUL-2671.
+				// on a fresh deployment and exit. ISS-2671.
 				go lark.BackfillBotUnionIDs(context.Background(), cs, larkClient, installSvc, slog.Default())
 
 				// Upgrade repair for deployments that ran the whole
@@ -446,7 +438,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 				// so relabel them to 'lark' (their true cloud) before the
 				// operator clears the override. No-op on mainland / fresh
 				// deployments. Off the hot startup path like the union_id
-				// backfill. MUL-3083.
+				// backfill. ISS-3083.
 				go lark.BackfillRegionFromLegacyOverride(context.Background(), cs,
 					strings.TrimSpace(os.Getenv("ORCHESTRA_LARK_HTTP_BASE_URL")),
 					strings.TrimSpace(os.Getenv("ORCHESTRA_LARK_CALLBACK_BASE_URL")),
@@ -489,10 +481,10 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 		slog.Info("lark integration disabled (ORCHESTRA_LARK_SECRET_KEY not set)")
 	}
 
-	// Slack integration. Multi-tenant B2 model (MUL-3666): Multica hosts ONE
+	// Slack integration. Multi-tenant B2 model (ISS-3666): Multica hosts ONE
 	// Slack app, workspaces self-install via OAuth, and inbound runs on a single
 	// deployment-level Socket Mode connection routed by team_id — replacing the
-	// stage-3 per-installation connection model (MUL-3516).
+	// stage-3 per-installation connection model (ISS-3516).
 	//
 	// Two deployment-level env vars gate the two halves:
 	//   - ORCHESTRA_SLACK_SECRET_KEY decrypts the per-installation bot token
@@ -516,7 +508,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 		if err != nil {
 			slog.Error("slack: secretbox.New failed; slack integration disabled", "error", err)
 		} else {
-			// Outbound replier (MUL-3666): delivers NeedsBinding prompt /
+			// Outbound replier (ISS-3666): delivers NeedsBinding prompt /
 			// AgentOffline / AgentArchived / issue-created notices. The binding
 			// token service mints the single-use token embedded in the prompt's
 			// redeem link; the redeem endpoint (registered below, public) binds
@@ -532,7 +524,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 				AppURL: appURLFromEnv(),
 				Logger: slog.Default(),
 			})
-			// Typing indicator (MUL-3874): a 👀 reaction on the user's message
+			// Typing indicator (ISS-3874): a 👀 reaction on the user's message
 			// while the agent works, cleared when the run finishes or fails.
 			// Best-effort; failures are logged only. Registered before the
 			// outbound reply subscriber so, on EventChatDone, the reaction clears
@@ -545,11 +537,11 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 			slack.NewOutbound(queries, box.Open, slog.Default()).Register(bus)
 
 			// On-demand history reader behind the unified `multica chat history`
-			// command (MUL-3871): pull the session's Slack conversation when the
+			// command (ISS-3871): pull the session's Slack conversation when the
 			// agent asks, instead of force-assembling it on every inbound.
 			h.SlackHistory = slack.NewHistory(queries, box.Open, slog.Default())
 
-			// `/issue` slash command (MUL-3908): a real Slack slash command,
+			// `/issue` slash command (ISS-3908): a real Slack slash command,
 			// delivered over the same Socket Mode connection. It is a quick-create
 			// entry point — the invoker's natural-language description is enqueued as
 			// a quick-create task (no chat session or chat run) and the agent authors
@@ -585,7 +577,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 		slog.Info("slack integration disabled (ORCHESTRA_SLACK_SECRET_KEY not set)")
 	}
 
-	// Composio integration (MUL-3720). Gated by COMPOSIO_API_KEY plus the
+	// Composio integration (ISS-3720). Gated by COMPOSIO_API_KEY plus the
 	// composio_mcp_apps feature flag. The env var is the project-scoped key the
 	// standalone SDK authenticates Composio with (sent as x-api-key; the project
 	// is resolved from the key, so NO project id is configured). When unset or
@@ -622,7 +614,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 						slog.Error("composio: service init failed; composio integration disabled", "error", serr)
 					} else {
 						h.Composio = svc
-						// Stage 3 (MUL-3721) hook: feed the per-task MCP
+						// Stage 3 (ISS-3721) hook: feed the per-task MCP
 						// overlay builder into TaskService so every Enqueue*
 						// path attaches the initiator user's Composio session
 						// URL to the task row before the daemon claims it.
@@ -679,8 +671,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 	// Reuses ORCHESTRA_CLOUD_FLEET_URL (the same URL the cloud-runtime
 	// proxy uses) so a deployment doesn't need a second config knob.
 	cloudPATVerifier := auth.NewCloudPATVerifier(auth.CloudPATVerifierConfig{
-		FleetBaseURL: signupConfig.CloudRuntimeFleetURL,
-		Redis:        rdb,
+		Redis: rdb,
 	})
 
 	// Empty-claim cache: lets the daemon poll path skip a Postgres
@@ -692,7 +683,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 	// Wire WS heartbeat after stores are finalized so the WS path uses the
 	// same (possibly Redis-backed) stores as the HTTP path.
 	daemonHub.SetHeartbeatHandler(h.HandleDaemonWSHeartbeat)
-	// WS-first claim (MUL-4257): route daemon:rpc_request frames (e.g.
+	// WS-first claim (ISS-4257): route daemon:rpc_request frames (e.g.
 	// tasks.claim) through the same handlers as the HTTP endpoints.
 	daemonHub.SetRPCHandler(h.DaemonRPCHandler)
 	health := newServerHealth(pool)
@@ -734,9 +725,9 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 	// Realtime subsystem metrics — connection counts, slow-client evictions,
 	// and per-event-type send QPS counters. Exposed as JSON so it can be
 	// scraped by ops or surfaced in the admin UI without adding a Prometheus
-	// dependency. See MUL-1138 (Phase 0).
+	// dependency. See ISS-1138 (Phase 0).
 	//
-	// Access is restricted (MUL-1342): when REALTIME_METRICS_TOKEN is set,
+	// Access is restricted (ISS-1342): when REALTIME_METRICS_TOKEN is set,
 	// callers must present it via Authorization: Bearer <token>. When the
 	// env var is unset the handler only serves loopback callers so local
 	// dev keeps working without exposing the metrics on a public listener.
@@ -761,12 +752,12 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 	// /api/attachments download endpoint; self-hosted split-origin/same-origin
 	// clients can then iframe-preview PDFs/HTML fetched straight from the
 	// static route instead of hitting the global frame-ancestors 'none' CSP.
-	// See MUL-3821 / #4477.
+	// See ISS-3821 / #4477.
 	if _, ok := store.(*storage.LocalStorage); ok {
 		r.Get("/uploads/*", h.ServeLocalUpload)
 	}
 
-	// Capability-authenticated attachment download (MUL-5292). Public by
+	// Capability-authenticated attachment download (ISS-5292). Public by
 	// necessity: a native download (Electron's webContents.downloadURL, a
 	// cross-site webview <img>) carries neither Authorization nor a session
 	// cookie, so there is nothing here for middleware.Auth to read. The
@@ -782,7 +773,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 	// be a native <img src> from Desktop / mobile webview or a split-origin
 	// self-hosted web app. The HMAC signature in the path is the credential.
 	// It covers the storage key, only image keys resolve, and the object must
-	// be avatar-class — see server/internal/handler/avatar.go (MUL-5393 /
+	// be avatar-class — see server/internal/handler/avatar.go (ISS-5393 /
 	// #6024).
 	r.Get("/api/avatars/{sig}/*", h.ServeAvatar)
 
@@ -803,6 +794,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 
 	// Public API
 	r.Get("/api/config", h.GetConfig)
+	r.Post("/api/daemon/token", h.ObtainDaemonSetupToken)
 	r.With(contactSalesRL).Post("/api/contact-sales", h.CreateContactSales)
 
 	// Webhook ingress for autopilots. Outside the authenticated group on
@@ -822,13 +814,9 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 	// the connection id in the path selects the workspace, provider, and
 	// decryption secret.
 	r.Post("/api/webhooks/vcs/{connectionId}", h.HandleVCSWebhook)
-	// Stripe webhook (no Multica auth — Stripe signs the raw body
-	// with a shared secret, the multica-cloud upstream verifies. We
-	// only forward the bytes + the Stripe-Signature header; see
-	// HandleCloudBillingStripeWebhook for the rationale).
-	r.Post("/api/webhooks/stripe", h.HandleCloudBillingStripeWebhook)
 
-	// Composio OAuth callback (MUL-3843). NOT under the Auth group on purpose:
+
+	// Composio OAuth callback (ISS-3843). NOT under the Auth group on purpose:
 	// Composio 302-redirects the user's browser here at the end of the OAuth
 	// flow, and the cookie session is frequently absent (expired session,
 	// SameSite=Strict / Safari ITP stripping cross-site cookies, private
@@ -853,7 +841,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 		r.Get("/workspaces/{workspaceId}/runtime-profiles", h.DaemonListRuntimeProfiles)
 
 		r.Post("/runtimes/{runtimeId}/tasks/claim", h.ClaimTaskByRuntime)
-		// Canonical machine-level batch claim (MUL-4257). `/claim` is a
+		// Canonical machine-level batch claim (ISS-4257). `/claim` is a
 		// transitional alias; the daemon coordinator targets the canonical
 		// path.
 		r.Post("/tasks/claim", h.ClaimTasksByRuntime)
@@ -911,7 +899,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 		r.Post("/api/feedback", h.CreateFeedback)
 		r.With(handler.RequireHumanActor).Post("/api/client-usage", h.UpsertClientUsage)
 
-		// Note (MUL-4309): the generic OpenAI-compatible passthrough endpoints
+		// Note (ISS-4309): the generic OpenAI-compatible passthrough endpoints
 		// (POST /api/llm/v1/chat/completions[/stream]) were intentionally
 		// removed. Exposing a general LLM proxy backed by the deployment's own
 		// key let any logged-in user run arbitrary completions on our dime.
@@ -925,7 +913,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 		// this route is callable as a native browser <img>/<video>
 		// src that cannot attach X-Workspace-Slug / X-Workspace-ID
 		// headers. Persisting `/api/attachments/<id>/download` into
-		// comment markdown depends on this — see MUL-3130. The
+		// comment markdown depends on this — see ISS-3130. The
 		// metadata / delete endpoints below stay workspace-scoped
 		// because they are JSON-API consumers that always have
 		// workspace context.
@@ -996,7 +984,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 				// is per-agent and enforced inside each handler via
 				// canManageAgent (agent owner OR workspace owner/admin), so an
 				// agent's owner can bind/manage their own agent's Bot without
-				// being a workspace admin (MUL-4213). The router can't make
+				// being a workspace admin (ISS-4213). The router can't make
 				// that call itself: begin identifies the agent by an
 				// `agent_id` query param and revoke by an installation id,
 				// neither of which is a URL param the role middleware sees.
@@ -1019,7 +1007,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 					r.Get("/lark/install/{sessionId}/status", h.GetLarkInstallStatus)
 				})
 
-				// Slack integration (MUL-3666). Same admin/member split as
+				// Slack integration (ISS-3666). Same admin/member split as
 				// Lark: listing is member-visible; OAuth begin + revoke are
 				// admin-only. The OAuth callback itself is a public route (it is
 				// hit by Slack's browser redirect with no workspace in the path)
@@ -1050,11 +1038,11 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 		// carries.
 		r.Post("/api/slack/binding/redeem", h.RedeemSlackBindingToken)
 
-		// Composio integration (MUL-3720). User-scoped (no workspace context):
+		// Composio integration (ISS-3720). User-scoped (no workspace context):
 		// a connection belongs to a user. These four require a logged-in
 		// session; the OAuth callback is the outlier and lives outside the Auth
 		// group (registered above with the other public OAuth/webhook routes —
-		// see MUL-3843). All return 503 when COMPOSIO_API_KEY is unset.
+		// see ISS-3843). All return 503 when COMPOSIO_API_KEY is unset.
 		r.Route("/api/integrations/composio", func(r chi.Router) {
 			r.Post("/connect/init", h.ComposioConnectInit)
 			r.Get("/toolkits", h.ListComposioToolkits)
@@ -1099,18 +1087,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 		// authoritative server-set X-Actor-Source header and 403s
 		// any task-token request. See actor_guards.go for the full
 		// rationale.
-		r.Route("/api/cloud-billing", func(r chi.Router) {
-			r.Use(handler.RequireHumanActor)
 
-			r.Get("/balance", h.GetCloudBillingBalance)
-			r.Get("/transactions", h.ListCloudBillingTransactions)
-			r.Get("/batches", h.ListCloudBillingBatches)
-			r.Get("/topups", h.ListCloudBillingTopups)
-			r.Get("/price-tiers", h.ListCloudBillingPriceTiers)
-			r.Post("/checkout-sessions", h.CreateCloudBillingCheckoutSession)
-			r.Get("/checkout-sessions/{sessionId}", h.GetCloudBillingCheckoutSession)
-			r.Post("/portal-sessions", h.CreateCloudBillingPortalSession)
-		})
 
 		// --- Workspace-scoped routes (all require workspace membership) ---
 		r.Group(func(r chi.Router) {
@@ -1283,7 +1260,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 			// /api/attachments/{id}/download is registered in the
 			// outer Auth-only group above so it can be loaded as a
 			// native <img>/<video> src without workspace headers
-			// (MUL-3130). The handler self-resolves the workspace
+			// (ISS-3130). The handler self-resolves the workspace
 			// from the attachment row.
 			r.Get("/api/attachments/{id}/content", h.GetAttachmentContent)
 			r.Delete("/api/attachments/{id}", h.DeleteAttachment)
@@ -1326,7 +1303,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 					// Dedicated env-management endpoint. Admits the agent
 					// owner or a workspace owner/admin; agent actors are
 					// denied. Every reveal / write is audited to
-					// activity_log. See MUL-2600, MUL-5438 and
+					// activity_log. See ISS-2600, ISS-5438 and
 					// internal/handler/agent_env.go.
 					r.Get("/env", h.GetAgentEnv)
 					r.Put("/env", h.UpdateAgentEnv)
@@ -1410,27 +1387,13 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 					// `runtime_has_active_agents` and the user confirmed.
 					r.Post("/unbind-agents-and-delete", h.UnbindAgentsAndDeleteRuntime)
 					// Legacy path for installed clients built against the
-					// archive-and-delete contract (MUL-5559 renamed the
+					// archive-and-delete contract (ISS-5559 renamed the
 					// behaviour, not just the route). Same handler.
 					r.Post("/archive-agents-and-delete", h.UnbindAgentsAndDeleteRuntime)
 				})
 			})
 
-			// Cloud Runtime fleet proxy. The remote service URL is configured
-			// on SaaS API nodes only; self-hosted deployments return 503.
-			r.Route("/api/cloud-runtime", func(r chi.Router) {
-				r.Get("/", h.GetCloudRuntimeService)
-				r.Get("/healthz", h.GetCloudRuntimeHealth)
-				r.Get("/readyz", h.GetCloudRuntimeReady)
-				r.Get("/nodes", h.ListCloudRuntimeNodes)
-				r.Post("/nodes", h.CreateCloudRuntimeNode)
-				r.Delete("/nodes", h.DeleteCloudRuntimeNode)
-				r.Post("/nodes/start", h.StartCloudRuntimeNode)
-				r.Post("/nodes/stop", h.StopCloudRuntimeNode)
-				r.Post("/nodes/reboot", h.RebootCloudRuntimeNode)
-				r.Post("/nodes/status", h.GetCloudRuntimeNodeStatus)
-				r.Post("/nodes/exec", h.ExecCloudRuntimeNode)
-			})
+
 
 			// Tasks (user-facing, with ownership check)
 			r.Post("/api/tasks/{taskId}/cancel", h.CancelTaskByUser)
@@ -1462,7 +1425,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 					r.Delete("/", h.DeleteChatSession)
 					r.Post("/messages", h.SendChatMessage)
 					// Explicit "refresh" of a turn's quick actions: re-runs the
-					// daemon suggestion pass for the latest assistant reply (MUL-5149).
+					// daemon suggestion pass for the latest assistant reply (ISS-5149).
 					r.Post("/quick-actions/regenerate", h.RegenerateChatQuickActions)
 					r.Get("/messages", h.ListChatMessages)
 					r.Get("/messages/page", h.ListChatMessagesPage)
@@ -1484,7 +1447,7 @@ func NewRouterWithOptions(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus
 			r.Post("/api/chat/pinned-agents", h.PinChatAgent)
 			r.Delete("/api/chat/pinned-agents/{agentId}", h.UnpinChatAgent)
 
-			// Agent-facing channel reads (MUL-3871). The caller's task-scoped token
+			// Agent-facing channel reads (ISS-3871). The caller's task-scoped token
 			// resolves to its own chat session; no session/channel id is passed, so
 			// an agent can only read its own conversation. `history` is the channel
 			// overview (top-level messages + thread metadata); `thread` reads one
@@ -1572,7 +1535,7 @@ func buildLarkConnector(installSvc *lark.InstallationService, apiClient lark.API
 		return creds, nil
 	})
 	// Inbound enricher: expands quoted replies / forwarded bundles AND
-	// prefetches a window of surrounding group history (MUL-3084) into the
+	// prefetches a window of surrounding group history (ISS-3084) into the
 	// agent's body via the IM API before dispatch. It shares the
 	// connector's resolved credentials and runs under the connector's
 	// EnrichTimeout so it cannot overrun the Lark long-conn ACK budget.
@@ -1678,12 +1641,6 @@ func splitAndTrim(s string) []string {
 	return res
 }
 
-func cloudRuntimeFleetURLFromEnv() string {
-	if url := strings.TrimSpace(os.Getenv("ORCHESTRA_CLOUD_FLEET_URL")); url != "" {
-		return url
-	}
-	return strings.TrimSpace(os.Getenv("ORCHESTRA_FLEET_URL"))
-}
 
 // composioStateSecret resolves the HMAC key for the connect-state. Prefers an
 // explicit COMPOSIO_STATE_SECRET; otherwise derives a composio-specific key

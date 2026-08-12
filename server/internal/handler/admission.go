@@ -3,10 +3,10 @@ package handler
 import (
 	"net/http"
 
-	"github.com/multica-ai/multica/server/internal/dispatch"
+	"github.com/JanMori/Orchestra/server/internal/dispatch"
 )
 
-// Unified execution-admission contract (MUL-4525).
+// Unified execution-admission contract (ISS-4525).
 //
 // Every synchronous enqueue entry point (comment mention, autopilot manual
 // "run now", issue assign / promotion / batch, manual rerun, direct chat) needs

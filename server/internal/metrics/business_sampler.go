@@ -1,4 +1,4 @@
-// Package-level note for PR4 (MUL-2947): the sampler runs at /metrics scrape
+// Package-level note for PR4 (ISS-2947): the sampler runs at /metrics scrape
 // time, hits the read replica via the existing pgxpool, and is opt-in. Every
 // individual SQL statement runs in its own short read-only transaction with
 // `SET LOCAL statement_timeout = '500ms'` and a hard `LIMIT 100` so a slow
@@ -42,7 +42,7 @@ const (
 	runtimeOnlineWindowSeconds = 60
 
 	// A running task is considered "stuck" once started_at is older
-	// than this. Matches the Grafana board threshold from MUL-2328.
+	// than this. Matches the Grafana board threshold from ISS-2328.
 	stuckRunningInterval = "30 minutes"
 )
 

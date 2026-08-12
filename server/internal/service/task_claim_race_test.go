@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 func newTaskClaimRacePool(t *testing.T) *pgxpool.Pool {
@@ -141,7 +141,7 @@ func createClaimCapacityFixture(t *testing.T, ctx context.Context, pool *pgxpool
 	t.Helper()
 
 	suffix := time.Now().UnixNano()
-	email := fmt.Sprintf("claim-capacity-%d@multica.ai", suffix)
+	email := fmt.Sprintf("claim-capacity-%d@orchestra.local", suffix)
 	slug := fmt.Sprintf("claim-capacity-%d", suffix)
 
 	var userID string

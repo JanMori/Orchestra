@@ -1,17 +1,17 @@
 ---
 title: AI 코딩 도구 설치
-description: 지원되는 AI 코딩 도구를 설치하고 로그인해 Multica가 로컬에서 태스크를 실행하게 합니다.
+description: 지원되는 AI 코딩 도구를 설치하고 로그인해 Orchestra가 로컬에서 태스크를 실행하게 합니다.
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-로컬 런타임은 Multica 데몬과 데몬이 호출할 수 있는 AI 코딩 도구 하나, 두 부분으로 구성됩니다. 사용할 도구만 설치하면 되며 모든 도구를 설치할 필요는 없습니다.
+로컬 런타임은 Orchestra 데몬과 데몬이 호출할 수 있는 AI 코딩 도구 하나, 두 부분으로 구성됩니다. 사용할 도구만 설치하면 되며 모든 도구를 설치할 필요는 없습니다.
 
 ## 1. 도구 선택
 
 이미 설치되어 로그인된 도구에는 추가 설정이 필요 없습니다. 도구마다 모델, MCP, 세션 복원, 스킬 지원이 다릅니다. 자세한 차이는 [AI 코딩 도구 비교](/providers)를 참고하세요.
 
-Multica는 현재 다음 명령을 감지합니다.
+Orchestra는 현재 다음 명령을 감지합니다.
 
 | 도구 | 감지하는 명령 | 공식 설치 안내 |
 | --- | --- | --- |
@@ -35,7 +35,7 @@ Multica는 현재 다음 명령을 감지합니다.
 | Qwen Code | `qwen` | [Qwen Code](https://github.com/QwenLM/qwen-code) |
 | TRAE CLI | `traecli` | [TRAE 공식 사이트](https://www.trae.cn/) |
 
-"지원됨"은 Multica가 해당 CLI를 호출할 수 있다는 뜻이며 Multica가 도구의 계정, 구독, 모델 사용량을 제공한다는 뜻은 아닙니다.
+"지원됨"은 Orchestra가 해당 CLI를 호출할 수 있다는 뜻이며 Orchestra가 도구의 계정, 구독, 모델 사용량을 제공한다는 뜻은 아닙니다.
 
 ## 2. 로컬에서 로그인 완료
 
@@ -43,7 +43,7 @@ Multica는 현재 다음 명령을 감지합니다.
 
 Reasonix를 사용할 때는 데몬을 시작하기 전에 `reasonix setup`을 실행해 기본 공급자와 모델을 설정하세요.
 
-로그인 자격 증명은 도구가 로컬에 저장합니다. Multica는 Claude, Codex, Cursor 또는 다른 CLI의 로그인 token을 받지 않습니다.
+로그인 자격 증명은 도구가 로컬에 저장합니다. Orchestra는 Claude, Codex, Cursor 또는 다른 CLI의 로그인 token을 받지 않습니다.
 
 <Callout type="info">
 Claude Code는 2.0.0 이상, Codex는 0.100.0 이상, Copilot은 1.0.0 이상, Grok은 0.2.89 이상, Qwen Code는 0.20.0 이상이 필요합니다. 최소 버전보다 낮으면 데몬이 해당 런타임을 등록하지 않습니다.
@@ -83,9 +83,9 @@ orchestra daemon start
 orchestra daemon restart
 ```
 
-Multica Desktop을 사용한다면 앱을 종료한 뒤 다시 열면 됩니다.
+Orchestra Desktop을 사용한다면 앱을 종료한 뒤 다시 열면 됩니다.
 
-그런 다음 Multica의 **런타임** 페이지를 엽니다. 대상 컴퓨터 아래에 해당 도구가 나타나고 온라인으로 표시됩니다. 이제 에이전트를 만들거나 수정할 때 이 런타임을 선택할 수 있습니다.
+그런 다음 Orchestra의 **런타임** 페이지를 엽니다. 대상 컴퓨터 아래에 해당 도구가 나타나고 온라인으로 표시됩니다. 이제 에이전트를 만들거나 수정할 때 이 런타임을 선택할 수 있습니다.
 
 <Callout type="warning">
 데몬이 시작될 때 기본 지원 CLI를 하나 이상 감지해야 합니다. 사용자 지정 런타임 설정은 데몬이 시작된 뒤 동기화되므로 빈 컴퓨터에서 유일한 시작 조건으로 사용할 수 없습니다.
@@ -107,4 +107,4 @@ Multica Desktop을 사용한다면 앱을 종료한 뒤 다시 열면 됩니다.
 
 - [에이전트 생성 및 설정](/agents-create) — 방금 연결한 런타임을 선택합니다.
 - [데몬과 런타임](/daemon-runtimes) — 온라인 상태, 동시 실행, 사용자 지정 런타임을 알아봅니다.
-- [AI 코딩 도구 비교](/providers) — Multica에서 도구별 기능을 비교합니다.
+- [AI 코딩 도구 비교](/providers) — Orchestra에서 도구별 기능을 비교합니다.

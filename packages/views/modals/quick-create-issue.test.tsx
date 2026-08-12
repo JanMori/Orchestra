@@ -11,7 +11,7 @@ const mockSetKeepOpen = vi.hoisted(() => vi.fn());
 const mockSetLastMode = vi.hoisted(() => vi.fn());
 const mockToastSuccess = vi.hoisted(() => vi.fn());
 // Uploads flow through the module-level coordinator, which calls
-// `api.uploadFile(file, ctx, signal)` (MUL-5181 L2).
+// `api.uploadFile(file, ctx, signal)` (ISS-5181 L2).
 const mockApiUploadFile = vi.hoisted(() => vi.fn());
 const mockNavigationPush = vi.hoisted(() => vi.fn());
 const mockSetShared = vi.hoisted(() => vi.fn());
@@ -387,7 +387,7 @@ vi.mock("@orchestra/ui/components/ui/switch", () => ({
 
 vi.mock("@orchestra/ui/components/common/file-upload-button", () => ({
   // `disabled` is forwarded so the "can still queue another file mid-upload"
-  // guarantee is actually assertable here (MUL-4808).
+  // guarantee is actually assertable here (ISS-4808).
   FileUploadButton: ({ disabled }: { disabled?: boolean }) => (
     <button type="button" disabled={disabled}>Upload file</button>
   ),
@@ -619,7 +619,7 @@ describe("AgentCreatePanel", () => {
     });
   });
 
-  // MUL-5181 P0: success may only consume the draft it submitted — the editor
+  // ISS-5181 P0: success may only consume the draft it submitted — the editor
   // stays interactive during the request, so mid-flight edits must survive.
   it("typing draft B while draft A's quick-create is pending survives the success (mounted)", async () => {
     let resolveCreate!: (v: unknown) => void;
@@ -651,7 +651,7 @@ describe("AgentCreatePanel", () => {
     expect(mockIssueDraftStore.draft.agent.prompt).toBe("Draft B prompt");
   });
 
-  // MUL-5181 P0: a submit that outlives its dialog may only consume the draft
+  // ISS-5181 P0: a submit that outlives its dialog may only consume the draft
   // it submitted — never one typed after closing and reopening.
   it("a late quick-create success does NOT clear a draft replaced after close", async () => {
     let resolveCreate!: (v: unknown) => void;
@@ -829,7 +829,7 @@ describe("AgentCreatePanel", () => {
       setIsExpanded: vi.fn(),
       data: {
         parent_issue_id: "parent-uuid-1",
-        parent_issue_identifier: "MUL-2534",
+        parent_issue_identifier: "ISS-2534",
       },
     });
 
@@ -864,7 +864,7 @@ describe("AgentCreatePanel", () => {
     expect(screen.queryByTestId("agent-sub-issue-chip")).toBeNull();
   });
 
-  // MUL-4808 — Quick Create already gated Create; these pin the two gaps:
+  // ISS-4808 — Quick Create already gated Create; these pin the two gaps:
   // the mode switch (which re-serializes the prompt into the manual draft)
   // and the file button that used to lock during an upload for no reason.
   describe("upload submit gate", () => {
@@ -905,7 +905,7 @@ describe("AgentCreatePanel", () => {
     });
   });
 
-  // MUL-4931 — this path files a real issue, so a double-fire is a duplicate
+  // ISS-4931 — this path files a real issue, so a double-fire is a duplicate
   // issue, not a cosmetic glitch. `submitting` is state: two chords landing in
   // one tick both read the pre-update value, so only a synchronously-flipped
   // ref can gate it. Mirrors the manual-create regression.

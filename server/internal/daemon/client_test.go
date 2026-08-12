@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 func TestClient_IdentityHeaders_PostJSON(t *testing.T) {
@@ -271,7 +271,7 @@ func TestPostJSONWithRetry_TransientThenSuccess(t *testing.T) {
 }
 
 // TestFailTask_RetriesOnTransient5xxThenSucceeds pins the callback half of
-// MUL-5305 Must-fix 1: FailTask's terminal transaction is now the sole
+// ISS-5305 Must-fix 1: FailTask's terminal transaction is now the sole
 // persistence point for the withheld session and continuity-gap flag, so if the
 // server returns a transient 5xx (the terminal tx rolled back), the daemon MUST
 // retry until it lands — a 400 would make it bail immediately
@@ -376,7 +376,7 @@ func TestPostJSONWithRetry_CtxCancelStopsRetries(t *testing.T) {
 }
 
 func TestDefaultTerminalRetrySchedule_MatchesAgreedPlan(t *testing.T) {
-	// MUL-2780 settled on a 5-step exponential backoff (4s, 8s, 16s, 32s, 64s).
+	// ISS-2780 settled on a 5-step exponential backoff (4s, 8s, 16s, 32s, 64s).
 	// Pin it so a future "tidy this up" refactor can't silently flatten or
 	// shorten the recovery window without explicit discussion.
 	want := []time.Duration{4 * time.Second, 8 * time.Second, 16 * time.Second, 32 * time.Second, 64 * time.Second}

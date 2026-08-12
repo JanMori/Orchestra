@@ -56,7 +56,7 @@ export function IntegrationsTab({ agent }: { agent: Agent }) {
   const isAgentOwner =
     !!user?.id && agent.owner_id != null && agent.owner_id === user.id;
   // Lark bind/manage is authorized for the agent's owner OR a workspace
-  // owner/admin (server/internal/handler/lark.go canManageAgent, MUL-4213).
+  // owner/admin (server/internal/handler/lark.go canManageAgent, ISS-4213).
   // Slack's install/revoke routes are still workspace owner/admin-only, so
   // its gate stays admin-only — the agent owner must not see a Slack CTA the
   // backend would 403.

@@ -28,13 +28,13 @@ func JWTSecret() []byte {
 	return jwtSecret
 }
 
-// GeneratePATToken creates a new personal access token: "mul_" + 40 random hex chars.
+// GeneratePATToken creates a new personal access token: "tok_" + 40 random hex chars.
 func GeneratePATToken() (string, error) {
 	b := make([]byte, 20) // 20 bytes = 40 hex chars
 	if _, err := rand.Read(b); err != nil {
 		return "", fmt.Errorf("generate PAT token: %w", err)
 	}
-	return "mul_" + hex.EncodeToString(b), nil
+	return "tok_" + hex.EncodeToString(b), nil
 }
 
 // GenerateDaemonToken creates a new daemon auth token: "mdt_" + 40 random hex chars.
@@ -50,7 +50,7 @@ func GenerateDaemonToken() (string, error) {
 // "mat_" + 40 random hex chars. The token is single-purpose — bound to a
 // specific (agent_id, task_id) pair on the server side — and is what the
 // daemon injects into the agent process in place of its own owner PAT.
-// See MUL-2600.
+// See ISS-2600.
 func GenerateAgentTaskToken() (string, error) {
 	b := make([]byte, 20)
 	if _, err := rand.Read(b); err != nil {

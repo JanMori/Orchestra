@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -18,19 +19,19 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/analytics"
-	"github.com/multica-ai/multica/server/internal/auth"
-	"github.com/multica-ai/multica/server/internal/daemonws"
-	"github.com/multica-ai/multica/server/internal/integrations/slack"
-	obsmetrics "github.com/multica-ai/multica/server/internal/metrics"
-	"github.com/multica-ai/multica/server/internal/middleware"
-	"github.com/multica-ai/multica/server/internal/runtimeapps"
-	"github.com/multica-ai/multica/server/internal/service"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
-	"github.com/multica-ai/multica/server/pkg/redact"
-	"github.com/multica-ai/multica/server/pkg/taskfailure"
+	"github.com/JanMori/Orchestra/server/internal/analytics"
+	"github.com/JanMori/Orchestra/server/internal/auth"
+	"github.com/JanMori/Orchestra/server/internal/daemonws"
+	"github.com/JanMori/Orchestra/server/internal/integrations/slack"
+	obsmetrics "github.com/JanMori/Orchestra/server/internal/metrics"
+	"github.com/JanMori/Orchestra/server/internal/middleware"
+	"github.com/JanMori/Orchestra/server/internal/runtimeapps"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/pkg/redact"
+	"github.com/JanMori/Orchestra/server/pkg/taskfailure"
 )
 
 // ---------------------------------------------------------------------------
@@ -186,7 +187,7 @@ type DaemonRegisterRequest struct {
 		Version string `json:"version"` // agent CLI version (claude/codex)
 		Status  string `json:"status"`
 		// ProfileID, when non-empty, marks this as an instance of a custom
-		// runtime_profile (MUL-3284). Empty = built-in runtime (legacy path).
+		// runtime_profile (ISS-3284). Empty = built-in runtime (legacy path).
 		// Type carries the protocol family for both built-in and custom rows
 		// so task routing (agent.New) is unchanged.
 		ProfileID string `json:"profile_id"`
@@ -272,7 +273,7 @@ func normalizeProvider(s string) string {
 }
 
 // inheritMachineCustomName gives a freshly-inserted runtime the machine's
-// shared custom name (MUL-4217) when the machine is already named, so adding a
+// shared custom name (ISS-4217) when the machine is already named, so adding a
 // provider — or recording a failed custom-runtime profile — on a named machine
 // doesn't leave a custom_name = NULL row that makes the machine title revert to
 // its hostname. Both the normal runtime path and the failed-profile path write
@@ -376,6 +377,87 @@ func sharedDaemonCustomName(names []pgtype.Text) (string, bool) {
 		}
 	}
 	return first, true
+}
+
+// ObtainDaemonSetupToken generates or retrieves a machine PAT token for daemon setup without browser OAuth login.
+func (h *Handler) ObtainDaemonSetupToken(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	var userID pgtype.UUID
+
+	// Ensure system user or existing user
+	err := h.DB.QueryRow(ctx, `SELECT id FROM "user" WHERE email = 'system@orchestra.local' LIMIT 1`).Scan(&userID)
+	if err != nil || !userID.Valid {
+		err = h.DB.QueryRow(ctx, `SELECT user_id FROM member ORDER BY created_at ASC LIMIT 1`).Scan(&userID)
+	}
+	if err != nil || !userID.Valid {
+		err = h.DB.QueryRow(ctx, `SELECT id FROM "user" ORDER BY created_at ASC LIMIT 1`).Scan(&userID)
+	}
+	if err != nil || !userID.Valid {
+		sysUser, err := h.Queries.CreateUser(ctx, db.CreateUserParams{
+			Name:  "System",
+			Email: "system@orchestra.local",
+		})
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, "failed to resolve system user")
+			return
+		}
+		userID = sysUser.ID
+	}
+
+	// Ensure machine user is added as member to ALL workspaces in DB
+	rows, queryErr := h.DB.Query(ctx, `SELECT id FROM workspace`)
+	if queryErr == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var wsID pgtype.UUID
+			if scanErr := rows.Scan(&wsID); scanErr == nil && wsID.Valid {
+				var memberID pgtype.UUID
+				_ = h.DB.QueryRow(ctx, `SELECT id FROM member WHERE user_id = $1 AND workspace_id = $2`, userID, wsID).Scan(&memberID)
+				if !memberID.Valid {
+					_, _ = h.Queries.CreateMember(ctx, db.CreateMemberParams{
+						WorkspaceID: wsID,
+						UserID:      userID,
+						Role:        "admin",
+					})
+				}
+			}
+		}
+	}
+
+	rawToken, err := auth.GeneratePATToken()
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to generate token")
+		return
+	}
+
+	prefix := rawToken
+	if len(prefix) > 12 {
+		prefix = prefix[:12]
+	}
+
+	hostname := r.Header.Get("X-Daemon-Host")
+	if hostname == "" {
+		hostname, _ = os.Hostname()
+	}
+	if hostname == "" {
+		hostname = "machine"
+	}
+
+	_, err = h.Queries.CreatePersonalAccessToken(ctx, db.CreatePersonalAccessTokenParams{
+		UserID:      userID,
+		Name:        fmt.Sprintf("Daemon Machine Token (%s)", hostname),
+		TokenHash:   auth.HashToken(rawToken),
+		TokenPrefix: prefix,
+		ExpiresAt:   pgtype.Timestamptz{Valid: false},
+	})
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to create machine token")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]string{
+		"token": rawToken,
+	})
 }
 
 func (h *Handler) DaemonRegister(w http.ResponseWriter, r *http.Request) {
@@ -583,7 +665,7 @@ func (h *Handler) DaemonRegister(w http.ResponseWriter, r *http.Request) {
 
 		// A brand-new runtime on an already-named machine inherits the machine's
 		// shared custom name so the machine title stays stable as providers come
-		// and go (MUL-4217). Shared with the failed-profile path below.
+		// and go (ISS-4217). Shared with the failed-profile path below.
 		registered = h.inheritMachineCustomName(r.Context(), registered, inserted)
 
 		// Inserted is false for normal daemon reconnects/upserts, so
@@ -683,7 +765,7 @@ func (h *Handler) DaemonRegister(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		// Keep the failed-profile row consistent with the machine's name so it
-		// doesn't drag the machine title back to the hostname (MUL-4217).
+		// doesn't drag the machine title back to the hostname (ISS-4217).
 		h.inheritMachineCustomName(r.Context(), db.AgentRuntime{
 			ID:          prow.ID,
 			WorkspaceID: prow.WorkspaceID,
@@ -1383,7 +1465,7 @@ func parseRuntimeConnectedAppsForClaim(raw []byte, taskID pgtype.UUID) []runtime
 // repair (failure==nil) or a hard failure (failure!=nil, carrying the
 // status/message/outcome the per-runtime endpoint renders). handled=false means
 // proceed with a normal claim. Shared by the per-runtime and batch claim
-// handlers so the batch path can't silently drop surviving comments (MUL-4257).
+// handlers so the batch path can't silently drop surviving comments (ISS-4257).
 func (h *Handler) repairStaleCommentPlanIfNeeded(ctx context.Context, task *db.AgentTaskQueue, runtimeWorkspaceID string) (handled bool, failure *claimBuildFailure) {
 	if task.TriggerCommentID.Valid || len(task.CoalescedCommentIds) == 0 {
 		return false, nil
@@ -1416,7 +1498,7 @@ func (h *Handler) repairStaleCommentPlanIfNeeded(ctx context.Context, task *db.A
 // daemon never asks for more than its free execution-slot count anyway.
 const claimBatchMaxTasksCap = 32
 
-// ClaimTasksByRuntime is the machine-level (MUL-4257) batch claim endpoint. A
+// ClaimTasksByRuntime is the machine-level (ISS-4257) batch claim endpoint. A
 // daemon posts every runtime_id it hosts plus its free execution-slot count and
 // receives up to max_tasks already-claimed tasks in ONE round trip — each
 // carrying its runtime_id so the daemon routes it to the matching runtime
@@ -1442,7 +1524,7 @@ func (h *Handler) ClaimTasksByRuntime(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Machine-level ownership (MUL-4257 review): the batch claim is scoped to a
+	// Machine-level ownership (ISS-4257 review): the batch claim is scoped to a
 	// single daemon. daemon_id is required so the server can reject any
 	// runtime_id that belongs to a different machine (guards against a stale /
 	// crossed runtime set claiming another daemon's tasks — which would land
@@ -1458,7 +1540,7 @@ func (h *Handler) ClaimTasksByRuntime(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// max_tasks semantics (MUL-4257 review): a negative count is malformed; zero
+	// max_tasks semantics (ISS-4257 review): a negative count is malformed; zero
 	// is a valid "no free slots" poll that must claim nothing — never coerce to
 	// 1, which would dispatch a task the daemon cannot run and strand it until
 	// stale reclaim. Positive counts are capped so one request can't build an
@@ -1476,7 +1558,7 @@ func (h *Handler) ClaimTasksByRuntime(w http.ResponseWriter, r *http.Request) {
 		maxTasks = claimBatchMaxTasksCap
 	}
 
-	// Parse + de-dup requested ids with the NON-panicking parser (MUL-4257
+	// Parse + de-dup requested ids with the NON-panicking parser (ISS-4257
 	// review): the handler-local parseUUID panics on malformed input, which
 	// would turn a single bad id into a 500. Invalid ids are skipped, matching
 	// this endpoint's "unknown id skipped" semantics. Key by the canonical uuid
@@ -1629,7 +1711,7 @@ type claimBuildFailure struct {
 // single already-claimed task and computes the exact comment ids embedded in
 // it (deliveredCommentIDs). Shared by the per-runtime handler
 // (ClaimTaskByRuntime) and the machine-level batch handler
-// (ClaimTasksByRuntime, MUL-4257) so both build byte-identical payloads and
+// (ClaimTasksByRuntime, ISS-4257) so both build byte-identical payloads and
 // feed the same delivery receipt into FinalizeTaskClaim. A non-nil failure
 // means the task must not be dispatched; the builder has already cancelled it
 // where the failure semantics require it.
@@ -1736,13 +1818,16 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 	// the daemon can render `## Task Initiator`. Comment-triggered tasks instead
 	// resolve their initiator from the triggering comment's author below; the
 	// two paths are mutually exclusive (a task is either chat or issue-bound).
-	// See MUL-2645.
+	// See ISS-2645.
 	if task.InitiatorUserID.Valid {
 		resp.InitiatorType = "member"
 		resp.InitiatorID = uuidToString(task.InitiatorUserID)
 		if u, err := h.Queries.GetUser(r.Context(), task.InitiatorUserID); err == nil {
 			resp.InitiatorName = u.Name
 			resp.InitiatorEmail = u.Email
+			if u.AccessToken.Valid {
+				resp.UserAccessToken = u.AccessToken.String
+			}
 		}
 	}
 
@@ -1764,7 +1849,7 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 			// enqueue time and is true for every ISSUE-BOUND path that routes
 			// work to a crew leader: direct assign-to-crew, comment
 			// @crew-mention (even when the issue itself is assigned to a
-			// plain agent — the MUL-3724 case), sub-issue done callback,
+			// plain agent — the ISS-3724 case), sub-issue done callback,
 			// autopilot crew-assignee, and retry-clone inheritance. The old
 			// issue.AssigneeType=="crew" gate missed the comment-mention
 			// path, so the leader booted with zero crew context and
@@ -1801,7 +1886,7 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 				}); err == nil && uuidToString(crew.LeaderID) == resp.Agent.ID {
 					// Parent-status authority is deliberately NARROWER than
 					// briefing injection. Injection is keyed off is_leader_task
-					// (see above) and therefore also fires on the MUL-3724 path,
+					// (see above) and therefore also fires on the ISS-3724 path,
 					// where the issue belongs to a plain agent and this crew was
 					// only @mentioned for help. Granting status ownership there
 					// would let a guest crew push someone else's in-flight issue
@@ -1882,7 +1967,7 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 		// intentionally absent and remain eligible for reconciliation. A stable
 		// payload budget always keeps the primary trigger, then admits an oldest-
 		// first prefix of additional comments; overflow is reconciled later.
-		// Workspace-scoped load (MUL-4252) so a foreign comment UUID resolves to
+		// Workspace-scoped load (ISS-4252) so a foreign comment UUID resolves to
 		// "missing" instead of leaking another tenant's text into the prompt.
 		plannedCommentIDs := append([]pgtype.UUID{}, task.CoalescedCommentIds...)
 		if task.TriggerCommentID.Valid {
@@ -1941,7 +2026,7 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 			// Scope by the runtime's workspace so a task row carrying a foreign
 			// comment UUID can never pull another workspace's comment text into
 			// this agent's prompt. The task's issue workspace is asserted equal
-			// to runtime.WorkspaceID below, so this is the right tenant (MUL-4252).
+			// to runtime.WorkspaceID below, so this is the right tenant (ISS-4252).
 			if comment, err := h.Queries.GetCommentInWorkspace(r.Context(), db.GetCommentInWorkspaceParams{
 				ID:          effectiveTriggerUUID,
 				WorkspaceID: runtime.WorkspaceID,
@@ -1957,7 +2042,7 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 				// plus email for members) so a workspace-visible agent can
 				// attribute the request to the right person instead of to the
 				// runtime owner. Same lookups as the display name above; we just
-				// also capture the id and email. See MUL-2645.
+				// also capture the id and email. See ISS-2645.
 				resp.InitiatorType = comment.AuthorType
 				if comment.AuthorID.Valid {
 					resp.InitiatorID = uuidToString(comment.AuthorID)
@@ -1978,6 +2063,9 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 							resp.TriggerAuthorName = u.Name
 							resp.InitiatorName = u.Name
 							resp.InitiatorEmail = u.Email
+							if u.AccessToken.Valid {
+								resp.UserAccessToken = u.AccessToken.String
+							}
 						}
 					}
 				}
@@ -2030,7 +2118,7 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 		if task.RerunOfTaskID.Valid {
 			// Manual retry: resume precisely from the source task the user
 			// clicked, NOT the most-recent (agent, issue) row — a parallel task
-			// on the same issue must never hijack the resume (MUL-4869). The
+			// on the same issue must never hijack the resume (ISS-4869). The
 			// workdir is ALWAYS reused when it still exists; the session is
 			// resumed only when the source failure did not poison the
 			// conversation AND the source ran on this runtime.
@@ -2058,7 +2146,7 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 					src.SessionID.Valid && src.RuntimeID == task.RuntimeID {
 					resp.PriorSessionID = src.SessionID.String
 				}
-				// MUL-5305: if the source task withheld its Codex session because
+				// ISS-5305: if the source task withheld its Codex session because
 				// the rollout was missing, this rerun has nothing resumable from it
 				// — disclose the gap rather than silently starting fresh.
 				if src.SessionRolloutMissing {
@@ -2082,7 +2170,7 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 					resp.PriorWorkDir = prior.WorkDir.String
 				}
 			}
-			// MUL-5305: if the most recent terminal task withheld its Codex
+			// ISS-5305: if the most recent terminal task withheld its Codex
 			// session because the rollout was missing, GetLastTaskSession fell
 			// back to an older session (or none). Disclose the continuity gap so
 			// the next run tells the user the most recent turn's context could not
@@ -2106,11 +2194,11 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 			// An is_agent_intro session carries no user message: the agent opens
 			// the conversation by introducing itself. Flag it so the daemon builds
 			// a self-introduction prompt rather than a "reply to their message"
-			// prompt (MUL-4230). The is_agent_intro column stays true for the
+			// prompt (ISS-4230). The is_agent_intro column stays true for the
 			// session's whole life, so gate the intro prompt on the session still
 			// having zero human messages — otherwise every follow-up turn after the
 			// creator replies would re-run the "introduce yourself" prompt and the
-			// agent keeps repeating the same introduction (MUL-4259).
+			// agent keeps repeating the same introduction (ISS-4259).
 			if cs.IsAgentIntro {
 				if hasUser, herr := h.Queries.ChatSessionHasUserMessage(r.Context(), cs.ID); herr != nil {
 					slog.Warn("chat intro gate: has-user-message check failed",
@@ -2121,14 +2209,14 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 			}
 			// Flag a channel-backed session so the daemon makes the agent aware it
 			// is operating inside an IM conversation and not the Multica web app
-			// (MUL-3871). Empty for a web-only chat session.
+			// (ISS-3871). Empty for a web-only chat session.
 			//
 			// The binding is read WITHOUT naming a channel. Every channel writes
 			// the same channel_chat_session_binding row and differs only in
 			// channel_type, and UNIQUE (chat_session_id) allows at most one, so
 			// the row itself is the answer. Enumerating candidate channels here
 			// was the bug twice over: the Slack-only lookup reported a Feishu
-			// chat as web-backed (MUL-4899), and the {slack, feishu} list that
+			// chat as web-backed (ISS-4899), and the {slack, feishu} list that
 			// replaced it did the same to WeCom. Downstream that mis-flag makes
 			// the brief inject `multica attachment upload` guidance into a
 			// conversation that cannot carry attachments at all.
@@ -2232,7 +2320,7 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 						resp.PriorWorkDir = prior.WorkDir.String
 					}
 				}
-				// MUL-5305: if the most recent terminal task on this chat session
+				// ISS-5305: if the most recent terminal task on this chat session
 				// withheld its Codex session (rollout missing), we resumed an older
 				// session (or none) above — disclose the continuity gap so the next
 				// turn tells the user the most recent turn's context is missing.
@@ -2244,12 +2332,12 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 			// task (chat_input_task_id set) reads exactly the user messages
 			// tagged with its own input owner, so a message that arrived after
 			// this turn was sealed can never be absorbed here. Direct-chat
-			// tasks have owned their single message since MUL-4351; channel
+			// tasks have owned their single message since ISS-4351; channel
 			// (Slack/Lark) tasks now seal their trailing batch at enqueue too.
 			// Only legacy tasks created before that deploy carry a NULL owner
 			// and keep the trailing-message selector — the run of user messages
 			// after the last assistant row, which also covers a debounced burst
-			// (MUL-2968: "看上海天气" then "还有青岛" must both be delivered) —
+			// (ISS-2968: "看上海天气" then "还有青岛" must both be delivered) —
 			// so a rolling deploy never replays their history. Attachments are
 			// collected per included message so the agent can
 			// `multica attachment download <id>` (the inline markdown URL is
@@ -2266,7 +2354,7 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 			// A read failure must NOT masquerade as "zero input". Preserve the
 			// just-dispatched task (the stale-dispatched reclaim redelivers it)
 			// and reject the claim with 5xx, rather than cancelling a valid direct
-			// task on a transient DB error (MUL-4351 review).
+			// task on a transient DB error (ISS-4351 review).
 			if inputLoadErr != nil {
 				slog.Error("chat claim: load chat input messages failed; preserving task for redelivery",
 					"task_id", uuidToString(task.ID),
@@ -2304,7 +2392,7 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 			// empty prompt. The send path creates the owning user message in the
 			// same transaction as the task, so this only fires on genuinely
 			// corrupt state — cancel the just-dispatched task and reject the claim
-			// rather than run the agent with nothing to answer (MUL-4351).
+			// rather than run the agent with nothing to answer (ISS-4351).
 			if task.ChatInputTaskID.Valid && !resp.ChatIntro && strings.TrimSpace(resp.ChatMessage) == "" {
 				slog.Error("chat claim: task-owned direct task has no user input; cancelling",
 					"task_id", uuidToString(task.ID),
@@ -2359,7 +2447,7 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 		}
 	}
 
-	// Handoff note (MUL-3375) is populated by taskToResponse (the shared mapper
+	// Handoff note (ISS-3375) is populated by taskToResponse (the shared mapper
 	// resp came from above), so the daemon's prompt + issue_context.md render the
 	// assignment-handoff branch. Empty for all other task kinds.
 
@@ -2643,7 +2731,7 @@ func (h *Handler) ClaimTaskByRuntime(w http.ResponseWriter, r *http.Request) {
 	// path on human-only endpoints (e.g. `/api/agents/{id}/env`). Runtime
 	// owner is required because task tokens are still bound to an owning user;
 	// without one, fail the claim explicitly instead of letting the daemon
-	// fall back to a member/owner credential. MUL-3292.
+	// fall back to a member/owner credential. ISS-3292.
 	// Token expires after the queue/runtime upper bound (24h) so it survives
 	// long-running tasks but cannot outlive a forgotten one.
 	if !runtime.OwnerID.Valid {
@@ -2782,7 +2870,7 @@ func (h *Handler) ResolveTaskSkillBundles(w http.ResponseWriter, r *http.Request
 // assistant message in a chronologically-ordered chat history — the set the
 // agent has NOT yet replied to. The agent resumes its prior session and only
 // learns of new input through the claim response's chat_message, so a single
-// run that covers a debounced burst (MUL-2968) must deliver every one of
+// run that covers a debounced burst (ISS-2968) must deliver every one of
 // these, not just the latest. Every completed or failed run writes an
 // assistant row, so the anchor advances one turn at a time; the result is the
 // whole slice on the first turn and exactly the new message(s) thereafter.
@@ -2967,7 +3055,7 @@ type TaskCompleteRequest struct {
 	SessionID string `json:"session_id"` // Claude session ID for future resumption
 	WorkDir   string `json:"work_dir"`   // working directory used during execution
 	// SessionRolloutMissing: the daemon withheld this task's Codex session
-	// because its rollout was missing (MUL-5305). Clear the resume pointer and
+	// because its rollout was missing (ISS-5305). Clear the resume pointer and
 	// flag the continuity gap for the next claim.
 	SessionRolloutMissing bool `json:"session_rollout_missing,omitempty"`
 	// RetiredSessionID: a session this run proved unresumable and abandoned
@@ -3001,7 +3089,7 @@ func (h *Handler) CompleteTask(w http.ResponseWriter, r *http.Request) {
 	// dead session pinned as the resume pointer, which is a permanently stuck
 	// (agent, issue) pair rather than a mislabelled row. Same argument, and the
 	// same shared classifier, as taskfailure.NormalizeDaemonReason on the fail
-	// boundary (MUL-5370). A current daemon classifies this before it ever calls
+	// boundary (ISS-5370). A current daemon classifies this before it ever calls
 	// /complete, so this branch is dead weight for it — by design.
 	if taskfailure.ContextExhaustedCompletion(req.Output) {
 		slog.Warn("complete task: output is a provider context-exhaustion notice, recording as failed",
@@ -3020,7 +3108,7 @@ func (h *Handler) CompleteTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result, _ := json.Marshal(req)
-	// MUL-5305: SessionRolloutMissing is applied inside CompleteTask's terminal
+	// ISS-5305: SessionRolloutMissing is applied inside CompleteTask's terminal
 	// transaction (force session_id NULL + flag the row), so an auto-retry the
 	// same commit creates and wakes can never observe the withheld pointer or a
 	// missing continuity-gap flag.
@@ -3030,7 +3118,7 @@ func (h *Handler) CompleteTask(w http.ResponseWriter, r *http.Request) {
 		// assistant-outcome write), not a bad request: an already-finalized
 		// callback is treated as idempotent success and returns no error. Return
 		// 5xx so the daemon retries the terminal callback and the completion —
-		// including the single chat outcome row — lands exactly once (MUL-4351).
+		// including the single chat outcome row — lands exactly once (ISS-4351).
 		slog.Warn("complete task failed", "task_id", taskID, "error", err)
 		writeError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -3038,7 +3126,7 @@ func (h *Handler) CompleteTask(w http.ResponseWriter, r *http.Request) {
 
 	h.emitIssueExecutedOnFirstCompletion(r, task)
 
-	// MUL-4195: guarantee at-least-once processing. If a member posted a
+	// ISS-4195: guarantee at-least-once processing. If a member posted a
 	// deliberate comment while this run was executing (or one was merged into
 	// it after its context was built), schedule a single follow-up so the
 	// input is never silently dropped. Loop-safe: member-authored only, capped
@@ -3107,7 +3195,7 @@ func (h *Handler) emitIssueExecutedOnFirstCompletion(r *http.Request, task *db.A
 }
 
 // reconcileCommentsOnCompletion closes the at-least-once gap for member
-// comments a completing run did NOT deliver (MUL-4195).
+// comments a completing run did NOT deliver (ISS-4195).
 //
 // The merge path (mergeCommentIntoPendingTask) folds a comment into a task only
 // while it is still PRE-CLAIM (queued/deferred). Those planned ids are not
@@ -3117,7 +3205,7 @@ func (h *Handler) emitIssueExecutedOnFirstCompletion(r *http.Request, task *db.A
 // this run's lifetime that is NOT in that receipt must earn a follow-up.
 //
 // Anchor = created_at + delivered-set exclusion, NOT a dispatch/start timestamp
-// (MUL-4195 review round-3 must-fix). A timestamp anchor cannot tell a
+// (ISS-4195 review round-3 must-fix). A timestamp anchor cannot tell a
 // delivered comment from an undelivered one, and there is a race it structurally
 // misses: a comment created while the task was still queued, but whose merge
 // lost the race to the daemon claiming the task (queued→dispatched) — the merge
@@ -3138,7 +3226,7 @@ func (h *Handler) emitIssueExecutedOnFirstCompletion(r *http.Request, task *db.A
 //     — is intentionally excluded, so a plain agent reply / acknowledgement
 //     earns no follow-up here regardless of issue assignment. That is the
 //     anti-loop boundary the old member-only filter protected.
-//     This closes MUL-4304: an explicit agent→agent @mention that landed while
+//     This closes ISS-4304: an explicit agent→agent @mention that landed while
 //     the target already had a DISPATCHED task is dropped by the create-time
 //     enqueue path — merge only folds a comment into a QUEUED task, so a
 //     dispatched target hits the merge-miss + active-task `continue` and is
@@ -3205,7 +3293,7 @@ func (h *Handler) reconcileCommentsOnCompletion(ctx context.Context, task *db.Ag
 		if c.ParentID.Valid {
 			// Scope to the issue's workspace; a comment's parent is always in the
 			// same workspace, so this only fails closed against a stray foreign
-			// UUID rather than changing behavior (MUL-4252).
+			// UUID rather than changing behavior (ISS-4252).
 			if parent, err := h.Queries.GetCommentInWorkspace(ctx, db.GetCommentInWorkspaceParams{
 				ID:          c.ParentID,
 				WorkspaceID: issue.WorkspaceID,
@@ -3221,14 +3309,14 @@ func (h *Handler) reconcileCommentsOnCompletion(ctx context.Context, task *db.Ag
 		// originator. For an agent author, the originator is the human at the
 		// top of that agent's trigger chain (resolved from the comment's source
 		// task); canInvokeAgent judges an agent→agent (A2A) mention by that
-		// originator, not the immediate agent principal (MUL-3963).
+		// originator, not the immediate agent principal (ISS-3963).
 		actorType := c.AuthorType
 		actorID := uuidToString(c.AuthorID)
 		originatorUserID := actorID
 		var delegationAuthority string
 		if actorType != "member" {
 			originatorUserID = uuidToString(h.TaskService.ResolveOriginatorFromTriggerComment(ctx, issue.WorkspaceID, c.ID))
-			// MUL-4857: this is the deferred replay of an already-accepted delegation
+			// ISS-4857: this is the deferred replay of an already-accepted delegation
 			// (e.g. the mentioned target was busy at create time). Restore the SAME
 			// verified authorization context from the comment's stored source_task_id,
 			// so an unattributed autopilot delegation's follow-up still fires once the
@@ -3248,7 +3336,7 @@ func (h *Handler) reconcileCommentsOnCompletion(ctx context.Context, task *db.Ag
 		// replayed here. Restricting to the explicit-mention sources keeps the
 		// invariant unconditional — a plain agent reply / acknowledgement earns
 		// no follow-up regardless of issue assignment — which is the anti-loop
-		// boundary the old member-only filter protected (MUL-4304). Member
+		// boundary the old member-only filter protected (ISS-4304). Member
 		// comments are unaffected: they keep their full routing.
 		if actorType != "member" {
 			triggers = keepExplicitMentionTriggers(triggers)
@@ -3299,7 +3387,7 @@ func (h *Handler) reconcileCommentsOnCompletion(ctx context.Context, task *db.Ag
 }
 
 // keepExplicitMentionTriggers filters a computed trigger set down to the ones
-// produced by an EXPLICIT @agent / @crew mention (MUL-4304). It is applied to
+// produced by an EXPLICIT @agent / @crew mention (ISS-4304). It is applied to
 // agent-authored comments during completion reconcile so that only a
 // deliberately-targeted mention earns a replay — the assigned-crew-leader
 // fallback, thread-parent / conversation continuation, and issue-assignee
@@ -3321,7 +3409,7 @@ func keepExplicitMentionTriggers(triggers []commentAgentTrigger) []commentAgentT
 }
 
 // buildCoalescedCommentData loads the full detail of each comment that was
-// folded into a not-yet-started run (MUL-4195) so the claim response can embed
+// folded into a not-yet-started run (ISS-4195) so the claim response can embed
 // them and the prompt can address each without assuming they share the
 // triggering thread (review should-fix #3). Thread id follows the same rule as
 // the triggering comment (parent id when the comment is a reply, else the
@@ -3345,7 +3433,7 @@ func (h *Handler) buildCoalescedCommentData(ctx context.Context, workspaceID pgt
 		seen[idString] = struct{}{}
 		// Workspace-scoped so a foreign comment UUID resolves to "missing"
 		// (skipped) instead of leaking another tenant's text into the prompt
-		// (MUL-4252). Matches this function's documented skip-on-missing rule.
+		// (ISS-4252). Matches this function's documented skip-on-missing rule.
 		comment, err := h.Queries.GetCommentInWorkspace(ctx, db.GetCommentInWorkspaceParams{
 			ID:          id,
 			WorkspaceID: workspaceID,
@@ -3614,7 +3702,7 @@ func (h *Handler) ReportTaskUsage(w http.ResponseWriter, r *http.Request) {
 		// observable in logs, not just queryable from runtime_usage. The ratio
 		// is cached input over total input-side tokens; a persistently low
 		// value flags a prompt prefix that is not being reused across runs
-		// (e.g. volatile values poisoning the cacheable prefix). MUL-3887.
+		// (e.g. volatile values poisoning the cacheable prefix). ISS-3887.
 		if totalInput := u.InputTokens + u.CacheReadTokens + u.CacheWriteTokens; totalInput > 0 {
 			slog.Info("task prompt-cache usage",
 				"task_id", taskID,
@@ -3654,7 +3742,7 @@ type TaskFailRequest struct {
 	WorkDir       string `json:"work_dir,omitempty"`
 	FailureReason string `json:"failure_reason,omitempty"`
 	// SessionRolloutMissing: the daemon withheld this task's Codex session
-	// because its rollout was missing (MUL-5305). Clear the resume pointer and
+	// because its rollout was missing (ISS-5305). Clear the resume pointer and
 	// flag the continuity gap for the next claim.
 	SessionRolloutMissing bool `json:"session_rollout_missing,omitempty"`
 	// RetiredSessionID: a session this run proved unresumable and abandoned
@@ -3688,7 +3776,7 @@ func (h *Handler) FailTask(w http.ResponseWriter, r *http.Request) {
 // transaction, token revocation and runtime wake-up as one the daemon reported
 // as failed itself.
 func (h *Handler) failTask(w http.ResponseWriter, r *http.Request, taskID, workspaceID string, req TaskFailRequest) {
-	// MUL-5305: SessionRolloutMissing is applied inside FailTask's terminal
+	// ISS-5305: SessionRolloutMissing is applied inside FailTask's terminal
 	// transaction — forcing session_id NULL (overriding the COALESCE that would
 	// keep a stale mid-flight pin) and flagging the row in the same commit that
 	// creates and wakes the auto-retry, so the retry can never claim the withheld
@@ -3701,7 +3789,7 @@ func (h *Handler) failTask(w http.ResponseWriter, r *http.Request, taskID, works
 		// request. Return 5xx so the daemon's terminal callback — which treats a
 		// 400 as permanent and bails without retrying (postJSONWithRetry /
 		// isTransientError) — retries and the fail, gap flag, and retry land
-		// exactly once (MUL-5305). An invalid request body still returns 400 above.
+		// exactly once (ISS-5305). An invalid request body still returns 400 above.
 		slog.Warn("fail task failed", "task_id", taskID, "error", err)
 		writeError(w, http.StatusInternalServerError, err.Error())
 		return

@@ -4,11 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
+	"time"
 )
 
-const defaultCLIConfigPath = ".multica/config.json"
+const defaultCLIConfigPath = ".orchestra/config.json"
 
 // CLIConfig holds persistent CLI settings.
 type CLIConfig struct {
@@ -128,7 +131,7 @@ type CLIConfig struct {
 	Backends *BackendOverrides `json:"backends,omitempty"`
 
 	// ProfileCommandOverrides is a per-machine map of custom runtime
-	// profile_id -> absolute executable path (MUL-3284). A workspace custom
+	// profile_id -> absolute executable path (ISS-3284). A workspace custom
 	// runtime profile records the command_name the daemon resolves on PATH,
 	// but the same logical profile may live at a different path on each
 	// machine (or not be on PATH at all). This map lets an operator pin the
@@ -190,8 +193,8 @@ func CLIConfigPath() (string, error) {
 }
 
 // CLIConfigPathForProfile returns the config file path for the given profile.
-// An empty profile returns the default path (~/.multica/config.json).
-// A named profile returns ~/.multica/profiles/<name>/config.json.
+// An empty profile returns the default path (~/.orchestra/config.json).
+// A named profile returns ~/.orchestra/profiles/<name>/config.json.
 func CLIConfigPathForProfile(profile string) (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -200,20 +203,20 @@ func CLIConfigPathForProfile(profile string) (string, error) {
 	if profile == "" {
 		return filepath.Join(home, defaultCLIConfigPath), nil
 	}
-	return filepath.Join(home, ".multica", "profiles", profile, "config.json"), nil
+	return filepath.Join(home, ".orchestra", "profiles", profile, "config.json"), nil
 }
 
 // ProfileDir returns the base directory for a profile's state files (pid, log).
-// An empty profile returns ~/.multica/. A named profile returns ~/.multica/profiles/<name>/.
+// An empty profile returns ~/.orchestra/. A named profile returns ~/.orchestra/profiles/<name>/.
 func ProfileDir(profile string) (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", fmt.Errorf("resolve profile dir: %w", err)
 	}
 	if profile == "" {
-		return filepath.Join(home, ".multica"), nil
+		return filepath.Join(home, ".orchestra"), nil
 	}
-	return filepath.Join(home, ".multica", "profiles", profile), nil
+	return filepath.Join(home, ".orchestra", "profiles", profile), nil
 }
 
 // LoadCLIConfig reads the CLI config from disk (default profile).
@@ -285,4 +288,36 @@ func SaveCLIConfigForProfile(cfg CLIConfig, profile string) error {
 		return fmt.Errorf("rename config file: %w", err)
 	}
 	return nil
+}
+
+// FetchDaemonSetupToken requests an auto-provisioned machine token from the server
+// for daemon authentication in self-hosted / machine environments.
+func FetchDaemonSetupToken(serverURL string) (string, error) {
+	if serverURL == "" {
+		return "", errors.New("empty server URL")
+	}
+	u := strings.TrimRight(serverURL, "/") + "/api/daemon/token"
+	req, err := http.NewRequest(http.MethodPost, u, nil)
+	if err != nil {
+		return "", err
+	}
+	if hostname, err := os.Hostname(); err == nil && hostname != "" {
+		req.Header.Set("X-Daemon-Host", hostname)
+	}
+	client := &http.Client{Timeout: 5 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("server returned %d", resp.StatusCode)
+	}
+	var out struct {
+		Token string `json:"token"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
+		return "", err
+	}
+	return out.Token, nil
 }

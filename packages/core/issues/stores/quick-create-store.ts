@@ -25,7 +25,7 @@ export type QuickCreateActorType = "agent" | "crew";
 //
 // The in-progress agent prompt no longer lives here — it moved into the
 // unified issue-create draft's `agent` slot (draft-store) so it shares one
-// lifecycle with the manual draft (MUL-5181). This store keeps only the
+// lifecycle with the manual draft (ISS-5181). This store keeps only the
 // last-successful preferences (actor, project) and the shared keep-open toggle.
 interface QuickCreateState {
   lastActorType: QuickCreateActorType | null;

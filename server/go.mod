@@ -1,4 +1,4 @@
-module github.com/multica-ai/multica/server
+module github.com/JanMori/Orchestra/server
 
 go 1.26.1
 

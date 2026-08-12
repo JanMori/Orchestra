@@ -13,15 +13,15 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/service"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // failureMonitorConfig is the tunable knob set for the autopilot failure
-// monitor. Defaults match the proposal in MUL-1336 §6 action item #2:
+// monitor. Defaults match the proposal in ISS-1336 §6 action item #2:
 // pause autopilots whose recent run history is dominated by failures and that
 // have run enough times that the failure rate is statistically meaningful.
 //
@@ -62,7 +62,7 @@ func envFailureMonitorConfig() failureMonitorConfig {
 // runAutopilotFailureMonitor periodically pauses autopilots whose recent run
 // history exceeds the configured failure threshold. This stops runaway
 // scheduled autopilots from burning tasks/tokens on a hot loop (e.g. the
-// `Registro de ls cada 5 min` case in MUL-1336: 1,475 / 1,476 runs failed
+// `Registro de ls cada 5 min` case in ISS-1336: 1,475 / 1,476 runs failed
 // over 7 days, still firing every 5 min). The monitor leaves a
 // `severity=attention` inbox notification for the autopilot's creator (or the
 // agent's owner if the autopilot was created by an agent) so somebody human
@@ -148,7 +148,7 @@ func tickAutopilotFailureMonitor(ctx context.Context, queries *db.Queries, bus *
 			continue
 		}
 
-		// A system auto-pause is a substantive status change (MUL-4302 §3.4).
+		// A system auto-pause is a substantive status change (ISS-4302 §3.4).
 		// Record it as a rule-version publish with a 'system' publisher (no member
 		// actor). Best-effort: the monitor is a background sweep, a paused autopilot
 		// does not dispatch (so this version is never the active version at a real

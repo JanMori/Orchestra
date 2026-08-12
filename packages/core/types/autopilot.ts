@@ -4,14 +4,14 @@ export type AutopilotExecutionMode = "create_issue" | "run_only";
 
 // `assignee_type` selects which polymorphic actor backs the autopilot:
 // "agent" → assignee_id references agent(id); "crew" → assignee_id references
-// crew(id) and dispatch resolves to crew.leader_id at run time (MUL-2429,
+// crew(id) and dispatch resolves to crew.leader_id at run time (ISS-2429,
 // Path A). Older servers omit this field — callers should default to "agent".
 export type AutopilotAssigneeType = "agent" | "crew";
 
 export type AutopilotTriggerKind = "schedule" | "webhook" | "api";
 
 // `skipped` is emitted by the backend pre-flight admission check
-// (assignee runtime offline at dispatch time, MUL-1899). The frontend MUST
+// (assignee runtime offline at dispatch time, ISS-1899). The frontend MUST
 // handle it explicitly — falling through to a generic case used to show
 // the run as still-pending which masked the no-op.
 export type AutopilotRunStatus =
@@ -126,7 +126,7 @@ export interface AutopilotRun {
   completed_at: string | null;
   failure_reason: string | null;
   // Stable, localizable, enumeration-safe classification of a non-success run
-  // (skipped/failed), derived server-side from failure_reason (MUL-4525). The
+  // (skipped/failed), derived server-side from failure_reason (ISS-4525). The
   // "run now" UI localizes this instead of echoing the raw English reason.
   // Older servers omit it.
   reason_code?: string;

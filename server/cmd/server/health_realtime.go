@@ -7,15 +7,15 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/multica-ai/multica/server/internal/daemonws"
-	"github.com/multica-ai/multica/server/internal/realtime"
+	"github.com/JanMori/Orchestra/server/internal/daemonws"
+	"github.com/JanMori/Orchestra/server/internal/realtime"
 )
 
 // realtimeMetricsHandler returns the HTTP handler for /health/realtime.
 //
 // The endpoint exposes operational counters (per-event / per-scope sends,
 // Redis relay state, etc.) that should not be reachable by anonymous public
-// clients. See MUL-1342.
+// clients. See ISS-1342.
 //
 // Access policy:
 //   - If token != "": require Authorization: Bearer <token>; reject other
@@ -27,7 +27,7 @@ import (
 //     not exposed on a public listener — including when the server sits
 //     behind a reverse proxy (Caddy / Nginx) that terminates TLS on
 //     localhost, in which case all requests would otherwise look like
-//     loopback (see MUL-1342 review).
+//     loopback (see ISS-1342 review).
 func realtimeMetricsHandler(token string) http.HandlerFunc {
 	token = strings.TrimSpace(token)
 	return func(w http.ResponseWriter, r *http.Request) {

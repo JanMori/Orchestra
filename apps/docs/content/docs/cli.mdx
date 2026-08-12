@@ -12,19 +12,19 @@ The Orchestra CLI both connects local runtimes and manages workspaces, issues, a
 **macOS / Linux**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.sh | bash
 ```
 
 With Homebrew installed, you can also run:
 
 ```bash
-brew install multica-ai/tap/multica
+brew install orchestra-ai/tap/orchestra
 ```
 
 **Windows PowerShell**
 
 ```powershell
-irm https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.ps1 | iex
+irm https://raw.githubusercontent.com/orchestra-ai/orchestra/main/scripts/install.ps1 | iex
 ```
 
 Confirm the install:
@@ -35,7 +35,7 @@ orchestra version
 
 ## First connection
 
-Connect to Multica Cloud:
+Connect to Orchestra Self-Host:
 
 ```bash
 orchestra setup
@@ -148,13 +148,13 @@ orchestra daemon restart
 orchestra daemon status --output json
 orchestra daemon logs --follow
 
-multica runtime list
-multica runtime rename <runtime-id> "Office Mac"
-multica runtime usage <runtime-id>
-multica runtime activity <runtime-id>
+orchestra runtime list
+orchestra runtime rename <runtime-id> "Office Mac"
+orchestra runtime usage <runtime-id>
+orchestra runtime activity <runtime-id>
 ```
 
-Deleting a runtime that still has active agents bound to it is refused by default. `multica runtime delete <id> --cascade` unbinds those agents, preserves their configuration and history, and cancels their active tasks.
+Deleting a runtime that still has active agents bound to it is refused by default. `orchestra runtime delete <id> --cascade` unbinds those agents, preserves their configuration and history, and cancels their active tasks.
 
 See [Daemon and runtimes](/daemon-runtimes) for how it works and for custom profiles.
 
@@ -176,7 +176,7 @@ See [Daemon and runtimes](/daemon-runtimes) for how it works and for custom prof
 | `config` | View or edit the current CLI profile's local configuration |
 | `update`, `version` | Update the CLI or print the version |
 
-`multica chat` reads **the external chat session an agent is currently handling**; it is mainly for agents in chat integrations, not a general command for browsing arbitrary workspace conversations.
+`orchestra chat` reads **the external chat session an agent is currently handling**; it is mainly for agents in chat integrations, not a general command for browsing arbitrary workspace conversations.
 
 ## IDs and output formats
 
@@ -191,11 +191,11 @@ orchestra issue list --output json
 orchestra agent list --output json
 ```
 
-Scripts should use JSON output rather than parsing the terminal-oriented tables. The output formats and pagination flags each command supports are defined by `multica <command> --help`.
+Scripts should use JSON output rather than parsing the terminal-oriented tables. The output formats and pagination flags each command supports are defined by `orchestra <command> --help`.
 
 ## Profiles and configuration
 
-The default configuration lives in `~/.multica/config.json`. Use `--profile <name>` to isolate a separate set of server address, token, default workspace, and daemon state:
+The default configuration lives in `~/.orchestra/config.json`. Use `--profile <name>` to isolate a separate set of server address, token, default workspace, and daemon state:
 
 ```bash
 orchestra setup self-host --profile staging \
@@ -205,7 +205,7 @@ orchestra setup self-host --profile staging \
 orchestra issue list --profile staging
 ```
 
-Named profiles live in `~/.multica/profiles/<name>/config.json`. Inspect the current values:
+Named profiles live in `~/.orchestra/profiles/<name>/config.json`. Inspect the current values:
 
 ```bash
 orchestra config show
@@ -213,12 +213,12 @@ orchestra config show --profile staging
 ```
 
 <Callout type="warning">
-CLI configuration files contain tokens that can access Multica as you. Don't commit them to a repository, upload them to logs, or share them with others.
+CLI configuration files contain tokens that can access Orchestra as you. Don't commit them to a repository, upload them to logs, or share them with others.
 </Callout>
 
 ## Command reference
 
-The tables below cover every current top-level command, grouped the way the CLI itself groups them. All commands accept the global flags `--server-url`, `--workspace-id`, `--profile`, and `--debug`. `--output` is registered per command, and the default format varies: `list` commands default to a table, while `get` and `create` commands mostly default to JSON. Full flags are defined by `multica <command> --help`.
+The tables below cover every current top-level command, grouped the way the CLI itself groups them. All commands accept the global flags `--server-url`, `--workspace-id`, `--profile`, and `--debug`. `--output` is registered per command, and the default format varies: `list` commands default to a table, while `get` and `create` commands mostly default to JSON. Full flags are defined by `orchestra <command> --help`.
 
 ### Core
 

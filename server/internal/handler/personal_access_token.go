@@ -10,8 +10,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/auth"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/auth"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // PATRenewThreshold is the remaining-lifetime window at which a PAT becomes
@@ -167,7 +167,7 @@ func (h *Handler) RenewCurrentPersonalAccessToken(w http.ResponseWriter, r *http
 	// and we need the row, not just the user.
 	authHeader := r.Header.Get("Authorization")
 	rawToken := strings.TrimPrefix(authHeader, "Bearer ")
-	if rawToken == "" || rawToken == authHeader || !strings.HasPrefix(rawToken, "mul_") {
+	if rawToken == "" || rawToken == authHeader || (!strings.HasPrefix(rawToken, "tok_") && !strings.HasPrefix(rawToken, "mul_")) {
 		writeError(w, http.StatusBadRequest, "only personal access tokens can be renewed")
 		return
 	}

@@ -15,13 +15,13 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 
-	"github.com/multica-ai/multica/server/internal/agenttmpl"
-	"github.com/multica-ai/multica/server/internal/analytics"
-	"github.com/multica-ai/multica/server/internal/logger"
-	obsmetrics "github.com/multica-ai/multica/server/internal/metrics"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/agenttmpl"
+	"github.com/JanMori/Orchestra/server/internal/analytics"
+	"github.com/JanMori/Orchestra/server/internal/logger"
+	obsmetrics "github.com/JanMori/Orchestra/server/internal/metrics"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // agentTemplates is the in-memory catalog loaded once at package init. We
@@ -126,7 +126,7 @@ type CreateAgentFromTemplateRequest struct {
 	Visibility         string `json:"visibility,omitempty"`
 	MaxConcurrentTasks int32  `json:"max_concurrent_tasks,omitempty"`
 	// PermissionMode + InvocationTargets are the invocation-permission inputs
-	// (MUL-3963). When permission_mode is present it is authoritative and
+	// (ISS-3963). When permission_mode is present it is authoritative and
 	// Visibility is ignored; when absent, legacy Visibility is mapped through
 	// parsePermissionInput ("workspace" -> public_to + workspace target;
 	// "private" or "" -> private). Persisting these fields keeps template
@@ -225,7 +225,7 @@ func (h *Handler) CreateAgentFromTemplate(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// Resolve invocation permission (MUL-3963) — mirrors CreateAgent so the
+	// Resolve invocation permission (ISS-3963) — mirrors CreateAgent so the
 	// two entry points can't drift. permission_mode is authoritative when
 	// present; otherwise legacy visibility is mapped through the same helper
 	// ("workspace" -> public_to + workspace target; "private" -> private).
@@ -522,13 +522,13 @@ func (h *Handler) CreateAgentFromTemplate(w http.ResponseWriter, r *http.Request
 		}
 	}
 
-	// Persist the invocation allow-list (MUL-3963) inside the same tx as the
+	// Persist the invocation allow-list (ISS-3963) inside the same tx as the
 	// agent row so the agent is never visible to callers in a state where the
 	// row exists but its targets are missing. Without this the freshly created
 	// row would default to `permission_mode=private` + zero targets — meaning
 	// canInvokeAgent silently locks out every non-owner even when the caller
 	// asked for a workspace-shared agent (the manual CreateAgent path already
-	// did this; the template path was diverging until MUL-4010).
+	// did this; the template path was diverging until ISS-4010).
 	if err := replaceInvocationTargetsWithQueries(r.Context(), qtx, agent.ID, creatorUUID, perm.targets); err != nil {
 		slog.Error("agent-template create: persist invocation targets failed",
 			append(logger.RequestAttrs(r),
@@ -599,7 +599,7 @@ func (h *Handler) CreateAgentFromTemplate(w http.ResponseWriter, r *http.Request
 		writeError(w, http.StatusInternalServerError, "failed to load agent skills")
 		return
 	}
-	// Reflect the invocation-permission state we just persisted (MUL-4010).
+	// Reflect the invocation-permission state we just persisted (ISS-4010).
 	// Without this the response would still show empty invocation_targets and
 	// derive Visibility from permission_mode alone — so a client that just
 	// asked for `visibility="workspace"` would round-trip to a legacy

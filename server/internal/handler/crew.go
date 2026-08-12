@@ -10,11 +10,11 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/analytics"
-	obsmetrics "github.com/multica-ai/multica/server/internal/metrics"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/analytics"
+	obsmetrics "github.com/JanMori/Orchestra/server/internal/metrics"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // ── Response types ──────────────────────────────────────────────────────────
@@ -114,7 +114,7 @@ func applyCrewMemberSummary(resp *CrewResponse, summary *crewMemberSummary) {
 // they created. Crews stay creator-scoped for management while remaining
 // visible workspace-wide (ListCrews is unfiltered). Mirrors the front-end
 // per-crew `canManage` gate so the UI and API agree on who can rename / add
-// members / archive (MUL-4223).
+// members / archive (ISS-4223).
 func canManageCrew(member db.Member, crew db.Crew) bool {
 	if roleAllowed(member.Role, "owner", "admin") {
 		return true
@@ -130,7 +130,7 @@ func canManageCrew(member db.Member, crew db.Crew) bool {
 // agents on their allow-list and their own private agents pass, while other
 // members' private / non-allow-listed agents are rejected. This stops a
 // creator from smuggling an agent they cannot invoke into a crew and reaching
-// it through crew routing (MUL-4223).
+// it through crew routing (ISS-4223).
 func (h *Handler) memberCanWireAgent(ctx context.Context, member db.Member, agent db.Agent, workspaceID string) bool {
 	if roleAllowed(member.Role, "owner", "admin") {
 		return true
@@ -226,7 +226,7 @@ func (h *Handler) CreateCrew(w http.ResponseWriter, r *http.Request) {
 	workspaceID := workspaceIDFromURL(r, "workspaceId")
 	// Any workspace member can create a crew and becomes its creator
 	// (CreatorID below). This aligns crews with agents/projects, which are
-	// also member-creatable; management stays creator-scoped (MUL-4223).
+	// also member-creatable; management stays creator-scoped (ISS-4223).
 	member, ok := h.requireWorkspaceMember(w, r, workspaceID, "workspace not found")
 	if !ok {
 		return
@@ -270,7 +270,7 @@ func (h *Handler) CreateCrew(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// A non-admin creator may only lead their crew with an agent they can
-	// @-trigger; admins may wire any workspace agent (MUL-4223).
+	// @-trigger; admins may wire any workspace agent (ISS-4223).
 	if !h.memberCanWireAgent(r.Context(), member, leaderAgent, workspaceID) {
 		writeError(w, http.StatusForbidden, "you can only use an agent you have access to as leader")
 		return
@@ -512,7 +512,7 @@ func (h *Handler) DeleteCrew(w http.ResponseWriter, r *http.Request) {
 	// archived crew row and every subsequent dispatch would skip with
 	// "assignee crew is archived" — visible to ops but useless to the
 	// owner. Rewriting to the leader keeps the autopilot semantics
-	// unchanged (Path A from MUL-2429 is leader-only execution anyway).
+	// unchanged (Path A from ISS-2429 is leader-only execution anyway).
 	if err := h.Queries.TransferCrewAutopilotsToLeader(r.Context(), db.TransferCrewAutopilotsToLeaderParams{
 		AssigneeID:   crew.ID,
 		AssigneeID_2: crew.LeaderID,
@@ -598,7 +598,7 @@ type CrewMemberStatusListResponse struct {
 // runtime row or task — they should appear in the list but never look
 // like they're still working or merely offline (a leftover online
 // runtime row would otherwise read as "offline" and hide the fact that
-// the agent has been archived). Per the RFC decision (see MUL-2319), we
+// the agent has been archived). Per the RFC decision (see ISS-2319), we
 // surface archived agents in this endpoint rather than filtering them
 // out in the SQL.
 func deriveCrewMemberStatus(
@@ -799,7 +799,7 @@ func (h *Handler) AddCrewMember(w http.ResponseWriter, r *http.Request) {
 		}
 		// A non-admin creator may only add agents they can @-trigger (public
 		// or their own / allow-listed agents); admins may add any workspace
-		// agent (MUL-4223).
+		// agent (ISS-4223).
 		if !h.memberCanWireAgent(r.Context(), member, agent, workspaceID) {
 			writeError(w, http.StatusForbidden, "you can only add an agent you have access to")
 			return
@@ -1075,7 +1075,7 @@ func commentMentionsAnyone(content string) bool {
 }
 
 // The crew-leader assign/promotion readiness decision now lives in the single
-// service.IssueService.WillEnqueueRun predicate (MUL-3375), shared by the issue
+// service.IssueService.WillEnqueueRun predicate (ISS-3375), shared by the issue
 // write paths and the preview endpoint. The former handler-local mirrors
 // (shouldEnqueueCrewLeaderOnAssign / isCrewLeaderReady) were removed to stop
 // the four-entry-point drift. The crew enqueue side effect still flows through
@@ -1099,7 +1099,7 @@ func (h *Handler) enqueueCrewLeaderTask(ctx context.Context, issue db.Issue, tri
 
 	// The gate must judge the SAME top-of-chain human the enqueue path will
 	// persist on the leader task row, or it drifts: an agent-created issue that
-	// correctly inherits its originator (MUL-4305) would still be denied here
+	// correctly inherits its originator (ISS-4305) would still be denied here
 	// if the gate used an empty originator. Member authors are their own
 	// originator; for agent/system-triggered assigns we resolve the originator
 	// exactly like EnqueueTaskForCrewLeader* does (via the issue's origin
@@ -1131,7 +1131,7 @@ func (h *Handler) enqueueCrewLeaderTask(ctx context.Context, issue db.Issue, tri
 	// note rides its own task column, never trigger_comment_id.
 	_ = triggerCommentID
 	// The member who performed the assign/promote is the accountable human for the
-	// leader run (MUL-4302 §4) — the same principal the gate above judged. An agent
+	// leader run (ISS-4302 §4) — the same principal the gate above judged. An agent
 	// author is not a human, so only a member actor is threaded.
 	if _, err := h.TaskService.EnqueueTaskForCrewLeaderWithHandoff(ctx, issue, crew.LeaderID, crew.ID, handoffNote, memberActorUserID(authorType, authorID)); err != nil {
 		slog.Warn("enqueue crew leader task failed",

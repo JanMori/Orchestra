@@ -690,7 +690,7 @@ export function createMentionSuggestion(
     allowSpaces: true,
     // Only open over an `@` the user actually typed. Tiptap matches on document
     // content alone, so without this a pasted, dropped, undone or server-loaded
-    // `@` opens the picker just as readily (MUL-5429).
+    // `@` opens the picker just as readily (ISS-5429).
     shouldShow: ({ editor, range }) => isTriggerArmedAt(editor, range.from),
     items: ({ query }) => {
       if (options.mode === "context") {

@@ -6,7 +6,7 @@ import (
 )
 
 // TestValidateQuickActionPromptRejectsTemplateTokens locks the guard that
-// OUTLIVED the templating feature (MUL-5465).
+// OUTLIVED the templating feature (ISS-5465).
 //
 // Variables were removed because every one of them named something the agent
 // already had. But someone carrying the habit over from autopilot's title
@@ -118,7 +118,7 @@ func TestValidateQuickActionAssignee(t *testing.T) {
 }
 
 // TestValidateQuickActionPromptRejectsSideEffectMentions locks the
-// one-action / one-reached-party invariant (MUL-5465, review findings #3 and
+// one-action / one-reached-party invariant (ISS-5465, review findings #3 and
 // round-two #1).
 //
 // The prompt is appended verbatim to a comment that runs through the normal
@@ -136,7 +136,7 @@ func TestValidateQuickActionPromptRejectsSideEffectMentions(t *testing.T) {
 	}{
 		{"plain prose", "review this code", false},
 		{"an @ that is not mention markup", "ask @someone on the team", false},
-		{"issue mention reaches nobody", "see [MUL-1](mention://issue/" + id + ")", false},
+		{"issue mention reaches nobody", "see [ISS-1](mention://issue/" + id + ")", false},
 		{"member mention pings an inbox on every click", "ask [@Jia](mention://member/" + id + ")", true},
 		{"agent mention would enqueue a second target", "also [@Nova](mention://agent/" + id + ")", true},
 		{"crew mention would enqueue a second target", "also [@Core](mention://crew/" + id + ")", true},

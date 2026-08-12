@@ -110,10 +110,10 @@ export function BatchActionToolbar({
     }
   };
 
-  // Batch status changes apply directly — no run-confirm modal (MUL-4155).
+  // Batch status changes apply directly — no run-confirm modal (ISS-4155).
   // done/cancelled can never start a run, and a backlog → active promotion now
   // starts its run the same way a single-issue status change or the CLI does,
-  // without an extra confirmation step (product decision on MUL-4155). The
+  // without an extra confirmation step (product decision on ISS-4155). The
   // status change was previously routed through the pre-trigger modal, which for
   // the common done/cancelled case only rendered a misleading "现在开始处理？ →
   // 不会开始处理" box. Agent/crew assignment still confirms via

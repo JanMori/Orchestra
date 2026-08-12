@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // completeTaskViaHandler drives the daemon CompleteTask endpoint for taskID.
@@ -54,7 +54,7 @@ func queuedTaskCountForAgentIssue(t *testing.T, issueID, agentID string) int {
 	return n
 }
 
-// TestCompleteTask_ReconcilesMemberCommentPostedDuringRun proves the MUL-4195
+// TestCompleteTask_ReconcilesMemberCommentPostedDuringRun proves the ISS-4195
 // completion-reconciliation guarantee: a deliberate member comment that lands
 // while the agent is busy (after the run's started_at) must earn a follow-up
 // run instead of being silently lost.
@@ -175,7 +175,7 @@ func TestCompleteTask_NoReconcileWhenNoNewMemberComment(t *testing.T) {
 	}
 }
 
-// TestCompleteTask_DoesNotReTriggerOtherAgentMentionedDuringRun is the MUL-4195
+// TestCompleteTask_DoesNotReTriggerOtherAgentMentionedDuringRun is the ISS-4195
 // review must-fix #2 regression test. Agent A is running on an issue when a
 // member posts a comment that @-mentions a DIFFERENT agent B. B is triggered at
 // comment-creation time (not exercised here). When A's run completes, the
@@ -256,7 +256,7 @@ func TestCompleteTask_DoesNotReTriggerOtherAgentMentionedDuringRun(t *testing.T)
 }
 
 // TestCompleteTask_ReconcilesAgentAuthoredMentionToCompletedAgent is the
-// MUL-4304 regression test. It drives the ACTUAL drop path (review must-fix):
+// ISS-4304 regression test. It drives the ACTUAL drop path (review must-fix):
 //
 //   - Agent B already has a DISPATCHED task on the issue. (This is the only
 //     state that drops the mention. `running`/`queued` do not: a queued task
@@ -375,7 +375,7 @@ func TestCompleteTask_ReconcilesAgentAuthoredMentionToCompletedAgent(t *testing.
 }
 
 // TestCompleteTask_DoesNotReconcilePlainAgentReply guards the anti-loop
-// boundary of MUL-4304 on an agent-assigned issue: an agent-authored comment
+// boundary of ISS-4304 on an agent-assigned issue: an agent-authored comment
 // with NO explicit @mention (a plain reply / acknowledgement) must never earn a
 // follow-up, even though reconcile now considers agent comments. Only explicit
 // @agent/@crew mentions are replayed.
@@ -443,7 +443,7 @@ func TestCompleteTask_DoesNotReconcilePlainAgentReply(t *testing.T) {
 	}
 }
 
-// TestCompleteTask_DoesNotReconcilePlainWorkerReplyOnCrewIssue is the MUL-4304
+// TestCompleteTask_DoesNotReconcilePlainWorkerReplyOnCrewIssue is the ISS-4304
 // review must-fix #2 regression test. On a CREW-assigned issue,
 // computeCommentAgentTriggers routes a plain worker-agent reply (no mention) to
 // the crew leader via routeAssignedCrewLeaderFallback (Source = issue
@@ -522,7 +522,7 @@ func handlerWorkspaceMember(t *testing.T, slug string) string {
 	return userID
 }
 
-// TestConsecutiveCommentsDifferentOriginatorsFullEnqueuePath is the MUL-4195
+// TestConsecutiveCommentsDifferentOriginatorsFullEnqueuePath is the ISS-4195
 // second-round must-fix #1 regression test, driving the FULL handler enqueue
 // path (computeCommentAgentTriggers → enqueueCommentAgentTriggers → merge), not
 // just the SQL. Member A's comment creates a queued task; member B (a different
@@ -609,7 +609,7 @@ func TestConsecutiveCommentsDifferentOriginatorsFullEnqueuePath(t *testing.T) {
 	}
 }
 
-// TestCompleteTask_ReconcilesDispatchedWindowComment is the MUL-4195
+// TestCompleteTask_ReconcilesDispatchedWindowComment is the ISS-4195
 // second-round must-fix #2 regression test. A member comment that lands AFTER
 // the claim response was built (after dispatched_at) but BEFORE StartTask
 // (before started_at) must still earn a follow-up. The earlier reconcile
@@ -706,7 +706,7 @@ func containsUUID(ids []string, want string) bool {
 	return false
 }
 
-// TestCompleteTask_ReconcilesPreDispatchMergeRaceComment is the MUL-4195
+// TestCompleteTask_ReconcilesPreDispatchMergeRaceComment is the ISS-4195
 // round-3 must-fix regression test. A member comment is created while the task
 // is still queued, but its merge loses the race to the daemon claiming the task
 // (queued→dispatched); the merge then finds no pre-claim row and the enqueue

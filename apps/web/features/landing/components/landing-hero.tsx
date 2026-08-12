@@ -44,13 +44,7 @@ export function LandingHero() {
               <Link href={ctaHref} className={heroButtonClassName("solid")}>
                 {user ? t.header.dashboard : t.hero.cta}
               </Link>
-              <Link
-                href="/download"
-                className={heroButtonClassName("ghost")}
-              >
-                <Download className="size-4" aria-hidden />
-                {t.hero.downloadDesktop}
-              </Link>
+
               <Link
                 href="/contact-sales"
                 className="group inline-flex items-center justify-center gap-1.5 rounded-[12px] px-3 py-3 text-body font-semibold text-white/80 transition-colors hover:text-white"

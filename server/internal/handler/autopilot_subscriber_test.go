@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 func installAutopilotSubscriberInsertFailure(t *testing.T) {
@@ -45,7 +45,7 @@ FOR EACH ROW EXECUTE FUNCTION %s();
 // TestCreateAutopilotPersistsMemberSubscribers covers the happy path:
 // supplying a non-empty `subscribers` array on POST /api/autopilots stores
 // the rows and the response echoes them back. This is the create half of the
-// MUL-2533 RFC ("autopilot default subscriber template").
+// ISS-2533 RFC ("autopilot default subscriber template").
 func TestCreateAutopilotPersistsMemberSubscribers(t *testing.T) {
 	ctx := context.Background()
 	var autopilotID string

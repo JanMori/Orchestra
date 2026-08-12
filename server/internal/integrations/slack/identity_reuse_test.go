@@ -8,13 +8,13 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	"github.com/multica-ai/multica/server/internal/integrations/channel"
-	"github.com/multica-ai/multica/server/internal/integrations/channel/engine"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel/engine"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // fakeIdentityQueries implements identityQueries so the cross-installation
-// account-link reuse path (MUL-3911) is exercised without a database.
+// account-link reuse path (ISS-3911) is exercised without a database.
 type fakeIdentityQueries struct {
 	binding     db.ChannelUserBinding
 	bindErr     error

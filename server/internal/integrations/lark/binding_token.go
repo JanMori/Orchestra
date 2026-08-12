@@ -12,7 +12,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // BindingToken is the public shape of a freshly minted token. The raw
@@ -86,7 +86,7 @@ func NewBindingTokenService(queries *db.Queries, tx TxStarter) *BindingTokenServ
 
 // NewBindingTokenServiceWithClock is the seam for tests; production
 // callers should use NewBindingTokenService. queries is wrapped in a
-// ChannelStore so lark_* calls resolve to channel_* rows (MUL-3515).
+// ChannelStore so lark_* calls resolve to channel_* rows (ISS-3515).
 func NewBindingTokenServiceWithClock(queries *db.Queries, tx TxStarter, now func() time.Time) *BindingTokenService {
 	return &BindingTokenService{queries: NewChannelStore(queries), tx: tx, now: now}
 }
@@ -163,7 +163,7 @@ func (s *BindingTokenService) RedeemAndBind(ctx context.Context, raw string, mul
 	}
 
 	// Explicit membership gate. The lark_user_binding -> member FK that
-	// used to reject a non-member redeemer is gone (MUL-3515 §4), so we
+	// used to reject a non-member redeemer is gone (ISS-3515 §4), so we
 	// check it here. Returning before Commit rolls the consume back, so
 	// a non-member's attempt does not burn the token — same outcome the
 	// FK violation produced.
@@ -240,7 +240,7 @@ func (s *BindingTokenService) BindInstallerTx(ctx context.Context, qtx *ChannelS
 		q = s.queries
 	}
 	// Explicit membership gate, replacing the removed member FK
-	// (MUL-3515 §4): the installer must be a member of the workspace
+	// (ISS-3515 §4): the installer must be a member of the workspace
 	// they are binding into.
 	isMember, err := q.IsWorkspaceMember(ctx, p.WorkspaceID, p.MulticaUserID)
 	if err != nil {
@@ -282,7 +282,7 @@ var ErrBindingAlreadyAssigned = errors.New("lark open_id is already bound to a d
 // ErrBindingNotWorkspaceMember is returned by RedeemAndBind and
 // BindInstallerTx when the user is not (or no longer) a member of the
 // target workspace, detected by an explicit IsWorkspaceMember check
-// (MUL-3515 §4 removed the member FK that used to enforce this).
+// (ISS-3515 §4 removed the member FK that used to enforce this).
 // Translated to 403 at the HTTP boundary.
 var ErrBindingNotWorkspaceMember = errors.New("redeemer is not a workspace member")
 

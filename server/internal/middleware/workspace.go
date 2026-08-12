@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // Context keys for workspace-scoped request data.
@@ -53,7 +53,7 @@ var errWorkspaceNotFound = errors.New("workspace not found")
 //
 // Priority:
 //  1. task-token binding (X-Actor-Source == "task_token") — authoritative,
-//     server-set, cannot be re-negotiated by the client (MUL-2600)
+//     server-set, cannot be re-negotiated by the client (ISS-2600)
 //  2. middleware-injected context (fast path for middleware-protected routes)
 //  3. X-Workspace-Slug header → GetWorkspaceBySlug → UUID (post-refactor frontend)
 //  4. ?workspace_slug query → GetWorkspaceBySlug → UUID
@@ -105,7 +105,7 @@ type workspaceResolver func(r *http.Request) (string, error)
 // Priority:
 //  1. task-token binding (X-Actor-Source == "task_token") — authoritative,
 //     server-set; the agent cannot widen its workspace scope by passing a
-//     different slug/id (MUL-2600)
+//     different slug/id (ISS-2600)
 //  2. X-Workspace-Slug header / ?workspace_slug query → GetWorkspaceBySlug → UUID
 //  3. X-Workspace-ID header / ?workspace_id query → UUID directly (CLI/daemon compat)
 //
@@ -210,7 +210,7 @@ func buildMiddleware(queries *db.Queries, resolve workspaceResolver, roles []str
 			// (RequireWorkspaceMemberFromURL), the agent must not be
 			// allowed to operate on a workspace other than the one
 			// stamped into its task token. This is the catch-all
-			// behind resolveWorkspaceUUID's earlier check. MUL-2600.
+			// behind resolveWorkspaceUUID's earlier check. ISS-2600.
 			if r.Header.Get("X-Actor-Source") == "task_token" {
 				bound := r.Header.Get("X-Workspace-ID")
 				if bound == "" || workspaceID != bound {

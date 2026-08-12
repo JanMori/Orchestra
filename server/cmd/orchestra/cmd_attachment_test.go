@@ -79,7 +79,7 @@ func TestRunAttachmentDownloadWritesBasenameIntoOutputDir(t *testing.T) {
 
 // TestRunAttachmentDownloadCreatesMissingOutputDir pins that `-o` works
 // against a directory that does not exist yet — the shape the command's own
-// help example (`-o ./attachments`) produces in a clean workdir (MUL-5696).
+// help example (`-o ./attachments`) produces in a clean workdir (ISS-5696).
 func TestRunAttachmentDownloadCreatesMissingOutputDir(t *testing.T) {
 	const attachmentID = "att-456"
 	const fileBody = "nested dir body"

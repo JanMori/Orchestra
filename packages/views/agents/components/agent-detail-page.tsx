@@ -267,7 +267,7 @@ export function AgentDetailPage({ agentId }: AgentDetailPageProps) {
     ? members.find((m) => m.user_id === agent.owner_id) ?? null
     : null;
 
-  // Chat shares the invocation gate with assignment (MUL-3963): starting a
+  // Chat shares the invocation gate with assignment (ISS-3963): starting a
   // chat triggers agent runs. The button stays visible either way — a denied
   // click explains itself instead of the affordance silently missing. While
   // membership is still resolving the decision is undetermined, so the button

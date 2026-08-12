@@ -164,7 +164,7 @@ WHERE agent_id IN (SELECT id FROM agent WHERE runtime_id = $1 AND kind = 'system
 // Workspace-wide cleanup lives in DeleteWorkspace so it is atomic with that
 // workspace's existing multi-table teardown.
 // Runtime teardown hard-deletes the system agents bound to the runtime (user
-// agents are unbound and kept since MUL-5559). Clear only those agents' label
+// agents are unbound and kept since ISS-5559). Clear only those agents' label
 // links so none survive the agent hard-delete — a surviving unbound agent must
 // keep its labels.
 func (q *Queries) DeleteAgentLabelAssignmentsBySystemRuntimeAgents(ctx context.Context, runtimeID pgtype.UUID) error {

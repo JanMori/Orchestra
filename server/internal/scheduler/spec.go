@@ -1,5 +1,5 @@
 // Package scheduler is the DB-backed execution-record scheduler
-// described in docs/db-backed-execution-scheduler-rfc.md (MUL-2957).
+// described in docs/db-backed-execution-scheduler-rfc.md (ISS-2957).
 //
 // The scheduler turns the `sys_cron_executions` table into the
 // distributed lock + audit log for every internal periodic job. Each

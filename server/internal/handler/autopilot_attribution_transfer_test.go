@@ -11,7 +11,7 @@ import (
 
 // These tests drive the REAL autopilot update handlers to prove the substantive /
 // cosmetic edit boundary that decides when trigger_owner responsibility transfers
-// (MUL-4302; Elon must-fix). They deliberately go through UpdateAutopilot /
+// (ISS-4302; Elon must-fix). They deliberately go through UpdateAutopilot /
 // UpdateAutopilotTrigger rather than calling SetAutopilotTriggerPublisher* directly,
 // because the bug Elon flagged lived in the handler's decision of WHEN to call the
 // setter, not in the setter itself. testHandler / testUserID / testWorkspaceID /

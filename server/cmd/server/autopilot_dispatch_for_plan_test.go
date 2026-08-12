@@ -6,14 +6,14 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/service"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // TestDispatchAutopilotForPlanIsIdempotent locks in the
-// occurrence-level idempotency contract (MUL-3551):
+// occurrence-level idempotency contract (ISS-3551):
 //
 //   - A second DispatchAutopilotForPlan with the same (trigger_id,
 //     planned_at) MUST return the SAME run row that the first call

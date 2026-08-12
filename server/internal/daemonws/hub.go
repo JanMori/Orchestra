@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 const (
@@ -161,7 +161,7 @@ func (c *client) markSeen(eventID string) bool {
 // the ack and is logged at debug level.
 type HeartbeatHandler func(ctx context.Context, identity ClientIdentity, runtimeID string, supportsBatchImport bool) (*protocol.DaemonHeartbeatAckPayload, error)
 
-// RPCHandler processes a generic daemon:rpc_request (MUL-4257). It dispatches
+// RPCHandler processes a generic daemon:rpc_request (ISS-4257). It dispatches
 // on method (e.g. "tasks.claim"), scoping work to identity (DaemonID +
 // authenticated RuntimeIDs), and returns an HTTP-style status plus a response
 // body OR an error. A returned error is surfaced to the daemon as a non-2xx
@@ -240,7 +240,7 @@ func (h *Hub) heartbeatHandler() HeartbeatHandler {
 }
 
 // SetRPCHandler installs the callback used for daemon:rpc_request frames
-// (MUL-4257). Like SetHeartbeatHandler it is wired after handler construction.
+// (ISS-4257). Like SetHeartbeatHandler it is wired after handler construction.
 // A nil handler disables WS RPC — daemons fall back to the HTTP claim endpoint.
 func (h *Hub) SetRPCHandler(fn RPCHandler) {
 	if h == nil {
@@ -330,7 +330,7 @@ func (h *Hub) NotifyWorkspacesChanged(userID string) {
 
 // NotifyPendingWork tells daemons watching runtimeID that a heartbeat-carried
 // request is queued, so they can heartbeat now instead of waiting for the next
-// scheduled tick (MUL-5444). Best-effort like every other hub notification: the
+// scheduled tick (ISS-5444). Best-effort like every other hub notification: the
 // daemon's own heartbeat schedule remains the correctness path.
 func (h *Hub) NotifyPendingWork(runtimeID, kind string) {
 	h.notifyPendingWork(runtimeID, kind, "")
@@ -706,7 +706,7 @@ func (c *client) readPump() {
 	}()
 
 	// Read limit sized for daemon:rpc_request frames carrying a machine's full
-	// runtime_id set (MUL-4257), well above the tiny heartbeat/wakeup frames.
+	// runtime_id set (ISS-4257), well above the tiny heartbeat/wakeup frames.
 	c.conn.SetReadLimit(64 * 1024)
 	c.conn.SetReadDeadline(time.Now().Add(pongWait))
 	c.conn.SetPongHandler(func(string) error {
@@ -753,7 +753,7 @@ func (c *client) handleFrame(raw []byte) {
 	}
 }
 
-// handleRPCFrame processes a generic daemon:rpc_request (MUL-4257): it runs the
+// handleRPCFrame processes a generic daemon:rpc_request (ISS-4257): it runs the
 // registered RPC handler in its own goroutine (so a DB-bound claim does not
 // stall the read pump or the next heartbeat) and writes back a
 // daemon:rpc_response echoing the request id. A missing handler or a full
@@ -786,7 +786,7 @@ func (c *client) handleRPCFrame(raw json.RawMessage) {
 		// Bound server-side execution by the caller's requested budget (in
 		// addition to the connection ctx), so a slow RPC is cancelled — and its
 		// work rolled back — rather than committing after the daemon has already
-		// timed out and fallen back to HTTP (MUL-4257). The daemon waits a grace
+		// timed out and fallen back to HTTP (ISS-4257). The daemon waits a grace
 		// period beyond this budget, so a claim that DID commit before the
 		// deadline still reports back in time.
 		hctx := c.ctx

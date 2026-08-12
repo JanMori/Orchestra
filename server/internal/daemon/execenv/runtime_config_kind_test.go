@@ -98,7 +98,7 @@ func TestBuildMetaSkillContentIssueBodyFormatting(t *testing.T) {
 				"An issue title already serves as its H1.",
 				// The rule covers BOTH surfaces: `description` is the CLI/API
 				// field name, `body` the UI term — the alias is a cross-surface
-				// mapping, not prose (MUL-5442 stage-1 review).
+				// mapping, not prose (ISS-5442 stage-1 review).
 				"do not add a Markdown H1 (`# ...`) to an issue body or description",
 				"start with prose or `##` subheadings",
 				"Only add an H1 when the user specifically requests one",
@@ -184,7 +184,7 @@ func TestBuildMetaSkillContentSlimKindMatrix(t *testing.T) {
 // TestBriefDueDateTeachesCalendarDayFormat pins the --due-date synopsis to
 // the calendar-day format the server canonically accepts
 // (util.ParseCalendarDate: YYYY-MM-DD; an RFC3339 value passes only at exact
-// UTC midnight). MUL-5696 found the brief teaching `<RFC3339>` while the CLI
+// UTC midnight). ISS-5696 found the brief teaching `<RFC3339>` while the CLI
 // help and the projects skill say YYYY-MM-DD, steering agents that computed a
 // natural timestamp into 400s.
 func TestBriefDueDateTeachesCalendarDayFormat(t *testing.T) {
@@ -197,7 +197,7 @@ func TestBriefDueDateTeachesCalendarDayFormat(t *testing.T) {
 			t.Errorf("%s brief missing the calendar-day --due-date synopsis", name)
 		}
 		if strings.Contains(out, "--due-date <RFC3339>") {
-			t.Errorf("%s brief still teaches --due-date <RFC3339>, which the server rejects except at UTC midnight (MUL-5696)", name)
+			t.Errorf("%s brief still teaches --due-date <RFC3339>, which the server rejects except at UTC midnight (ISS-5696)", name)
 		}
 	}
 }
@@ -205,7 +205,7 @@ func TestBriefDueDateTeachesCalendarDayFormat(t *testing.T) {
 // TestBriefOwnsAutopilotIssueCommandsGuard pins the guard's single emission
 // point: the autopilot brief carries AutopilotIssueCommandsGuard, and the
 // per-turn prompt defers to it (daemon.TestBuildPromptAutopilotRunOnly pins
-// the deferral side). MUL-5696.
+// the deferral side). ISS-5696.
 func TestBriefOwnsAutopilotIssueCommandsGuard(t *testing.T) {
 	out := buildMetaSkillContent("claude", TaskContextForEnv{AutopilotRunID: "run-1"})
 	if !strings.Contains(out, AutopilotIssueCommandsGuard) {
@@ -254,12 +254,12 @@ func TestSlimQuickCreateAvailableCommands(t *testing.T) {
 }
 
 // TestBackgroundTaskSafetySlimHardPins asserts the slim brief carries the
-// same hardened Background Task Safety pins as the legacy brief (MUL-4140).
+// same hardened Background Task Safety pins as the legacy brief (ISS-4140).
 // The verbose path is covered by
 // TestInjectRuntimeConfigBackgroundTaskSafetyProviderAgnostic; this locks
 // the compressed slim path so a future slim-brief trim can't quietly drop
 // the no-background-and-yield / no-"standing by" guardrails that address
-// the MUL-4091 mechanism.
+// the ISS-4091 mechanism.
 func TestBackgroundTaskSafetySlimHardPins(t *testing.T) {
 
 	out := buildMetaSkillContent("claude", TaskContextForEnv{
@@ -269,7 +269,7 @@ func TestBackgroundTaskSafetySlimHardPins(t *testing.T) {
 
 	for _, want := range []string{
 		"## Background Task Safety",
-		// MUL-5442 judgment rewrite (owner-authorized pin renegotiation): the
+		// ISS-5442 judgment rewrite (owner-authorized pin renegotiation): the
 		// section now states the one platform fact, the external-systems/CI
 		// boundary with its single exception, and the review-locked
 		// persistent-service contract. Enforcement-detail pins that only
@@ -284,7 +284,7 @@ func TestBackgroundTaskSafetySlimHardPins(t *testing.T) {
 		"run unobservable work synchronously",
 		"standing by",
 		"are not run-owned: do not wait",
-		// The full compound ban, not its first item — MUL-5223 made this a
+		// The full compound ban, not its first item — ISS-5223 made this a
 		// non-derivable boundary, so no member may be silently dropped.
 		"do not run `gh pr checks --watch`, `gh run watch`, or sleep/retry polls",
 		"GitHub Actions after a successful push",
@@ -314,7 +314,7 @@ func TestBackgroundTaskSafetySlimHardPins(t *testing.T) {
 	if strings.Contains(out, "e.g. `gh run watch`") {
 		t.Errorf("slim Background Task Safety should not suggest waiting for external GitHub CI\n---\n%s", out)
 	}
-	// MUL-5274 review: with the persistent-service exception in the list, a
+	// ISS-5274 review: with the persistent-service exception in the list, a
 	// "The rules above ..." scoping sentence would sweep in work that is
 	// precisely no longer run-owned after handoff.
 	if strings.Contains(out, "The rules above") {

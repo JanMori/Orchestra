@@ -10,9 +10,9 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/events"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // These tests cover the pure-Go halves of RegistrationService —
@@ -225,7 +225,7 @@ func TestRandomSessionIDUnique(t *testing.T) {
 }
 
 // TestRegistrationServicePublishInstalledEmitsCreatedEvent pins the
-// MUL-3059 fix: a completed install must publish lark_installation:created
+// ISS-3059 fix: a completed install must publish lark_installation:created
 // at the row-write point so every workspace client refreshes its
 // connection badge without a page reload. The bug was that this event only
 // fired from the HTTP status-poll handler, so any surface that wasn't the

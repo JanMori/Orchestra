@@ -1,11 +1,11 @@
--- Platform-agnostic inbound channel queries (MUL-3515). These operate on
+-- Platform-agnostic inbound channel queries (ISS-3515). These operate on
 -- the channel_* tables created in migration 124. Each installation carries
 -- a `channel_type` discriminator and a JSONB `config` blob for
 -- platform-specific identifiers/credentials; the cross-platform columns
 -- stay flat. The Go layer owns building/parsing config — these queries
 -- treat it as opaque JSON except for the routing index on config->>'app_id'.
 --
--- No foreign keys exist on these tables (MUL-3515 §4): the integrity the
+-- No foreign keys exist on these tables (ISS-3515 §4): the integrity the
 -- old composite FKs enforced (binding workspace matches installation;
 -- binding dies with membership / chat_session) is maintained in the
 -- application layer via the membership check in the inbound identity step
@@ -119,7 +119,7 @@ WHERE ci.channel_type = sqlc.arg('channel_type')
 -- Rebind cleanup gate. Frees the (channel_type, config->>'app_id') routing slot
 -- so a valid new agent can (re)bind a bot whose previous owner is DEAD, and, in
 -- the same statement, clears every application-owned dependent row of the removed
--- installation (channel_* has no FK/cascade, MUL-3515 §4). Returns the removed id
+-- installation (channel_* has no FK/cascade, ISS-3515 §4). Returns the removed id
 -- (pgx.ErrNoRows when nothing was dead — a no-op the caller treats as success).
 --
 -- "Dead" is exactly one of:
@@ -198,7 +198,7 @@ detached_audit AS (
 SELECT id FROM dead;
 
 -- name: DeleteChannelInstallationsBySystemRuntimeAgents :exec
--- Application-layer replacement for the (deliberately absent, MUL-3515 §4)
+-- Application-layer replacement for the (deliberately absent, ISS-3515 §4)
 -- workspace/agent ON DELETE CASCADE: on runtime teardown, before the system
 -- agents are hard-deleted, remove every channel installation they own — plus all
 -- of each installation's dependent rows — so no orphaned installation keeps
@@ -206,7 +206,7 @@ SELECT id FROM dead;
 -- (#4810). MUST run in the same tx as, and BEFORE, DeleteSystemAgentsByRuntime.
 -- Mirrors the agent hard-delete predicate (runtime_id, kind = 'system') exactly.
 --
--- Scoped to kind = 'system' since MUL-5559: a user agent now survives its
+-- Scoped to kind = 'system' since ISS-5559: a user agent now survives its
 -- runtime's deletion as an unbound agent, so tearing down its installations
 -- here would take a working bot away from an agent that is still there.
 WITH doomed AS (
@@ -255,7 +255,7 @@ ORDER BY created_at ASC;
 -- for its own platform and never supervises another channel's installation.
 --
 -- The JOINs require the owning workspace and agent rows to still exist.
--- channel_installation has no FK (MUL-3515 §4), so unlike the old
+-- channel_installation has no FK (ISS-3515 §4), so unlike the old
 -- lark_installation (which cascaded away on workspace/agent deletion) an
 -- installation can be orphaned when its workspace is deleted or its agent is
 -- hard-deleted (e.g. runtime teardown). Without this guard the hub would keep
@@ -270,14 +270,14 @@ WHERE ci.status = 'active'
 ORDER BY ci.created_at ASC;
 
 -- name: ListAllActiveChannelInstallations :many
--- Boot path for the channel-agnostic engine Supervisor (MUL-3620): every
+-- Boot path for the channel-agnostic engine Supervisor (ISS-3620): every
 -- active installation across ALL channel types, so one Supervisor drives every
 -- platform's connections rather than a per-platform hub. This is the de-
 -- hardcoded counterpart of ListActiveChannelInstallations — the Supervisor
 -- routes each row to its registered channel.Factory by channel_type, so it
 -- never needs to know which platforms exist. Same orphan guard as the per-type
 -- query: the workspace + agent JOINs drop installations whose owning rows are
--- gone (channel_installation has no FK, MUL-3515 §4), matching the old ON
+-- gone (channel_installation has no FK, ISS-3515 §4), matching the old ON
 -- DELETE CASCADE semantics (row existence, not agent archival).
 SELECT ci.* FROM channel_installation ci
 JOIN workspace w ON w.id = ci.workspace_id
@@ -371,7 +371,7 @@ SELECT * FROM channel_user_binding
 WHERE installation_id = $1 AND channel_user_id = $2;
 
 -- name: FindReusableChannelUserBinding :one
--- Cross-installation account-link reuse (MUL-3911). When a platform user
+-- Cross-installation account-link reuse (ISS-3911). When a platform user
 -- messages an installation they have NOT linked, but the SAME user id is already
 -- bound to ANOTHER installation in the SAME Multica workspace + SAME Slack team,
 -- the inbound identity step reuses that link instead of re-prompting. Slack user
@@ -402,7 +402,7 @@ DELETE FROM channel_user_binding
 WHERE workspace_id = $1 AND multica_user_id = $2;
 
 -- name: DeleteChannelUserBindingsByInstallation :exec
--- Application-layer integrity (schema has no FK/cascade, MUL-3515 §4): drop
+-- Application-layer integrity (schema has no FK/cascade, ISS-3515 §4): drop
 -- every member account link for an installation that is being hard-deleted.
 -- Rebinding a Feishu bot to a DIFFERENT agent starts a fresh installation, so
 -- old links do not follow — a different agent is a distinct connection and
@@ -555,7 +555,7 @@ ORDER BY received_at DESC
 LIMIT $2 OFFSET $3;
 
 -- name: NullChannelInboundAuditInstallationID :exec
--- Application-layer stand-in for the old ON DELETE SET NULL (MUL-3515 §4,
+-- Application-layer stand-in for the old ON DELETE SET NULL (ISS-3515 §4,
 -- migration 124 keeps installation_id nullable for exactly this): before an
 -- installation row is hard-deleted, detach its inbound-audit rows by NULLing
 -- installation_id. The drop-audit history is preserved (channel_type,
@@ -593,7 +593,7 @@ SET status = $2,
 WHERE id = $1;
 
 -- name: DeleteChannelOutboundCardMessagesBySession :exec
--- Application-layer integrity (channel_* has no FK/cascade, MUL-3515 §4): drop the
+-- Application-layer integrity (channel_* has no FK/cascade, ISS-3515 §4): drop the
 -- outbound card-message rows for a chat_session being deleted. They are keyed by
 -- chat_session_id with no FK and no reaper, so the standalone chat-session delete
 -- path must prune them here alongside DeleteChannelChatSessionBindingBySession —
@@ -637,7 +637,7 @@ DELETE FROM channel_binding_token
 WHERE expires_at < $1;
 
 -- name: DeleteChannelBindingTokensByInstallation :exec
--- Application-layer integrity (schema has no FK/cascade, MUL-3515 §4): drop
+-- Application-layer integrity (schema has no FK/cascade, ISS-3515 §4): drop
 -- every pending binding token for an installation that is being hard-deleted.
 -- A token stays redeemable for up to 15 min; without this a user who clicks a
 -- still-unexpired bind link right after the bot was rebound to another agent

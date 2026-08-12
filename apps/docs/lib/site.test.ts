@@ -41,11 +41,11 @@ describe("docsAlternates", () => {
     const { docsAlternates } = await import("./site");
 
     expect(docsAlternates(["agents"])).toEqual({
-      canonical: "https://www.multica.ai/docs/agents",
+      canonical: "http://localhost:5001/docs/agents",
       languages: {
-        en: "https://www.multica.ai/docs/agents",
-        zh: "https://www.multica.ai/docs/zh/agents",
-        "x-default": "https://www.multica.ai/docs/agents",
+        en: "http://localhost:5001/docs/agents",
+        zh: "http://localhost:5001/docs/zh/agents",
+        "x-default": "http://localhost:5001/docs/agents",
       },
     });
   });
@@ -61,12 +61,12 @@ describe("docsAlternates", () => {
     const { docsAlternates } = await import("./site");
 
     expect(docsAlternates(["agents"])).toEqual({
-      canonical: "https://www.multica.ai/docs/agents",
+      canonical: "http://localhost:5001/docs/agents",
       languages: {
-        en: "https://www.multica.ai/docs/agents",
-        zh: "https://www.multica.ai/docs/zh/agents",
-        ko: "https://www.multica.ai/docs/ko/agents",
-        "x-default": "https://www.multica.ai/docs/agents",
+        en: "http://localhost:5001/docs/agents",
+        zh: "http://localhost:5001/docs/zh/agents",
+        ko: "http://localhost:5001/docs/ko/agents",
+        "x-default": "http://localhost:5001/docs/agents",
       },
     });
   });
@@ -76,12 +76,12 @@ describe("docsAlternates", () => {
     const { docsAlternates } = await import("./site");
 
     expect(docsAlternates(["agents"])).toEqual({
-      canonical: "https://www.multica.ai/docs/agents",
+      canonical: "http://localhost:5001/docs/agents",
       languages: {
-        en: "https://www.multica.ai/docs/agents",
-        zh: "https://www.multica.ai/docs/zh/agents",
-        ja: "https://www.multica.ai/docs/ja/agents",
-        "x-default": "https://www.multica.ai/docs/agents",
+        en: "http://localhost:5001/docs/agents",
+        zh: "http://localhost:5001/docs/zh/agents",
+        ja: "http://localhost:5001/docs/ja/agents",
+        "x-default": "http://localhost:5001/docs/agents",
       },
     });
   });
@@ -90,11 +90,11 @@ describe("docsAlternates", () => {
     const { docsAlternates } = await import("./site");
 
     expect(docsAlternates([])).toEqual({
-      canonical: "https://www.multica.ai/docs",
+      canonical: "http://localhost:5001/docs",
       languages: {
-        en: "https://www.multica.ai/docs",
-        zh: "https://www.multica.ai/docs/zh",
-        "x-default": "https://www.multica.ai/docs",
+        en: "http://localhost:5001/docs",
+        zh: "http://localhost:5001/docs/zh",
+        "x-default": "http://localhost:5001/docs",
       },
     });
   });

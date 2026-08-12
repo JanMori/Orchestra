@@ -17,10 +17,10 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/multica-ai/multica/server/internal/analytics"
-	"github.com/multica-ai/multica/server/internal/auth"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/realtime"
+	"github.com/JanMori/Orchestra/server/internal/analytics"
+	"github.com/JanMori/Orchestra/server/internal/auth"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/realtime"
 )
 
 var (
@@ -35,7 +35,7 @@ var (
 // the JWT_SECRET env var (set in .env) and stays in sync with the server.
 
 const (
-	integrationTestEmail         = "integration-test@multica.ai"
+	integrationTestEmail         = "integration-test@orchestra.local"
 	integrationTestName          = "Integration Tester"
 	integrationTestWorkspaceSlug = "integration-tests"
 )
@@ -275,7 +275,7 @@ func TestConfigRouteIsPublic(t *testing.T) {
 // ---- Auth ----
 
 func TestSendCodeAndVerify(t *testing.T) {
-	const email = "integration-sendcode@multica.ai"
+	const email = "integration-sendcode@orchestra.local"
 	ctx := context.Background()
 
 	t.Cleanup(func() {
@@ -358,7 +358,7 @@ func TestSendCodeAndVerify(t *testing.T) {
 }
 
 func TestVerifyCodeNewUserHasNoWorkspace(t *testing.T) {
-	const email = "new-integration-verify@multica.ai"
+	const email = "new-integration-verify@orchestra.local"
 	ctx := context.Background()
 
 	t.Cleanup(func() {
@@ -848,7 +848,7 @@ func TestInboxUnreadSummaryThroughRouter(t *testing.T) {
 	}
 }
 
-// ---- Archived inbox (MUL-3736) ----
+// ---- Archived inbox (ISS-3736) ----
 
 type inboxItemJSON struct {
 	ID       string  `json:"id"`
@@ -1170,7 +1170,7 @@ func TestUnarchiveInboxRejectsForeignItem(t *testing.T) {
 // An issue's inbox notifications are deduplicated per issue: opening the issue
 // marks only the NEWEST item read, leaving older siblings unread. The summary
 // must mirror the inbox UI (issue is read when its newest item is read), so a
-// read-newest / unread-older issue must NOT light the switcher dot (MUL-3695).
+// read-newest / unread-older issue must NOT light the switcher dot (ISS-3695).
 func TestInboxUnreadSummaryDedupesByIssue(t *testing.T) {
 	ctx := context.Background()
 

@@ -173,7 +173,7 @@ type ListActivitiesForIssueParams struct {
 // made a busy issue's timeline appear to stop at some point in the past with no
 // indication anything was missing. Activity is machine-paced (description
 // autosave, every agent run, status/assignee changes), so this was reachable in
-// normal use, not only on pathological issues (MUL-5492).
+// normal use, not only on pathological issues (ISS-5492).
 func (q *Queries) ListActivitiesForIssue(ctx context.Context, arg ListActivitiesForIssueParams) ([]ActivityLog, error) {
 	rows, err := q.db.Query(ctx, listActivitiesForIssue, arg.IssueID, arg.Limit)
 	if err != nil {

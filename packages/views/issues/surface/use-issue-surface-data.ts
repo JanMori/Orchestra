@@ -51,7 +51,7 @@ const EMPTY_PROJECTS: Project[] = [];
  * These rules live HERE rather than privately inside GanttView so the header
  * chip can narrow the same set the canvas draws. A view that filters its own
  * rows in secret is exactly how the chip's count drifted from the list in the
- * first place (MUL-4884); duplicating the rules in both places would just
+ * first place (ISS-4884); duplicating the rules in both places would just
  * reintroduce the drift with extra steps.
  */
 function ganttCanvasRows(issues: Issue[], showCompleted: boolean): Issue[] {
@@ -222,7 +222,7 @@ export function useIssueSurfaceData({
     usesAssigneeBoard,
   ]);
 
-  // `cancelled` is a first-class default status (MUL-4290): it is fetched into
+  // `cancelled` is a first-class default status (ISS-4290): it is fetched into
   // the cache like every other status and flows straight through to list /
   // board / swimlane columns, header facet counts, batch selection, and the
   // isEmpty check. The status filter narrows this set like any other status —

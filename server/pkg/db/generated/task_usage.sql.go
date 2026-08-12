@@ -269,7 +269,7 @@ type ListDashboardFailuresDailyRow struct {
 // Shape note: this returns EVERY terminal task, not just the failures. The
 // `failure_reason = ”` row of each date carries that date's succeeded
 // count, which is the denominator the client needs for an error rate. A
-// failed row whose failure_reason column is NULL or empty (pre-MUL-1949
+// failed row whose failure_reason column is NULL or empty (pre-ISS-1949
 // rows, or a failure path that forgot to classify) collapses into the
 // 'unclassified' bucket so it stays countable instead of masquerading as a
 // success. Cardinality is bounded by days x (21 reasons + 2), so the whole

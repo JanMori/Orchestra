@@ -9,9 +9,9 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 
-	"github.com/multica-ai/multica/server/internal/integrations/channel"
-	"github.com/multica-ai/multica/server/internal/service"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // ---- fakes ----
@@ -808,7 +808,7 @@ func TestRouter_IssueCommand_Creates(t *testing.T) {
 	}
 	if !waitFor(time.Second, func() bool {
 		for _, r := range h.replier.calls() {
-			if r.IssueIdentifier == "MUL-42" && r.IssueTitle == "Fix login" {
+			if r.IssueIdentifier == "ISS-42" && r.IssueTitle == "Fix login" {
 				return true
 			}
 		}
@@ -876,7 +876,7 @@ func TestRouter_IssueCommand_ActiveDuplicateIsTerminalProductOutcome(t *testing.
 	}
 	if !waitFor(time.Second, func() bool {
 		for _, result := range h.replier.calls() {
-			if result.IssueDuplicate && result.IssueID == duplicate.ID && result.IssueIdentifier == "MUL-44" && result.IssueTitle == duplicate.Title {
+			if result.IssueDuplicate && result.IssueID == duplicate.ID && result.IssueIdentifier == "ISS-44" && result.IssueTitle == duplicate.Title {
 				return true
 			}
 		}

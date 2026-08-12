@@ -76,7 +76,7 @@ func TestClassifyComment_AutopilotRootedParentInheritsAccountableOnly(t *testing
 	// (ParentAccountable = human). Delegating from it must copy accountable down —
 	// keeping the chain root stable and precise — while leaving originator NULL so
 	// authorization is unchanged and a fail-closed workspace does not reject the
-	// fan-out (MUL-4302 §3.2).
+	// fan-out (ISS-4302 §3.2).
 	got := ClassifyComment(CommentFacts{
 		CommentID:         comment,
 		AuthorType:        "agent",
@@ -251,7 +251,7 @@ func TestClassifyDirect_AgentCreatedNoOriginIsUnattributed(t *testing.T) {
 
 func TestClassifyDirect_ActorOverridesCreator(t *testing.T) {
 	// A member directly assigned/promoted an issue someone else created: the
-	// acting member is accountable, ahead of the creator (MUL-4302 §4).
+	// acting member is accountable, ahead of the creator (ISS-4302 §4).
 	got := ClassifyDirect(DirectFacts{
 		IssueID:     issue,
 		CreatorType: "member",
@@ -292,7 +292,7 @@ func TestClassifyDirect_ActorOverridesAgentOriginInheritance(t *testing.T) {
 }
 
 func TestClassifyDirect_AgentCreateInheritsOriginAsDelegation(t *testing.T) {
-	// agent_create (an agent's ordinary `issue create`, MUL-4305) inherits the
+	// agent_create (an agent's ordinary `issue create`, ISS-4305) inherits the
 	// origin task's human exactly like quick_create.
 	got := ClassifyDirect(DirectFacts{
 		IssueID:          issue,
@@ -309,7 +309,7 @@ func TestClassifyDirect_AgentCreateInheritsOriginAsDelegation(t *testing.T) {
 	}
 }
 
-// TestAccountableMirrorsOriginatorInvariant is the MUL-4302 §11 acceptance check
+// TestAccountableMirrorsOriginatorInvariant is the ISS-4302 §11 acceptance check
 // at the classification layer: EVERY result the resolver produces must satisfy the
 // ONE-WAY invariant `originator (UserID) IS NOT NULL ⟹ accountable == originator`.
 // When UserID is NULL the two MAY diverge (rule_owner / owner_fallback name an
@@ -397,7 +397,7 @@ func TestRuleOwner(t *testing.T) {
 }
 
 func TestTriggerOwner(t *testing.T) {
-	// The divergence case (MUL-4302; Bohan): an autopilot schedule/webhook run has
+	// The divergence case (ISS-4302; Bohan): an autopilot schedule/webhook run has
 	// NO authorizing human (originator NULL) but IS accountable to the member who
 	// created the firing trigger.
 	got := TriggerOwner(human, EvidenceAutopilotRun, issue)

@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  *
- * MUL-4985 regression — cold-load render loop on the Issues route.
+ * ISS-4985 regression — cold-load render loop on the Issues route.
  *
  * These tests render Board and Swimlane with the REAL react-virtuoso and the
  * REAL `useActorName`, while the member/agent/crew directory queries are held
@@ -229,7 +229,7 @@ function renderWithProviders(ui: ReactNode) {
   );
 }
 
-describe("Issues cold-load render loop (MUL-4985)", () => {
+describe("Issues cold-load render loop (ISS-4985)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockViewState.grouping = "status";

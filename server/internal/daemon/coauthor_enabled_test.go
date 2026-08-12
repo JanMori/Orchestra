@@ -11,7 +11,7 @@ import (
 )
 
 // workspaceCoAuthoredByEnabled gates the prepare-commit-msg hook installed in
-// agent worktrees. RFC MUL-2414 adds the `github_enabled` master switch:
+// agent worktrees. RFC ISS-2414 adds the `github_enabled` master switch:
 // when it is explicitly false the hook must NOT be installed even if
 // `co_authored_by_enabled` is true. The function also defaults to true
 // whenever settings are absent or malformed so existing workspaces keep

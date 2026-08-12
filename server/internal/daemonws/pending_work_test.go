@@ -9,11 +9,11 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // TestNotifyPendingWork pins the hint that removes the up-to-one-heartbeat
-// wait before a queued model-list request is picked up (MUL-5444): daemons
+// wait before a queued model-list request is picked up (ISS-5444): daemons
 // watching the runtime must receive a runtime-scoped daemon:pending_work frame.
 func TestNotifyPendingWork(t *testing.T) {
 	M.Reset()

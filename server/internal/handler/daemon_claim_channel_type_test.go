@@ -9,7 +9,7 @@ import (
 )
 
 // Claim must report the chat session's real channel type for EVERY registered
-// channel, not just Slack (MUL-4899).
+// channel, not just Slack (ISS-4899).
 //
 // The binding lookup used to hardcode channel_type='slack', so a Feishu session
 // — which writes the same channel_chat_session_binding row under
@@ -135,7 +135,7 @@ func TestClaim_SlackBoundSessionStillReportsThreadState(t *testing.T) {
 // reported. The lookup enumerated a fixed {slack, feishu} list, so every
 // channel added after it — WeCom is the first — claimed as a web chat and
 // inherited the web chat's `multica attachment upload` guidance, the exact
-// MUL-4899 failure the fixed list was supposed to have ended.
+// ISS-4899 failure the fixed list was supposed to have ended.
 //
 // The list is what is under test here, not WeCom: the binding row shape is
 // identical for every channel, so a handler that reads the row instead of

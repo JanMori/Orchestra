@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // All tests in this file require a working DB. testHandler / testWorkspaceID /
@@ -78,7 +78,7 @@ func createWebhookTriggerViaHandler(t *testing.T, autopilotID string) AutopilotT
 }
 
 // TestCreateTrigger_RepublishesRuleVersionAtomically verifies Elon's final Phase 1
-// must-fix: creating a trigger (a substantive change to what fires, MUL-4302 §3.4)
+// must-fix: creating a trigger (a substantive change to what fires, ISS-4302 §3.4)
 // republishes the autopilot's rule version with the acting member as publisher,
 // written atomically in the same tx as the trigger INSERT — for BOTH the webhook
 // create path (mint-with-retry, whole attempt wrapped in a tx) and the schedule path.

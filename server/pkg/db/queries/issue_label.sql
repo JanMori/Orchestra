@@ -63,7 +63,7 @@ DELETE FROM skill_to_label WHERE skill_id = $1;
 
 -- name: DeleteAgentLabelAssignmentsBySystemRuntimeAgents :exec
 -- Runtime teardown hard-deletes the system agents bound to the runtime (user
--- agents are unbound and kept since MUL-5559). Clear only those agents' label
+-- agents are unbound and kept since ISS-5559). Clear only those agents' label
 -- links so none survive the agent hard-delete — a surviving unbound agent must
 -- keep its labels.
 DELETE FROM agent_to_label

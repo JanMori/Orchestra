@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
-// Regression tests for MUL-5492: the per-issue timeline cap used to be applied
+// Regression tests for ISS-5492: the per-issue timeline cap used to be applied
 // with ORDER BY created_at ASC, so once an issue accumulated more than
 // timelineHardCap rows the cap discarded the NEWEST ones and the timeline
 // silently appeared to stop at some point in the past.
@@ -219,7 +219,7 @@ func TestListTimeline_ActivityTruncationDoesNotDropComments(t *testing.T) {
 // TestListTimeline_NoOrphanedReplies is the regression for the review finding.
 // Scenario: a thread root older than the comment window, a fresh reply to it
 // inside the window. The reply must not come back without its parent — an orphan
-// is invisible in the UI, not merely mis-nested (MUL-1847 / #2263).
+// is invisible in the UI, not merely mis-nested (ISS-1847 / #2263).
 func TestListTimeline_NoOrphanedReplies(t *testing.T) {
 	issueID := createIssueForTimeline(t, "no orphaned replies")
 

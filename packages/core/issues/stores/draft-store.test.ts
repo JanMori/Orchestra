@@ -197,7 +197,7 @@ describe("issue draft store — legacy rehydrate", () => {
     setCurrentWorkspace(null, null);
   });
 
-  it("migrates a pre-MUL-5181 flat draft into the shared/manual slots", async () => {
+  it("migrates a pre-ISS-5181 flat draft into the shared/manual slots", async () => {
     localStorage.setItem(
       "multica_issue_draft:acme",
       JSON.stringify({

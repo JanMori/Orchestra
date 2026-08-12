@@ -13,13 +13,13 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/multica-ai/multica/server/internal/cli"
+	"github.com/JanMori/Orchestra/server/internal/cli"
 )
 
 var setupCmd = &cobra.Command{
 	Use:   "setup",
 	Short: "Configure the CLI, authenticate, and start the daemon",
-	Long: `Configures the CLI to connect to Multica Cloud (multica.ai), then
+	Long: `Configures the CLI to connect to Multica Cloud (localhost:5001), then
 authenticates via browser and starts the agent daemon.
 
 If a configuration already exists, you will be prompted before overwriting.
@@ -38,8 +38,8 @@ Use --profile to create an isolated configuration for a separate environment:
 
 var setupCloudCmd = &cobra.Command{
 	Use:   "cloud",
-	Short: "Configure the CLI for Multica Cloud (multica.ai)",
-	Long: `Explicitly configures the CLI to connect to Multica Cloud (multica.ai).
+	Short: "Configure the CLI for Multica Cloud (localhost:5001)",
+	Long: `Explicitly configures the CLI to connect to Multica Cloud (localhost:5001).
 
 If you run this command over SSH on a remote machine, keep the localhost
 callback and follow the SSH tunnel hint printed during browser login. If your
@@ -158,17 +158,19 @@ func runSetupCloud(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("save config: %w", err)
 	}
 
-	fmt.Fprintln(os.Stderr, "Configured for Multica Cloud (https://multica.ai).")
+	fmt.Fprintln(os.Stderr, "Configured for Multica Cloud (http://localhost:5001).")
 	fmt.Fprintf(os.Stderr, "  server_url: %s\n", cfg.ServerURL)
 	fmt.Fprintf(os.Stderr, "  app_url:    %s\n", cfg.AppURL)
 	printConfigLocation(profile)
 
-	// Authenticate.
-	fmt.Fprintln(os.Stderr, "")
-	if err := runLogin(cmd, args); err != nil {
-		return err
+	if cfg.Token == "" {
+		if token, tokenErr := cli.FetchDaemonSetupToken(cfg.ServerURL); tokenErr == nil && token != "" {
+			cfg.Token = token
+			_ = cli.SaveCLIConfigForProfile(cfg, profile)
+		}
 	}
 
+	fmt.Fprintln(os.Stderr, "")
 	if err := runDaemonAfterSetup(cmd, args); err != nil {
 		return fmt.Errorf("start or restart daemon: %w", err)
 	}
@@ -241,12 +243,15 @@ func runSetupSelfHost(cmd *cobra.Command, args []string) error {
 	fmt.Fprintf(os.Stderr, "  app_url:    %s\n", appURL)
 	printConfigLocation(profile)
 
-	// Authenticate.
-	fmt.Fprintln(os.Stderr, "")
-	if err := runLogin(cmd, args); err != nil {
-		return err
+	existingCfg, _ := cli.LoadCLIConfigForProfile(profile)
+	if existingCfg.Token == "" {
+		if token, tokenErr := cli.FetchDaemonSetupToken(serverURL); tokenErr == nil && token != "" {
+			existingCfg.Token = token
+			_ = cli.SaveCLIConfigForProfile(existingCfg, profile)
+		}
 	}
 
+	fmt.Fprintln(os.Stderr, "")
 	if err := runDaemonAfterSetup(cmd, args); err != nil {
 		return fmt.Errorf("start or restart daemon: %w", err)
 	}

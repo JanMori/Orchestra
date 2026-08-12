@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/service"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // setupDirectChatSession creates a runtime-guard agent (with its registered
@@ -92,7 +92,7 @@ func assertChatTranscriptContents(t *testing.T, messages []db.ChatMessage, want 
 }
 
 // TestDirectChat_TaskOwnsItsOwnInputBatch is the core input-boundary contract
-// (MUL-4351): each direct send owns exactly the user message it created. When
+// (ISS-4351): each direct send owns exactly the user message it created. When
 // U1→T1 and U2→T2 are both queued, T1's claim must deliver ONLY U1 (never
 // "U1\n\nU2" the way the trailing-message selector would), and after T1
 // completes, T2 delivers ONLY U2.
@@ -130,7 +130,7 @@ func TestDirectChat_TaskOwnsItsOwnInputBatch(t *testing.T) {
 }
 
 // TestDirectChat_ClaimKeepsQueuedTurnsPairedWithReplies covers the follow-up
-// transcript regression from MUL-5751. The idle positional head is visible
+// transcript regression from ISS-5751. The idle positional head is visible
 // before claim, while later queued user rows remain hidden. When a predecessor
 // settles, its reply and the newly-visible follow-up must become atomically
 // ordered during the completion-to-claim window; claiming that already-visible
@@ -707,7 +707,7 @@ func insertSealedChannelChatTask(t *testing.T, ctx context.Context, agentID, run
 	return taskID
 }
 
-// TestCompleteTask_ChannelEmptyOutputWritesNoRow pins the MUL-4351 review fix
+// TestCompleteTask_ChannelEmptyOutputWritesNoRow pins the ISS-4351 review fix
 // for the LEGACY channel shape (chat_input_task_id NULL): an empty completion
 // must NOT write an assistant row — so chat:done carries empty content and the
 // Slack/Lark outbound keeps silently dropping it. The no_response fallback
@@ -844,7 +844,7 @@ func TestCompleteTask_ChatQuickActions(t *testing.T) {
 	// An actions-only turn (quick-actions footer with no visible text) must NOT
 	// become an empty-content message: older Desktop / mobile clients ignore
 	// quick_actions and would render an empty bubble. It falls through to the
-	// visible no_response fallback instead (MUL-4351).
+	// visible no_response fallback instead (ISS-4351).
 	actionsOnlyTask := sendDirectChat(t, ctx, agentID, sessionID, "give me options only")
 	markTaskRunning(t, ctx, actionsOnlyTask)
 	actionsOnly := "```quick-actions\n[{\"label\":\"Continue\",\"prompt\":\"Continue the plan\"}]\n```"
@@ -1013,7 +1013,7 @@ func installStubQuickActions() func() {
 }
 
 // TestRegenerateChatQuickActions_StaleTargetRejected pins the ack-alignment
-// contract (MUL-5149 review): a refresh names the turn it is refreshing, and
+// contract (ISS-5149 review): a refresh names the turn it is refreshing, and
 // the server enqueues it only while that turn is STILL the session's latest.
 // Once a newer reply lands, refreshing the older turn is refused, so the
 // client's pending marker never points at a turn the resulting
@@ -1080,7 +1080,7 @@ func TestRegenerateChatQuickActions_StaleTargetRejected(t *testing.T) {
 }
 
 // TestRegenerateChatQuickActions_ActiveTurnRejected pins finding §1 of the
-// MUL-5149 review: a newer reply that is queued/running but whose assistant row
+// ISS-5149 review: a newer reply that is queued/running but whose assistant row
 // has not landed yet leaves the OLD turn as the latest-persisted one, so the
 // stale check still passes on it. Regenerating then would resume the session
 // after the newer turn advanced its provider state, attaching suggestions built

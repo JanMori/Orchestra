@@ -347,7 +347,7 @@ var kindMessages = map[ErrorKind][2]string{
 // deterministic refusal that names its own fix ("a skill with this name
 // already exists", "set parent_id (--parent) to <id>"). Agents took the retry
 // hint literally and burned hours re-sending an unchanged request (GH #6264,
-// GH #5948), and the server-side wording added in MUL-4417 never reached them.
+// GH #5948), and the server-side wording added in ISS-4417 never reached them.
 var serverMessagePrefixes = map[ErrorKind][2]string{
 	KindValidation: {"Invalid request: ", "请求无效："},
 	KindConflict:   {"Request conflict: ", "请求冲突："},

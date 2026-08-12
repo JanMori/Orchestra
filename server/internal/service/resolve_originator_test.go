@@ -10,13 +10,13 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/multica-ai/multica/server/internal/attribution"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/featureflags"
-	"github.com/multica-ai/multica/server/internal/runtimeapps"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/featureflag"
+	"github.com/JanMori/Orchestra/server/internal/attribution"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/featureflags"
+	"github.com/JanMori/Orchestra/server/internal/runtimeapps"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/featureflag"
 )
 
 // newResolveOriginatorPool mirrors the local-postgres pattern used in
@@ -271,7 +271,7 @@ func TestResolveOriginatorFromTriggerComment_AgentAuthoredInheritsFromParent(t *
 }
 
 // TestAttributionForIssueTask_SystemCommentFallsThroughToIssueProvenance covers
-// the Stage-completion cascade (MUL-4302; raised by Bohan). Closing the last
+// the Stage-completion cascade (ISS-4302; raised by Bohan). Closing the last
 // sub-issue in a Stage wakes the parent's assignee agent through a SYSTEM-authored
 // child-done comment that threads no actor. That system comment carries no human,
 // so attribution must NOT stop at it (which would degrade to owner_fallback, the
@@ -306,7 +306,7 @@ func TestAttributionForIssueTask_SystemCommentFallsThroughToIssueProvenance(t *t
 
 	svc := &TaskService{Queries: db.New(pool)}
 	// Parent issue created by an agent on behalf of userID (agent_create origin).
-	// WorkspaceID is set so the workspace-scoped trigger-comment lookup (MUL-4252)
+	// WorkspaceID is set so the workspace-scoped trigger-comment lookup (ISS-4252)
 	// finds the system comment and classifies it (author_type=system) before the
 	// fall-through to issue provenance.
 	issue := db.Issue{
@@ -367,7 +367,7 @@ func TestResolveOriginatorForIssueTask_QuickCreateIssueInheritsParentTask(t *tes
 }
 
 // TestResolveOriginatorForIssueTask_AgentCreateIssueInheritsParentTask covers
-// the MUL-4305 fix: an agent that creates an issue through the ordinary
+// the ISS-4305 fix: an agent that creates an issue through the ordinary
 // `issue create` path gets origin_type='agent_create' + origin_id=<acting
 // task>. The issue creator is the agent, but the top-of-chain human lives on
 // that acting task and must be inherited so downstream assignment /
@@ -392,7 +392,7 @@ func TestResolveOriginatorForIssueTask_AgentCreateIssueInheritsParentTask(t *tes
 }
 
 // TestOriginatorForIssueTask_MatchesResolverForAgentCreate pins the gate/enqueue
-// consistency guarantee from MUL-4305: the exported OriginatorForIssueTask
+// consistency guarantee from ISS-4305: the exported OriginatorForIssueTask
 // (used by the crew-leader access gate) must return the SAME human the
 // unexported resolver persists on the task row. If these drift, an
 // agent-created issue could be attributed correctly on the task row yet denied

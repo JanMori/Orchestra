@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
-// TestSubtreeUnsubscribe_LosesToConcurrentRevoke covers MUL-5483 review round 8,
+// TestSubtreeUnsubscribe_LosesToConcurrentRevoke covers ISS-5483 review round 8,
 // finding 2.
 //
 // The handler validated membership from its own MVCC snapshot and only opened

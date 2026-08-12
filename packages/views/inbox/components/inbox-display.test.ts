@@ -33,8 +33,8 @@ describe("inbox display helpers", () => {
   it("removes legacy quick-create created prefixes from list titles", () => {
     expect(
       stripQuickCreatePrefix(
-        "Created MUL-1583: Fix agent list column widths",
-        "MUL-1583",
+        "Created ISS-1583: Fix agent list column widths",
+        "ISS-1583",
       ),
     ).toBe("Fix agent list column widths");
   });
@@ -42,8 +42,8 @@ describe("inbox display helpers", () => {
   it("cleans quick-create success titles before rendering the inbox row", () => {
     const quickCreateItem = item({
       type: "quick_create_done",
-      title: "Created MUL-1583: Fix agent list column widths",
-      details: { identifier: "MUL-1583" },
+      title: "Created ISS-1583: Fix agent list column widths",
+      details: { identifier: "ISS-1583" },
     });
 
     expect(getInboxDisplayTitle(quickCreateItem)).toBe(

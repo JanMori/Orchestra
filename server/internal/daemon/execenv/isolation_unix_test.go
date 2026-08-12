@@ -15,7 +15,7 @@ import (
 )
 
 // TestPrepareIsolated_PermanentFIFOBlockThenImmediateRetry is the lifecycle
-// regression for MUL-4923. The first real Codex Prepare blocks forever opening
+// regression for ISS-4923. The first real Codex Prepare blocks forever opening
 // a shared config FIFO. After the deadline, there must be no reader left on
 // that FIFO before an immediate retry mutates the same env root.
 func TestPrepareIsolated_PermanentFIFOBlockThenImmediateRetry(t *testing.T) {

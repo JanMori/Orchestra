@@ -20,7 +20,7 @@ import (
 // `thinking` / `tool_call` events, not as content blocks inside assistant
 // messages. When the parser only understood the assistant-block shape it
 // dropped all of them silently and the task transcript showed a single step
-// (MUL-5231). A fixture test is what makes the next upstream event rename loud
+// (ISS-5231). A fixture test is what makes the next upstream event rename loud
 // instead of silent.
 func TestCursorExecuteParsesRecordedStream(t *testing.T) {
 	t.Parallel()
@@ -171,7 +171,7 @@ func TestCursorExecuteParsesRecordedStream(t *testing.T) {
 // decrement the daemon's in-flight tool count early and drop a still-running
 // long tool onto the shorter idle watchdog; folding unknown text into reasoning
 // corrupts the transcript. Both are the silent-misparse regression this parser
-// exists to prevent (MUL-5231 review).
+// exists to prevent (ISS-5231 review).
 func TestCursorExecuteIgnoresUnknownSubtypes(t *testing.T) {
 	t.Parallel()
 
@@ -299,7 +299,7 @@ func countCursorMessageTypes(messages []Message) map[MessageType]int {
 	return counts
 }
 
-// TestCursorExecuteReportsUnhandledTopLevelTypes is the MUL-5434 regression.
+// TestCursorExecuteReportsUnhandledTopLevelTypes is the ISS-5434 regression.
 //
 // Reported symptom: a Cursor run that demonstrably used tools produced a single
 // blob of agent text, tools=0, no reasoning — and not one diagnostic. This test
@@ -405,7 +405,7 @@ func TestCursorExecuteDoesNotWarnOnHealthyStream(t *testing.T) {
 }
 
 // TestCursorLastAssistantBytesExcludesResultText pins the second half of
-// MUL-5434's diagnostic gap. The result event writes its text into the same
+// ISS-5434's diagnostic gap. The result event writes its text into the same
 // builder as assistant text, so the summary used to report
 // last_assistant_bytes == result_bytes even when the assistant streamed
 // nothing — erasing the one signal that says "no incremental output arrived,

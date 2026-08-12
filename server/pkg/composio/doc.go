@@ -8,7 +8,7 @@
 // # MVP surface
 //
 // The SDK targets the surface required by the Composio integration MVP
-// (see MUL-3715 / MUL-3720). It is deliberately minimal — only the
+// (see ISS-3715 / ISS-3720). It is deliberately minimal — only the
 // endpoints actually used by the first-stage product are wired up:
 //
 //   - Connect Link  — POST /connected_accounts/link

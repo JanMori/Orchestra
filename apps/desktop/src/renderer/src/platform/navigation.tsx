@@ -39,7 +39,7 @@ function extractWorkspaceSlug(path: string): string | null {
  * desktop are rendered as a window-level overlay instead of a tab route.
  * Returns `true` if the navigation was handled (caller should NOT proceed).
  *
- * MUL-4741 note: the old adapter also parked the tab's router at "/" when
+ * ISS-4741 note: the old adapter also parked the tab's router at "/" when
  * opening these overlays. Under the session architecture the Coordinator
  * parks the single router automatically whenever `activeWorkspaceSlug` goes
  * null (the zero-workspace flows), and an overlay opened over a still-valid
@@ -151,7 +151,7 @@ function tryRouteToPinnedNewTab(path: string): boolean {
  * RouterProvider (there is no per-tab provider anymore; the active session's
  * URL is the location for everyone).
  *
- * MUL-4741 invariant 1: none of these operations touch the router. They
+ * ISS-4741 invariant 1: none of these operations touch the router. They
  * mutate tab sessions in the store; the Coordinator reconciles the single
  * router to the active session URL with a navigation token.
  */

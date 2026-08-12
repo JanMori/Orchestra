@@ -1,6 +1,6 @@
 import { cn } from "@orchestra/ui/lib/utils";
 
-export const githubUrl = "https://github.com/multica-ai/multica";
+export const githubUrl = "https://github.com/JanMori/Orchestra";
 export const twitterUrl = "https://x.com/MulticaAI";
 export const discordUrl = "https://discord.gg/W8gYBn226t";
 

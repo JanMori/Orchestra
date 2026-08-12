@@ -10,9 +10,9 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/runtimeapps"
-	sdk "github.com/multica-ai/multica/server/pkg/composio"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/runtimeapps"
+	sdk "github.com/JanMori/Orchestra/server/pkg/composio"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // seedActiveConnection writes a single active row for the user/toolkit pair
@@ -62,7 +62,7 @@ func makeAgent(owner pgtype.UUID, allowlist ...string) db.Agent {
 	return a
 }
 
-// --- Overlay follows the agent owner, not the run originator (MUL-3963) ---
+// --- Overlay follows the agent owner, not the run originator (ISS-3963) ---
 
 // TestBuildTaskOverlay_FollowsOwnerRegardlessOfOriginator: with no human
 // originator (autopilot / system run) the overlay is STILL built from the
@@ -97,7 +97,7 @@ func TestBuildTaskOverlay_FollowsOwnerRegardlessOfOriginator(t *testing.T) {
 
 // --- Overlay uses the OWNER's connection, not the originator's -----------
 
-// TestBuildTaskOverlay_UsesOwnerConnectionNotOriginator is the MUL-3963
+// TestBuildTaskOverlay_UsesOwnerConnectionNotOriginator is the ISS-3963
 // contract that replaced the old originator==owner gate: a non-owner
 // originator who has passed the invoke gate gets the overlay built from the
 // AGENT OWNER's connection, and never from their own. Seeding only the

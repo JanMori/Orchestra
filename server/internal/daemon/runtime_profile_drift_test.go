@@ -34,7 +34,7 @@ func TestProfileSetSignature_StableUnderReorder(t *testing.T) {
 // TestProfileSetSignature_DetectsRegistrationAffectingChanges asserts the
 // digest covers exactly the fields the daemon sends in a Register call.
 // Coverage gaps here would mean a real server-side change goes undetected
-// and the user has to restart the daemon — the bug MUL-3332 is about.
+// and the user has to restart the daemon — the bug ISS-3332 is about.
 func TestProfileSetSignature_DetectsRegistrationAffectingChanges(t *testing.T) {
 	base := []RuntimeProfile{{
 		ID:             "p1",
@@ -325,7 +325,7 @@ func TestRefreshWorkspaceRuntimeProfiles_NoDrift_DoesNotReregister(t *testing.T)
 }
 
 // TestRefreshWorkspaceRuntimeProfiles_NewProfileTriggersReregister verifies
-// the user-visible fix for MUL-3332: a profile created via the web UI on an
+// the user-visible fix for ISS-3332: a profile created via the web UI on an
 // already-tracked workspace becomes a registered runtime when the daemon
 // receives the server's change notification — no daemon restart required.
 func TestRefreshWorkspaceRuntimeProfiles_NewProfileTriggersReregister(t *testing.T) {
@@ -401,7 +401,7 @@ func TestRefreshWorkspaceRuntimeProfiles_NewProfileTriggersReregister(t *testing
 		t.Errorf("steady-state refresh must not re-register; before=%d after=%d", stableCalls, got)
 	}
 
-	// MUL-3332 review (concern 1): the drift path MUST NOT call recover-
+	// ISS-3332 review (concern 1): the drift path MUST NOT call recover-
 	// orphans on any returned runtime. Recover-orphans hard-fails every
 	// dispatched/running task on a runtime, so calling it for a built-in
 	// runtime that the user had been actively running tasks on would kill
@@ -414,7 +414,7 @@ func TestRefreshWorkspaceRuntimeProfiles_NewProfileTriggersReregister(t *testing
 }
 
 // TestRefreshWorkspaceRuntimeProfiles_DriftWithRunningRuntimeSkipsOrphanRecovery
-// is the targeted regression for MUL-3332 review concern #1: a daemon that
+// is the targeted regression for ISS-3332 review concern #1: a daemon that
 // is actively executing tasks on its existing runtime (built-in or
 // previously-registered profile) must NOT have those tasks killed when
 // the user adds a *new* sibling profile. Adding a profile must surface as
@@ -468,7 +468,7 @@ func TestRefreshWorkspaceRuntimeProfiles_DriftWithRunningRuntimeSkipsOrphanRecov
 	}
 
 	// Hard regression: zero recover-orphans calls for ANY runtime ID.
-	// The whole point of MUL-3332 review concern #1 is that adding a
+	// The whole point of ISS-3332 review concern #1 is that adding a
 	// profile must not nuke in-flight work on existing runtimes.
 	if got := fx.recordedRecoverOrphans(); len(got) != 0 {
 		t.Errorf("drift refresh leaked recover-orphans calls (would fail running tasks on existing runtimes): %v", got)
@@ -476,7 +476,7 @@ func TestRefreshWorkspaceRuntimeProfiles_DriftWithRunningRuntimeSkipsOrphanRecov
 }
 
 // TestRefreshWorkspaceRuntimeProfiles_DisableConvergesCustomOnlyDaemon is the
-// targeted regression for MUL-3332 review concern #2: when a custom-only
+// targeted regression for ISS-3332 review concern #2: when a custom-only
 // daemon (no built-in agents) has its only enabled profile disabled, the
 // daemon must converge to a zero-runtime state — clear local tracking AND
 // tell the server to mark the orphaned runtime row offline immediately,

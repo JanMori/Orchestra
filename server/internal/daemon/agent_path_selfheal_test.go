@@ -65,7 +65,7 @@ func installVersionedCodex(t *testing.T, root, version, stableBin string) string
 	return canonicalExecutablePath(link)
 }
 
-// TestResolveAgentEntry_SelfHealsAfterInPlaceUpgrade reproduces MUL-4486: a
+// TestResolveAgentEntry_SelfHealsAfterInPlaceUpgrade reproduces ISS-4486: a
 // version manager upgrades codex in place, deleting the versioned directory the
 // daemon pinned at startup and repointing the stable command name at the new
 // version. resolveAgentEntry must re-resolve the pinned path AND return the
@@ -117,7 +117,7 @@ func TestResolveAgentEntry_SelfHealsAfterInPlaceUpgrade(t *testing.T) {
 	if !agentExecutablePresent(got.Path) {
 		t.Fatalf("self-healed path is not runnable: %q", got.Path)
 	}
-	// Must-fix (MUL-4486 review): the version returned is paired with the healed
+	// Must-fix (ISS-4486 review): the version returned is paired with the healed
 	// path, and the shared version cache moved with it too.
 	if ver != "0.144.3" {
 		t.Fatalf("returned version not paired with healed path: got %q, want %q", ver, "0.144.3")
@@ -325,7 +325,7 @@ func TestResolveAgentEntry_NoCommandNoHeal(t *testing.T) {
 //
 // resolveAgentEntry deliberately returns healed.version, NOT the shared
 // agentVersions cache, whenever a previous self-heal is still live — that is the
-// MUL-4486 guarantee that a reader seeing the healed path sees the version
+// ISS-4486 guarantee that a reader seeing the healed path sees the version
 // detected for it. But a re-probe only wrote agentVersions, so once the healed
 // binary was itself replaced in place, the daemon reported the new version to
 // the server while every task kept launching under the version captured at heal

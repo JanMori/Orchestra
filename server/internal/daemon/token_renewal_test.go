@@ -177,7 +177,7 @@ func TestTryRenewToken_TransientErrorIsDebugNotWarn(t *testing.T) {
 }
 
 // TestPreflightAuth_RenewsBeforeWorkspaceSyncOnExpiredToken locks in the
-// must-fix from MUL-2744 review: when the daemon starts with an already-
+// must-fix from ISS-2744 review: when the daemon starts with an already-
 // revoked or expired PAT, the renewal call has to happen BEFORE the first
 // workspace sync, because the workspace sync's 401 would short-circuit Run
 // and the operator would never see a "run orchestra login" hint.

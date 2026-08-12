@@ -18,26 +18,26 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/analytics"
-	"github.com/multica-ai/multica/server/internal/auth"
-	"github.com/multica-ai/multica/server/internal/cloudruntime"
-	"github.com/multica-ai/multica/server/internal/daemonws"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/integrations/channel/engine"
-	composio "github.com/multica-ai/multica/server/internal/integrations/composio"
-	"github.com/multica-ai/multica/server/internal/integrations/ghsnapshot"
-	"github.com/multica-ai/multica/server/internal/integrations/lark"
-	"github.com/multica-ai/multica/server/internal/integrations/slack"
-	obsmetrics "github.com/multica-ai/multica/server/internal/metrics"
-	"github.com/multica-ai/multica/server/internal/middleware"
-	"github.com/multica-ai/multica/server/internal/realtime"
-	"github.com/multica-ai/multica/server/internal/service"
-	"github.com/multica-ai/multica/server/internal/storage"
-	"github.com/multica-ai/multica/server/internal/util"
-	"github.com/multica-ai/multica/server/internal/util/secretbox"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/featureflag"
-	"github.com/multica-ai/multica/server/pkg/llm"
+	"github.com/JanMori/Orchestra/server/internal/analytics"
+	"github.com/JanMori/Orchestra/server/internal/auth"
+
+	"github.com/JanMori/Orchestra/server/internal/daemonws"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel/engine"
+	composio "github.com/JanMori/Orchestra/server/internal/integrations/composio"
+	"github.com/JanMori/Orchestra/server/internal/integrations/ghsnapshot"
+	"github.com/JanMori/Orchestra/server/internal/integrations/lark"
+	"github.com/JanMori/Orchestra/server/internal/integrations/slack"
+	obsmetrics "github.com/JanMori/Orchestra/server/internal/metrics"
+	"github.com/JanMori/Orchestra/server/internal/middleware"
+	"github.com/JanMori/Orchestra/server/internal/realtime"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	"github.com/JanMori/Orchestra/server/internal/storage"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	"github.com/JanMori/Orchestra/server/internal/util/secretbox"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/featureflag"
+	"github.com/JanMori/Orchestra/server/pkg/llm"
 )
 
 // randomID returns a random 16-byte hex string used as a request ID for
@@ -80,7 +80,7 @@ type Config struct {
 	// ORCHESTRA_VCS_INTEGRATION_ENABLED; the self-host compose defaults it on.
 	VCSIntegrationEnabled bool
 	// PublicURL is the absolute base URL the API is reachable at from the
-	// public internet, with no trailing slash (e.g. "https://multica.ai").
+	// public internet, with no trailing slash (e.g. "http://localhost:5001").
 	// Used only to build webhook_url responses for autopilot webhook triggers
 	// — never for auth, routing, or workspace resolution. Empty when unset,
 	// in which case clients fall back to webhook_path + their own origin.
@@ -97,11 +97,7 @@ type Config struct {
 	// webhook limiter from being bypassed by a spoofed XFF on deployments
 	// without a header-stripping reverse proxy in front.
 	TrustedProxies []netip.Prefix
-	// CloudRuntimeFleetURL enables the SaaS-only remote Fleet adapter when set.
-	// Empty keeps self-hosted deployments explicit: cloud runtime endpoints
-	// return 503 instead of attempting to dial a hard-coded private service.
-	CloudRuntimeFleetURL     string
-	CloudRuntimeFleetTimeout time.Duration
+
 	AttachmentDownloadMode   string
 	AttachmentDownloadURLTTL time.Duration
 	// AttachmentFrameAncestors are trusted browser origins allowed to embed
@@ -109,10 +105,10 @@ type Config struct {
 	// frontend/CORS origin allowlist so split app/api self-hosted deployments
 	// can frame API-hosted PDFs without allowing arbitrary third-party frames.
 	AttachmentFrameAncestors []string
-	// LLM* configure the basic LLM API layer (MUL-4238). They back the
+	// LLM* configure the basic LLM API layer (ISS-4238). They back the
 	// server-internal LLM helpers in pkg/llm (e.g. chat title generation).
 	// The generic OpenAI-compatible passthrough endpoints were removed in
-	// MUL-4309; LLM access is internal-only now. When both LLMAPIKey and
+	// ISS-4309; LLM access is internal-only now. When both LLMAPIKey and
 	// LLMBaseURL are empty the layer is disabled and callers fall back
 	// silently (see maybeGenerateChatTitleAsync).
 	//   - LLMAPIKey       -> ORCHESTRA_LLM_API_KEY
@@ -128,10 +124,6 @@ type Config struct {
 	ServerVersion string
 }
 
-type cloudRuntimeProxy interface {
-	Enabled() bool
-	Do(ctx context.Context, req cloudruntime.Request) (*cloudruntime.Response, error)
-}
 
 type RuntimeProfileRefreshNotifier interface {
 	NotifyRuntimeProfilesChanged(workspaceID, profileID string)
@@ -143,7 +135,7 @@ type WorkspaceSetRefreshNotifier interface {
 
 // DaemonPendingWorkNotifier pushes a runtime-scoped "heartbeat now" hint to the
 // daemon so a queued heartbeat-carried request (model discovery) is picked up
-// immediately instead of on the daemon's next scheduled tick (MUL-5444).
+// immediately instead of on the daemon's next scheduled tick (ISS-5444).
 // Satisfied by both *daemonws.Hub (single-node) and *daemonws.RelayNotifier
 // (multi-node, fans out through Redis).
 type DaemonPendingWorkNotifier interface {
@@ -174,13 +166,13 @@ type Handler struct {
 	CFSigner               *auth.CloudFrontSigner
 	Analytics              analytics.Client
 	// DaemonPendingWork pushes "heartbeat now" hints for queued
-	// heartbeat-carried requests (MUL-5444). Optional: when nil,
+	// heartbeat-carried requests (ISS-5444). Optional: when nil,
 	// requestDaemonPendingWork falls back to the local DaemonHub, which is the
 	// correct delivery scope for a single-node deployment.
 	DaemonPendingWork DaemonPendingWorkNotifier
 	// ModelCatalogCache serves the last known good model list for a runtime so
 	// the picker can render without waiting for a daemon round trip
-	// (stale-while-revalidate, MUL-5444). Nil-safe: every call site treats a nil
+	// (stale-while-revalidate, ISS-5444). Nil-safe: every call site treats a nil
 	// cache as a permanent miss and falls back to the full discovery flow.
 	ModelCatalogCache ModelCatalogCache
 	// Metrics is the shared business-metrics collector built by main.go.
@@ -195,7 +187,7 @@ type Handler struct {
 	WebhookIPRateLimiter         WebhookRateLimiter
 	WebhookAbsoluteIPRateLimiter WebhookRateLimiter
 	WebhookDeliveryWorker        *WebhookDeliveryWorker
-	CloudRuntime                 cloudRuntimeProxy
+
 	// Lark integration. All three are nil when the Lark master key
 	// (ORCHESTRA_LARK_SECRET_KEY) is unset; the corresponding HTTP
 	// handlers return 503 in that case so a misconfigured self-host
@@ -218,13 +210,13 @@ type Handler struct {
 	// UI consults IsConfigured() to decide whether to surface install
 	// entry points.
 	LarkAPIClient lark.APIClient
-	// Composio integration (MUL-3720). Nil when COMPOSIO_API_KEY is unset;
+	// Composio integration (ISS-3720). Nil when COMPOSIO_API_KEY is unset;
 	// the composio HTTP handlers return 503 in that case. Wired in
 	// cmd/server/router.go after handler.New.
 	Composio *composio.Service
 	// ChannelSupervisor owns the per-installation supervisor goroutines
 	// that hold the §4.4 WS lease and drive each channel.Channel
-	// (MUL-3620 generalized the Feishu-only Hub into this channel-agnostic
+	// (ISS-3620 generalized the Feishu-only Hub into this channel-agnostic
 	// engine). The router constructs it UNCONDITIONALLY — it drives any
 	// channel type, not just Feishu, so it does not depend on the Lark
 	// master key; each platform registers its Factory only when configured
@@ -248,21 +240,21 @@ type Handler struct {
 	ChannelMediaReconciler *service.ChannelMediaReconciler
 	// SlackInstall owns the bring-your-own-app Slack install lifecycle (register
 	// pasted tokens / list / revoke) and the at-rest encryption of each app's bot
-	// + app tokens (MUL-3666). Nil unless ORCHESTRA_SLACK_SECRET_KEY is set.
+	// + app tokens (ISS-3666). Nil unless ORCHESTRA_SLACK_SECRET_KEY is set.
 	SlackInstall *slack.InstallService
 	// SlackBindingTokens mints/redeems the user-binding tokens behind the
-	// "link your Slack account" prompt (MUL-3666). Nil unless Slack is
+	// "link your Slack account" prompt (ISS-3666). Nil unless Slack is
 	// configured (ORCHESTRA_SLACK_SECRET_KEY set).
 	SlackBindingTokens *slack.BindingTokenService
 	// SlackHistory backs the agent-facing `multica chat history` command: it
-	// reads a chat session's bound Slack conversation on demand (MUL-3871). Nil
+	// reads a chat session's bound Slack conversation on demand (ISS-3871). Nil
 	// unless Slack is configured; GetChatChannelHistory then reports "no channel
 	// integration". A future platform satisfies the same reader interface.
 	SlackHistory ChatChannelHistoryReader
-	// LLM is the basic LLM API layer (MUL-4238): a thin wrapper over the
+	// LLM is the basic LLM API layer (ISS-4238): a thin wrapper over the
 	// OpenAI Go SDK backing server-internal one-shot LLM helpers such as chat
 	// title generation. The generic passthrough endpoints were removed in
-	// MUL-4309, so it is internal-only now. Always non-nil (New builds it from
+	// ISS-4309, so it is internal-only now. Always non-nil (New builds it from
 	// Config); when unconfigured its Enabled() reports false and callers fall
 	// back silently.
 	LLM *llm.Client
@@ -273,7 +265,7 @@ type Handler struct {
 	// error rather than silently storing plaintext. Wired in
 	// cmd/server/router.go after New.
 	VCSSecretBox *secretbox.Box
-	// PRRefresh drives the GitHub API snapshot pipeline for PR cards (MUL-5265):
+	// PRRefresh drives the GitHub API snapshot pipeline for PR cards (ISS-5265):
 	// webhook / page-visit / TTL triggers → authenticated GraphQL fetch →
 	// head-SHA-guarded atomic snapshot write. Always non-nil, but inert (every
 	// trigger is a no-op) when GITHUB_APP_ID / GITHUB_APP_PRIVATE_KEY are unset,
@@ -351,16 +343,13 @@ func New(queries *db.Queries, txStarter txStarter, hub *realtime.Hub, bus *event
 		WebhookRateLimiter:           NewMemoryWebhookRateLimiter(DefaultWebhookRateLimit()),
 		WebhookIPRateLimiter:         NewMemoryWebhookIPRateLimiter(DefaultWebhookIPRateLimit()),
 		WebhookAbsoluteIPRateLimiter: NewMemoryWebhookAbsoluteIPRateLimiter(DefaultWebhookAbsoluteIPRateLimit()),
-		CloudRuntime: cloudruntime.NewClient(cloudruntime.Config{
-			BaseURL: cfg.CloudRuntimeFleetURL,
-			Timeout: cfg.CloudRuntimeFleetTimeout,
-		}),
+
 		LLM: llmClient,
 		cfg: cfg,
 	}
 	h.WebhookDeliveryWorker = NewWebhookDeliveryWorker(h)
 
-	// GitHub API snapshot pipeline for PR cards (MUL-5265). Built
+	// GitHub API snapshot pipeline for PR cards (ISS-5265). Built
 	// unconditionally but inert (every trigger no-ops) when the App private key
 	// is unconfigured, so the feature degrades cleanly. main.go calls
 	// h.PRRefresh.Start(ctx) to launch its worker pool + TTL sweeper.
@@ -441,7 +430,7 @@ func uuidToPtr(u pgtype.UUID) *string               { return util.UUIDToPtr(u) }
 
 // uuidsToStrings maps a UUID array column to string ids, skipping NULL/invalid
 // entries. Returns nil (not an empty slice) when there is nothing to emit so
-// `omitempty` JSON fields drop out cleanly (MUL-4195).
+// `omitempty` JSON fields drop out cleanly (ISS-4195).
 func uuidsToStrings(us []pgtype.UUID) []string {
 	if len(us) == 0 {
 		return nil
@@ -584,7 +573,7 @@ func requestUserID(r *http.Request) string {
 // authenticated via an `mat_` task-scoped token. The auth middleware sets
 // that header (and stripped any client-supplied value first), so it is
 // authoritative — the bound (agent_id, task_id) cannot be forged or
-// stripped by the agent process. This is the path MUL-2600 relies on to
+// stripped by the agent process. This is the path ISS-2600 relies on to
 // reject agent-process traffic on owner-only endpoints.
 //
 // Fallback signal (legacy CLI / member-token paths): the request MUST

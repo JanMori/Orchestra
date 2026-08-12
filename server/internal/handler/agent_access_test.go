@@ -7,9 +7,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/middleware"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/middleware"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // TestMemberAllowedToViewAgent_Pure exercises the pure predicate that drives
@@ -248,7 +248,7 @@ func TestCreateIssue_AssignToPrivateAgentForbidsPlainMember(t *testing.T) {
 	}
 
 	// Workspace owner (testUserID) who is NOT the agent owner: DENIED under
-	// the invocation-permission model (MUL-3963) — admin/owner status no
+	// the invocation-permission model (ISS-3963) — admin/owner status no
 	// longer grants the ability to invoke someone else's private agent.
 	w := httptest.NewRecorder()
 	testHandler.CreateIssue(w, newRequest("POST", "/api/issues?workspace_id="+testWorkspaceID, body(testUserID)))
@@ -574,14 +574,14 @@ func TestShouldEnqueueOnComment_PrivateAgentGate(t *testing.T) {
 			actorType: "member",
 			actorID:   testUserID,
 			want:      false,
-			reason:    "MUL-3963: workspace owners/admins no longer bypass a private agent's invocation gate",
+			reason:    "ISS-3963: workspace owners/admins no longer bypass a private agent's invocation gate",
 		},
 		{
 			name:      "agent-to-agent — denied without allowed originator",
 			actorType: "agent",
 			actorID:   agentID,
 			want:      false,
-			reason:    "MUL-3963: A2A is judged by the top-of-chain originator; a private agent denies an agent actor with no owner/allow-listed originator",
+			reason:    "ISS-3963: A2A is judged by the top-of-chain originator; a private agent denies an agent actor with no owner/allow-listed originator",
 		},
 	}
 

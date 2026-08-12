@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // child builds a sibling row with the given stage (0 = unstaged/NULL) and
@@ -148,7 +148,7 @@ func TestStageProgressSummary_SkipsUnstaged(t *testing.T) {
 }
 
 // stageAdvanceInstruction must point at a known next stage when one exists,
-// and — the core of MUL-4062 — must NOT assert finality when no later stage
+// and — the core of ISS-4062 — must NOT assert finality when no later stage
 // exists yet, because a lazily-created intermediate stage reaches nextStage==0
 // exactly like a true final stage does.
 func TestStageAdvanceInstruction(t *testing.T) {
@@ -163,7 +163,7 @@ func TestStageAdvanceInstruction(t *testing.T) {
 
 	t.Run("no created next stage does not assert finality", func(t *testing.T) {
 		got := stageAdvanceInstruction(0, parentID)
-		// Regression guard for MUL-4062: an intermediate stage in a lazily
+		// Regression guard for ISS-4062: an intermediate stage in a lazily
 		// created workflow also reaches nextStage==0, so the message must not
 		// claim this was definitively the final stage.
 		if strings.Contains(got, "This was the final stage") {

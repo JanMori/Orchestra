@@ -9,7 +9,7 @@ import (
 )
 
 // TestCreateAgentFromTemplate_LegacyVisibilityMapsToPermission is the
-// MUL-4010 regression: the template create path used to persist
+// ISS-4010 regression: the template create path used to persist
 // permission_mode='private' (the SQL default) regardless of the incoming
 // legacy `visibility="workspace"` value, so an agent that the caller asked
 // to be workspace-shared silently became owner-only in canInvokeAgent.
@@ -118,7 +118,7 @@ func TestCreateAgentFromTemplate_PublicToWithMemberTarget(t *testing.T) {
 	}
 
 	// Fresh member to grant invocation access to.
-	targetUserID := createPermissionTestMember(t, "template-invoke-target@multica.ai")
+	targetUserID := createPermissionTestMember(t, "template-invoke-target@orchestra.local")
 
 	w := httptest.NewRecorder()
 	testHandler.CreateAgentFromTemplate(w, newRequest("POST", "/api/agents/from-template?workspace_id="+testWorkspaceID, map[string]any{

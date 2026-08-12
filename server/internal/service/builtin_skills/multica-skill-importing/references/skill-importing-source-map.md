@@ -1,15 +1,15 @@
 # Skill-importing source map
 
-Evidence layer for `multica-skill-importing`. Every behavioral claim in `SKILL.md`
+Evidence layer for `orchestra-skill-importing`. Every behavioral claim in `SKILL.md`
 maps to a real code path below with `file:line`. Paths are relative to the repo
-root (`multica/`).
+root (`orchestra/`).
 
 Re-derive before trusting: line numbers drift. To re-verify a single anchor,
 `grep` the symbol and read its surroundings, e.g.:
 
 ```bash
 grep -n "func (h \*Handler) ImportSkill" server/internal/handler/skill.go
-grep -n "func runSkillImport"           server/cmd/multica/cmd_skill.go
+grep -n "func runSkillImport"           server/cmd/orchestra/cmd_skill.go
 grep -n "func IsReservedContentPath"    server/internal/skill/reserved.go
 ```
 
@@ -53,17 +53,17 @@ archive path (below); a JSON body keeps the URL flow. Both converge on the share
 
 | Behavior | File:line |
 |---|---|
-| `skill import` command def | `server/cmd/multica/cmd_skill.go:59-63` |
-| `--url` flag | `server/cmd/multica/cmd_skill.go:143` |
-| `--file` flag (local `.skill` / `.zip`; mutually exclusive with `--url`) | `server/cmd/multica/cmd_skill.go:144` |
-| `--on-conflict` flag (default `fail`) | `server/cmd/multica/cmd_skill.go:145` |
-| `--output` flag (default `json`) | `server/cmd/multica/cmd_skill.go:146` |
-| `runSkillImport` | `server/cmd/multica/cmd_skill.go:412` |
-| Requires exactly one of `--url` / `--file` | `server/cmd/multica/cmd_skill.go:420-427` |
-| `--file` reads the archive and posts multipart via `ImportSkillFile` | `server/cmd/multica/cmd_skill.go:436-447`, client method `server/internal/cli/client.go:535` |
-| `POST /api/skills/import` (URL, JSON body) | `server/cmd/multica/cmd_skill.go:455` |
-| Structured HTTP error body handling | `server/cmd/multica/cmd_skill.go:437-440`, `handleSkillImportError` at `:454` |
-| Prints structured result (`json` or table) | `server/cmd/multica/cmd_skill.go:443`, helper at `:497` |
+| `skill import` command def | `server/cmd/orchestra/cmd_skill.go:59-63` |
+| `--url` flag | `server/cmd/orchestra/cmd_skill.go:143` |
+| `--file` flag (local `.skill` / `.zip`; mutually exclusive with `--url`) | `server/cmd/orchestra/cmd_skill.go:144` |
+| `--on-conflict` flag (default `fail`) | `server/cmd/orchestra/cmd_skill.go:145` |
+| `--output` flag (default `json`) | `server/cmd/orchestra/cmd_skill.go:146` |
+| `runSkillImport` | `server/cmd/orchestra/cmd_skill.go:412` |
+| Requires exactly one of `--url` / `--file` | `server/cmd/orchestra/cmd_skill.go:420-427` |
+| `--file` reads the archive and posts multipart via `ImportSkillFile` | `server/cmd/orchestra/cmd_skill.go:436-447`, client method `server/internal/cli/client.go:535` |
+| `POST /api/skills/import` (URL, JSON body) | `server/cmd/orchestra/cmd_skill.go:455` |
+| Structured HTTP error body handling | `server/cmd/orchestra/cmd_skill.go:437-440`, `handleSkillImportError` at `:454` |
+| Prints structured result (`json` or table) | `server/cmd/orchestra/cmd_skill.go:443`, helper at `:497` |
 
 ## Same-name conflict handling
 
@@ -79,7 +79,7 @@ archive path (below); a JSON body keeps the URL flow. Both converge on the share
 | `skip`: returns `status:"skipped"` and leaves existing skill untouched | `server/internal/handler/skill.go:1816-1821` |
 | Legacy duplicate branch when `on_conflict` was omitted | `server/internal/handler/skill.go:1973-1978` |
 | Legacy duplicate response `{error, existing_skill}` | `server/internal/handler/skill.go:118-123` |
-| CLI normalizes legacy `{existing_skill}` body into `status:"conflict"` | `server/cmd/multica/cmd_skill.go:454-482`, helper at `:484` |
+| CLI normalizes legacy `{existing_skill}` body into `status:"conflict"` | `server/cmd/orchestra/cmd_skill.go:454-482`, helper at `:484` |
 
 ## Response shape: `SkillWithFilesResponse`
 
@@ -114,11 +114,11 @@ that omit `on_conflict` still receive a bare `SkillWithFilesResponse`.
 | Route `POST /api/agents/{id}/skills/add` | `server/cmd/server/router.go:851` |
 | `SetAgentSkills` (replace-all: RemoveAllAgentSkills then re-add) | `server/internal/handler/skill.go:2106`; `RemoveAllAgentSkills` `:2138`; re-add `:2143-2151` |
 | Route `PUT /api/agents/{id}/skills` | `server/cmd/server/router.go:850` |
-| CLI `agent skills add` def ("without replacing existing assignments") | `server/cmd/multica/cmd_agent.go:125-130` |
-| `runAgentSkillsAdd` → `POST .../skills/add` | `server/cmd/multica/cmd_agent.go:797`; POST `:818` |
-| CLI `agent skills set` def ("replaces all current assignments") | `server/cmd/multica/cmd_agent.go:118-123` |
-| `runAgentSkillsSet` → `PUT .../skills` | `server/cmd/multica/cmd_agent.go:772`; PUT `:790` |
-| CLI `agent skills list` | `server/cmd/multica/cmd_agent.go:740`; GET `:750` |
+| CLI `agent skills add` def ("without replacing existing assignments") | `server/cmd/orchestra/cmd_agent.go:125-130` |
+| `runAgentSkillsAdd` → `POST .../skills/add` | `server/cmd/orchestra/cmd_agent.go:797`; POST `:818` |
+| CLI `agent skills set` def ("replaces all current assignments") | `server/cmd/orchestra/cmd_agent.go:118-123` |
+| `runAgentSkillsSet` → `PUT .../skills` | `server/cmd/orchestra/cmd_agent.go:772`; PUT `:790` |
+| CLI `agent skills list` | `server/cmd/orchestra/cmd_agent.go:740`; GET `:750` |
 
 ## Reserved primary-content filename (`SKILL.md`)
 

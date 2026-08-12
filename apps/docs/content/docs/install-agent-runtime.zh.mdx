@@ -1,17 +1,17 @@
 ---
 title: 安装 AI 编程工具
-description: 安装并登录一款受支持的 AI 编程工具，让 Multica 在本机执行任务。
+description: 安装并登录一款受支持的 AI 编程工具，让 Orchestra 在本机执行任务。
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-本地运行时由两部分组成：Multica 守护进程，以及它能够调用的一款 AI 编程工具。只需要安装你准备使用的工具，不必安装全部工具。
+本地运行时由两部分组成：Orchestra 守护进程，以及它能够调用的一款 AI 编程工具。只需要安装你准备使用的工具，不必安装全部工具。
 
 ## 1. 选择一款工具
 
 已经安装并登录的工具不需要额外配置。工具之间的模型、MCP、会话恢复和 skill 支持有所不同，详细差异见 [AI 编程工具对照](/providers)。
 
-Multica 当前会检测以下命令：
+Orchestra 当前会检测以下命令：
 
 | 工具 | 检测的命令 | 官方安装说明 |
 | --- | --- | --- |
@@ -35,7 +35,7 @@ Multica 当前会检测以下命令：
 | Qwen Code | `qwen` | [Qwen Code](https://github.com/QwenLM/qwen-code) |
 | TRAE CLI | `traecli` | [TRAE 官方站](https://www.trae.cn/) |
 
-"受支持"表示 Multica 能够调用对应 CLI，不代表 Multica 会替你提供该工具的账号、订阅或模型额度。
+"受支持"表示 Orchestra 能够调用对应 CLI，不代表 Orchestra 会替你提供该工具的账号、订阅或模型额度。
 
 ## 2. 在本机完成登录
 
@@ -43,7 +43,7 @@ Multica 当前会检测以下命令：
 
 使用 Reasonix 时，请先运行 `reasonix setup`，配置默认的模型服务和模型，再启动守护进程。
 
-这些登录凭据由工具保存在本机。Multica 不会接收 Claude、Codex、Cursor 或其他 CLI 的登录 token。
+这些登录凭据由工具保存在本机。Orchestra 不会接收 Claude、Codex、Cursor 或其他 CLI 的登录 token。
 
 <Callout type="info">
 Claude Code 需要 2.0.0 或更高版本，Codex 需要 0.100.0 或更高版本，Copilot 需要 1.0.0 或更高版本，Grok 需要 0.2.89 或更高版本，Qwen Code 需要 0.20.0 或更高版本。低于最低版本时，守护进程不会注册对应运行时。
@@ -83,9 +83,9 @@ orchestra daemon start
 orchestra daemon restart
 ```
 
-使用 Multica Desktop 时，退出并重新打开应用即可。
+使用 Orchestra Desktop 时，退出并重新打开应用即可。
 
-然后打开 Multica 的**运行时**页面。目标电脑下面会出现对应工具，并显示为在线。现在可以在创建或编辑智能体时选择这条运行时。
+然后打开 Orchestra 的**运行时**页面。目标电脑下面会出现对应工具，并显示为在线。现在可以在创建或编辑智能体时选择这条运行时。
 
 <Callout type="warning">
 守护进程启动时必须先检测到至少一款内置支持的 CLI。自定义运行时配置会在守护进程启动后同步，因此不能作为一台空白机器上的唯一启动条件。
@@ -107,4 +107,4 @@ orchestra daemon restart
 
 - [创建和配置智能体](/agents-create) — 选择刚刚连接的运行时。
 - [守护进程与运行时](/daemon-runtimes) — 了解在线状态、并发和自定义运行时。
-- [AI 编程工具对照](/providers) — 比较各工具在 Multica 中的能力。
+- [AI 编程工具对照](/providers) — 比较各工具在 Orchestra 中的能力。

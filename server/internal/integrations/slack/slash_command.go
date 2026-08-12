@@ -11,15 +11,15 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/slack-go/slack"
 
-	"github.com/multica-ai/multica/server/internal/integrations/channel/engine"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel/engine"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // This file implements the Slack `/issue` SLASH COMMAND. It is deliberately
 // separate from the message-based `/issue` (engine ParseIssueCommand): on Slack
 // a message whose first character is `/` is intercepted by the client as a
 // slash command and never delivered to the app, so the message-prefix form of
-// `/issue` cannot work here at all (MUL-3908). Registering `/issue` as a real
+// `/issue` cannot work here at all (ISS-3908). Registering `/issue` as a real
 // slash command in the app manifest is what makes it reach us — as an
 // `EventTypeSlashCommand` over the same Socket Mode connection.
 //

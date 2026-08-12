@@ -20,7 +20,7 @@ func patchRuntimeCustomName(actorID, runtimeID string, body map[string]any) *htt
 }
 
 // TestUpdateAgentRuntime_CustomNamePatchApplies covers the single-runtime
-// rename path (MUL-4217): a PATCH carrying custom_name sets it, an empty
+// rename path (ISS-4217): a PATCH carrying custom_name sets it, an empty
 // string clears it back to NULL, and an over-long value is rejected with 400.
 func TestUpdateAgentRuntime_CustomNamePatchApplies(t *testing.T) {
 	if testHandler == nil {

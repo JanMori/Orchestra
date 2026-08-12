@@ -99,7 +99,7 @@ func NextOccurrencesUTC(cronExpr, timezone string, after, until time.Time) ([]ti
 // local clock but calls NextOccurrenceAfterUTC anchored at
 // max(now, plan_time) rather than this helper, so a lagging app clock can
 // never re-point the column at the slot that just fired (see
-// scheduler.advancedNextRun / autopilotHandler, MUL-3749).
+// scheduler.advancedNextRun / autopilotHandler, ISS-3749).
 //
 // Scheduling decisions are a separate concern and MUST go through
 // NextOccurrencesUTC / NextOccurrenceAfterUTC against DB time instead:

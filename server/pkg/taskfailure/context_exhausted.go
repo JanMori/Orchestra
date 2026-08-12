@@ -65,7 +65,7 @@ const contextExhaustedOutputMaxLen = 320
 //     own cadence, so a daemon-only fix reaches nobody until every host
 //     updates — and one un-upgraded host means a permanently stuck (agent,
 //     issue) pair, not just a mislabelled row (same argument as
-//     NormalizeDaemonReason, MUL-5370).
+//     NormalizeDaemonReason, ISS-5370).
 //
 // EVERY clause is composite, and none is a bare natural-language sentence. The
 // GitHub report paraphrased the CLI as "context too long, please run /compact",

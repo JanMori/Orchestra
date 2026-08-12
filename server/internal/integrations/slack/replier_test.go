@@ -8,9 +8,9 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 
-	"github.com/multica-ai/multica/server/internal/integrations/channel"
-	"github.com/multica-ai/multica/server/internal/integrations/channel/engine"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel/engine"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 type fakeReplySender struct {
@@ -131,13 +131,13 @@ func TestReply_IngestedWithIssue_Confirms(t *testing.T) {
 	r.Reply(context.Background(), testResolvedInstallation(t), testInboundForReply(), engine.Result{
 		Outcome:         engine.OutcomeIngested,
 		IssueID:         mustUUID(t, "55555555-5555-5555-5555-555555555555"),
-		IssueIdentifier: "MUL-42",
+		IssueIdentifier: "ISS-42",
 		IssueTitle:      "Fix the thing",
 	})
 	if sender.calls != 1 || sender.sent == nil {
 		t.Fatalf("expected one confirmation, got %d", sender.calls)
 	}
-	if !strings.Contains(sender.sent.Text, "MUL-42") || !strings.Contains(sender.sent.Text, "Fix the thing") {
+	if !strings.Contains(sender.sent.Text, "ISS-42") || !strings.Contains(sender.sent.Text, "Fix the thing") {
 		t.Errorf("confirmation text = %q", sender.sent.Text)
 	}
 }
@@ -148,17 +148,17 @@ func TestReply_IngestedWithDuplicateIssue_ReportsConflict(t *testing.T) {
 	r.Reply(context.Background(), testResolvedInstallation(t), testInboundForReply(), engine.Result{
 		Outcome:         engine.OutcomeIngested,
 		IssueID:         mustUUID(t, "55555555-5555-5555-5555-555555555555"),
-		IssueIdentifier: "MUL-42",
+		IssueIdentifier: "ISS-42",
 		IssueTitle:      "Fix the thing",
 		IssueDuplicate:  true,
 	})
 	if sender.calls != 1 || sender.sent == nil {
 		t.Fatalf("expected one duplicate reply, got %d", sender.calls)
 	}
-	if !strings.Contains(sender.sent.Text, "Not created") || !strings.Contains(sender.sent.Text, "MUL-42") {
+	if !strings.Contains(sender.sent.Text, "Not created") || !strings.Contains(sender.sent.Text, "ISS-42") {
 		t.Fatalf("duplicate reply = %q", sender.sent.Text)
 	}
-	if strings.Contains(sender.sent.Text, "Created MUL-42") {
+	if strings.Contains(sender.sent.Text, "Created ISS-42") {
 		t.Fatalf("duplicate reply falsely claimed creation: %q", sender.sent.Text)
 	}
 }
@@ -186,7 +186,7 @@ func TestReply_Dropped_Silent(t *testing.T) {
 }
 
 func TestIssueCreatedText(t *testing.T) {
-	if got := issueCreatedText(engine.Result{IssueIdentifier: "MUL-7", IssueTitle: "Title"}); got != "✅ Created MUL-7 — Title" {
+	if got := issueCreatedText(engine.Result{IssueIdentifier: "ISS-7", IssueTitle: "Title"}); got != "✅ Created ISS-7 — Title" {
 		t.Errorf("with title = %q", got)
 	}
 	if got := issueCreatedText(engine.Result{IssueNumber: 9}); got != "✅ Created #9" {
@@ -196,9 +196,9 @@ func TestIssueCreatedText(t *testing.T) {
 
 func TestIssueDuplicateText(t *testing.T) {
 	got := issueDuplicateText(engine.Result{
-		IssueIdentifier: "MUL-7", IssueTitle: "Title", IssueDuplicate: true,
+		IssueIdentifier: "ISS-7", IssueTitle: "Title", IssueDuplicate: true,
 	})
-	if got != "⚠️ Not created — active issue MUL-7 already exists: Title" {
+	if got != "⚠️ Not created — active issue ISS-7 already exists: Title" {
 		t.Fatalf("duplicate text = %q", got)
 	}
 }

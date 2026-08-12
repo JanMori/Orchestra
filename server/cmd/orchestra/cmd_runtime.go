@@ -12,7 +12,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/multica-ai/multica/server/internal/cli"
+	"github.com/JanMori/Orchestra/server/internal/cli"
 )
 
 var runtimeCmd = &cobra.Command{
@@ -414,7 +414,7 @@ func printRuntimeDeleteResult(cmd *cobra.Command, result map[string]any) error {
 		return nil
 	}
 	// Compatibility fallback for an older server that only returns the
-	// pre-MUL-5559 mirror.
+	// pre-ISS-5559 mirror.
 	if agentsArchived, ok := result["agents_archived"]; ok {
 		fmt.Fprintf(os.Stderr, "Runtime %s deleted; processed %v agent(s).\n", strVal(result, "id"), agentsArchived)
 		return nil

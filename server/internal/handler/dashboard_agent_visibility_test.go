@@ -19,7 +19,7 @@ type dashboardAgentPresence struct {
 }
 
 // TestDashboardPerAgentRollupsFoldRestrictedAgents is the regression guard for
-// MUL-5409: the three per-agent dashboard rollups used to authorize on
+// ISS-5409: the three per-agent dashboard rollups used to authorize on
 // workspace membership alone and return a bare agent_id for EVERY agent in the
 // workspace, telling a plain member that someone else's private agent exists,
 // how much it spends, how long it runs, and what it fails on.
@@ -287,7 +287,7 @@ func TestDashboardPerAgentRollupsFoldRestrictedAgents(t *testing.T) {
 }
 
 // TestDashboardPerAgentRollupsFoldSystemAgentCarriers covers the population the
-// first version of the MUL-5409 fix missed. `kind = 'system'` agents — the
+// first version of the ISS-5409 fix missed. `kind = 'system'` agents — the
 // hidden execution carriers behind agent-builder sessions — run real tasks and
 // book real usage, and the three rollup queries aggregate over
 // agent_task_queue / task_usage without any kind filter. But NO list endpoint

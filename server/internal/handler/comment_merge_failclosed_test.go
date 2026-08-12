@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // TestMergeCommentIntoPendingTask_FailClosedKeepsOriginalSnapshot is Elon's must-fix
@@ -14,7 +14,7 @@ import (
 // precise human must REFUSE the merge and leave the queued task's entire attribution
 // snapshot (trigger comment, originator, accountable, source) intact — never re-stamped
 // to a degraded owner_fallback. A fail-open control proves the same comment DOES merge
-// (owner_fallback) when the workspace permits the degrade (MUL-4302).
+// (owner_fallback) when the workspace permits the degrade (ISS-4302).
 func TestMergeCommentIntoPendingTask_FailClosedKeepsOriginalSnapshot(t *testing.T) {
 	ctx := context.Background()
 	agentID := createWebhookTestAgent(t, "MergeFailClosed Agent")

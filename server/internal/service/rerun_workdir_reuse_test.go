@@ -5,13 +5,13 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // TestRerunIssuePinsForceFreshSessionForRollbackSafety locks in the rollback-safe
-// half of the MUL-4869 contract: RerunIssue ALWAYS persists
+// half of the ISS-4869 contract: RerunIssue ALWAYS persists
 // force_fresh_session=true on the rerun row, no matter how the source task
 // failed. The session-reuse decision is made later by the (new) claim handler
 // from the source task, so an OLD claim handler picked up mid rolling-deploy —

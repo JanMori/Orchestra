@@ -258,7 +258,7 @@ describe("bucketUnknownAgentRows", () => {
 
   it("keeps the bucket total reconciled with the top-line spend", () => {
     // The KPI total counts deleted-agent spend; sum(visible rows) must match it
-    // so the breakdown reconciles (MUL-3776).
+    // so the breakdown reconciles (ISS-3776).
     const out = bucketUnknownAgentRows(
       [live, deletedA, deletedB],
       new Set(["live"]),
@@ -292,7 +292,7 @@ describe("bucketUnknownAgentRows", () => {
     expect(out.map((r) => r.agentId)).toEqual(["live", "deleted-a"]);
   });
 
-  // MUL-5409: the server folds agents the viewer may not see onto its own
+  // ISS-5409: the server folds agents the viewer may not see onto its own
   // sentinel. That row is not in `knownAgentIds` either, and sweeping it into
   // the "Deleted agents" bucket is exactly the lie the issue was filed for —
   // those agents are alive.
@@ -390,7 +390,7 @@ describe("aggregateWeeklyTime", () => {
   });
 
   it("drops rows that fall outside the trailing window and keeps empty buckets", () => {
-    // Same MUL-2382 sparse-data regression we caught on the runtimes side:
+    // Same ISS-2382 sparse-data regression we caught on the runtimes side:
     // an old populated week must not surface when the requested window
     // doesn't include it; in-range empty weeks must remain as zero buckets.
     vi.setSystemTime(new Date("2026-05-19T12:00:00Z"));

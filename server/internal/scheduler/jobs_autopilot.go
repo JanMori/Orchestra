@@ -11,9 +11,9 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/multica-ai/multica/server/internal/service"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // JobNameAutopilotScheduleDispatch is the canonical job name written
@@ -55,7 +55,7 @@ type AutopilotScheduleDispatcher interface {
 // AutopilotScheduleDispatchJob returns the JobSpec that drives
 // scheduled Autopilot dispatch through the existing scheduler +
 // sys_cron_executions lease infrastructure. Replaces the legacy
-// cmd/server/autopilot_scheduler.go goroutine (MUL-3551).
+// cmd/server/autopilot_scheduler.go goroutine (ISS-3551).
 //
 // Design highlights:
 //
@@ -231,7 +231,7 @@ func autopilotScopes(
 // the half-open (latest.PlanTime, now] enumeration below would skip
 // past the failed bucket and the occurrence would be lost — the
 // canonical bug from the #4444 review where a claim+crash sequence
-// could leak a scheduled occurrence (MUL-3551 acceptance ③).
+// could leak a scheduled occurrence (ISS-3551 acceptance ③).
 func autopilotPlansForScope(cache *autopilotScheduleCache) func(
 	ctx context.Context, scope Scope, now time.Time, latest LatestPlanInfo,
 ) ([]time.Time, error) {
@@ -270,7 +270,7 @@ func autopilotPlansForScope(cache *autopilotScheduleCache) func(
 		//      strictly after the last successful fire so we do not
 		//      replay an already-handled occurrence. This is the case
 		//      that produced the post-deploy spurious-fire reported
-		//      on MUL-3551 dev: without it, a trigger that fired at
+		//      on ISS-3551 dev: without it, a trigger that fired at
 		//      Mon 17:10 under the legacy code would be enumerated
 		//      again the moment the new scheduler took over, because
 		//      the (created_at, now] half-open interval still
@@ -379,7 +379,7 @@ func autopilotHandler(
 
 		// Advance the display-only next_run_at to the upcoming slot and
 		// bump last_fired_at in the same write, so the trigger UI stops
-		// showing a "next run" that has already fired (MUL-3749). The
+		// showing a "next run" that has already fired (ISS-3749). The
 		// value stays on the app local clock — consistent with the trigger
 		// create/update display path — but is floored at the plan_time
 		// that just fired (see advancedNextRun), so a lagging app clock can
@@ -418,7 +418,7 @@ func autopilotHandler(
 // just fired — even when this app instance's clock lags the DB clock that
 // judged the plan due. Without that floor a sub-second-late local clock
 // could recompute the same slot and the next_run_at staleness bug
-// (MUL-3749) would reappear at the top-of-period boundary. Returns
+// (ISS-3749) would reappear at the top-of-period boundary. Returns
 // ok=false when the cron/timezone fail to parse, signalling the caller to
 // fall back to a last_fired_at-only bump.
 func advancedNextRun(cronExpr, timezone string, planTime, now time.Time) (time.Time, bool) {

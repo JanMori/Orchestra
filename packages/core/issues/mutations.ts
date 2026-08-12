@@ -240,7 +240,7 @@ export function useUpdateIssue() {
     onMutate: ({ id, move_intent: _moveIntent, ...data }) => {
       // suppress_run / handoff_note are write-time control fields, not Issue
       // columns — they steer enqueue/injection on the server and must never be
-      // written into the query cache (MUL-3375). Strip them from the patch; the
+      // written into the query cache (ISS-3375). Strip them from the patch; the
       // mutationFn above still sends the full payload to the API.
       const { suppress_run: _suppressRun, handoff_note: _handoffNote, ...patch } = data;
       // Fire-and-forget cancelQueries — keeps onMutate synchronous so the
@@ -363,7 +363,7 @@ export function useUpdateIssue() {
       // the specific list keys the coordinator flagged as drifted (unknown
       // membership, enter/leave beyond the loaded window, bucket-count drift).
       // Those stale keys are the surgical replacement for the old blanket
-      // "invalidate myAll on project move" safety net (MUL-3669 / #4548): the
+      // "invalidate myAll on project move" safety net (ISS-3669 / #4548): the
       // old project's loaded list already had the card removed in onMutate,
       // and only genuinely undecidable lists refetch here.
       invalidateIssueDerivatives(qc, wsId, {
@@ -511,7 +511,7 @@ export function useBatchUpdateIssues() {
     }) => api.batchUpdateIssues(ids, updates),
     onMutate: async ({ ids, updates }) => {
       // Control fields steer the server; they are not Issue columns and must
-      // not enter the cache (MUL-3375). mutationFn still sends them.
+      // not enter the cache (ISS-3375). mutationFn still sends them.
       const { suppress_run: _suppressRun, handoff_note: _handoffNote, ...patch } = updates;
       await qc.cancelQueries({ queryKey: issueKeys.list(wsId) });
       await qc.cancelQueries({ queryKey: issueKeys.myAll(wsId) });
@@ -633,7 +633,7 @@ export function useBatchUpdateIssues() {
       // caches that cannot be recomputed from a single-issue patch are
       // refreshed below, plus the specific keys the coordinator flagged as
       // drifted — the surgical replacement for the old blanket "invalidate
-      // myAll on project move" safety net (MUL-3669 / #4548).
+      // myAll on project move" safety net (ISS-3669 / #4548).
       invalidateIssueDerivatives(qc, wsId, {
         statusOrProjectChanged:
           _vars.updates.status !== undefined ||
@@ -1133,7 +1133,7 @@ export function useToggleIssueSubscriber(issueId: string) {
 }
 
 /**
- * Leave an issue AND its whole sub-tree (MUL-5483). Not optimistic: it writes
+ * Leave an issue AND its whole sub-tree (ISS-5483). Not optimistic: it writes
  * to an unknown number of other issues' subscriber lists, so there is nothing
  * determinate to patch — invalidate every subscriber query instead and let the
  * server be the source of truth.

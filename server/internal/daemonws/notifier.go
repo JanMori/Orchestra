@@ -5,7 +5,7 @@ import (
 
 	"github.com/oklog/ulid/v2"
 
-	"github.com/multica-ai/multica/server/internal/realtime"
+	"github.com/JanMori/Orchestra/server/internal/realtime"
 )
 
 // RelayNotifier sends daemon wakeup hints to the local daemon hub and, when
@@ -102,7 +102,7 @@ func (n *RelayNotifier) NotifyWorkspacesChanged(userID string) {
 
 // NotifyPendingWork fans a runtime-scoped "heartbeat now" hint out to the local
 // hub and, when Redis is configured, through the relay so the API node that
-// actually holds the daemon's WebSocket delivers it (MUL-5444). Shard key is the
+// actually holds the daemon's WebSocket delivers it (ISS-5444). Shard key is the
 // runtime ID: hints for one runtime stay ordered relative to each other, and a
 // dropped hint only costs the daemon its normal heartbeat delay.
 func (n *RelayNotifier) NotifyPendingWork(runtimeID, kind string) {

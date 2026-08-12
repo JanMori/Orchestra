@@ -18,8 +18,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/multica-ai/multica/server/internal/cli"
-	"github.com/multica-ai/multica/server/internal/util"
+	"github.com/JanMori/Orchestra/server/internal/cli"
+	"github.com/JanMori/Orchestra/server/internal/util"
 )
 
 // resolveTextFlag picks between a `--<name>` inline value, a `--<name>-stdin`
@@ -93,7 +93,7 @@ func resolveTextFlag(cmd *cobra.Command, flagName string) (string, bool, error) 
 // outside the current working directory, unless --allow-external-file is set.
 //
 // Agent task workdirs are isolated per profile and per task; machine-shared
-// scratch paths like /tmp are not. MUL-4252 traced a cross-environment context
+// scratch paths like /tmp are not. ISS-4252 traced a cross-environment context
 // leak to exactly this gap: a quick-create run wrote its description to a fixed
 // /tmp/desc.md, the write silently failed because a *different* environment's
 // run had left a stale file there minutes earlier, and --description-file then
@@ -472,7 +472,7 @@ func init() {
 	issueCreateCmd.Flags().String("description", "", "Issue description (decodes \\n, \\r, \\t, \\\\; pipe via --description-stdin to preserve literal backslashes)")
 	issueCreateCmd.Flags().Bool("description-stdin", false, "Read issue description from stdin (preserves multi-line content verbatim)")
 	issueCreateCmd.Flags().String("description-file", "", "Read issue description from a UTF-8 file (preserves multi-line content verbatim; use this on Windows when stdin piping mangles non-ASCII bytes). The path must be inside the current working directory unless --allow-external-file is set.")
-	issueCreateCmd.Flags().Bool("allow-external-file", false, "Allow --description-file / --attachment to read a path outside the current working directory. Off by default so a stale file from another run/environment can't be picked up (MUL-4252).")
+	issueCreateCmd.Flags().Bool("allow-external-file", false, "Allow --description-file / --attachment to read a path outside the current working directory. Off by default so a stale file from another run/environment can't be picked up (ISS-4252).")
 	issueCreateCmd.Flags().String("status", "", "Issue status")
 	issueCreateCmd.Flags().String("priority", "", "Issue priority")
 	issueCreateCmd.Flags().String("assignee", "", "Assignee name (member, agent, or crew; fuzzy match)")
@@ -492,7 +492,7 @@ func init() {
 	issueUpdateCmd.Flags().String("description", "", "New description (decodes \\n, \\r, \\t, \\\\; pipe via --description-stdin to preserve literal backslashes)")
 	issueUpdateCmd.Flags().Bool("description-stdin", false, "Read new description from stdin (preserves multi-line content verbatim)")
 	issueUpdateCmd.Flags().String("description-file", "", "Read new description from a UTF-8 file (preserves multi-line content verbatim; use this on Windows when stdin piping mangles non-ASCII bytes). The path must be inside the current working directory unless --allow-external-file is set.")
-	issueUpdateCmd.Flags().Bool("allow-external-file", false, "Allow --description-file to read a path outside the current working directory. Off by default so a stale temp file from another run/environment can't be picked up (MUL-4252).")
+	issueUpdateCmd.Flags().Bool("allow-external-file", false, "Allow --description-file to read a path outside the current working directory. Off by default so a stale temp file from another run/environment can't be picked up (ISS-4252).")
 	issueUpdateCmd.Flags().String("status", "", "New status")
 	issueUpdateCmd.Flags().String("priority", "", "New priority")
 	issueUpdateCmd.Flags().String("assignee", "", "New assignee name (member, agent, or crew; fuzzy match)")
@@ -550,7 +550,7 @@ func init() {
 	issueCommentAddCmd.Flags().String("content", "", "Comment content (decodes \\n, \\r, \\t, \\\\; pipe via --content-stdin for multi-line bodies or to preserve literal backslashes)")
 	issueCommentAddCmd.Flags().Bool("content-stdin", false, "Read comment content from stdin (preserves multi-line content verbatim)")
 	issueCommentAddCmd.Flags().String("content-file", "", "Read comment content from a UTF-8 file (preserves multi-line content verbatim; use this on Windows when stdin piping mangles non-ASCII bytes). The path must be inside the current working directory unless --allow-external-file is set.")
-	issueCommentAddCmd.Flags().Bool("allow-external-file", false, "Allow --content-file / --attachment to read a path outside the current working directory. Off by default so a stale file from another run/environment can't be picked up (MUL-4252).")
+	issueCommentAddCmd.Flags().Bool("allow-external-file", false, "Allow --content-file / --attachment to read a path outside the current working directory. Off by default so a stale file from another run/environment can't be picked up (ISS-4252).")
 	issueCommentAddCmd.Flags().String("parent", "", "Parent comment ID to reply under. A comment-triggered agent task must reply under its trigger comment; omitting --parent to post a top-level comment is rejected")
 	issueCommentAddCmd.Flags().StringSlice("attachment", nil, "File path(s) to attach (can be specified multiple times)")
 	issueCommentAddCmd.Flags().String("output", "json", "Output format: table or json")
@@ -972,7 +972,7 @@ func isHTTPURL(path string) bool {
 }
 
 // ensureAttachmentWithinWorkdir applies the same workdir containment guard as
-// --description-file / --content-file (MUL-4252) to a local --attachment path.
+// --description-file / --content-file (ISS-4252) to a local --attachment path.
 // An agent that writes a chart/report to a machine-shared path like /tmp and
 // then attaches it could otherwise pick up another run's — possibly another
 // workspace's — stale file (the image version of the /tmp/desc.md leak). URL
@@ -1006,7 +1006,7 @@ type pendingAttachment struct {
 
 // collectLocalAttachments validates and reads ALL local --attachment paths up
 // front, before any upload. URL-shaped values are warned and skipped (the API
-// only accepts local paths). Each remaining path is run through the MUL-4252
+// only accepts local paths). Each remaining path is run through the ISS-4252
 // workdir guard and read into memory; the first invalid or unreadable path
 // returns an error with nothing uploaded. Both `issue create` and
 // `comment add` share this so an invalid attachment can never leave an earlier
@@ -1966,7 +1966,7 @@ func runIssueCommentAdd(cmd *cobra.Command, args []string) error {
 	// everything up front means a later invalid path (external / symlink escape
 	// caught by the workdir guard) aborts the call with ZERO uploads, instead
 	// of leaving an earlier file uploaded as an orphaned issue attachment while
-	// the comment is never posted (which would duplicate on retry — MUL-4252).
+	// the comment is never posted (which would duplicate on retry — ISS-4252).
 	pending, err := collectLocalAttachments(cmd, attachments)
 	if err != nil {
 		return err
@@ -2474,7 +2474,7 @@ type assigneeMatch struct {
 // (`memberOrAgentKinds`) — the DB CHECK on `project.lead_type` and the
 // `isWorkspaceEntity` switch in the subscriber handler both reject `crew`,
 // so resolving to (crew, ...) for those callers would surface as a 500 /
-// 403 instead of a clean CLI-side resolution error (MUL-2165 follow-up).
+// 403 instead of a clean CLI-side resolution error (ISS-2165 follow-up).
 type assigneeKinds struct {
 	member, agent, crew bool
 }
@@ -2605,7 +2605,7 @@ func resolveAssignee(ctx context.Context, client *cli.APIClient, name string, ki
 	// (the leader agent then coordinates delegation), so crew names must
 	// resolve here too for issue-assignee callers — otherwise a user saying
 	// "assign to <CrewName>" silently falls through and the autopilot
-	// prompt emits "Unrecognized assignee: <CrewName>" (MUL-2165). Callers
+	// prompt emits "Unrecognized assignee: <CrewName>" (ISS-2165). Callers
 	// whose target schema is member-or-agent only (project lead, subscriber)
 	// must opt out via `kinds.crew = false`.
 	if kinds.crew {

@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // crewOperatingProtocolHeader is the hard-coded system-level briefing
@@ -93,7 +93,7 @@ const crewParentStatusOwned = `6. **Own the parent issue status.** This issue is
    existing integrations (for example a PR with close intent that merges).`
 
 // crewParentStatusNotOwned is responsibility 6 for every other leader path:
-// an @crew mention on an issue owned by someone else (MUL-3724), and
+// an @crew mention on an issue owned by someone else (ISS-3724), and
 // quick-create, where no issue exists yet on this turn. Granting status
 // ownership there would let a crew that was merely pulled in to answer a
 // question push another assignee's in-flight issue to in_review.

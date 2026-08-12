@@ -24,7 +24,7 @@ import (
 // to fall back to `sandbox_mode = "danger-full-access"` so the agent can
 // actually reach the Multica API.
 //
-// Linux runs danger-full-access as a deliberate product decision (MUL-5578,
+// Linux runs danger-full-access as a deliberate product decision (ISS-5578,
 // #6218), not as a compatibility fallback — see codexSandboxPolicyFor.
 //
 // CodexDarwinNetworkAccessFixedVersion is the earliest Codex CLI version in
@@ -76,7 +76,7 @@ func resolveGOOS(goos string) string {
 //     the real HOME were readable and exfiltratable regardless. The task
 //     filesystem boundary is therefore the boundary the daemon itself runs
 //     inside (VM, container, or dedicated Unix user), matching macOS/Windows.
-//     See MUL-5578 / #6218, and apps/docs security-model.
+//     See ISS-5578 / #6218, and apps/docs security-model.
 //   - Windows: danger-full-access, as a deliberate compatibility choice.
 //     Codex ships a native Windows sandbox (windows.sandbox = "unelevated" via
 //     a Restricted Token, or "elevated"), but it is still experimental with
@@ -87,7 +87,7 @@ func resolveGOOS(goos string) string {
 //     create` fails — because under approval_policy = "never" the request never
 //     reaches the daemon's auto-approver. danger-full-access sidesteps that.
 //     Enabling the native sandbox is tracked as separate follow-up work. See
-//     MUL-4957. A user who has opted into windows.sandbox (via config.toml or a
+//     ISS-4957. A user who has opted into windows.sandbox (via config.toml or a
 //     `-c` custom arg) keeps workspace-write instead of this fallback, and an
 //     undecidable config fails closed; that logic lives in
 //     codexSandboxPolicyForConfig / resolveWindowsSandboxState.
@@ -102,13 +102,13 @@ func codexSandboxPolicyFor(goos, detectedVersion string) codexSandboxPolicy {
 	if goos == "windows" {
 		return codexSandboxPolicy{
 			Mode:   "danger-full-access",
-			Reason: "codex on windows: compatibility fallback; no native windows.sandbox configured, so workspace-write cannot be enforced (MUL-4957)",
+			Reason: "codex on windows: compatibility fallback; no native windows.sandbox configured, so workspace-write cannot be enforced (ISS-4957)",
 		}
 	}
 	if goos != "darwin" {
 		return codexSandboxPolicy{
 			Mode:   "danger-full-access",
-			Reason: "codex on " + goos + ": tasks run with the daemon user's real HOME and full filesystem access; isolation comes from the boundary the daemon runs inside (MUL-5578)",
+			Reason: "codex on " + goos + ": tasks run with the daemon user's real HOME and full filesystem access; isolation comes from the boundary the daemon runs inside (ISS-5578)",
 			Hint:   codexLinuxIsolationHint(),
 		}
 	}
@@ -134,7 +134,7 @@ func codexSandboxPolicyFor(goos, detectedVersion string) codexSandboxPolicy {
 // windowsSandboxConfig is the tri-state of a native Codex Windows sandbox
 // selection. It is three-valued (not a bool) so an undecidable config fails
 // closed — the daemon never loosens to danger-full-access when it cannot
-// confirm the user's intent. See MUL-4957.
+// confirm the user's intent. See ISS-4957.
 type windowsSandboxConfig int
 
 const (
@@ -155,7 +155,7 @@ const (
 // native-sandbox state (see resolveWindowsSandboxState): a user who opted into
 // windows.sandbox keeps workspace-write, an undecidable config fails closed to
 // workspace-write, and only a confidently absent sandbox gets the
-// danger-full-access compatibility fallback. See MUL-4957.
+// danger-full-access compatibility fallback. See ISS-4957.
 //
 // This is intentionally the branch point for the eventual native-sandbox
 // rollout: flipping the Windows default later means writing windows.sandbox
@@ -186,12 +186,12 @@ func codexSandboxPolicyForWindows(state windowsSandboxConfig) codexSandboxPolicy
 		return codexSandboxPolicy{
 			Mode:          "workspace-write",
 			NetworkAccess: true,
-			Reason:        "codex on windows: windows.sandbox config undecidable (unreadable/unparseable/invalid); failing closed to workspace-write rather than loosening (MUL-4957)",
+			Reason:        "codex on windows: windows.sandbox config undecidable (unreadable/unparseable/invalid); failing closed to workspace-write rather than loosening (ISS-4957)",
 		}
 	default: // windowsSandboxAbsent
 		return codexSandboxPolicy{
 			Mode:   "danger-full-access",
-			Reason: "codex on windows: compatibility fallback; no native windows.sandbox configured (MUL-4957)",
+			Reason: "codex on windows: compatibility fallback; no native windows.sandbox configured (ISS-4957)",
 		}
 	}
 }
@@ -223,7 +223,7 @@ var codexWindowsSandboxOverrideRe = regexp.MustCompile(`^\s*windows\s*\.\s*sandb
 // windowsSandboxFromCustomArgs classifies a native Windows sandbox selection
 // passed via Codex `-c windows.sandbox=...` / `--config windows.sandbox=...`
 // args. These never land in config.toml (they stay in argv and are applied on
-// top of it), so config-only detection would miss them — the MUL-4957 review's
+// top of it), so config-only detection would miss them — the ISS-4957 review's
 // second must-fix. Mirrors the override-parsing shape in server/pkg/agent's
 // buildCodexArgs: inline (`-c=windows.sandbox=x`) and two-token
 // (`-c windows.sandbox=x`) forms, last occurrence winning (Codex is last-wins).

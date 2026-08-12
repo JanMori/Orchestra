@@ -1,18 +1,18 @@
 {
   "name": "@orchestra/desktop",
-  "productName": "Multica",
+  "productName": "Orchestra",
   "version": "0.1.0",
   "private": true,
-  "description": "Multica Desktop — native desktop client for the Multica platform.",
-  "homepage": "https://multica.ai",
+  "description": "Orchestra Desktop — native desktop client for the Orchestra platform.",
+  "homepage": "https://github.com/JanMori/Orchestra",
   "repository": {
     "type": "git",
-    "url": "https://github.com/multica-ai/multica.git",
+    "url": "https://github.com/JanMori/Orchestra.git",
     "directory": "apps/desktop"
   },
   "author": {
-    "name": "Multica",
-    "email": "support@multica.ai"
+    "name": "Orchestra",
+    "email": "support@orchestra.local"
   },
   "license": "SEE LICENSE IN ../../LICENSE",
   "main": "./out/main/index.js",

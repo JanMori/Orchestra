@@ -21,7 +21,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/multica-ai/multica/server/internal/selfexec"
+	"github.com/JanMori/Orchestra/server/internal/selfexec"
 )
 
 // ChecksumManifestName is the asset name GoReleaser publishes for the

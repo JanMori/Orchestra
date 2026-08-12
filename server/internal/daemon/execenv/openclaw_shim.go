@@ -81,7 +81,7 @@ func findOpenclawShimInterpreter(shimPath string) openclawInterpreterOrigin {
 // openclawShimDiagnostic explains a batch-shim invocation that failed without
 // writing anything to stderr, and returns "" when it has nothing to add.
 //
-// Why this exists (MUL-5422 / #6061): a Windows user reported every OpenClaw
+// Why this exists (ISS-5422 / #6061): a Windows user reported every OpenClaw
 // task failing in execenv prep with a bare `exit status 1` and no stderr. The
 // daemon pins `openclaw` to an absolute path, so the failing command looked
 // correct; what the error could not show is that a shim's interpreter lookup is

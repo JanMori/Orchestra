@@ -17,14 +17,14 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/auth"
-	"github.com/multica-ai/multica/server/internal/storage"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/auth"
+	"github.com/JanMori/Orchestra/server/internal/storage"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // ---------------------------------------------------------------------------
-// Avatar URLs (MUL-5393 / #6024)
+// Avatar URLs (ISS-5393 / #6024)
 // ---------------------------------------------------------------------------
 //
 // `avatar_url` columns (user / agent / crew / workspace) store the raw
@@ -43,7 +43,7 @@ import (
 //
 //   - What is PERSISTED stays the durable object reference (the raw storage
 //     URL). Nothing with a TTL is ever written to the database — that is the
-//     MUL-3130 regression this deliberately avoids — and avatars already
+//     ISS-3130 regression this deliberately avoids — and avatars already
 //     saved by an older build are fixed without a backfill.
 //   - What is SERVED is `/api/avatars/<sig>/<key>`, a stable URL this server
 //     resolves per request into a presigned redirect (or a proxied body)

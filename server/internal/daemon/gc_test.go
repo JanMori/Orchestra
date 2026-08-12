@@ -14,8 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/internal/daemon/execenv"
-	"github.com/multica-ai/multica/server/internal/daemon/repocache"
+	"github.com/JanMori/Orchestra/server/internal/daemon/execenv"
+	"github.com/JanMori/Orchestra/server/internal/daemon/repocache"
 )
 
 // newGCTestDaemon creates a minimal Daemon for GC testing with a mock HTTP server.

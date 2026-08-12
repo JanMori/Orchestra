@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
-// Agent invocation permission model (MUL-3963).
+// Agent invocation permission model (ISS-3963).
 //
 // Two distinct questions, previously conflated in canAccessPrivateAgent:
 //
@@ -71,7 +71,7 @@ func (h *Handler) canInvokeAgent(ctx context.Context, agent db.Agent, actorType,
 
 	// Agents and system triggers are workspace-internal principals: a
 	// workspace target admits them even when no human originator resolved.
-	// This is a DELIBERATE, product-approved exception (MUL-3963): webhook /
+	// This is a DELIBERATE, product-approved exception (ISS-3963): webhook /
 	// system / workspace-wide automation must be able to trigger a
 	// `public_to workspace` agent even though there is no human at the top of
 	// the chain. It is scoped tightly — it ONLY relaxes the *workspace* target.
@@ -202,10 +202,10 @@ func (h *Handler) invokeOriginatorFromRequest(r *http.Request, actorType, actorI
 // autopilotDelegationAuthority resolves the effective invoking human for the A2A
 // invoke gate (canInvokeAgent) when a trigger comment is authored by an
 // UNATTRIBUTED autopilot dispatch delegating mid-chain on the very issue that
-// autopilot created (MUL-4857).
+// autopilot created (ISS-4857).
 //
 // A schedule/webhook autopilot run carries no top-of-chain human originator by
-// design (MUL-4302). Without one, canInvokeAgent fails closed for the DEFAULT
+// design (ISS-4302). Without one, canInvokeAgent fails closed for the DEFAULT
 // private agent (and member-scoped public_to agents), so a mid-run @mention
 // delegation silently enqueues nothing — even though the SAME autopilot's first
 // dispatch was admitted via the autopilot creator (autopilotAdmitInvoke ->
@@ -213,7 +213,7 @@ func (h *Handler) invokeOriginatorFromRequest(r *http.Request, actorType, actorI
 // the mid-run delegation path: the gate still runs, now keyed on the autopilot
 // creator, so NO unrestricted agent-to-agent bypass is reopened.
 //
-// SECURITY (confused-deputy defense, review MUL-4857): the creator's authority is
+// SECURITY (confused-deputy defense, review ISS-4857): the creator's authority is
 // granted ONLY when the SPEAKING run is verified to be doing work on THIS very
 // autopilot-created issue. Binding to issue provenance + an empty originator alone
 // is NOT enough — an agent running a task on some OTHER issue can legitimately
@@ -267,7 +267,7 @@ func (h *Handler) autopilotDelegationAuthority(ctx context.Context, issue db.Iss
 	return uuidToString(ap.CreatedByID)
 }
 
-// autopilotDelegationAuthorityFromRequest resolves the MUL-4857 delegation
+// autopilotDelegationAuthorityFromRequest resolves the ISS-4857 delegation
 // authority for a comment being created or previewed over HTTP. The speaking task
 // is taken from the server-trusted X-Task-ID header (the CLI stamps it on every
 // agent request); autopilotDelegationAuthority then verifies its lineage. Returns
@@ -283,7 +283,7 @@ func (h *Handler) autopilotDelegationAuthorityFromRequest(r *http.Request, issue
 	return h.autopilotDelegationAuthority(r.Context(), issue, actorType, actorID, task)
 }
 
-// autopilotDelegationAuthorityFromComment resolves the MUL-4857 delegation
+// autopilotDelegationAuthorityFromComment resolves the ISS-4857 delegation
 // authority when reconciling an already-persisted comment (retrigger after
 // cancel). The speaking task is taken from the stored comment.source_task_id — the
 // same server-trusted lineage CreateComment stamped for the authoring run — and
@@ -304,7 +304,7 @@ func (h *Handler) autopilotDelegationAuthorityFromComment(ctx context.Context, i
 // UUID. This is the exact issue-scoped lineage CreateComment stamps onto
 // source_task_id; a cross-issue (or missing) task yields invalid so the persisted
 // lineage — and every authority/originator resolution that reads it — fails closed
-// (MUL-4857).
+// (ISS-4857).
 func (h *Handler) commentSourceTaskIDForIssue(r *http.Request, issue db.Issue) pgtype.UUID {
 	task, ok := h.taskFromRequestHeader(r)
 	if !ok || !task.IssueID.Valid || uuidToString(task.IssueID) != uuidToString(issue.ID) {

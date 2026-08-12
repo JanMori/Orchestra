@@ -108,10 +108,10 @@ func systemCommentOn(t *testing.T, issueID string) (content, authorIDStr string,
 // child transitioning from a non-done status into `done` while its parent is
 // open must produce exactly one top-level platform-generated comment on the
 // parent. The comment must reference the child by its workspace-specific
-// identifier (NOT a hardcoded `MUL-` prefix — that was the bug PR #2918
+// identifier (NOT a hardcoded `ISS-` prefix — that was the bug PR #2918
 // review called out). When the parent has no assignee, the body must NOT
 // carry any agent/member/crew mention either; the assignee-mention is the
-// only mention we ever inject (see MUL-2538 Option C — covered separately
+// only mention we ever inject (see ISS-2538 Option C — covered separately
 // in TestChildDoneMentionsParentAssignee_* below).
 func TestChildDoneNotifiesParent(t *testing.T) {
 	fx := newChildDoneFixture(t, "in_progress")
@@ -134,12 +134,12 @@ func TestChildDoneNotifiesParent(t *testing.T) {
 	}
 
 	// Identifier substring must use the real workspace prefix (HAN-, seeded
-	// in TestMain), never MUL-.
+	// in TestMain), never ISS-.
 	if !strings.Contains(content, fx.child.Identifier) {
 		t.Errorf("expected comment to contain child identifier %q, got: %s", fx.child.Identifier, content)
 	}
-	if strings.Contains(content, "MUL-") {
-		t.Errorf("comment must not hardcode MUL- prefix, got: %s", content)
+	if strings.Contains(content, "ISS-") {
+		t.Errorf("comment must not hardcode ISS- prefix, got: %s", content)
 	}
 
 	// The comment must contain the safe issue mention. With no parent
@@ -175,7 +175,7 @@ func TestChildDoneNotificationIsIdempotent(t *testing.T) {
 
 // TestChildReopenAndDoneFiresAgain — done → in_progress → done IS a real
 // new completion event and should produce a second notification. This
-// captures the "reopen + done counts as a new event" line from MUL-2538.
+// captures the "reopen + done counts as a new event" line from ISS-2538.
 func TestChildReopenAndDoneFiresAgain(t *testing.T) {
 	fx := newChildDoneFixture(t, "in_progress")
 
@@ -216,7 +216,7 @@ func TestChildDoneSkippedWhenParentCancelled(t *testing.T) {
 // `backlog` must not be woken when a child completes. Waking it would
 // re-activate the parent assignee, which can then promote sibling backlog
 // sub-issues into todo — the surprise auto-activation reported in #4320 /
-// MUL-3497. No system comment, no trigger, until the user explicitly moves
+// ISS-3497. No system comment, no trigger, until the user explicitly moves
 // the parent out of backlog.
 func TestChildDoneSkippedWhenParentBacklog(t *testing.T) {
 	fx := newChildDoneFixture(t, "backlog")
@@ -308,7 +308,7 @@ func countInboxItems(t *testing.T, recipientUserID, issueID string) int {
 	return n
 }
 
-// TestChildDoneMentionsParentAssignee_Agent verifies the MUL-2538 Option C
+// TestChildDoneMentionsParentAssignee_Agent verifies the ISS-2538 Option C
 // happy path for an agent parent assignee: the system comment carries a
 // `mention://agent/<id>` link AND a real mention-style task is enqueued on
 // the parent. The trigger fires through TaskService.EnqueueTaskForMention,
@@ -342,7 +342,7 @@ func TestChildDoneMentionsParentAssignee_Agent(t *testing.T) {
 	}
 }
 
-// TestChildDoneSkippedWhenParentMember verifies the MUL-2538 follow-up: a
+// TestChildDoneSkippedWhenParentMember verifies the ISS-2538 follow-up: a
 // human parent assignee should NOT receive the platform-generated system
 // comment at all. Humans read their own timeline manually; the automated
 // notification is pure noise and skipping it also removes the question of
@@ -406,7 +406,7 @@ func TestChildDoneMentionsParentAssignee_Crew(t *testing.T) {
 
 // TestChildDoneTriggersParentAgentWhenSameAgentOwnsChild — when the parent
 // agent assignee is the SAME agent that owns the just-finished child, the
-// parent agent must still be triggered (MUL-2808). A child finishing and
+// parent agent must still be triggered (ISS-2808). A child finishing and
 // waking its parent is a serial sub-task handoff between two different
 // issues, not a self-loop — and the lone-agent decomposition pattern (one
 // agent owns both the parent and the sub-issues it created) has no other
@@ -448,10 +448,10 @@ func TestChildDoneTriggersParentAgentWhenSameAgentOwnsChild(t *testing.T) {
 // TestChildDoneTriggersParentAgentWhenChildCrewSharesLeader — parent is
 // assigned to agent A directly; the finished child is assigned to a crew
 // whose leader is also agent A. Because the parent is an AGENT, dispatch
-// routes through the agent path, which (post-MUL-2808) has no self-trigger
+// routes through the agent path, which (post-ISS-2808) has no self-trigger
 // guard: A coordinates the parent and must be woken to advance it when the
 // child completes, regardless of who executed the child. The crew path now
-// behaves identically: MUL-3969 removed its old same-crew / shared-leader
+// behaves identically: ISS-3969 removed its old same-crew / shared-leader
 // guards, so BOTH sides being crews that share a leader also wakes the leader
 // (see TestChildDoneWakesLeaderWhenParentAndChildCrewsShareLeader).
 func TestChildDoneTriggersParentAgentWhenChildCrewSharesLeader(t *testing.T) {
@@ -482,7 +482,7 @@ func TestChildDoneTriggersParentAgentWhenChildCrewSharesLeader(t *testing.T) {
 // shared-leader case. Parent is crew A, child is crew B, both crews have
 // the same leader agent. The crew path used to suppress the leader wake here
 // (effectiveChildAgentOwner reduced both sides to the shared leader), but that
-// guard was removed in MUL-3969: waking the leader on the PARENT is a serial
+// guard was removed in ISS-3969: waking the leader on the PARENT is a serial
 // sub-task handoff across two DIFFERENT issues, not a self-loop, and it is the
 // only signal that carries the parent-level stage-barrier instruction. The
 // leader must now be woken exactly once; runaway re-triggering is bounded by
@@ -521,11 +521,11 @@ func TestChildDoneWakesLeaderWhenParentAndChildCrewsShareLeader(t *testing.T) {
 		t.Errorf("expected parent-crew mention in system comment, got: %s", content)
 	}
 	if got := countPendingTasksForAgent(t, fx.parent.ID, parentCrew.LeaderID); got != 1 {
-		t.Errorf("expected 1 pending leader task on parent (shared-leader guard removed, MUL-3969), got %d", got)
+		t.Errorf("expected 1 pending leader task on parent (shared-leader guard removed, ISS-3969), got %d", got)
 	}
 }
 
-// TestChildDoneWakesLeaderWhenChildIsSameCrew — the MUL-3969 repro. Parent
+// TestChildDoneWakesLeaderWhenChildIsSameCrew — the ISS-3969 repro. Parent
 // and the just-finished child are BOTH assigned to the same crew (the common
 // "a crew decomposes its parent into sub-issues it works itself" pattern).
 // The old same-crew guard suppressed the leader wake, so the stage-barrier
@@ -551,12 +551,12 @@ func TestChildDoneWakesLeaderWhenChildIsSameCrew(t *testing.T) {
 		t.Errorf("expected parent-crew mention in system comment, got: %s", content)
 	}
 	if got := countPendingTasksForAgent(t, fx.parent.ID, sq.LeaderID); got != 1 {
-		t.Errorf("expected 1 pending leader task for same-crew child (MUL-3969), got %d", got)
+		t.Errorf("expected 1 pending leader task for same-crew child (ISS-3969), got %d", got)
 	}
 }
 
 // TestStageLeaderPrepareTimeoutRetryCanAdvanceNextStage covers the full server
-// half of MUL-4923's recovery chain: a stage barrier wakes the crew leader,
+// half of ISS-4923's recovery chain: a stage barrier wakes the crew leader,
 // the pre-start attempt fails with the daemon's timeout reason, the atomic
 // retry preserves leader/crew/trigger provenance, and that retry can promote
 // the parked next stage as the leader actor.

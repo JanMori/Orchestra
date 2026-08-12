@@ -8,13 +8,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // TestCanManageAgentEnv_Pure exercises the predicate behind the env
 // endpoints without a database. Ownership must count for a plain member
-// (MUL-5438), workspace owner/admin must keep working, and a NULL
+// (ISS-5438), workspace owner/admin must keep working, and a NULL
 // agent.owner_id must never match anyone: the column is nullable and
 // uuidToString renders a NULL UUID as "".
 func TestCanManageAgentEnv_Pure(t *testing.T) {
@@ -69,7 +69,7 @@ func agentEnvOwnerFixture(t *testing.T, agentName, email string) (agentID, owner
 	return agentID, ownerUserID
 }
 
-// TestAgentEnv_AgentOwnerMemberCanRevealAndUpdate is the MUL-5438 fix:
+// TestAgentEnv_AgentOwnerMemberCanRevealAndUpdate is the ISS-5438 fix:
 // the human who owns an agent can reveal and rotate its env even with a
 // plain `member` workspace role. The audit assertions come along because
 // the reveal/update trail must keep naming the real human operator and
@@ -135,7 +135,7 @@ func TestAgentEnv_AgentOwnerMemberCanRevealAndUpdate(t *testing.T) {
 }
 
 // TestAgentEnv_UnrelatedMemberForbidden keeps the blast radius of
-// MUL-5438 at exactly one agent: ownership, not membership, is what
+// ISS-5438 at exactly one agent: ownership, not membership, is what
 // opens the endpoint. A member who owns some other agent still gets 403
 // on this one.
 func TestAgentEnv_UnrelatedMemberForbidden(t *testing.T) {
@@ -208,7 +208,7 @@ func TestAgentEnv_WorkspaceRolesUnchanged(t *testing.T) {
 	}
 }
 
-// TestAgentEnv_AgentActorRejectedForOwnedAgent is the boundary MUL-5438
+// TestAgentEnv_AgentActorRejectedForOwnedAgent is the boundary ISS-5438
 // must not widen. TestAgentEnv_AgentActorRejected already covers an agent
 // backed by a workspace owner; this covers the new shape the fix creates —
 // an agent whose backing human is the target agent's own owner. The actor

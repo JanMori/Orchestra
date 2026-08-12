@@ -49,7 +49,7 @@ interface RunConfirmData {
   issueIds?: string[];
   // Assign is the only mode: agent/crew assignment is the sole issue write that
   // needs the pre-trigger confirmation. Batch status changes apply directly now
-  // (MUL-4155), so there is no "status" mode.
+  // (ISS-4155), so there is no "status" mode.
   mode?: "assign";
   assigneeType?: IssueAssigneeType;
   assigneeId?: string;
@@ -60,7 +60,7 @@ interface RunConfirmData {
  * Assignment confirmation for issues that may start agent runs.
  *
  * The rule is "dialog = you are confirming an assignment", NOT "you are
- * confirming N runs" (MUL-5010). It therefore does no pre-flight prediction:
+ * confirming N runs" (ISS-5010). It therefore does no pre-flight prediction:
  * opening it fires no request, so the note box and buttons are usable on the
  * first frame. Previously it called POST /api/issues/preview-trigger on open
  * and blocked the whole dialog behind a "检查中…" spinner; because that query is
@@ -127,7 +127,7 @@ export function RunConfirmModal({
   }, [d.assigneeType, d.assigneeId, agents, runtimes, crews]);
 
   // Soft gate: an old runtime can't render the note. Disable the box but let
-  // the assignment proceed (MUL-3375 §6.3).
+  // the assignment proceed (ISS-3375 §6.3).
   const noteDisabled = localHandoff === false;
 
   const applyTo = (extra: Partial<UpdateIssueRequest>) => {
@@ -170,7 +170,7 @@ export function RunConfirmModal({
 
   /**
    * The configured `send` chord confirms the assignment, the same chord that
-   * creates from the issue composer (MUL-5694).
+   * creates from the issue composer (ISS-5694).
    *
    * Bound on the dialog, not on the note box, because the chord means "run the
    * primary action" no matter which control has focus — and the note box is

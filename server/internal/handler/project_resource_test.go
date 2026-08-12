@@ -243,7 +243,7 @@ func TestIsValidGitRepoURL(t *testing.T) {
 }
 
 // TestProjectResourceLocalDirectoryLifecycle covers the full CRUD path for the
-// local_directory resource type added in MUL-2662. Unlike github_repo, the
+// local_directory resource type added in ISS-2662. Unlike github_repo, the
 // ref schema requires local_path + daemon_id and forbids any path that isn't
 // absolute. Two project-scoped resources pointing at the same daemon_id /
 // local_path on different projects must be allowed — Bohan explicitly chose
@@ -696,7 +696,7 @@ func TestCreateProjectRollsBackOnInvalidResource(t *testing.T) {
 	}
 }
 
-// TestProjectResourceUpdateLifecycle covers the PUT endpoint added in MUL-2662:
+// TestProjectResourceUpdateLifecycle covers the PUT endpoint added in ISS-2662:
 // editing label / position / resource_ref independently must succeed, and a
 // missing resource_type swap is enforced implicitly because the request body
 // has no resource_type field.

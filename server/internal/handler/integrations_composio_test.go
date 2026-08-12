@@ -13,10 +13,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	composio "github.com/multica-ai/multica/server/internal/integrations/composio"
-	"github.com/multica-ai/multica/server/internal/util"
-	sdk "github.com/multica-ai/multica/server/pkg/composio"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	composio "github.com/JanMori/Orchestra/server/internal/integrations/composio"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	sdk "github.com/JanMori/Orchestra/server/pkg/composio"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 const composioTestUserID = "22222222-2222-2222-2222-222222222222"
@@ -139,8 +139,8 @@ func newComposioTestHandler(t *testing.T, sdkFake composio.SDK, store composio.S
 	t.Helper()
 	svc, err := composio.NewService(sdkFake, store, composio.Config{
 		StateSecret:     []byte("handler-test-secret"),
-		CallbackBaseURL: "https://multica.ai",
-		FrontendBaseURL: "https://multica.ai",
+		CallbackBaseURL: "http://localhost:5001",
+		FrontendBaseURL: "http://localhost:5001",
 	})
 	if err != nil {
 		t.Fatalf("NewService: %v", err)
@@ -232,7 +232,7 @@ func TestComposio_ListToolkits(t *testing.T) {
 		t.Fatalf("decode: %v", err)
 	}
 	// Only notion has an enabled auth config; github is filtered out server-side
-	// (MUL-4009), so a single connectable toolkit comes back.
+	// (ISS-4009), so a single connectable toolkit comes back.
 	if len(toolkits) != 1 {
 		t.Fatalf("expected 1 toolkit, got %d (%s)", len(toolkits), w.Body.String())
 	}
@@ -250,7 +250,7 @@ func TestComposio_ListToolkits(t *testing.T) {
 }
 
 // TestComposio_ListToolkits_ResolverErrorIs502 pins the key behavior of this
-// PR (MUL-4009): when the service can't resolve which toolkits are connectable
+// PR (ISS-4009): when the service can't resolve which toolkits are connectable
 // (auth-config lookup fails), ListComposioToolkits must return 502 rather than
 // silently degrading to an empty catalog. A regression back to a soft empty
 // list would render as a misleading "no apps configured" state.

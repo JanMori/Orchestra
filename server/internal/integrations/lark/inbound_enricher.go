@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/multica-ai/multica/server/internal/integrations/channel/engine"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel/engine"
 )
 
 // larkMsgTypeMergeForward is the msg_type of a "merged & forwarded"
@@ -123,7 +123,7 @@ func NewInboundEnricher(client APIClient, cfg InboundEnricherConfig) Enricher {
 //
 // The <recent_context> block is only produced for a group message
 // addressed to the Bot, and only when RecentContextSize > 0 — it answers
-// MUL-3084 (the Bot saw only the single @-ed line, never the surrounding
+// ISS-3084 (the Bot saw only the single @-ed line, never the surrounding
 // conversation). It is the one fetch here NOT triggered by something the
 // user explicitly attached. When the @-mention arrives inside a Lark topic
 // (话题) the window is scoped to that topic, so a topic's context never
@@ -142,8 +142,8 @@ func NewInboundEnricher(client APIClient, cfg InboundEnricherConfig) Enricher {
 // is persisted into the addressed turn's chat_message.content downstream
 // (AppendUserMessage). Inlining nearby group messages — including ones
 // from senders who did not address the Bot — into a member's addressed
-// turn is an accepted product decision for MUL-3084. It does NOT relax
-// the MUL-2671 drop-audit invariant: a non-addressed group message still
+// turn is an accepted product decision for ISS-3084. It does NOT relax
+// the ISS-2671 drop-audit invariant: a non-addressed group message still
 // never creates its own session row, and is only ever surfaced as read-
 // context attached to a turn a workspace member explicitly directed at
 // the Bot.

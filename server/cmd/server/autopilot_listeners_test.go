@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/service"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 func TestAutopilotRunOnlyTaskTerminalEventsUpdateRun(t *testing.T) {
@@ -308,7 +308,7 @@ func TestAutopilotCreateIssueTaskRetryPendingKeepsRunOpen(t *testing.T) {
 	}
 }
 
-// TestAutopilotDispatchSkipsWhenRuntimeOffline locks in the MUL-1899
+// TestAutopilotDispatchSkipsWhenRuntimeOffline locks in the ISS-1899
 // admission gate: when the assignee agent's runtime is not online we must
 // record a `skipped` autopilot_run with a failure_reason and NOT enqueue an
 // agent_task_queue row. This is the fix for "活跃 schedule 持续给离线 local
@@ -353,7 +353,7 @@ func TestAutopilotDispatchSkipsWhenRuntimeOffline(t *testing.T) {
 	ap, err := queries.CreateAutopilot(ctx, db.CreateAutopilotParams{
 		WorkspaceID:        parseUUID(testWorkspaceID),
 		Title:              "Offline-runtime autopilot",
-		Description:        pgtype.Text{String: "MUL-1899 admission test", Valid: true},
+		Description:        pgtype.Text{String: "ISS-1899 admission test", Valid: true},
 		AssigneeType:       "agent",
 		AssigneeID:         parseUUID(agentID),
 		Status:             "active",

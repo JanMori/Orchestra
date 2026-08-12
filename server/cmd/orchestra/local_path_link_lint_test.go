@@ -126,7 +126,7 @@ func TestFindLocalPathLinksAllowsLegitimateContent(t *testing.T) {
 			// origin-relative URI reference (RFC 3986 §4.2) — blocking it would
 			// break every issue link an agent writes.
 			name: "origin-relative in-app link",
-			body: "see [MUL-1](/acme/issues/MUL-1) and [inbox](/issues/123)",
+			body: "see [ISS-1](/acme/issues/ISS-1) and [inbox](/issues/123)",
 		},
 		{
 			name: "external http link",
@@ -229,7 +229,7 @@ func TestGuardLocalPathLinksOnlyFiresInAgentContext(t *testing.T) {
 
 	t.Run("agent context with a clean body passes", func(t *testing.T) {
 		withAgentContext(t)
-		if err := guardLocalPathLinks("all good — see [MUL-1](/acme/issues/MUL-1)", "comment body", "hint"); err != nil {
+		if err := guardLocalPathLinks("all good — see [ISS-1](/acme/issues/ISS-1)", "comment body", "hint"); err != nil {
 			t.Errorf("expected no error for a clean body, got: %v", err)
 		}
 	})

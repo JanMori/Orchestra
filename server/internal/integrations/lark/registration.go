@@ -75,7 +75,7 @@ const (
 
 	// Mirror brand label for the reverse direction: a user who picked
 	// the "Bind to Lark" CTA but actually authorized with a mainland
-	// Feishu account. The split-CTA UX (MUL-3083) rendered a QR against
+	// Feishu account. The split-CTA UX (ISS-3083) rendered a QR against
 	// accounts.larksuite.com, but Lark's poll stream surfaces
 	// tenant_brand="feishu" once authorization completes on the wrong
 	// cloud, and we honor that signal symmetrically — re-aim polling
@@ -187,7 +187,7 @@ type PollResult struct {
 	// the caller can update both the polling host AND the per-install
 	// region in one step. Originally this only fired in the
 	// Feishu→Lark direction (Lark international users authorizing on
-	// a Feishu-first begin); after MUL-3083 follow-up it is symmetric,
+	// a Feishu-first begin); after ISS-3083 follow-up it is symmetric,
 	// so a user who picked the "wrong" Bind CTA also recovers — the
 	// service must update the session's stored domain AND region and
 	// re-poll WITHOUT honoring the interval (the SDK does the same —
@@ -348,7 +348,7 @@ func (c *RegistrationClient) Poll(ctx context.Context, domain, deviceCode string
 	// Feishu QR with a Lark-international account, AND lark→feishu for
 	// users who picked the new "Bind to Lark" CTA but actually
 	// authorized with a mainland Feishu account. Symmetry matters
-	// because the split-CTA UI (MUL-3083) also begins on
+	// because the split-CTA UI (ISS-3083) also begins on
 	// accounts.larksuite.com directly — without the reverse swap, a
 	// "wrong entry" install on that side would carry RegionLark all
 	// the way through finishSuccess and fail (or commit a wrong-region

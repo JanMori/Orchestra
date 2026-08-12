@@ -1425,7 +1425,7 @@ func TestOpenclawProcessOutputStdoutFixture(t *testing.T) {
 	}
 }
 
-// ── Version gate tests (MUL-1803) ──
+// ── Version gate tests (ISS-1803) ──
 
 func TestParseOpenclawVersion(t *testing.T) {
 	t.Parallel()

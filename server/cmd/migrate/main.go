@@ -10,10 +10,10 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/multica-ai/multica/server/internal/attributionbackfill"
-	"github.com/multica-ai/multica/server/internal/logger"
-	"github.com/multica-ai/multica/server/internal/migrations"
-	"github.com/multica-ai/multica/server/internal/taskusagebackfill"
+	"github.com/JanMori/Orchestra/server/internal/attributionbackfill"
+	"github.com/JanMori/Orchestra/server/internal/logger"
+	"github.com/JanMori/Orchestra/server/internal/migrations"
+	"github.com/JanMori/Orchestra/server/internal/taskusagebackfill"
 )
 
 // preMigrationHook runs work that must happen before a specific
@@ -32,7 +32,7 @@ type preMigrationHook func(ctx context.Context, pool *pgxpool.Pool) error
 // the file basename without the `.up.sql` suffix, matching what
 // `migrations.ExtractVersion` returns.
 //
-// MUL-2957: the v0.3.4 → current direct-upgrade path needs the hourly
+// ISS-2957: the v0.3.4 → current direct-upgrade path needs the hourly
 // rollup seeded BEFORE migration 103 evaluates its fail-closed lag
 // guard, because at `cmd/migrate up` time the server has not yet
 // started so neither the legacy pg_cron job nor the new app scheduler
@@ -40,7 +40,7 @@ type preMigrationHook func(ctx context.Context, pool *pgxpool.Pool) error
 // monthly-slice backfill that
 // `cmd/backfill_task_usage_hourly` exposes to operators.
 //
-// MUL-4897 / GH #5544: migration 198 VALIDATEs the strict attribution
+// ISS-4897 / GH #5544: migration 198 VALIDATEs the strict attribution
 // constraint installed by 197, which drops migration 190's
 // originator_source IS NULL exemption. Self-hosted databases never ran the
 // out-of-band backfill that Multica's cloud did, so their legacy rows make
@@ -120,7 +120,7 @@ func runTaskUsageHourlyHook(ctx context.Context, pool *pgxpool.Pool) error {
 // runAttributionStrictHook backfills accountable_user_id from
 // originator_user_id before migration 198 validates the strict attribution
 // constraint, so self-hosted upgrades that never ran the out-of-band
-// backfill recover automatically (GH #5544 / MUL-4897).
+// backfill recover automatically (GH #5544 / ISS-4897).
 func runAttributionStrictHook(ctx context.Context, pool *pgxpool.Pool) error {
 	res, err := attributionbackfill.Hook(ctx, pool, attributionbackfill.HookOptions{})
 	if err != nil {
@@ -236,7 +236,7 @@ func main() {
 // processes against the same database with the same options: every
 // caller blocks on pg_advisory_lock, and once it is their turn the
 // already-applied EXISTS check turns each finished migration into a
-// no-op skip. See GitHub multica-ai/multica#3647 / MUL-2923.
+// no-op skip. See GitHub multica-ai/multica#3647 / ISS-2923.
 func runMigrations(ctx context.Context, pool *pgxpool.Pool, opts runOptions) error {
 	switch opts.Direction {
 	case "up", "down":

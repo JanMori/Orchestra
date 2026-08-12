@@ -20,7 +20,7 @@ func findCommentOutcome(t *testing.T, outcomes []CommentTriggerOutcome, targetID
 	return CommentTriggerOutcome{}
 }
 
-// TestCreateComment_MixedMentionSurfacesPartialTriggerOutcomes is the MUL-4525 §2
+// TestCreateComment_MixedMentionSurfacesPartialTriggerOutcomes is the ISS-4525 §2
 // acceptance test for Bohan's exact scenario: a comment @mentions an agent the
 // author can invoke AND a crew whose private leader they cannot. The comment is
 // still saved (one blocked mention must not reject it), and the response carries
@@ -97,7 +97,7 @@ func TestCreateComment_MixedMentionSurfacesPartialTriggerOutcomes(t *testing.T) 
 }
 
 // TestCreateComment_BlockedMentionReasonDoesNotEnumeratePrivateAgent pins the
-// enumeration-safety rule (MUL-4525 §2): a mention the author cannot invoke and a
+// enumeration-safety rule (ISS-4525 §2): a mention the author cannot invoke and a
 // mention of a truly nonexistent agent both return the same generic
 // invocation_not_allowed, so a blocked reason can never confirm a private
 // agent's existence.
@@ -133,7 +133,7 @@ func TestCreateComment_BlockedMentionReasonDoesNotEnumeratePrivateAgent(t *testi
 // is A, the run coalesces to ONE task that carries the LEADER role
 // (is_leader_task + crew_id=S, so the daemon injects S's briefing) regardless
 // of mention order, and each explicitly-named target still gets its own outcome
-// (MUL-4525). The old first-mention-wins dedup could drop the leader role when
+// (ISS-4525). The old first-mention-wins dedup could drop the leader role when
 // @Agent A came first — this asserts the role independent of order.
 func TestCreateComment_AgentAndSameLeaderCrew(t *testing.T) {
 	if testHandler == nil || testPool == nil {
@@ -207,7 +207,7 @@ func TestCreateComment_AgentAndSameLeaderCrew(t *testing.T) {
 // must-fix 1 (multi-crew case): two DIFFERENT crews share the same leader and
 // both are @mentioned. The single leader agent runs ONCE carrying one crew's
 // context; the other crew's mention folds into that run and is reported
-// coalesced — never a second task, and never both reported queued (MUL-4525).
+// coalesced — never a second task, and never both reported queued (ISS-4525).
 func TestCreateComment_TwoCrewsSharingLeaderCoalescesNonWinner(t *testing.T) {
 	if testHandler == nil || testPool == nil {
 		t.Skip("database not available")

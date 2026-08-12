@@ -16,8 +16,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/multica-ai/multica/server/internal/cli"
-	"github.com/multica-ai/multica/server/internal/daemon"
+	"github.com/JanMori/Orchestra/server/internal/cli"
+	"github.com/JanMori/Orchestra/server/internal/daemon"
 )
 
 // TestDaemonAlive locks in the liveness predicate the lifecycle commands rely
@@ -603,7 +603,7 @@ func TestPrintDiskUsageOtherRootsHintSuggestsProfilesWithTasks(t *testing.T) {
 
 	var out bytes.Buffer
 	printDiskUsageOtherRootsHint(&out, daemon.DiskUsageReport{
-		WorkspacesRoot: filepath.Join(home, "multica_workspaces"),
+		WorkspacesRoot: filepath.Join(home, "orchestra_workspaces"),
 	}, "", "")
 
 	got := out.String()
@@ -631,7 +631,7 @@ func TestPrintDiskUsageOtherRootsHintSuggestsProfilesWithTasks(t *testing.T) {
 }
 
 // TestPrintDiskUsageOtherRootsHintFiresWhenCurrentRootNonEmpty is the core
-// MUL-3404 behavior: the hint must surface other roots even when the scanned
+// ISS-3404 behavior: the hint must surface other roots even when the scanned
 // root already has tasks, otherwise the Desktop app's root stays hidden behind
 // a non-empty default root.
 func TestPrintDiskUsageOtherRootsHintFiresWhenCurrentRootNonEmpty(t *testing.T) {
@@ -644,7 +644,7 @@ func TestPrintDiskUsageOtherRootsHintFiresWhenCurrentRootNonEmpty(t *testing.T) 
 
 	var out bytes.Buffer
 	printDiskUsageOtherRootsHint(&out, daemon.DiskUsageReport{
-		WorkspacesRoot: filepath.Join(home, "multica_workspaces"),
+		WorkspacesRoot: filepath.Join(home, "orchestra_workspaces"),
 		TotalTaskCount: 7, // current root is NOT empty
 	}, "", "")
 
@@ -663,7 +663,7 @@ func TestPrintDiskUsageOtherRootsHintSuggestsDefaultFromNamedProfile(t *testing.
 
 	var out bytes.Buffer
 	printDiskUsageOtherRootsHint(&out, daemon.DiskUsageReport{
-		WorkspacesRoot: filepath.Join(home, "multica_workspaces_named"),
+		WorkspacesRoot: filepath.Join(home, "orchestra_workspaces_named"),
 	}, "named", "")
 
 	got := out.String()
@@ -710,10 +710,10 @@ func TestEnumerateDiskUsageRoots(t *testing.T) {
 	if len(roots) != 2 {
 		t.Fatalf("roots = %+v, want default + desktop-host only", roots)
 	}
-	if roots[0].Profile != "" || roots[0].Root != filepath.Join(home, "multica_workspaces") {
+	if roots[0].Profile != "" || roots[0].Root != filepath.Join(home, "orchestra_workspaces") {
 		t.Fatalf("roots[0] = %+v, want default root first", roots[0])
 	}
-	if roots[1].Profile != "desktop-host" || roots[1].Root != filepath.Join(home, "multica_workspaces_desktop-host") {
+	if roots[1].Profile != "desktop-host" || roots[1].Root != filepath.Join(home, "orchestra_workspaces_desktop-host") {
 		t.Fatalf("roots[1] = %+v, want desktop-host root", roots[1])
 	}
 }
@@ -722,13 +722,13 @@ func TestPrintAggregateDiskUsageShowsRootsAndGrandTotal(t *testing.T) {
 	agg := daemon.AggregateDiskUsageReport{
 		Roots: []daemon.RootDiskUsage{
 			{Profile: "", Report: daemon.DiskUsageReport{
-				WorkspacesRoot: "/home/u/multica_workspaces",
+				WorkspacesRoot: "/home/u/orchestra_workspaces",
 				Tasks:          []daemon.TaskDiskUsage{{WorkspaceShort: "ws0", TaskShort: "t0", SizeBytes: 100}},
 				TotalTaskCount: 1,
 				TotalSizeBytes: 100,
 			}},
 			{Profile: "desktop-host", Report: daemon.DiskUsageReport{
-				WorkspacesRoot: "/home/u/multica_workspaces_desktop-host",
+				WorkspacesRoot: "/home/u/orchestra_workspaces_desktop-host",
 				Tasks:          []daemon.TaskDiskUsage{{WorkspaceShort: "ws1", TaskShort: "t1", SizeBytes: 900}},
 				TotalTaskCount: 1,
 				TotalSizeBytes: 900,
@@ -748,7 +748,7 @@ func TestPrintAggregateDiskUsageShowsRootsAndGrandTotal(t *testing.T) {
 	if !strings.Contains(got, "[default]") || !strings.Contains(got, "[desktop-host]") {
 		t.Fatalf("output = %q, want per-root section labels", got)
 	}
-	if !strings.Contains(got, "/home/u/multica_workspaces_desktop-host") {
+	if !strings.Contains(got, "/home/u/orchestra_workspaces_desktop-host") {
 		t.Fatalf("output = %q, want desktop root path", got)
 	}
 	if !strings.Contains(got, "Grand total:") || !strings.Contains(got, "across 2 task(s) in 2 root(s)") {
@@ -773,20 +773,20 @@ func valueColumn(t *testing.T, line string) int {
 
 func mkdirProfile(t *testing.T, home, profile string) {
 	t.Helper()
-	if err := os.MkdirAll(filepath.Join(home, ".multica", "profiles", profile), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Join(home, ".orchestra", "profiles", profile), 0o755); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func writeDiskUsageTaskFile(t *testing.T, home, profile, workspaceID, taskID, rel string) {
 	t.Helper()
-	path := filepath.Join(home, "multica_workspaces_"+profile, workspaceID, taskID, rel)
+	path := filepath.Join(home, "orchestra_workspaces_"+profile, workspaceID, taskID, rel)
 	writeDiskUsageFile(t, path)
 }
 
 func writeDefaultDiskUsageTaskFile(t *testing.T, home, workspaceID, taskID, rel string) {
 	t.Helper()
-	path := filepath.Join(home, "multica_workspaces", workspaceID, taskID, rel)
+	path := filepath.Join(home, "orchestra_workspaces", workspaceID, taskID, rel)
 	writeDiskUsageFile(t, path)
 }
 
@@ -805,7 +805,7 @@ func writeDiskUsageFile(t *testing.T, path string) {
 //
 // The daemon's auto-reload check runs `<binary> --version` and parses the result
 // back into a version string it compares against its own compile-time version
-// (MUL-3269). That only works while cobra's version template keeps rendering
+// (ISS-3269). That only works while cobra's version template keeps rendering
 // "multica <version> ..." as its first line — a reasonable-looking edit here
 // would leave the daemon reading a version that never matches, restarting on
 // every check, and nothing else in the suite would notice.

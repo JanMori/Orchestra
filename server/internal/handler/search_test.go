@@ -63,7 +63,7 @@ func TestBuildSearchQuery_MultiTerm(t *testing.T) {
 }
 
 func TestBuildSearchQuery_WithNumber(t *testing.T) {
-	query, args := buildSearchQuery("MUL-42", []string{"MUL-42"}, 42, true, false)
+	query, args := buildSearchQuery("ISS-42", []string{"ISS-42"}, 42, true, false)
 
 	_ = args
 	// Number match should be in WHERE.
@@ -257,7 +257,7 @@ func TestBuildSearchQuery_SingleTermNoAllTermTiers(t *testing.T) {
 }
 
 // TestBuildSearchQuery_CommentSubqueryWorkspaceScope regressions the
-// MUL-4059 fix: every EXISTS / correlated subquery over `comment` MUST
+// ISS-4059 fix: every EXISTS / correlated subquery over `comment` MUST
 // filter by c.workspace_id = $wsParam. Without this, Postgres rewrites
 // the correlated subquery into a hashed subplan that materializes every
 // comment in the entire table matching the LIKE — on prd this was
@@ -280,7 +280,7 @@ func TestBuildSearchQuery_CommentSubqueryWorkspaceScope(t *testing.T) {
 		t.Fatalf("single-term query has no comment subquery — did buildSearchQuery drop it?")
 	}
 	if scopedCount < fromCount {
-		t.Errorf("single-term query has %d comment subqueries but only %d workspace_id filters — %d unscoped subquery(ies) will trigger the MUL-4059 global-hash plan",
+		t.Errorf("single-term query has %d comment subqueries but only %d workspace_id filters — %d unscoped subquery(ies) will trigger the ISS-4059 global-hash plan",
 			fromCount, scopedCount, fromCount-scopedCount)
 	}
 

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // RunEnqueueSource identifies which kind of issue write would start an agent
@@ -65,7 +65,7 @@ func allowAllAgents(db.Agent) bool { return true }
 // start an agent run, and for whom". It is the one source of truth shared by
 // the issue update / batch-update write paths and the preview endpoint,
 // replacing the per-site copies that drifted (crew omitted, self-loop
-// omitted, four entry points inconsistent — see MUL-3375).
+// omitted, four entry points inconsistent — see ISS-3375).
 //
 // It is intentionally a distinct predicate from the comment trigger
 // (assignee fallback comment routing): issue writes park on backlog while comments fire
@@ -83,7 +83,7 @@ func allowAllAgents(db.Agent) bool { return true }
 //     index would coalesce away.
 //   - assign source (create / assignee change) skips the check: a create
 //     targets a fresh issue with no prior task, and a reassignment no longer
-//     cancels existing tasks (#4963 / MUL-4113) — in the rare case the new
+//     cancels existing tasks (#4963 / ISS-4113) — in the rare case the new
 //     assignee already holds a pending task the insert simply no-ops on the
 //     same unique index, so the assignee still ends up with one pending run.
 func (s *IssueService) WillEnqueueRun(ctx context.Context, in IssueTriggerInput, probe IssueTriggerProbe) (IssueRunTrigger, bool) {

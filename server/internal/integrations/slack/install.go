@@ -11,12 +11,12 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 
-	"github.com/multica-ai/multica/server/internal/integrations/channel/engine"
-	"github.com/multica-ai/multica/server/internal/util/secretbox"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel/engine"
+	"github.com/JanMori/Orchestra/server/internal/util/secretbox"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
-// This file is the Slack install backend (MUL-3666). Slack uses the
+// This file is the Slack install backend (ISS-3666). Slack uses the
 // bring-your-own-app (BYO) model: the workspace admin creates their own Slack
 // app, installs it to their Slack workspace, and pastes its bot token (xoxb-) +
 // app-level token (xapp-) into Multica (the paste path lives in byo_install.go).

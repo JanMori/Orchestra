@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // errWSRPCUnavailable is returned by wsRPCClient.Call when there is no live WS
@@ -20,13 +20,13 @@ var errWSRPCUnavailable = errors.New("ws rpc: no active connection")
 // errWSRPCUncertain is returned when a request's frame WAS sent but the
 // connection dropped before a definitive response. The outcome is unknown (the
 // server may have committed), so the caller must NOT fall back to another
-// transport for the same work — that risks a double claim (MUL-4257).
+// transport for the same work — that risks a double claim (ISS-4257).
 var errWSRPCUncertain = errors.New("ws rpc: sent but outcome unknown (connection lost)")
 
 // wsRPCResponseGrace is how much longer the daemon waits for an RPC response
 // beyond the server-side execution budget it requested, so a claim that
 // committed just before the server deadline still reports back before the
-// daemon gives up (MUL-4257).
+// daemon gives up (ISS-4257).
 const wsRPCResponseGrace = 2 * time.Second
 
 var wsClaimUncertainFallbackDelay = batchClaimRequestTimeout + wsRPCResponseGrace
@@ -36,7 +36,7 @@ var wsClaimUncertainFallbackDelay = batchClaimRequestTimeout + wsRPCResponseGrac
 var errWSRPCWriteBufferFull = errors.New("ws rpc: write buffer full")
 
 // wsRPCClient is the daemon-side half of the generic WS request/response
-// transport (MUL-4257). It correlates responses to requests by request_id over
+// transport (ISS-4257). It correlates responses to requests by request_id over
 // the shared, multiplexed WS control connection so multiple RPCs can be in
 // flight concurrently. Sending is delegated to an injected sendFrame func
 // (which pushes onto the active connection's write channel); when no connection
@@ -46,7 +46,7 @@ var errWSRPCWriteBufferFull = errors.New("ws rpc: write buffer full")
 // caller that gives up (timeout/detach) before the frame has hit the socket can
 // prevent it from being delivered later — otherwise a backpressured writer
 // could deliver a stale tasks.claim after the daemon already HTTP-fell-back,
-// double-claiming (MUL-4257, Sol-Boy review). sent/cancel race under mu so the
+// double-claiming (ISS-4257, Sol-Boy review). sent/cancel race under mu so the
 // decision is atomic: whoever wins determines whether the frame is delivered.
 type wsOutbound struct {
 	data     []byte
@@ -92,7 +92,7 @@ type wsRPCClient struct {
 	generation     uint64
 	// grace is added to a call's server-side timeout budget to get how long the
 	// daemon waits for the response, so a claim that committed just before the
-	// server deadline still reports back before the daemon gives up (MUL-4257).
+	// server deadline still reports back before the daemon gives up (ISS-4257).
 	grace time.Duration
 }
 
@@ -229,7 +229,7 @@ func (c *wsRPCClient) call(ctx context.Context, method string, serverTimeout tim
 	// cancel it so the writer never delivers it — a definitively-not-sent
 	// outcome that is safe to HTTP-fall-back. If the writer already began
 	// sending it, it may reach the server, so the outcome is uncertain and the
-	// caller must NOT fall back (that would double-claim, MUL-4257).
+	// caller must NOT fall back (that would double-claim, ISS-4257).
 	giveUp := func() error {
 		if item.cancel() {
 			return errWSRPCUnavailable
@@ -239,7 +239,7 @@ func (c *wsRPCClient) call(ctx context.Context, method string, serverTimeout tim
 
 	// Wait the server-side budget PLUS a grace margin: a claim that committed
 	// just before the server deadline must still report back before the daemon
-	// gives up and falls back to HTTP, or we would double-claim (MUL-4257).
+	// gives up and falls back to HTTP, or we would double-claim (ISS-4257).
 	timeout := serverTimeout + c.grace
 	if timeout <= 0 {
 		timeout = 5 * time.Second
@@ -304,7 +304,7 @@ func (c *wsRPCClient) deliver(resp protocol.RPCResponsePayload) {
 	}
 }
 
-// ClaimTasksWSFirst is the WS-first claim policy (MUL-4257): it issues the
+// ClaimTasksWSFirst is the WS-first claim policy (ISS-4257): it issues the
 // tasks.claim RPC over the WS control connection when one is attached, and
 // falls back to the HTTP claim endpoint on transport failures that are known not
 // to have reached the server (no connection, write-buffer full, unsent timeout)

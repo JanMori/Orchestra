@@ -107,7 +107,7 @@ function makeIssue(id: string, title: string, projectId: string): Issue {
     id,
     workspace_id: "ws-1",
     number: 1,
-    identifier: `MUL-${id}`,
+    identifier: `ISS-${id}`,
     title,
     description: null,
     status: "todo",
@@ -686,7 +686,7 @@ describe("IssueSurface — table pagination ownership", () => {
   });
 });
 
-// MUL-5525. A surface whose filters match nothing is not an empty surface.
+// ISS-5525. A surface whose filters match nothing is not an empty surface.
 // Every caller's own empty copy ("No issues linked — create one") describes the
 // UNFILTERED case, so the shared filtered state has to win before `renderEmpty`
 // runs. The agents-working chip is the most common way into this state.

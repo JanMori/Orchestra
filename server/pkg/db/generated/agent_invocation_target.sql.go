@@ -90,7 +90,7 @@ WHERE agent_id IN (
 // DeleteSystemAgentsByRuntime so no orphan target rows survive the agent rows
 // they belonged to. Mirrors the agent hard-delete predicate exactly.
 //
-// Scoped to kind = 'system' since MUL-5559: user agents are no longer deleted
+// Scoped to kind = 'system' since ISS-5559: user agents are no longer deleted
 // with their runtime (they are unbound and keep their configuration), so
 // clearing THEIR invocation targets here would silently strip a surviving
 // agent's allow-list.
@@ -106,7 +106,7 @@ WHERE agent_id = $1
 ORDER BY target_type ASC, created_at ASC
 `
 
-// Agent invocation permission targets (MUL-3963). Rows are the allow-list for
+// Agent invocation permission targets (ISS-3963). Rows are the allow-list for
 // agents whose permission_mode = 'public_to'. See migration 130.
 func (q *Queries) ListAgentInvocationTargets(ctx context.Context, agentID pgtype.UUID) ([]AgentInvocationTarget, error) {
 	rows, err := q.db.Query(ctx, listAgentInvocationTargets, agentID)

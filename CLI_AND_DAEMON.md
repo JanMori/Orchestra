@@ -1,37 +1,37 @@
 # CLI and Agent Daemon Guide
 
-The `multica` CLI connects your local machine to Multica. It handles authentication, workspace management, issue tracking, and runs the agent daemon that executes AI tasks locally.
+The `orchestra` CLI connects your local machine to Orchestra. It handles authentication, workspace management, issue tracking, and runs the agent daemon that executes AI tasks locally.
 
 ## Installation
 
 ### Homebrew (macOS/Linux)
 
 ```bash
-brew install multica-ai/tap/multica
+brew install orchestra-ai/tap/orchestra
 ```
 
 ### Build from Source
 
 ```bash
-git clone https://github.com/multica-ai/multica.git
-cd multica
+git clone https://github.com/JanMori/Orchestra.git
+cd orchestra
 make build
-cp server/bin/multica /usr/local/bin/multica
+cp server/bin/orchestra /usr/local/bin/orchestra
 ```
 
 ### Update
 
 ```bash
-brew upgrade multica-ai/tap/multica
+brew upgrade orchestra-ai/tap/orchestra
 ```
 
 For install script or manual installs, use:
 
 ```bash
-multica update
+orchestra update
 ```
 
-`multica update` auto-detects your installation method and upgrades accordingly.
+`orchestra update` auto-detects your installation method and upgrades accordingly.
 
 ## Quick Start
 
@@ -93,7 +93,7 @@ Removes the stored authentication token.
 
 ## Agent Daemon
 
-The daemon is the local agent runtime. It detects available AI CLIs on your machine, registers them with the Multica server, and executes tasks when agents are assigned work.
+The daemon is the local agent runtime. It detects available AI CLIs on your machine, registers them with the Orchestra server, and executes tasks when agents are assigned work.
 
 ### Start
 
@@ -101,7 +101,7 @@ The daemon is the local agent runtime. It detects available AI CLIs on your mach
 orchestra daemon start
 ```
 
-By default, the daemon runs in the background and logs to `~/.multica/daemon.log`.
+By default, the daemon runs in the background and logs to `~/.orchestra/daemon.log`.
 
 To run in the foreground (useful for debugging):
 
@@ -112,8 +112,8 @@ orchestra daemon start --foreground
 #### Following a replaced binary
 
 A CLI-launched daemon periodically compares its own compile-time version against
-the `--version` output of the `multica` binary it would re-exec. When they differ
-— `brew upgrade multica`, a re-download, a local `make build` — it waits for any
+the `--version` output of the `orchestra` binary it would re-exec. When they differ
+— `brew upgrade orchestra`, a re-download, a local `make build` — it waits for any
 running task to finish, then restarts into the new binary. A running task is
 never interrupted; if the daemon is busy the restart is deferred to the next
 check, and `orchestra daemon status` shows why it's still on the old version.
@@ -131,7 +131,7 @@ orchestra config set disable_auto_reload true
 
 Agent CLIs (codex, claude, ...) are handled differently: when one of them is
 upgraded in place, the daemon re-probes its version and re-registers the runtime
-**without restarting**, so subsequent tasks pick up the new CLI while Multica's
+**without restarting**, so subsequent tasks pick up the new CLI while Orchestra's
 availability stays independent of a third party's release cadence.
 
 Desktop-managed daemons ignore both, because the Desktop app owns its bundled
@@ -209,7 +209,7 @@ Daemon behavior is configured via flags or environment variables:
 | Daemon ID | `--daemon-id` | `ORCHESTRA_DAEMON_ID` | hostname |
 | Device name | `--device-name` | `ORCHESTRA_DAEMON_DEVICE_NAME` | hostname |
 | Runtime name | `--runtime-name` | `ORCHESTRA_AGENT_RUNTIME_NAME` | `Local Agent` |
-| Workspaces root | — | `ORCHESTRA_WORKSPACES_ROOT` | `~/multica_workspaces` |
+| Workspaces root | — | `ORCHESTRA_WORKSPACES_ROOT` | `~/orchestra_workspaces` |
 | GC enabled | — | `ORCHESTRA_GC_ENABLED` | `true` (set `false`/`0` to disable) |
 | GC scan interval | — | `ORCHESTRA_GC_INTERVAL` | `2h` |
 | GC TTL (done/cancelled issues) | — | `ORCHESTRA_GC_TTL` | `24h` |
@@ -274,17 +274,17 @@ Agent-specific overrides:
 | `ORCHESTRA_QWEN_MODEL` | Override the Qwen Code model used |
 | `ORCHESTRA_QWEN_ARGS` | Daemon-wide extra Qwen arguments (POSIX shellword parsing; managed protocol flags are filtered) |
 
-If a previously generated `~/.multica/hooks` wrapper is first on `PATH` and calls the same command name again, the daemon skips that hooks directory during built-in agent discovery and records the real binary path behind it. If your interactive shell still recurses when you run `claude`, `codex`, or `hermes` manually, remove the hooks entry from your shell startup file or replace the wrapper body with an absolute `exec /path/to/real-binary "$@"`.
+If a previously generated `~/.orchestra/hooks` wrapper is first on `PATH` and calls the same command name again, the daemon skips that hooks directory during built-in agent discovery and records the real binary path behind it. If your interactive shell still recurses when you run `claude`, `codex`, or `hermes` manually, remove the hooks entry from your shell startup file or replace the wrapper body with an absolute `exec /path/to/real-binary "$@"`.
 
 The daemon launches Qoder and Qoder CN as `qodercli --yolo --acp` and `qoderclicn --yolo --acp`, respectively, matching their ACP “bypass permissions” mode so tool runs do not block on interactive approval in headless runs.
 The daemon launches Qwen Code as `qwen -p <prompt> --output-format stream-json`. It writes the task brief to `QWEN.md`; when an agent has managed `mcp_config`, the daemon writes a 0600 per-run JSON file and passes it through `--mcp-config <path>`, then removes it after the process exits. A null config preserves Qwen Code native MCP settings.
 
 
-`ORCHESTRA_CLAUDE_ARGS`, `ORCHESTRA_CODEX_ARGS`, and `ORCHESTRA_QWEN_ARGS` are parsed with POSIX shellword quoting, so values such as `--model "gpt-5.1 codex" --sandbox read-only` are split like a shell command line. Agent arguments are applied in this order: hardcoded Multica defaults, daemon-wide env defaults, then per-agent `custom_args` from the task.
+`ORCHESTRA_CLAUDE_ARGS`, `ORCHESTRA_CODEX_ARGS`, and `ORCHESTRA_QWEN_ARGS` are parsed with POSIX shellword quoting, so values such as `--model "gpt-5.1 codex" --sandbox read-only` are split like a shell command line. Agent arguments are applied in this order: hardcoded Orchestra defaults, daemon-wide env defaults, then per-agent `custom_args` from the task.
 
 ### Self-Hosted Server
 
-When connecting to a self-hosted Multica instance, the easiest approach is:
+When connecting to a self-hosted Orchestra instance, the easiest approach is:
 
 ```bash
 # One command — configures for localhost, authenticates, starts daemon
@@ -324,7 +324,7 @@ orchestra daemon start --profile staging
 orchestra daemon start
 ```
 
-Each profile gets its own config directory (`~/.multica/profiles/<name>/`), daemon state, health port, and workspace root.
+Each profile gets its own config directory (`~/.orchestra/profiles/<name>/`), daemon state, health port, and workspace root.
 
 ## Workspaces
 
@@ -517,8 +517,8 @@ design — same flag, different scope:
 
 Outside those two modes (`--thread` without `--tail`, or no `--thread`
 and no `--recent`) the cursor flags are rejected so they cannot silently
-no-op. The server emits the cursor headers (`X-Multica-Next-Before` /
-`X-Multica-Next-Before-Id`) only when an older page actually exists —
+no-op. The server emits the cursor headers (`X-Orchestra-Next-Before` /
+`X-Orchestra-Next-Before-Id`) only when an older page actually exists —
 exact-boundary pages (e.g. `--tail 3` on a thread with exactly 3
 replies) intentionally return no cursor so callers stop paginating.
 
@@ -671,7 +671,7 @@ orchestra issue list --project <project-id>
 ## Setup
 
 ```bash
-# One-command setup for Multica Cloud: configure, authenticate, and start the daemon
+# One-command setup for Orchestra Self-Host: configure, authenticate, and start the daemon
 orchestra setup
 
 # For local self-hosted deployments
@@ -684,7 +684,7 @@ orchestra setup self-host --port 9090 --frontend-port 4000
 orchestra setup self-host --server-url https://api.example.com --app-url https://app.example.com
 ```
 
-`orchestra setup` configures the CLI, opens your browser for authentication, and starts the daemon — all in one step. Use `orchestra setup self-host` to connect to a self-hosted server instead of Multica Cloud.
+`orchestra setup` configures the CLI, opens your browser for authentication, and starts the daemon — all in one step. Use `orchestra setup self-host` to connect to a self-hosted server instead of Orchestra Self-Host.
 
 ## Configuration
 
@@ -713,9 +713,9 @@ Autopilots are scheduled/triggered automations that dispatch agent tasks (either
 ### List Autopilots
 
 ```bash
-multica autopilot list
-multica autopilot list --full-id
-multica autopilot list --status active --output json
+orchestra autopilot list
+orchestra autopilot list --full-id
+orchestra autopilot list --status active --output json
 ```
 
 Autopilot table IDs are short UUID prefixes; follow-up autopilot commands accept copied prefixes when they are unique in the current workspace. Use `--full-id` to print canonical UUIDs.
@@ -723,25 +723,25 @@ Autopilot table IDs are short UUID prefixes; follow-up autopilot commands accept
 ### Get Autopilot Details
 
 ```bash
-multica autopilot get <id>
-multica autopilot get <id> --output json   # includes triggers
+orchestra autopilot get <id>
+orchestra autopilot get <id> --output json   # includes triggers
 ```
 
 ### Create / Update / Delete
 
 ```bash
-multica autopilot create \
+orchestra autopilot create \
   --title "Nightly bug triage" \
   --description "Scan todo issues and prioritize." \
   --agent "Lambda" \
   --mode create_issue \
   --subscriber "Alice"
 
-multica autopilot update <id> --status paused
-multica autopilot update <id> --description "New prompt"
-multica autopilot update <id> --subscriber "Alice" --subscriber "Bob"
-multica autopilot update <id> --clear-subscribers
-multica autopilot delete <id>
+orchestra autopilot update <id> --status paused
+orchestra autopilot update <id> --description "New prompt"
+orchestra autopilot update <id> --subscriber "Alice" --subscriber "Bob"
+orchestra autopilot update <id> --clear-subscribers
+orchestra autopilot delete <id>
 ```
 
 `--mode` accepts `create_issue` (creates a new issue on each run and assigns it to the agent) or `run_only` (enqueues a direct agent task without creating an issue). `--agent` accepts either a name or UUID.
@@ -750,22 +750,22 @@ multica autopilot delete <id>
 ### Manual Trigger
 
 ```bash
-multica autopilot trigger <id>            # Fires the autopilot once, returns the run
+orchestra autopilot trigger <id>            # Fires the autopilot once, returns the run
 ```
 
 ### Run History
 
 ```bash
-multica autopilot runs <id>
-multica autopilot runs <id> --limit 50 --output json
+orchestra autopilot runs <id>
+orchestra autopilot runs <id> --limit 50 --output json
 ```
 
 ### Schedule Triggers
 
 ```bash
-multica autopilot trigger-add <autopilot-id> --cron "0 9 * * 1-5" --timezone "America/New_York"
-multica autopilot trigger-update <autopilot-id> <trigger-id> --enabled=false
-multica autopilot trigger-delete <autopilot-id> <trigger-id>
+orchestra autopilot trigger-add <autopilot-id> --cron "0 9 * * 1-5" --timezone "America/New_York"
+orchestra autopilot trigger-update <autopilot-id> <trigger-id> --enabled=false
+orchestra autopilot trigger-delete <autopilot-id> <trigger-id>
 ```
 
 Only cron-based `schedule` triggers are currently exposed via the CLI. The data model also defines `webhook` and `api` kinds, but there is no server endpoint that fires them yet, so they're not surfaced here.
@@ -774,7 +774,7 @@ Only cron-based `schedule` triggers are currently exposed via the CLI. The data 
 
 ```bash
 orchestra version              # Show CLI version and commit hash
-multica update               # Update to latest version
+orchestra update               # Update to latest version
 orchestra agent list           # List agents in the current workspace
 ```
 

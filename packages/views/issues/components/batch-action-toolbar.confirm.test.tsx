@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import type { Issue, UpdateIssueRequest } from "@orchestra/core/types";
 import { BatchActionToolbar } from "./batch-action-toolbar";
 
-// MUL-4155: batch status changes must apply directly (no run-confirm modal),
+// ISS-4155: batch status changes must apply directly (no run-confirm modal),
 // while agent/crew assignment still confirms and delete still confirms. These
 // tests drive the pickers' onUpdate callbacks and assert which path is taken.
 
@@ -69,7 +69,7 @@ function makeIssue(overrides: Partial<Issue> = {}): Issue {
     id: "a",
     workspace_id: "ws-1",
     number: 1,
-    identifier: "MUL-1",
+    identifier: "ISS-1",
     title: "Issue",
     description: null,
     status: "todo",
@@ -99,7 +99,7 @@ beforeEach(() => {
   openModal.mockClear();
 });
 
-describe("BatchActionToolbar status routing (MUL-4155)", () => {
+describe("BatchActionToolbar status routing (ISS-4155)", () => {
   it("applies every status target directly, never opening the run-confirm modal", () => {
     for (const status of [...ACTIVE_STATUSES, ...TERMINAL_STATUSES, "backlog"]) {
       batchUpdate.mockClear();

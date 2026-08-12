@@ -1,5 +1,5 @@
 /**
- * Five-surface RichContent parity (MUL-4922).
+ * Five-surface RichContent parity (ISS-4922).
  *
  * The acceptance naiyuan set: ONE completed Markdown fixture must produce the
  * SAME semantic blocks in Chat (user message, live assistant, persisted
@@ -419,7 +419,7 @@ describe("live → persisted row identity", () => {
 
 describe("semantic parity beyond Mermaid", () => {
   const FIXTURE = [
-    "A [link](https://example.com) and a mention [MUL-7](mention://issue/MUL-7).",
+    "A [link](https://example.com) and a mention [ISS-7](mention://issue/ISS-7).",
     "",
     "```html",
     "<b>preview</b>",
@@ -452,7 +452,7 @@ describe("semantic parity beyond Mermaid", () => {
 
   it("produces the same block set in Issue/Comment and Chat", async () => {
     resolveIssueIdentifierMock.mockImplementation((id: string) =>
-      id === "MUL-7" ? { id: "issue-7", identifier: "MUL-7" } : null,
+      id === "ISS-7" ? { id: "issue-7", identifier: "ISS-7" } : null,
     );
 
     const readonly = renderReadonly();

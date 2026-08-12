@@ -7,7 +7,7 @@ import "github.com/jackc/pgx/v5/pgtype"
 // feishuChannel translates that into a channel.InboundMessage for the
 // channel-agnostic engine.Router, and the feishu resolvers / OutcomeReplier
 // translate back at the adapter boundary. (Formerly defined on dispatcher.go,
-// which the MUL-3620 Router cutover removed.)
+// which the ISS-3620 Router cutover removed.)
 
 // InboundMessage is the Feishu connector's decoded, enriched event. It is the
 // adapter's internal shape: feishuChannel maps it to a channel.InboundMessage
@@ -90,7 +90,7 @@ type DispatchResult struct {
 	TaskID         pgtype.UUID
 	IssueID        pgtype.UUID
 	IssueNumber    int32
-	// IssueIdentifier is the workspace-qualified key ("MUL-42") for the
+	// IssueIdentifier is the workspace-qualified key ("ISS-42") for the
 	// created issue, used verbatim in the confirmation message.
 	IssueIdentifier string
 	// IssueTitle is the title supplied on /issue, echoed in the confirmation.

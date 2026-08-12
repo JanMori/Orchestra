@@ -27,7 +27,7 @@ import (
 // and produce a final reply while emitting ZERO bytes to stdout (the log shows
 // "PlannerResponse without ModifiedResponse encountered"). Exit code is 0 and
 // no error is logged, so a blank-but-"completed" run reaches the daemon and the
-// user sees an empty result even though the work happened (MUL-3726, #4595).
+// user sees an empty result even though the work happened (ISS-3726, #4595).
 // When stdout comes back empty on an otherwise-completed turn, the backend
 // therefore recovers the assistant text agy durably wrote to its per-
 // conversation transcript (see readAntigravityTranscriptOutput).
@@ -161,7 +161,7 @@ func (b *antigravityBackend) Execute(ctx context.Context, prompt string, opts Ex
 			// waiting for response" to stdout and EXITED 0, so runCtx never
 			// tripped and waitErr is nil — the checks above leave the turn as
 			// "completed". Surface it as a real timeout instead of a truncated
-			// success the user can't distinguish from a finished task (MUL-3570).
+			// success the user can't distinguish from a finished task (ISS-3570).
 			finalStatus = "timeout"
 			finalError = fmt.Sprintf(
 				"agy --print-timeout elapsed after %s waiting for the agent response; a long-running command likely outlived the print timeout",
@@ -182,7 +182,7 @@ func (b *antigravityBackend) Execute(ctx context.Context, prompt string, opts Ex
 		if finalStatus == "completed" && strings.TrimSpace(finalOutput) == "" {
 			// agy 1.0.14 print mode can finish a turn (tools executed, reply
 			// produced) without writing anything to stdout, leaving a blank but
-			// "completed" run none of the guards above catch (MUL-3726). Recover
+			// "completed" run none of the guards above catch (ISS-3726). Recover
 			// the assistant text agy persisted to its conversation transcript so
 			// the user sees the actual answer instead of an empty result. Also
 			// emit it as a MessageText event so the task transcript catches up;
@@ -228,7 +228,7 @@ var antigravityConversationIDRe = regexp.MustCompile(
 // produced a final response. agy then prints "Error: timed out waiting for
 // response" to stdout and EXITS 0 — runCtx never trips and cmd.Wait returns nil
 // — so without this signal the daemon would record the truncated turn as a
-// successful "completed" (MUL-3570).
+// successful "completed" (ISS-3570).
 //
 // Example: `E0623 17:17:59.017212 65926 printmode.go:289] Print mode: timed out
 // after 100 polls (printed=3)`
@@ -316,7 +316,7 @@ type antigravityTranscriptRecord struct {
 // per-conversation transcript when stdout carried nothing. agy 1.0.14's print
 // mode can finish a turn (tools executed, final reply produced) while emitting
 // zero bytes to stdout, leaving the daemon with a blank but "completed" run
-// (MUL-3726, #4595). The full reply is still durably written to:
+// (ISS-3726, #4595). The full reply is still durably written to:
 //
 //	<appDataDir>/brain/<conversation-id>/.system_generated/logs/transcript.jsonl
 //
@@ -427,7 +427,7 @@ var antigravityBlockedArgs = map[string]blockedArgMode{
 //	    --print-timeout <duration> --log-file <tmp>
 //	    [--conversation <id>] [--add-dir <cwd>]
 //
-// agy 1.0.6 added a `--model` flag (MUL-3125), so opts.Model is now wired
+// agy 1.0.6 added a `--model` flag (ISS-3125), so opts.Model is now wired
 // through when set. The value is the exact human display string `agy models`
 // prints (e.g. "Claude Opus 4.6 (Thinking)"), NOT a provider/model slug —
 // it's passed verbatim as a single exec arg, so spaces and parens need no
@@ -450,7 +450,7 @@ func buildAntigravityArgs(prompt, logPath string, timeout time.Duration, opts Ex
 	// agy's --print-timeout has NO "disabled" value and DEFAULTS TO 5m when the
 	// flag is omitted, so "no cap" cannot be expressed by dropping it — that
 	// silently guillotines every turn at 5 minutes, killing any run whose build
-	// or tests outlive the budget (MUL-3570). Always pass the flag: the
+	// or tests outlive the budget (ISS-3570). Always pass the flag: the
 	// configured wall-clock cap when positive, else a value so large agy's own
 	// timeout never fires before the daemon's idle/tool watchdogs reclaim a
 	// genuinely stuck run (see antigravityPrintTimeout).

@@ -8,7 +8,7 @@ import (
 
 // Metrics collects lightweight counters describing the realtime subsystem.
 //
-// Phase 1 (MUL-1138) extends the phase-0 counter set with subscribe / Redis /
+// Phase 1 (ISS-1138) extends the phase-0 counter set with subscribe / Redis /
 // per-scope-room counters. We keep using std-library atomics rather than a
 // Prometheus dependency; a future phase can re-export the same numbers.
 type Metrics struct {

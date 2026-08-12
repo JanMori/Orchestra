@@ -13,7 +13,7 @@ import (
 // Listing a runtime's models is a round trip to the user's machine: the request
 // waits for the daemon's next heartbeat, the daemon shells out to the provider
 // CLI (or drives an ACP handshake) and only then reports back. Even with the
-// pending-work push hint (MUL-5444) that is seconds of latency on a UI surface
+// pending-work push hint (ISS-5444) that is seconds of latency on a UI surface
 // people open repeatedly while filling in one form — switch runtime, look at the
 // models, switch back.
 //
@@ -47,7 +47,7 @@ import (
 const (
 	// modelCatalogServeWindow is how long a cached catalog may answer a
 	// list-models request without waiting for the daemon. Day-scale on purpose
-	// (MUL-5444): see the freshness discussion above — every served snapshot
+	// (ISS-5444): see the freshness discussion above — every served snapshot
 	// past modelCatalogRevalidateAfter queues its own refresh, so this bounds
 	// unused-entry lifetime and the open-once worst case, not staleness for an
 	// active user.
@@ -98,7 +98,7 @@ type ModelCatalogCache interface {
 // the emptiness check and gets stored as last-known-good — so one transient
 // failure pins a catalog the runtime never advertised for the full 24h serve
 // window. For codebuddy the stand-in does not share a single ID with the real
-// catalog, making every pick an ID the CLI rejects (MUL-5549).
+// catalog, making every pick an ID the CLI rejects (ISS-5549).
 func cacheableModelCatalog(models []ModelEntry, supported, fallback bool) bool {
 	return supported && !fallback && len(models) > 0
 }
@@ -121,7 +121,7 @@ const (
 
 // modelCatalogCacheDecision maps a completed report onto its cache action.
 //
-// The fallback case is the MUL-5549 fix and is deliberately Keep, not Drop: a
+// The fallback case is the ISS-5549 fix and is deliberately Keep, not Drop: a
 // static stand-in tells us nothing about what the runtime supports, so letting
 // it evict a real catalog would turn one transient discovery failure into a
 // downgrade. That matches how a `failed` report is already handled — serving

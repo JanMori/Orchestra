@@ -124,7 +124,7 @@ export function ChatWindow() {
     chatQuickActionsPendingOptions(activeSessionId ?? ""),
   );
   // Drop a stuck pending marker (dead daemon / failed supplement) so the pill
-  // spinner stops and a later refresh starts clean (MUL-5149).
+  // spinner stops and a later refresh starts clean (ISS-5149).
   useQuickActionsPendingTimeout(activeSessionId ?? null, quickActionsPending);
   // Toast when an accepted refresh later fails in the daemon (async half).
   useQuickActionsFailureToast(activeSessionId ?? null);
@@ -328,7 +328,7 @@ export function ChatWindow() {
   // chat:done so a reply arriving while the user watches triggers this effect
   // again and is instantly cleared. `appForeground` gates the "is looking"
   // assumption: a reply landing while the window is open but the app is
-  // backgrounded must stay unread so the sidebar badges it (MUL-4485), then
+  // backgrounded must stay unread so the sidebar badges it (ISS-4485), then
   // clears when the user refocuses and this effect re-runs.
   const currentHasUnread =
     sessions.find((s) => s.id === activeSessionId)?.has_unread ?? false;
@@ -409,7 +409,7 @@ export function ChatWindow() {
   );
 
   // Upload transport moved into the coordinated-upload engine inside ChatInput
-  // (MUL-5181 L2); the host only says whether the affordance exists. Uploads
+  // (ISS-5181 L2); the host only says whether the affordance exists. Uploads
   // remain workspace-scoped drafts — sending is still the point where a
   // session is created (if needed) and attachment_ids bind to the message.
 

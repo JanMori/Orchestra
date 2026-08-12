@@ -12,13 +12,13 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 
-	"github.com/multica-ai/multica/server/internal/integrations/channel"
-	"github.com/multica-ai/multica/server/internal/integrations/channel/engine"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel/engine"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // feishuChannel is the Feishu implementation of channel.Channel — the first
-// adapter driven by the channel-agnostic engine (MUL-3620). It wraps the
+// adapter driven by the channel-agnostic engine (ISS-3620). It wraps the
 // existing Lark transport: Connect runs the shared WS long-conn connector for
 // this installation, translating each decoded event into a normalized
 // channel.InboundMessage and handing it to the engine's shared inbound handler

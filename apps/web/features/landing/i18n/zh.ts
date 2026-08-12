@@ -962,7 +962,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
           "Codex 智能体的 MCP 设置能被正确读取了。",
           "Pi 智能体的 task 结果只显示最终答案，不再夹带中间步骤。",
           "自动化不再在单次运行超时的时候重复派发同一个任务。",
-          "任务的 PR 列表只显示真正关联到本任务的 PR，仅在描述里顺带提到「Related to MUL-…」的 PR 不再露出。",
+          "任务的 PR 列表只显示真正关联到本任务的 PR，仅在描述里顺带提到「Related to ISS-…」的 PR 不再露出。",
           "任务操作菜单里嵌套的「More」项改名为「Relations」，你不用点开也知道里面装的是关系类操作。",
           "所有附件上传按钮——对话输入、任务创建、任务描述、反馈——都支持在系统对话框里一次选多个文件。",
         ],
@@ -1990,7 +1990,7 @@ export function createZhDict(allowSignup: boolean): LandingDict {
           "新增 `orchestra daemon disk-usage` CLI，按 task / workspace 维度查看磁盘占用",
           "Skill Picker 弹窗新增搜索框，Agent 设置里挑技能更快",
           "Daemon GC 覆盖扩展到 chat、autopilot、quick-create task",
-          "任务详情页面包屑直接显示 MUL-xxxx identifier",
+          "任务详情页面包屑直接显示 ISS-xxxx identifier",
         ],
         improvements: [
           "Timeline 分页 size 提到 50，评论与活动按池独立 keyset 游标，长任务翻页更顺",

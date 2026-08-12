@@ -9,9 +9,9 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // TEN-356 regression: the reviewer-loop dedup keyed only on (issue_id,
@@ -59,7 +59,7 @@ func createHeadShaDedupFixture(t *testing.T, ctx context.Context, pool *pgxpool.
 	t.Helper()
 
 	suffix := time.Now().UnixNano()
-	email := fmt.Sprintf("head-sha-dedup-%d@multica.ai", suffix)
+	email := fmt.Sprintf("head-sha-dedup-%d@orchestra.local", suffix)
 	slug := fmt.Sprintf("head-sha-dedup-%d", suffix)
 
 	var userID string

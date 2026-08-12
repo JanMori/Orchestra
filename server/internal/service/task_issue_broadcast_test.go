@@ -6,10 +6,10 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // noRowsDBTX makes every read return pgx.ErrNoRows so getIssuePrefix's
@@ -30,7 +30,7 @@ type noRow struct{}
 func (noRow) Scan(...any) error { return pgx.ErrNoRows }
 
 // TestBroadcastIssueUpdated_EmitsStatusChange pins the realtime contract behind
-// #4648 / MUL-3782: when a background path resets an issue's status (e.g. the
+// #4648 / ISS-3782: when a background path resets an issue's status (e.g. the
 // failed-task handler flipping a stuck in_progress issue back to todo), it must
 // publish issue:updated with status_changed=true and the new status so the
 // frontend's onIssueUpdated reconcile moves the card between status columns /

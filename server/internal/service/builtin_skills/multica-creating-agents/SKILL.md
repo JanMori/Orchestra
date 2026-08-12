@@ -1,13 +1,13 @@
 ---
-name: multica-creating-agents
-description: "Use when creating, inspecting, or debugging a Multica agent definition via the `orchestra agent` CLI or POST /api/agents. Not for assigning issues to agents that already exist, and not for runtime task prompts."
+name: orchestra-creating-agents
+description: "Use when creating, inspecting, or debugging a Orchestra agent definition via the `orchestra agent` CLI or POST /api/agents. Not for assigning issues to agents that already exist, and not for runtime task prompts."
 user-invocable: false
-allowed-tools: Bash(multica *)
+allowed-tools: Bash(orchestra *)
 ---
 
-# Creating Multica agents
+# Creating Orchestra agents
 
-This is the contract for Multica's agent-creation path: what the create entry
+This is the contract for Orchestra's agent-creation path: what the create entry
 points accept, what the server validates and rejects, how each field is
 persisted, and which fields the daemon actually reads at claim time. It is
 not a parameter manual — it states source-traced facts, and every claim is
@@ -25,7 +25,7 @@ orchestra agent env get <agent-id> --output json  # plaintext env (agent owner o
 
 An agent can also be **unbound**: `runtime_id` is `NULL` (served as `""` with
 `runtime_bound: false`) after its runtime was deleted, which unbinds instead of
-deleting its agents (MUL-5559). An unbound agent keeps everything it owns and
+deleting its agents (ISS-5559). An unbound agent keeps everything it owns and
 stays editable, but no trigger path will run it — they all refuse with
 `agent_runtime_required` — until `agent update <id> --runtime-id <runtime-id>` binds
 it again. Unbound is orthogonal to archived.

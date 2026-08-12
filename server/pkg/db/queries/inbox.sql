@@ -8,7 +8,7 @@ ORDER BY i.created_at DESC;
 
 -- name: ListArchivedInboxItems :many
 -- Archived counterpart of ListInboxItems, backing the inbox's "Archived"
--- sub-view (MUL-3736).
+-- sub-view (ISS-3736).
 --
 -- An issue whose group still has an active row is excluded: archiving is
 -- issue-level, so a NEW notification on an already-archived issue leaves the
@@ -83,7 +83,7 @@ WHERE workspace_id = $1 AND recipient_type = $2 AND recipient_id = $3 AND issue_
 -- name: UnarchiveInboxItem :one
 -- Deliberately does not touch `read`: unarchiving restores an item to the main
 -- inbox in the exact read/unread state it was archived in, so restoring an
--- unread item legitimately raises the unread badge again (MUL-3736).
+-- unread item legitimately raises the unread badge again (ISS-3736).
 UPDATE inbox_item SET archived = false
 WHERE id = $1
 RETURNING *;
@@ -111,7 +111,7 @@ WHERE workspace_id = $1 AND recipient_type = $2 AND recipient_id = $3 AND read =
 -- its NEWEST non-archived item is unread. Opening an issue marks just that
 -- newest item read, so counting raw unread rows would keep older siblings
 -- alive and light the switcher dot for a workspace whose inbox the user sees
--- as empty (MUL-3695). Items without an issue group on their own id. The
+-- as empty (ISS-3695). Items without an issue group on their own id. The
 -- member join keeps counts scoped to workspaces the user still belongs to,
 -- so a stale item left behind in a workspace the user has since left cannot
 -- light the dot.

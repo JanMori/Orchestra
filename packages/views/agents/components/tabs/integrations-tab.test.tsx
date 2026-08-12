@@ -192,7 +192,7 @@ describe("IntegrationsTab", () => {
     // The agent's owner (user-1) is only a plain workspace member. Lark
     // authorizes the agent owner (canManageAgent), so the Lark bind entry
     // renders and receives owner_id; Slack's routes stay admin-only, so it
-    // shows the read-only note instead of a CTA (MUL-4213).
+    // shows the read-only note instead of a CTA (ISS-4213).
     membersRef.current = [{ user_id: "user-1", role: "member" }];
     renderTab(<IntegrationsTab agent={agent} />);
     const larkButton = screen.getByTestId("lark-bind-button");
@@ -208,7 +208,7 @@ describe("IntegrationsTab", () => {
   it("renders the bind entry (not coming-soon) when installs are unavailable but the agent is already bound", () => {
     // install_supported governs only NEW installs; an already-bound agent
     // must still surface its connected state instead of "coming soon"
-    // (regression for the must-fix on MUL-2988).
+    // (regression for the must-fix on ISS-2988).
     installationsRef.current = {
       installations: [{ agent_id: "agent-1", status: "active" }],
       configured: true,

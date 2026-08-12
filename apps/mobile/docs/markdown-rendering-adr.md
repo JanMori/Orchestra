@@ -27,11 +27,11 @@ the RN platform itself:
 **Fact**: as of 2026-05, **no single library satisfies path A + path B
 simultaneously** — i.e. native rendering performance AND custom React
 component for arbitrary leaf nodes. This is an ecosystem-level constraint,
-not a Multica problem.
+not a Orchestra problem.
 
 ### Concrete library survey (2026-05)
 
-| Library | Path | Last release | Verdict for Multica |
+| Library | Path | Last release | Verdict for Orchestra |
 |---|---|---|---|
 | [`react-native-enriched-markdown`](https://github.com/software-mansion-labs/react-native-enriched-markdown) | A | v0.5.0 (Apr 2026) | **Selected for prose.** Expo officially recommends it in [Edit rich text](https://docs.expo.dev/guides/editing-richtext/) — A-tier endorsement. Software Mansion (same team as Reanimated / Gesture Handler) |
 | [`react-native-streamdown`](https://github.com/software-mansion-labs/react-native-streamdown) | A + worklets | active 2026 | Not adopted. Built on enriched-markdown, optimised for AI streaming. Web/desktop don't use a streaming-specific renderer either, mobile streaming isn't currently a top product pain |
@@ -47,7 +47,7 @@ Closed-source production references like Stream Chat's [`StreamingMessageView`](
 
 ## Decision
 
-Multica mobile uses a **segment-based hybrid renderer** that dispatches
+Orchestra mobile uses a **segment-based hybrid renderer** that dispatches
 each markdown token type to the renderer that doesn't trip on that
 token's specific platform trap.
 
@@ -139,7 +139,7 @@ newly-added color fields** — they will also ship light-mode defaults.
 
 **Inline code chip top-heavy padding** — visible as `~13pt empty space
 above` vs `~3pt below` glyphs in chips inside CJK paragraphs (seen in
-#MUL-2397 and #MUL-2395 dark screenshots, 2026-05-19).
+#ISS-2397 and #ISS-2395 dark screenshots, 2026-05-19).
 
 - **Root cause**: enriched-markdown applies hardcoded internal padding
   to inline code that cannot be turned off via `markdownStyle.code`. The

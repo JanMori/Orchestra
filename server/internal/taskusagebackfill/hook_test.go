@@ -15,8 +15,8 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/multica-ai/multica/server/internal/migrations"
-	"github.com/multica-ai/multica/server/internal/taskusagebackfill"
+	"github.com/JanMori/Orchestra/server/internal/migrations"
+	"github.com/JanMori/Orchestra/server/internal/taskusagebackfill"
 )
 
 // TestHook_DirectV034Upgrade simulates the path described in
@@ -29,7 +29,7 @@ import (
 //     1970-01-01 (the post-101 default);
 //   - migration 103's fail-closed guard would normally abort `migrate
 //     up` here because watermark < max_event - 1h;
-//   - run taskusagebackfill.Hook (the migrator hook from MUL-2957);
+//   - run taskusagebackfill.Hook (the migrator hook from ISS-2957);
 //   - the hook performs an idempotent monthly-slice backfill, stamps
 //     the watermark, and migration 103 then passes.
 //
@@ -102,7 +102,7 @@ func TestHook_DirectV034Upgrade(t *testing.T) {
 	// Roll back the failed transaction state (Postgres connections are
 	// fine; we just did not commit anything destructive).
 
-	// Run the MUL-2957 migrator hook. The hook should:
+	// Run the ISS-2957 migrator hook. The hook should:
 	//   * Read MIN/MAX from task_usage.
 	//   * Acquire advisory lock 4246 on its own conn.
 	//   * Walk monthly slices via rollup_task_usage_hourly_window.

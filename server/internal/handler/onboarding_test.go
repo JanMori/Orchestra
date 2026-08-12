@@ -12,7 +12,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 
-	obsmetrics "github.com/multica-ai/multica/server/internal/metrics"
+	obsmetrics "github.com/JanMori/Orchestra/server/internal/metrics"
 )
 
 // newWaitlistTestUser inserts a fresh user row, returns its id, and
@@ -49,7 +49,7 @@ func newWaitlistRequest(userID string, body map[string]string) *http.Request {
 }
 
 func TestJoinCloudWaitlistRecordsEmailAndReason(t *testing.T) {
-	userID := newWaitlistTestUser(t, "waitlist-ok@multica.ai")
+	userID := newWaitlistTestUser(t, "waitlist-ok@orchestra.local")
 
 	w := httptest.NewRecorder()
 	req := newWaitlistRequest(userID, map[string]string{
@@ -88,7 +88,7 @@ func TestJoinCloudWaitlistRecordsEmailAndReason(t *testing.T) {
 }
 
 func TestJoinCloudWaitlistAllowsEmptyReason(t *testing.T) {
-	userID := newWaitlistTestUser(t, "waitlist-noreason@multica.ai")
+	userID := newWaitlistTestUser(t, "waitlist-noreason@orchestra.local")
 
 	w := httptest.NewRecorder()
 	req := newWaitlistRequest(userID, map[string]string{
@@ -111,7 +111,7 @@ func TestJoinCloudWaitlistAllowsEmptyReason(t *testing.T) {
 }
 
 func TestJoinCloudWaitlistMissingEmailReturns400(t *testing.T) {
-	userID := newWaitlistTestUser(t, "waitlist-missing@multica.ai")
+	userID := newWaitlistTestUser(t, "waitlist-missing@orchestra.local")
 
 	cases := []map[string]string{
 		{},               // empty body
@@ -131,7 +131,7 @@ func TestJoinCloudWaitlistMissingEmailReturns400(t *testing.T) {
 }
 
 func TestJoinCloudWaitlistRejectsOverlongReason(t *testing.T) {
-	userID := newWaitlistTestUser(t, "waitlist-long@multica.ai")
+	userID := newWaitlistTestUser(t, "waitlist-long@orchestra.local")
 
 	w := httptest.NewRecorder()
 	req := newWaitlistRequest(userID, map[string]string{
@@ -145,7 +145,7 @@ func TestJoinCloudWaitlistRejectsOverlongReason(t *testing.T) {
 }
 
 func TestJoinCloudWaitlistSecondCallOverwrites(t *testing.T) {
-	userID := newWaitlistTestUser(t, "waitlist-overwrite@multica.ai")
+	userID := newWaitlistTestUser(t, "waitlist-overwrite@orchestra.local")
 
 	// First submission.
 	w := httptest.NewRecorder()
@@ -553,7 +553,7 @@ func TestBootstrapOnboardingNoRuntimeCreatesSingleGuideIssue(t *testing.T) {
 	}
 	for _, want := range []string{
 		"Try Multica first",
-		"https://multica.ai/docs/install-agent-runtime",
+		"http://localhost:5001/docs/install-agent-runtime",
 		"npm i -g @openai/codex",
 	} {
 		if !strings.Contains(description, want) {
@@ -657,7 +657,7 @@ func TestBootstrapOnboardingNoRuntimeUsesChineseGuideForChineseUsers(t *testing.
 	}
 	for _, want := range []string{
 		"先体验项目管理功能",
-		"https://multica.ai/docs/install-agent-runtime",
+		"http://localhost:5001/docs/install-agent-runtime",
 		"中文用户建议先装 Kimi CLI",
 		"kimi --version",
 	} {
@@ -669,7 +669,7 @@ func TestBootstrapOnboardingNoRuntimeUsesChineseGuideForChineseUsers(t *testing.
 
 // counterValue sums a named Prometheus counter across all label
 // combinations on the given BusinessMetrics. Events are metrics-only
-// since MUL-4127, so PatchOnboarding's emissions are observable ONLY
+// since ISS-4127, so PatchOnboarding's emissions are observable ONLY
 // through these counters — there is no PostHog capture to record.
 func counterValue(t *testing.T, m *obsmetrics.BusinessMetrics, name string) float64 {
 	t.Helper()
@@ -709,12 +709,12 @@ func patchOnboardingAs(t *testing.T, h *Handler, userID, questionnaire string) {
 	}
 }
 
-// The in-flow questionnaire is role + use_case only (MUL-5159): its
+// The in-flow questionnaire is role + use_case only (ISS-5159): its
 // funnel counter must move without source, and source's own counter
 // must move exactly once when source resolves later via the workspace
 // backfill prompt.
 func TestPatchOnboardingSplitsQuestionnaireAndSourceEvents(t *testing.T) {
-	userID := newWaitlistTestUser(t, "onboarding-event-split@multica.ai")
+	userID := newWaitlistTestUser(t, "onboarding-event-split@orchestra.local")
 
 	m := obsmetrics.NewBusinessMetrics()
 	h := *testHandler
@@ -766,7 +766,7 @@ func TestPatchOnboardingSplitsQuestionnaireAndSourceEvents(t *testing.T) {
 // role and use_case skip markers; a backfill Skip writes source's) is
 // a resolution too: both counters move exactly once.
 func TestPatchOnboardingAllSkippedResolvesBothCounters(t *testing.T) {
-	userID := newWaitlistTestUser(t, "onboarding-source-skip@multica.ai")
+	userID := newWaitlistTestUser(t, "onboarding-source-skip@orchestra.local")
 
 	m := obsmetrics.NewBusinessMetrics()
 	h := *testHandler

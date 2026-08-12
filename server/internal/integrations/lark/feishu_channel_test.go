@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/integrations/channel"
-	"github.com/multica-ai/multica/server/internal/integrations/channel/engine"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel/engine"
 )
 
 // fakeSender embeds the APIClient interface (nil) and overrides only
@@ -767,7 +767,7 @@ func TestDispatchResultFromEngine(t *testing.T) {
 	res := dispatchResultFromEngine(engine.Result{
 		Outcome:         engine.OutcomeNeedsBinding,
 		Sender:          "ou_user",
-		IssueIdentifier: "MUL-7",
+		IssueIdentifier: "ISS-7",
 		IssueDuplicate:  true,
 	})
 	if res.Outcome != OutcomeNeedsBinding {
@@ -776,7 +776,7 @@ func TestDispatchResultFromEngine(t *testing.T) {
 	if res.SenderOpenID != "ou_user" {
 		t.Fatalf("sender not mapped: %q", res.SenderOpenID)
 	}
-	if res.IssueIdentifier != "MUL-7" {
+	if res.IssueIdentifier != "ISS-7" {
 		t.Fatalf("issue identifier not mapped: %q", res.IssueIdentifier)
 	}
 	if !res.IssueDuplicate {

@@ -14,7 +14,7 @@ import (
 // actually invoke is the directory slug writeSkillFiles lays down —
 // sanitizeSkillName of the same field. A workspace skill's Name is its human
 // display name ("PR review"), so listing it verbatim hands the model an
-// identifier that does not resolve (MUL-5529).
+// identifier that does not resolve (ISS-5529).
 //
 // Slugs come from resolveSkillSlugs over the *unfiltered* batch, because
 // writeSkillFiles lays down every skill — including the ones hidden here — and
@@ -26,7 +26,7 @@ import (
 // `<slug>-multica` while the listing shows the bare slug. Closing that needs
 // the allocated slug threaded back from Prepare, which these renderers
 // deliberately cannot reach — they are pure so the brief stays byte-identical
-// across runs. Tracked in MUL-5550.
+// across runs. Tracked in ISS-5550.
 func modelVisibleSkills(skills []SkillContextForEnv) []SkillContextForEnv {
 	if len(skills) == 0 {
 		return nil

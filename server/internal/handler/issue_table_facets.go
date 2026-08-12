@@ -11,9 +11,9 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/logger"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/logger"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // The workspace property catalog is capped at 20 active definitions. Six
@@ -209,7 +209,7 @@ func (h *Handler) issueTableFacetQuery(w http.ResponseWriter, r *http.Request, r
 		// precedence, user-authored non-archived agents only), but the issue set
 		// comes from the surface's own compiled scope + filters instead of a
 		// second, independent workspace-wide definition. That is what keeps the
-		// header chip's count equal to the rows clicking it leaves (MUL-5525).
+		// header chip's count equal to the rows clicking it leaves (ISS-5525).
 		query = fmt.Sprintf(`SELECT a.id::text, COUNT(*)::bigint
 FROM issue i
 JOIN agent_task_queue atq ON atq.issue_id = i.id

@@ -1,4 +1,4 @@
-// Classifies a manual "run now" outcome into a toast (MUL-4525). Pure so it can
+// Classifies a manual "run now" outcome into a toast (ISS-4525). Pure so it can
 // be unit-tested across every run-status class without mounting the page.
 //
 // The response schema deliberately accepts any status string for forward
@@ -45,7 +45,7 @@ export function runNowBlockedKey(reasonCode: string | undefined): RunNowBlockedK
     case "runtime_offline":
       return "run_blocked_runtime_offline";
     // Unbound, not offline: nothing will claim the run until the agent is bound
-    // to a runtime (MUL-5559).
+    // to a runtime (ISS-5559).
     case "agent_runtime_required":
       return "run_blocked_agent_runtime_required";
     case "target_unavailable":

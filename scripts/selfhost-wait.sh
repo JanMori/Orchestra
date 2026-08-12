@@ -84,13 +84,13 @@ if [ "$mode" = "build" ]; then
   echo "Built images locally via docker-compose.selfhost.build.yml."
   echo "Local tags: orchestra-backend:dev and orchestra-web:dev."
 else
-  echo "Images: ${ORCHESTRA_BACKEND_IMAGE:-ghcr.io/orchestra-ai/orchestra-backend}:${ORCHESTRA_IMAGE_TAG:-latest}"
-  echo "        ${ORCHESTRA_WEB_IMAGE:-ghcr.io/orchestra-ai/orchestra-web}:${ORCHESTRA_IMAGE_TAG:-latest}"
+  echo "Images: ${ORCHESTRA_BACKEND_IMAGE:-ghcr.io/JanMori/Orchestra-backend}:${ORCHESTRA_IMAGE_TAG:-latest}"
+  echo "        ${ORCHESTRA_WEB_IMAGE:-ghcr.io/JanMori/Orchestra-web}:${ORCHESTRA_IMAGE_TAG:-latest}"
 fi
 echo ""
 echo "Log in: configure RESEND_API_KEY in .env for email codes,"
 echo "        or read the generated code from backend logs when Resend is unset."
 echo ""
 echo "Next — install the CLI and connect your machine:"
-echo "  brew install orchestra-ai/tap/multica"
+echo "  brew install JanMori/tap/multica"
 echo "  orchestra setup self-host"

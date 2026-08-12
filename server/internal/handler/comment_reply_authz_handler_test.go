@@ -11,7 +11,7 @@ import (
 
 // TestCreateComment_TriggeredTaskRejectsTopLevelComment exercises the full
 // CreateComment handler path (not just taskCoversReplyParent) for the trap
-// reported in MUL-4417 / GH #5266: a comment-triggered task that posts a
+// reported in ISS-4417 / GH #5266: a comment-triggered task that posts a
 // parentless, top-level comment on its own issue is rejected with a 409 whose
 // message names the trigger comment and states that top-level comments are not
 // allowed. Pinning the message here keeps it from silently drifting away from
@@ -61,7 +61,7 @@ func TestCreateComment_TriggeredTaskRejectsTopLevelComment(t *testing.T) {
 // TestCreateComment_TriggeredTaskAllowsReplyUnderTrigger is the positive half:
 // the same task replying under its trigger comment succeeds, proving the guard
 // rejects only the top-level case and does not lock the whole issue for
-// comments (MUL-4417 / GH #5266).
+// comments (ISS-4417 / GH #5266).
 func TestCreateComment_TriggeredTaskAllowsReplyUnderTrigger(t *testing.T) {
 	if testHandler == nil || testPool == nil {
 		t.Skip("database not available")

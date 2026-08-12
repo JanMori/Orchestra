@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/pkg/agent"
+	"github.com/JanMori/Orchestra/server/pkg/agent"
 )
 
 // stubAgentProbe replaces CLI discovery for the duration of a test. The returned
@@ -67,7 +67,7 @@ func registeredProviders(t *testing.T, d *Daemon, workspaceID string) []string {
 	return out
 }
 
-// TestDiscovery_RegistersCLIInstalledAfterStartup is the MUL-5439 regression
+// TestDiscovery_RegistersCLIInstalledAfterStartup is the ISS-5439 regression
 // (GH #6077): the availability set used to be built once in LoadConfig, so a CLI
 // installed while the daemon was running never registered — and on Desktop,
 // quitting the app does not restart the daemon, so the user had no way to
@@ -518,7 +518,7 @@ func TestDiscovery_GainWithNoWorkspacesStillPublishes(t *testing.T) {
 	}
 }
 
-// TestHealth_ReportsSkippedAgents covers the diagnostic half of MUL-5439: a CLI
+// TestHealth_ReportsSkippedAgents covers the diagnostic half of ISS-5439: a CLI
 // that IS installed but gets dropped at registration used to be
 // indistinguishable from a CLI that is not installed — both produced no runtime.
 func TestHealth_ReportsSkippedAgents(t *testing.T) {

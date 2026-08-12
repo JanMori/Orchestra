@@ -54,14 +54,14 @@ type ExecOptions struct {
 	// clear). When it is true but the backend ends up on a fresh thread — the
 	// live resume RPC was rejected, or a transport failure forced a fresh retry —
 	// the backend surfaces a continuity notice instead of silently
-	// restarting. Currently honoured by the codex backend (MUL-4424).
+	// restarting. Currently honoured by the codex backend (ISS-4424).
 	ResumeExpected bool
 	// ResumeContinuityNotice is the text to prepend to the first turn when
 	// ResumeExpected holds but the backend lands on a fresh thread anyway. The
 	// caller owns the wording because only it knows what the surface lost — an
 	// issue's comments and a Slack channel's history survive and can be re-read,
 	// a web chat's and a Feishu channel's cannot — and that difference decides
-	// whether the agent should tell the user anything at all (MUL-5722).
+	// whether the agent should tell the user anything at all (ISS-5722).
 	//
 	// Empty means say nothing, and the caller MUST leave it empty when its own
 	// prompt already carries the notice. That is what keeps a turn from paying
@@ -81,7 +81,7 @@ type ExecOptions struct {
 	// injection so the upstream CLI's own default applies. Currently honoured
 	// by the claude, codex, opencode, codebuddy, and grok (ACP
 	// `--effort` on `grok agent`) backends; other backends ignore
-	// the field rather than fail (so MUL-2339 can grow runtime support
+	// the field rather than fail (so ISS-2339 can grow runtime support
 	// incrementally without breaking unrelated agents).
 	ThinkingLevel string
 	// ServiceTier is a runtime-native Codex execution tier (for example
@@ -109,7 +109,7 @@ type ExecOptions struct {
 // configured per-run timeout. A positive timeout imposes a hard wall-clock
 // deadline; a zero (or negative) timeout imposes NO deadline, leaving liveness
 // entirely to the daemon's inactivity watchdog so a session that keeps emitting
-// events is never killed merely for running long (MUL-3064). The caller owns
+// events is never killed merely for running long (ISS-3064). The caller owns
 // the returned CancelFunc and must call it to release resources.
 func runContext(ctx context.Context, timeout time.Duration) (context.Context, context.CancelFunc) {
 	if timeout > 0 {

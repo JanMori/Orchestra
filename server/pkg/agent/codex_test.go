@@ -17,7 +17,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/multica-ai/multica/server/pkg/redact"
+	"github.com/JanMori/Orchestra/server/pkg/redact"
 )
 
 func newTestCodexClient(t *testing.T) (*codexClient, *fakeStdin, []Message) {
@@ -737,7 +737,7 @@ func TestCodexFirstTurnProgressActivity(t *testing.T) {
 
 // TestCodexFirstTurnNoProgressTimeoutClamp pins both halves of the first-turn
 // window: the 60s ceiling that a healthy gpt-5.5 turn has to fit under
-// (MUL-5542), and the fact that the configured semantic inactivity timeout can
+// (ISS-5542), and the fact that the configured semantic inactivity timeout can
 // only ever shrink it, never raise it. The second half is easy to misread as a
 // knob for the ceiling — it is not, and GH #5959 proposed removing the ceiling
 // entirely on that reading.
@@ -811,7 +811,7 @@ func TestParseCodexSessionFileSubtractsCachedInput(t *testing.T) {
 }
 
 // The per-task CODEX_HOME must win over the ambient env / global home so usage
-// is read from the same task-local sessions Codex actually wrote to (MUL-4424).
+// is read from the same task-local sessions Codex actually wrote to (ISS-4424).
 func TestCodexSessionRootPrefersExplicitTaskHome(t *testing.T) {
 	// Cannot use t.Parallel() with t.Setenv.
 	envHome := t.TempDir()
@@ -1827,7 +1827,7 @@ func TestCodexStartOrResumeThreadResumesPriorThread(t *testing.T) {
 // would inline if developerInstructions were ever wired back up.
 const codexRuntimeBriefCanary = "MULTICA-RUNTIME-BRIEF-CANARY"
 
-// assertNoDeveloperInstructions pins the MUL-5392 contract: Codex loads the
+// assertNoDeveloperInstructions pins the ISS-5392 contract: Codex loads the
 // per-task AGENTS.md from the thread's cwd, so the daemon never inlines the
 // runtime brief here. The field must still be sent — the app-server treats a
 // missing key differently from an explicit null — but always as null.
@@ -1839,7 +1839,7 @@ func assertNoDeveloperInstructions(t *testing.T, params map[string]any) {
 		return
 	}
 	if got != nil {
-		t.Errorf("developerInstructions = %v, want null: the runtime brief is delivered via the workdir AGENTS.md, not inline (MUL-5392)", got)
+		t.Errorf("developerInstructions = %v, want null: the runtime brief is delivered via the workdir AGENTS.md, not inline (ISS-5392)", got)
 	}
 }
 
@@ -1930,7 +1930,7 @@ func TestCodexStartOrResumeThreadFallsBackOnResumeError(t *testing.T) {
 // TestCodexStartOrResumeThreadFallsBackOnResumeError (which proves the live
 // thread/resume RPC returns resumed=false on a recoverable error), this proves
 // the real fallback surfaces the notice while a successful resume does not
-// (MUL-4424).
+// (ISS-4424).
 func TestCodexTurnInput(t *testing.T) {
 	t.Parallel()
 
@@ -1966,7 +1966,7 @@ func TestCodexTurnInput(t *testing.T) {
 	}
 }
 
-// TestCodexTurnInputNoticeMatchesWhatTheSurfaceLost is the MUL-5722 half of the
+// TestCodexTurnInputNoticeMatchesWhatTheSurfaceLost is the ISS-5722 half of the
 // continuity notice. An issue's discussion survives in its comments, which the
 // agent re-reads every turn, so ordering it to announce "the previous context
 // was lost" tells the user the discussion is gone when none of it is. The
@@ -1978,7 +1978,7 @@ func TestCodexTurnInputSuppressesNoticeWhenCallerAlreadyDisclosed(t *testing.T) 
 	// An empty notice is how the caller says "the prompt already carries it".
 	// Honouring that is the backend's half of the no-duplicate guarantee: on
 	// the daemon's fresh-session retry the prompt already ends with the
-	// continuity notice, and before MUL-5722 this path prepended a second copy
+	// continuity notice, and before ISS-5722 this path prepended a second copy
 	// of the same paragraph into the same turn.
 	const prompt = "do the task"
 	input := codexTurnInput(prompt, true, false, "")
@@ -3219,7 +3219,7 @@ func TestCodexExecuteCleansUpWhenScannerOverflowsOnResume(t *testing.T) {
 		t.Fatalf("expected empty SessionID so outer fallback retries fresh, got %q",
 			result.SessionID)
 	}
-	// MUL-5722 layer 2: an unreadable resume response is a rejected resume,
+	// ISS-5722 layer 2: an unreadable resume response is a rejected resume,
 	// and this flag is the positive evidence shouldRetryWithFreshSession
 	// requires. Without it #5715's gate stops the retry dead (codex is in
 	// neither the ResumeRejected-capable nor the undetectable set), and the
@@ -3509,7 +3509,7 @@ func TestCodexExecuteSemanticInactivityDoesNotAffectNormalTurnCompletion(t *test
 	}
 }
 
-// TestCodexExecuteRetriesAfterModelCatalogRefreshFailure covers the MUL-5110
+// TestCodexExecuteRetriesAfterModelCatalogRefreshFailure covers the ISS-5110
 // hot path: Codex accepts the turn, fails to load its model catalog, and never
 // emits an item. The daemon must retry once and surface the second attempt.
 func TestCodexExecuteRetriesAfterModelCatalogRefreshFailure(t *testing.T) {
@@ -3613,7 +3613,7 @@ func TestCodexExecuteRetryAfterCatalogFailureStartsFreshThreadForResume(t *testi
 	result, _ := executeFakeCodexCollectingMessages(t, fakePath, ExecOptions{
 		ResumeSessionID: "thr-prior",
 		ResumeExpected:  true,
-		// Supplied by the daemon since MUL-5722: this package no longer holds
+		// Supplied by the daemon since ISS-5722: this package no longer holds
 		// the wording, because only the caller knows whether the surface's
 		// conversation can still be read.
 		ResumeContinuityNotice:    "[System notice] the previous conversation context could not be restored.\n\n",
@@ -4022,7 +4022,7 @@ func TestBuildCodexArgsDoesNotLeakMcpToArgv(t *testing.T) {
 }
 
 // TestNormalizeCodexLaunchArgsStripsShellQuotes locks the normalization the
-// daemon reuses for the Windows sandbox decision (MUL-4957): a shell-quoted
+// daemon reuses for the Windows sandbox decision (ISS-4957): a shell-quoted
 // `-c windows.sandbox=...` opt-in must come out as clean tokens, and
 // buildCodexArgs must be exactly the transport prefix followed by this result,
 // so the sandbox decision and the launch argv can never diverge.
@@ -4117,7 +4117,7 @@ func TestBuildCodexArgsPreservesCustomMcpOverridesWhenUnmanaged(t *testing.T) {
 	t.Parallel()
 
 	// Existing Codex agents may rely on `custom_args: ["-c", "mcp_servers.…"]`
-	// because before MUL-2764 there was no MCP Tab. When the agent has
+	// because before ISS-2764 there was no MCP Tab. When the agent has
 	// no managed mcp_config saved, the daemon must leave those entries
 	// alone — silently dropping them would break the only way those
 	// users had to configure MCP. We only claim the `mcp_servers`
@@ -5481,7 +5481,7 @@ func TestCodexResumeOverflowError(t *testing.T) {
 }
 
 // TestCodexResumeOverflowErrorMatchesLiveFailureText guards the seam between
-// the two halves of MUL-5722's layer 3: in-process the backend detects the
+// the two halves of ISS-5722's layer 3: in-process the backend detects the
 // overflow from the typed bufio.ErrTooLong, but the daemon classifies it at
 // report time from the error STRING alone. If the wording produced by
 // startOrResumeThread ever drifts from what the predicate matches, the resume

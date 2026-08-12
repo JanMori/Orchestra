@@ -51,7 +51,7 @@ import { useRestoredScrollRef } from "../../platform";
 // trailing spacer and Virtuoso's defaultItemHeight keeps the shared
 // scroller's height truthful from the first frame — which both stops the
 // scrollbar from re-drawing across the seed → Virtuoso handoff and lets the
-// restored scrollTop assignment stick at ref-attach (MUL-4741).
+// restored scrollTop assignment stick at ref-attach (ISS-4741).
 const LIST_ROW_ESTIMATED_HEIGHT = 36;
 
 const EMPTY_PROGRESS_MAP = new Map<string, ChildProgress>();
@@ -319,7 +319,7 @@ function ListViewImpl({
   // the current sticky-header + cross-section scroll behavior; only the rows
   // inside each expanded panel virtualize.
   const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null);
-  // Pull-based scroll restoration (MUL-4741): assign the saved offset when
+  // Pull-based scroll restoration (ISS-4741): assign the saved offset when
   // the shared scroller attaches — the per-status seeds plus their estimate
   // spacers give it a truthful height on the first commit.
   const restoreScrollRef = useRestoredScrollRef("list");
@@ -459,7 +459,7 @@ function StatusAccordionItem({
   const listComponents = useMemo(
     () => ({
       // Always a non-undefined object: react-virtuoso throws if `components`
-      // is ever undefined (MUL-4474). The footer itself renders null for a
+      // is ever undefined (ISS-4474). The footer itself renders null for a
       // short, non-paginated section.
       Footer: () => (
         <ListLoadMoreFooter
@@ -502,7 +502,7 @@ function StatusAccordionItem({
   // is still null (callback ref not settled after a route-return remount),
   // seed a bounded slice of real rows so the first painted frame isn't blank;
   // once it's set, mount the Virtuoso with a matching `initialItemCount` so the
-  // measurement frame keeps those rows instead of flashing empty (MUL-4750).
+  // measurement frame keeps those rows instead of flashing empty (ISS-4750).
   // The droppable, SortableContext, sticky header, and collapse are unchanged;
   // virtualization only decides whether an off-screen row is in the DOM.
   const rows =

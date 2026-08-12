@@ -8,8 +8,8 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 func TestSelectChatQuickActionsContextExcludesFutureTurnAfterItCompletes(t *testing.T) {
@@ -238,7 +238,7 @@ func TestParseChatQuickActionsOutputAcceptsFencedObject(t *testing.T) {
 	}
 }
 
-// The MUL-5689 shape, with every pull toward the wrong language present at
+// The ISS-5689 shape, with every pull toward the wrong language present at
 // once: an older Chinese turn, a Chinese agent reply, Chinese labels replayed
 // under ALREADY SUGGESTED — and the user's newest turn in English. The rendered
 // prompt must close by pointing at that newest [user] turn and disowning the

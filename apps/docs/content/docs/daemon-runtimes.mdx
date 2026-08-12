@@ -1,22 +1,22 @@
 ---
 title: Daemon and runtimes
-description: How Multica connects computers, discovers AI coding tools, and executes tasks.
+description: How Orchestra connects computers, discovers AI coding tools, and executes tasks.
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-Multica records and coordinates the work; connected computers execute it. The **daemon** on a computer claims tasks and invokes the AI coding tools installed on that machine.
+Orchestra records and coordinates the work; connected computers execute it. The **daemon** on a computer claims tasks and invokes the AI coding tools installed on that machine.
 
 ## Daemon vs runtime
 
-- The **daemon** is the Multica background process running on one computer. It connects to the server, discovers local tools, claims tasks, and reports results back.
+- The **daemon** is the Orchestra background process running on one computer. It connects to the server, discovers local tools, claims tasks, and reports results back.
 - A **runtime** represents one concrete execution environment available to a workspace. It corresponds to one computer plus one AI coding tool — or one custom runtime profile — on that computer.
 
 For example, a computer has both Claude Code and Codex installed and is connected to two workspaces. The daemon registers Claude Code and Codex runtimes for each workspace. Restarting the daemon updates the existing records; it does not keep creating new runtimes for the same combination.
 
 ## Execution location and data boundaries
 
-The AI coding tools a local runtime invokes, those tools' own login credentials, and your local code directories all stay on the connected computer. The Multica server does not execute commands on behalf of local tools, and it does not automatically upload your entire working directory.
+The AI coding tools a local runtime invokes, those tools' own login credentials, and your local code directories all stay on the connected computer. The Orchestra server does not execute commands on behalf of local tools, and it does not automatically upload your entire working directory.
 
 So the team can collaborate, the server stores issues, comments, agent configuration, task context, run records, and the results agents write back. That content can include code snippets or other project context an agent chose to read and include in its replies.
 
@@ -26,7 +26,7 @@ An agent's custom environment variables are stored server-side and sent to the r
 
 ## Starting the daemon
 
-With Multica Desktop, the app starts the daemon automatically — no extra command needed.
+With Orchestra Desktop, the app starts the daemon automatically — no extra command needed.
 
 On the web, a remote computer, or a headless environment, [install the Orchestra CLI](/cli) first, then run:
 
@@ -81,7 +81,7 @@ The runtime owner or an admin can make it **public**. Other workspace members ca
 
 If your team uses an internal wrapper, a version-pinned executable, or needs fixed extra arguments for a compatible tool, create a **custom runtime profile**.
 
-A custom profile does not add a new communication protocol. You still pick one of the protocol families Multica already supports (the tool's integration protocol type; see [AI coding tools comparison](/providers)), and the command itself must be compatible with that family.
+A custom profile does not add a new communication protocol. You still pick one of the protocol families Orchestra already supports (the tool's integration protocol type; see [AI coding tools comparison](/providers)), and the command itself must be compatible with that family.
 
 ### Creating a profile
 
@@ -99,13 +99,13 @@ The command field takes an executable and arguments, not a shell script. Plain a
 If a Desktop-launched daemon cannot find a command your terminal can run, set an absolute path for the current computer:
 
 ```bash
-multica runtime profile set-path <profile-id> --path /absolute/path/to/command
+orchestra runtime profile set-path <profile-id> --path /absolute/path/to/command
 ```
 
 Remove the path override:
 
 ```bash
-multica runtime profile unset-path <profile-id>
+orchestra runtime profile unset-path <profile-id>
 ```
 
 Editing a profile only affects tasks claimed afterwards. Before deleting a profile, deal with the active agents still bound to its runtimes. Deleting only the runtime instance on one computer does not delete the profile — a running daemon will re-register it.
@@ -117,7 +117,7 @@ Check in this order:
 1. Run `orchestra daemon status` to confirm the daemon is running.
 2. Run `orchestra daemon logs -f` to look for login, network, or tool-detection errors.
 3. Run `command -v <tool-command>` in the same environment to confirm the daemon can find it.
-4. Open Multica's **Runtimes** page and check whether the target computer and the matching AI coding tool show as online.
+4. Open Orchestra's **Runtimes** page and check whether the target computer and the matching AI coding tool show as online.
 5. After a tool install, a path change, or a profile update, run `orchestra daemon restart`.
 
 If the problem persists, see [Troubleshooting](/troubleshooting).

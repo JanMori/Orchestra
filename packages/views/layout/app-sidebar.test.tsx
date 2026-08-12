@@ -410,7 +410,7 @@ describe("personal nav — Chat", () => {
 
   it("counts the active session while the floating window is open but the app is backgrounded", () => {
     // A reply landing while the app is not in the foreground is NOT auto
-    // marked-read (MUL-4485), so its unread must still badge — otherwise the
+    // marked-read (ISS-4485), so its unread must still badge — otherwise the
     // notification is silently eaten while the user is away.
     chatSessions.current = [{ id: "a", unread_count: 2 }, { id: "b", unread_count: 3 }];
     navigation.current = { pathname: "/acme/issues" };

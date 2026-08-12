@@ -125,7 +125,7 @@ Hidden body.`,
 		{ChatSessionID: "c-1", AgentName: ctx.AgentName, AgentID: ctx.AgentID, AgentSkills: ctx.AgentSkills},
 	} {
 		out := buildMetaSkillContent("codex", kind)
-		// Listings carry the on-disk slug, not the display name (MUL-5529).
+		// Listings carry the on-disk slug, not the display name (ISS-5529).
 		if !strings.Contains(out, "visible-skill") {
 			t.Errorf("brief missing visible skill:\n%s", out)
 		}

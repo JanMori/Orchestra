@@ -303,7 +303,7 @@ var acpDeliverableEmissionPaths = []struct {
 // TestACPBackendsDeliverFinalAnswerWithoutNarration pins the boundary across
 // every ACP backend: interim narration stays in the streamed transcript but
 // must not reach Result.Output, which becomes the channel reply and the
-// auto-generated issue comment (#6006, MUL-5394).
+// auto-generated issue comment (#6006, ISS-5394).
 func TestACPBackendsDeliverFinalAnswerWithoutNarration(t *testing.T) {
 	t.Parallel()
 

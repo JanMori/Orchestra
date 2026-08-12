@@ -12,12 +12,12 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/logger"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/logger"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
-// Issue Quick Actions (MUL-5465): workspace-level presets for "who to call and
+// Issue Quick Actions (ISS-5465): workspace-level presets for "who to call and
 // what to say" on an existing issue.
 //
 // Contract highlights:
@@ -25,7 +25,7 @@ import (
 //     ordinary comment carrying the target's mention markup (marked with
 //     quick_action_id), and hands off to triggerTasksForComment. Permission, attribution, crew routing,
 //     the execution log, and pending-task coalescing are inherited from the
-//     comment path rather than reimplemented — the MUL-3375 lesson about four
+//     comment path rather than reimplemented — the ISS-3375 lesson about four
 //     drifting copies of one trigger decision.
 //   - PERMISSION IS CHECKED IN EXACTLY ONE PLACE: RunQuickAction. The list
 //     endpoint does no permission work and hides nothing beyond `private`

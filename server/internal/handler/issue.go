@@ -18,15 +18,15 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/dispatch"
-	"github.com/multica-ai/multica/server/internal/issueguard"
-	"github.com/multica-ai/multica/server/internal/logger"
-	"github.com/multica-ai/multica/server/internal/middleware"
-	"github.com/multica-ai/multica/server/internal/service"
-	"github.com/multica-ai/multica/server/internal/util"
-	agentpkg "github.com/multica-ai/multica/server/pkg/agent"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/dispatch"
+	"github.com/JanMori/Orchestra/server/internal/issueguard"
+	"github.com/JanMori/Orchestra/server/internal/logger"
+	"github.com/JanMori/Orchestra/server/internal/middleware"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	agentpkg "github.com/JanMori/Orchestra/server/pkg/agent"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // IssueResponse is the JSON response for an issue.
@@ -444,7 +444,7 @@ func buildSearchQuery(phrase string, terms []string, queryNum int, hasNum bool, 
 	// a lossy bitmap and taking 30+ seconds. With the workspace_id
 	// constant duplicated into the subquery, the hashed set collapses to
 	// this workspace's comments and the plan uses the supporting
-	// idx_comment_workspace (migration 135). See MUL-4059 EXPLAIN reports.
+	// idx_comment_workspace (migration 135). See ISS-4059 EXPLAIN reports.
 	phraseMatch := fmt.Sprintf(
 		"(LOWER(i.title) LIKE %s OR LOWER(COALESCE(i.description, '')) LIKE %s OR EXISTS (SELECT 1 FROM comment c WHERE c.issue_id = i.id AND c.workspace_id = %s AND LOWER(c.content) LIKE %s))",
 		phraseContainsParam, phraseContainsParam, wsParam, phraseContainsParam,
@@ -2548,14 +2548,14 @@ func (h *Handler) CreateIssue(w http.ResponseWriter, r *http.Request) {
 		originType = pgtype.Text{String: *req.OriginType, Valid: true}
 		originID = oid
 	} else if creatorType == "agent" {
-		// MUL-4305: an agent creating an issue via the ordinary create path
+		// ISS-4305: an agent creating an issue via the ordinary create path
 		// carries no explicit origin, which historically left the new issue
 		// unattributed. Any run later derived from it (agent assignment,
 		// crew-leader trigger) then lost the top-of-chain human originator,
 		// so A2A @-mentions from those runs failed the canInvokeAgent gate
 		// against private agents. Stamp the acting task as the issue's origin
 		// so resolveOriginatorForIssueTask can inherit its originator — the
-		// same trick CreateComment uses with comment.source_task_id (MUL-4015).
+		// same trick CreateComment uses with comment.source_task_id (ISS-4015).
 		//
 		// The task id is taken from the SERVER-trusted X-Task-ID: resolveActor
 		// only returns creatorType=="agent" when either X-Actor-Source=task_token
@@ -2699,13 +2699,13 @@ type UpdateIssueRequest struct {
 	AttachmentIDs []string `json:"attachment_ids"`
 	// SuppressRun, when true, applies the assignee/status change as usual but
 	// skips starting the agent run this write would otherwise trigger
-	// ("暂时不启动" — MUL-3375). It is not an undo: the change takes effect and
+	// ("暂时不启动" — ISS-3375). It is not an undo: the change takes effect and
 	// the issue can be run later via manual run/rerun. Optional; omitted or
 	// false keeps today's behavior. Mirrors comment suppress_agent_ids.
 	SuppressRun bool `json:"suppress_run,omitempty"`
 	// HandoffNote is an optional free-text instruction injected into the run's
 	// opening context when this write starts an agent/crew run ("交接说明" —
-	// MUL-3375). Only consumed when a run actually starts: SuppressRun=true or
+	// ISS-3375). Only consumed when a run actually starts: SuppressRun=true or
 	// a parked/non-triggering write drops it. Never fabricates a comment.
 	HandoffNote string `json:"handoff_note,omitempty"`
 }
@@ -2821,7 +2821,7 @@ func (h *Handler) UpdateIssue(w http.ResponseWriter, r *http.Request) {
 			}
 			// Cannot set self as parent. Compare against prevIssue.ID (the
 			// resolved entity), not the raw URL string — `id` may be an
-			// identifier like "MUL-7".
+			// identifier like "ISS-7".
 			if newParentID == prevIssue.ID {
 				writeError(w, http.StatusBadRequest, "an issue cannot be its own parent")
 				return
@@ -2914,7 +2914,7 @@ func (h *Handler) UpdateIssue(w http.ResponseWriter, r *http.Request) {
 	// project_changed gates the client's per-project issue-list refetch the way
 	// status/assignee flags gate theirs. Without it the client must diff
 	// project_id against its own cache, which breaks once an optimistic local
-	// move has overwritten the cached value (MUL-3669 / #4548).
+	// move has overwritten the cached value (ISS-3669 / #4548).
 	projectChanged := req.ProjectID != nil && uuidToString(prevIssue.ProjectID) != uuidToString(issue.ProjectID)
 	descriptionChanged := req.Description != nil && textToPtr(prevIssue.Description) != resp.Description
 	titleChanged := req.Title != nil && prevIssue.Title != issue.Title
@@ -2953,10 +2953,10 @@ func (h *Handler) UpdateIssue(w http.ResponseWriter, r *http.Request) {
 	// Reconcile the task queue. Whether this write starts an agent run — and
 	// for whom (agent assignee or crew leader) — is decided by the single
 	// WillEnqueueRun predicate, shared verbatim with the preview endpoint so
-	// the two never drift (MUL-3375).
+	// the two never drift (ISS-3375).
 	//
 	// A reassignment intentionally does NOT cancel existing tasks on the issue
-	// (#4963 / MUL-4113). The previous "cancel every active task on the issue"
+	// (#4963 / ISS-4113). The previous "cancel every active task on the issue"
 	// was too coarse: it silently dropped unrelated in-flight work (a
 	// mention-triggered run for another agent, a crew task) with no requeue,
 	// and it self-cancelled a run that reassigned the issue from inside itself.
@@ -2965,7 +2965,7 @@ func (h *Handler) UpdateIssue(w http.ResponseWriter, r *http.Request) {
 	// was already in flight. No status change — not even → cancelled — cancels
 	// active tasks: a user clicking "cancel" on an issue has no expectation that
 	// it stops in-flight agent runs, so that implicit coupling is gone
-	// (MUL-4465). Deleting an issue still cancels its tasks (see DeleteIssue),
+	// (ISS-4465). Deleting an issue still cancels its tasks (see DeleteIssue),
 	// because the tasks' owning issue ceases to exist.
 	if trigger, ok := h.IssueService.WillEnqueueRun(r.Context(),
 		service.IssueTriggerInput{
@@ -2981,7 +2981,7 @@ func (h *Handler) UpdateIssue(w http.ResponseWriter, r *http.Request) {
 
 	// Platform-driven parent notification: when this issue transitions into
 	// `done` and has a parent, post a top-level system comment on the parent
-	// (MUL-2538 — replaces the agent-prompt rule that caused self-mention
+	// (ISS-2538 — replaces the agent-prompt rule that caused self-mention
 	// loops in PR #2918). The helper guards on transition + parent state and
 	// fails best-effort.
 	if statusChanged {
@@ -3311,7 +3311,7 @@ func (h *Handler) BatchUpdateIssues(w http.ResponseWriter, r *http.Request) {
 	updated := 0
 	// Children that transitioned into a terminal status this batch, collected so
 	// the parent/stage notification is evaluated once against the final state
-	// after the loop (MUL-4155) rather than per-child mid-batch.
+	// after the loop (ISS-4155) rather than per-child mid-batch.
 	var childDoneCompleted []db.Issue
 	for _, issueID := range req.IssueIDs {
 		issueUUID, err := util.ParseUUID(issueID)
@@ -3488,12 +3488,12 @@ func (h *Handler) BatchUpdateIssues(w http.ResponseWriter, r *http.Request) {
 			"project_changed":  projectChanged,
 		})
 
-		// Reassignment does not cancel existing tasks (#4963 / MUL-4113) —
+		// Reassignment does not cancel existing tasks (#4963 / ISS-4113) —
 		// mirrors UpdateIssue. See that handler for the rationale.
 		//
 		// Same single predicate as UpdateIssue — batch must not grow its own
 		// copy of the enqueue rule (the historical source of four-entry-point
-		// drift, MUL-3375). suppress_run applies batch-wide.
+		// drift, ISS-3375). suppress_run applies batch-wide.
 		if trigger, ok := h.IssueService.WillEnqueueRun(r.Context(),
 			service.IssueTriggerInput{
 				Issue:           issue,
@@ -3507,13 +3507,13 @@ func (h *Handler) BatchUpdateIssues(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// No status change — not even → cancelled — cancels active tasks here,
-		// mirroring UpdateIssue (MUL-4465). See that handler for the rationale.
+		// mirroring UpdateIssue (ISS-4465). See that handler for the rationale.
 
 		// Platform-driven parent notification, mirrored from UpdateIssue
-		// (MUL-2538) but DEFERRED to after the loop. Evaluating the stage
+		// (ISS-2538) but DEFERRED to after the loop. Evaluating the stage
 		// barrier here, per-child, would read a mid-batch sibling snapshot and
 		// fire a stale "advance Stage N+1" wake when one batch closes several
-		// stages at once (MUL-4155). Collect the terminal transitions and let
+		// stages at once (ISS-4155). Collect the terminal transitions and let
 		// notifyParentsOfBatchChildDone below evaluate each parent once against
 		// the batch's final committed state. Same transition guard as
 		// notifyParentOfChildDone: a non-terminal -> terminal move on a child.
@@ -3527,7 +3527,7 @@ func (h *Handler) BatchUpdateIssues(w http.ResponseWriter, r *http.Request) {
 
 	// Aggregate parent/stage notification over the whole batch's final state so
 	// each affected parent gets at most one accurate comment + wake, independent
-	// of issue_ids order (MUL-4155). Best-effort; failure does not abort the
+	// of issue_ids order (ISS-4155). Best-effort; failure does not abort the
 	// batch. Single-issue UpdateIssue is unchanged and still notifies inline.
 	h.notifyParentsOfBatchChildDone(r.Context(), childDoneCompleted)
 

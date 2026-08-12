@@ -45,7 +45,7 @@ function makeAdapter(
 function renderCard(adapter: NavigationAdapter) {
   return render(
     <NavigationProvider value={adapter}>
-      <IssueMentionCard issueId="issue-1" fallbackLabel="MUL-7" />
+      <IssueMentionCard issueId="issue-1" fallbackLabel="ISS-7" />
     </NavigationProvider>,
   );
 }
@@ -64,7 +64,7 @@ describe("IssueMentionCard", () => {
     expect(anchor).toHaveAttribute("target", "_blank");
 
     fireEvent.click(screen.getByTestId("issue-chip"));
-    expect(openInNewTab).toHaveBeenCalledWith("/acme/issues/issue-1", "MUL-7", {
+    expect(openInNewTab).toHaveBeenCalledWith("/acme/issues/issue-1", "ISS-7", {
       activate: true,
     });
     expect(push).not.toHaveBeenCalled();

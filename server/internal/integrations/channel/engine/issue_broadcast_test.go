@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/service"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // A chat-created issue must broadcast the same full issue payload the HTTP
@@ -76,8 +76,8 @@ func TestRouter_IssueCommand_BroadcastPayloadCarriesIdentityFields(t *testing.T)
 	}
 	// The workspace issue prefix must come from the workspace row, matching the
 	// identifier the chat reply already shows.
-	if got, _ := issue["identifier"].(string); got != "MUL-42" {
-		t.Errorf("issue[\"identifier\"] = %q; want MUL-42", got)
+	if got, _ := issue["identifier"].(string); got != "ISS-42" {
+		t.Errorf("issue[\"identifier\"] = %q; want ISS-42", got)
 	}
 }
 

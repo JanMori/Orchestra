@@ -10,13 +10,13 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/pkg/agent"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/pkg/agent"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // ---------------------------------------------------------------------------
-// Custom Runtime Profiles (MUL-3284)
+// Custom Runtime Profiles (ISS-3284)
 //
 // A runtime_profile is a workspace-level, team-shared definition of a custom
 // runtime — e.g. an in-house Codex wrapper. Daemons pull the enabled profiles
@@ -76,7 +76,7 @@ func runtimeProfileToResponse(p db.RuntimeProfile) RuntimeProfileResponse {
 // would silently leak a "private" profile's name/command to other members and
 // let other machines' daemons register it (lateral data leak). Re-expose a
 // visibility control only once those read paths enforce creator visibility.
-// Follow-up: MUL-3308.
+// Follow-up: ISS-3308.
 const runtimeProfileDefaultVisibility = "workspace"
 
 // marshalFixedArgs validates and JSON-encodes the fixed_args list. Each entry

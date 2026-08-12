@@ -20,7 +20,7 @@ function makeIssue(id: string): Issue {
     id,
     workspace_id: "ws-1",
     number: id === "issue-1" ? 1 : 2,
-    identifier: id === "issue-1" ? "MUL-1" : "MUL-2",
+    identifier: id === "issue-1" ? "ISS-1" : "ISS-2",
     title: id,
     description: null,
     status: "todo",

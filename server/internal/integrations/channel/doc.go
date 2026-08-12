@@ -1,8 +1,8 @@
 // Package channel is the platform-agnostic foundation for Multica's
 // inbound IM integrations (Feishu/Lark, Slack, WeCom, …). It owns the
 // contract every integration implements so the core never learns what a
-// given platform's event JSON looks like — design tracked in MUL-3506,
-// phase-1 foundation in MUL-3515.
+// given platform's event JSON looks like — design tracked in ISS-3506,
+// phase-1 foundation in ISS-3515.
 //
 // The contract has four pieces:
 //
@@ -30,7 +30,7 @@
 //  4. Registry — a Type→Factory map with last-writer-wins semantics.
 //     Adding a platform is "register a factory", not "edit the core".
 //
-// Boundary rule (MUL-3515 decision §2): the envelope holds ONLY fields
+// Boundary rule (ISS-3515 decision §2): the envelope holds ONLY fields
 // that are true across every platform — Text, a normalized message-type
 // enum, media references, the reply/thread anchors, the routing Source,
 // and the event/message ids used for dedup. Anything platform-specific
@@ -41,5 +41,5 @@
 // dependencies, and nothing in it imports another integration package.
 // The concrete Feishu/Lark adapter, the DB-backed installation/identity/
 // session resolvers, and the supervisor that drives Connect/Disconnect
-// are wired in the follow-up cutover (see MUL-3515).
+// are wired in the follow-up cutover (see ISS-3515).
 package channel

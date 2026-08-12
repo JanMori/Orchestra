@@ -10,9 +10,9 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // failNthBeginTxStarter fails the Nth Begin so a specific ClaimTask inside the
@@ -56,7 +56,7 @@ func (f candidateFailDBTX) QueryRow(ctx context.Context, sql string, args ...int
 }
 
 // TestClaimTasksForRuntimes_PartialSuccessOnSecondAgentClaimFailure is the
-// MUL-4257 review regression: ClaimTask runs per agent in its own transaction,
+// ISS-4257 review regression: ClaimTask runs per agent in its own transaction,
 // so when a later agent's claim fails the already-committed (dispatched) tasks
 // must be RETURNED, not dropped with an error. Dropping them would 500 the
 // handler and make the daemon HTTP-fall-back and double-claim the same slots.
@@ -91,7 +91,7 @@ func TestClaimTasksForRuntimes_PartialSuccessOnSecondAgentClaimFailure(t *testin
 // TestClaimTasksForRuntimes_PartialSuccessOnCandidateQueryFailureAfterReclaim
 // covers the other partial-commit path: step-2 reclaims a stale dispatched task
 // (committed), then the step-4 candidate SELECT errors. The reclaimed task must
-// be returned, not dropped — same double-claim risk otherwise (MUL-4257).
+// be returned, not dropped — same double-claim risk otherwise (ISS-4257).
 func TestClaimTasksForRuntimes_PartialSuccessOnCandidateQueryFailureAfterReclaim(t *testing.T) {
 	ctx := context.Background()
 	pool := newTaskClaimRacePool(t)

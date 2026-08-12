@@ -11,7 +11,7 @@ import {
 import { parseIssueWindowPath } from "../../../shared/issue-window";
 
 /**
- * Answer the `multica:navigate` event inside a dedicated issue window (MUL-5208).
+ * Answer the `multica:navigate` event inside a dedicated issue window (ISS-5208).
  *
  * The event is what a link in content (comment, description) fires once it
  * resolves to an in-app destination, including an absolute URL on this
@@ -50,7 +50,7 @@ function useContentLinkHandler(
  * Navigation bridge for a dedicated issue window. Unlike the main Desktop
  * shell, this window owns a tiny MemoryRouter and intentionally accepts only
  * issue-detail routes. Keeping the bridge in the platform layer preserves the
- * MUL-4741 boundary around direct router navigation.
+ * ISS-4741 boundary around direct router navigation.
  */
 export function IssueWindowNavigationProvider({
   children,

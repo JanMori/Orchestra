@@ -51,7 +51,7 @@ ORDER BY (cs.pinned_at IS NOT NULL) DESC, cs.pinned_at DESC, COALESCE(lm.created
 -- unread state), but an archived session is read-only and hidden from history,
 -- so any residual unread is uncleanable and must not light up any badge. Gating
 -- on status here is the single source of truth for all unread surfaces (FAB,
--- sidebar Chat tab, chat-window header) — see MUL-4360.
+-- sidebar Chat tab, chat-window header) — see ISS-4360.
 SELECT cs.*,
        CASE WHEN cs.status = 'archived' THEN 0
             ELSE (SELECT count(*) FROM chat_message m
@@ -90,7 +90,7 @@ ORDER BY (cs.pinned_at IS NOT NULL) DESC, cs.pinned_at DESC, COALESCE(lm.created
 -- cs.runtime_id: that is the daemon's resume pointer, left stale on purpose
 -- after a runtime switch (see RebindAgentBuilderRuntime), so resuming from it
 -- would put the picker on a runtime that no longer executes anything — the
--- exact split MUL-5163 removed.
+-- exact split ISS-5163 removed.
 --
 -- A conversation qualifies once it holds something the user would miss: a
 -- message, or a saved configuration. Requiring a message alone was wrong — the
@@ -151,7 +151,7 @@ RETURNING *;
 -- name: UpdateChatSessionTitleIfCurrent :one
 -- Compare-and-swap the title: only overwrite it when it still equals the
 -- value the caller observed (@expected_title). This is the idempotency /
--- no-clobber guard behind LLM auto-titling (MUL-4295): the async generator
+-- no-clobber guard behind LLM auto-titling (ISS-4295): the async generator
 -- captures the session's current (default/original) title before calling the
 -- model, and this write lands only if a manual rename or a competing writer
 -- has not changed the title in the meantime. A mismatch returns pgx.ErrNoRows
@@ -283,7 +283,7 @@ FOR UPDATE;
 -- send reads the carrier agent's runtime_id, the switch then passes its
 -- pending-task check and rebinds the carrier, and the send finally inserts a task
 -- still stamped with the pre-switch runtime — so the user is told the switch
--- succeeded while their message runs on the old runtime (MUL-5163).
+-- succeeded while their message runs on the old runtime (ISS-5163).
 --
 -- The lock alone is not sufficient: the send path must also re-read the agent
 -- INSIDE the locked transaction, because a send blocked at INSERT would otherwise
@@ -338,7 +338,7 @@ WHERE id = $1;
 -- name: CreateChatMessage :one
 -- message_kind and quick_actions default via COALESCE so every existing caller
 -- (which omits it) keeps writing ordinary messages; the empty-reply path passes
--- 'no_response' to mark a visible turn with no text output (MUL-4351).
+-- 'no_response' to mark a visible turn with no text output (ISS-4351).
 INSERT INTO chat_message (
     chat_session_id, role, content, task_id, failure_reason, elapsed_ms,
     message_kind, quick_actions, channel_media_pending_until, channel_ingested
@@ -619,7 +619,7 @@ WHERE claimed_input.id = latest_visible.claimed_input_id
 
 -- name: ReanchorNextQueuedDirectChatInput :exec
 -- An assistant outcome can make the next queued direct task the positional
--- head before a daemon claims it (MUL-5750). Its user row was persisted before
+-- head before a daemon claims it (ISS-5750). Its user row was persisted before
 -- this reply, so move that still-hidden single-row input just after the reply.
 -- Callers run this immediately after CreateChatMessage in the same transaction:
 -- readers see either the old active head without the reply, or the settled
@@ -704,7 +704,7 @@ WHERE id = $1;
 -- name: CreateChatTask :one
 -- The chat sender (initiator) is a direct_human originator and accountable;
 -- attribution provenance is stamped so this path is not a NULL-source enqueue
--- bypass (MUL-4302 §2).
+-- bypass (ISS-4302 §2).
 INSERT INTO agent_task_queue (
     agent_id, runtime_id, issue_id, status, priority, chat_session_id,
     initiator_user_id, originator_user_id, accountable_user_id, force_fresh_session, runtime_mcp_overlay,
@@ -838,7 +838,7 @@ WHERE session_id NOT IN (SELECT session_id FROM retired_sessions)
                AND COALESCE(error, '') ~* 'role[^a-z0-9]{0,2}assistant|assistant message|message at position|messages\.[0-9]|messages\[[0-9]')
     )
   )
-  -- MUL-5722, mirroring GetLastTaskSession: an overflowed resume records no
+  -- ISS-5722, mirroring GetLastTaskSession: an overflowed resume records no
   -- session, so exclude by time instead of by matching the failed row. Note
   -- this only guards the FALLBACK — the claim handler reads
   -- chat_session.session_id first, so a pointer still naming the oversized
@@ -858,14 +858,14 @@ LIMIT 1;
 -- target we'd resume is already stale even before its assistant row lands; and a
 -- second concurrent regenerate would double-spend quota on the same turn. Read
 -- inside the same session lock as the enqueue so it cannot race a sibling insert
--- (MUL-5149 review §1/§2).
+-- (ISS-5149 review §1/§2).
 --
 -- 'deferred' is included: an auto-retry armed with a backoff fire_at is inserted
 -- deferred (CreateRetryTask), and provider_network's final chat attempt waits
 -- ~5s that way. During that window the failed turn has written no assistant row,
 -- so the latest-persisted check still points at the OLD turn — omitting deferred
 -- would let a refresh resume a session the retry is about to advance and attach
--- the new turn's suggestions to the old one (MUL-5149 re-review §1).
+-- the new turn's suggestions to the old one (ISS-5149 re-review §1).
 SELECT EXISTS (
   SELECT 1 FROM agent_task_queue
   WHERE chat_session_id = $1
@@ -895,7 +895,7 @@ SELECT id, status, created_at FROM agent_task_queue
 WHERE chat_session_id = $1 AND status IN ('queued', 'dispatched', 'running', 'waiting_local_directory')
   -- Background quick-actions regeneration passes are invisible to the chat UI:
   -- they own no assistant turn and must not raise the StatusPill or disable the
-  -- composer (MUL-5149 refresh follow-up).
+  -- composer (ISS-5149 refresh follow-up).
   AND regenerate_quick_actions_for IS NULL
 ORDER BY created_at DESC
 LIMIT 1;
@@ -1001,7 +1001,7 @@ JOIN chat_session cs ON cs.id = atq.chat_session_id
 WHERE atq.chat_session_id IS NOT NULL
   AND atq.status IN ('queued', 'dispatched', 'running', 'waiting_local_directory', 'deferred')
   -- Exclude background quick-actions regeneration passes: they own no assistant
-  -- turn and must not surface as "running" chat work (MUL-5149 refresh follow-up).
+  -- turn and must not surface as "running" chat work (ISS-5149 refresh follow-up).
   AND atq.regenerate_quick_actions_for IS NULL
   AND cs.workspace_id = $1
   AND cs.creator_id = $2
@@ -1024,7 +1024,7 @@ SELECT EXISTS (
   WHERE atq.chat_session_id IS NOT NULL
     AND atq.status IN ('queued', 'dispatched', 'running', 'waiting_local_directory', 'deferred')
     -- Background quick-actions regeneration passes own no visible turn and must
-    -- never light the FAB "running" indicator (MUL-5149 refresh follow-up).
+    -- never light the FAB "running" indicator (ISS-5149 refresh follow-up).
     AND atq.regenerate_quick_actions_for IS NULL
     AND cs.workspace_id = sqlc.arg(workspace_id)
     AND cs.creator_id = sqlc.arg(creator_id)
@@ -1053,7 +1053,7 @@ LIMIT 1;
 -- server-driven turn: an intro session starts with zero user messages, so the
 -- opening run gets the "introduce yourself" prompt. Once the creator replies,
 -- later turns in the same session must fall back to the normal reply prompt
--- instead of repeating the introduction every turn (MUL-4259).
+-- instead of repeating the introduction every turn (ISS-4259).
 SELECT EXISTS (
     SELECT 1 FROM chat_message
     WHERE chat_session_id = $1 AND role = 'user'
@@ -1079,7 +1079,7 @@ DELETE FROM chat_draft_restore
 WHERE id = $1 AND chat_session_id = $2;
 
 -- name: DeleteChatDraftRestoresBySession :exec
--- chat_draft_restore carries no chat_session FK (MUL-3515), so DeleteChatSession
+-- chat_draft_restore carries no chat_session FK (ISS-3515), so DeleteChatSession
 -- prunes its pending restores in the same tx that deletes the session.
 DELETE FROM chat_draft_restore
 WHERE chat_session_id = $1;
@@ -1138,7 +1138,7 @@ FOR UPDATE OF cs;
 -- same tx, BEFORE the agent rows go: the join below needs them. Mirrors
 -- DeleteChannelInstallationsBySystemRuntimeAgents.
 --
--- Only system agents are hard-deleted on runtime teardown since MUL-5559; user
+-- Only system agents are hard-deleted on runtime teardown since ISS-5559; user
 -- agents (archived or not) are unbound and keep their sessions and restores.
 DELETE FROM chat_draft_restore
 WHERE chat_session_id IN (
@@ -1157,7 +1157,7 @@ LIMIT 1;
 
 -- name: GetLatestAssistantChatMessageForSession :one
 -- The session's most recent assistant turn, used as the regeneration target
--- when the user clicks "refresh" on the quick-actions row (MUL-5149). Only rows
+-- when the user clicks "refresh" on the quick-actions row (ISS-5149). Only rows
 -- with a task_id qualify — the daemon suggest supplement keys off task_id and
 -- a resume needs a real completed turn to resume from.
 SELECT * FROM chat_message

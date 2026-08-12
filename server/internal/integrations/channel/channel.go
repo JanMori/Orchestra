@@ -79,7 +79,7 @@ type Channel interface {
 // tenant_key / region, Slack's bot/app tokens, …), carried opaquely so
 // the foundation never grows a per-platform field. It maps directly onto
 // the channel_type column + JSONB config of a channel_installation row
-// (MUL-3515 decision §3).
+// (ISS-3515 decision §3).
 type Config struct {
 	Type Type
 	Raw  json.RawMessage

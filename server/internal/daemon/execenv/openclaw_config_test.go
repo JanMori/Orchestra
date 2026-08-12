@@ -1183,12 +1183,12 @@ func TestPrepareOpenclawConfigFailsClosedOnMalformedMcpConfig(t *testing.T) {
 }
 
 // TestPrepareOpenclawSkillWriteMatchesScanPath is the regression test the
-// MUL-2219 DoD calls out: the directory Multica writes skills into MUST be
+// ISS-2219 DoD calls out: the directory Multica writes skills into MUST be
 // the same directory the OpenClaw scanner reads from. We assert this by
 // resolving the workspaceDir the way OpenClaw does (agents.defaults.workspace
 // from the synthesized config) and proving {workspaceDir}/skills/ holds the
 // skill we wrote. Previous fixes asserted "we wrote a file" without checking
-// the scanner would ever see it; that is why MUL-2213 / #2621 needed a
+// the scanner would ever see it; that is why ISS-2213 / #2621 needed a
 // follow-up.
 func TestPrepareOpenclawSkillWriteMatchesScanPath(t *testing.T) {
 	envRoot := t.TempDir()

@@ -11,9 +11,9 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/util"
-	sdk "github.com/multica-ai/multica/server/pkg/composio"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	sdk "github.com/JanMori/Orchestra/server/pkg/composio"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // ---- fakes ---------------------------------------------------------------
@@ -206,8 +206,8 @@ func newTestService(t *testing.T, client SDK, store Store) *Service {
 	t.Helper()
 	svc, err := NewService(client, store, Config{
 		StateSecret:     testSecret,
-		CallbackBaseURL: "https://multica.ai",
-		FrontendBaseURL: "https://multica.ai",
+		CallbackBaseURL: "http://localhost:5001",
+		FrontendBaseURL: "http://localhost:5001",
 		Now:             func() time.Time { return time.Unix(1_700_000_000, 0) },
 	})
 	if err != nil {
@@ -257,7 +257,7 @@ func TestBeginConnect_MappingAndState(t *testing.T) {
 	}
 	// callback URL carries the signed state and points at our callback path
 	cb := sdkFake.lastCreateLink.CallbackURL
-	if !strings.HasPrefix(cb, "https://multica.ai"+callbackPath+"?state=") {
+	if !strings.HasPrefix(cb, "http://localhost:5001"+callbackPath+"?state=") {
 		t.Fatalf("callback url = %q", cb)
 	}
 	u, _ := url.Parse(cb)
@@ -313,7 +313,7 @@ func TestBeginConnect_PrefersCustomAuthConfig(t *testing.T) {
 }
 
 // TestListToolkits_FiltersToConnectable: only toolkits with an enabled auth
-// config are returned (MUL-4009); the rest are dropped from the catalog, and
+// config are returned (ISS-4009); the rest are dropped from the catalog, and
 // every surfaced entry is Connectable by construction.
 func TestListToolkits_FiltersToConnectable(t *testing.T) {
 	t.Parallel()
@@ -363,7 +363,7 @@ func TestListToolkits_FiltersToConnectable(t *testing.T) {
 
 // TestListToolkits_ResolverErrorReturnsError: an /auth_configs failure is
 // surfaced as an error rather than silently degrading to an empty catalog
-// (MUL-4009). With filtering in place, masking the error would render as a
+// (ISS-4009). With filtering in place, masking the error would render as a
 // misleading "no apps configured" empty state, so the handler must be able to
 // return a 502 instead.
 func TestListToolkits_ResolverErrorReturnsError(t *testing.T) {
@@ -709,10 +709,10 @@ func TestCreateMCPSession_PinsConnectedAccounts(t *testing.T) {
 func TestCallbackRedirect(t *testing.T) {
 	t.Parallel()
 	svc := newTestService(t, &fakeSDK{}, newFakeStore())
-	if got := svc.CallbackRedirect("notion", true); got != "https://multica.ai/settings?tab=integrations&connected=notion" {
+	if got := svc.CallbackRedirect("notion", true); got != "http://localhost:5001/settings?tab=integrations&connected=notion" {
 		t.Errorf("success redirect = %q", got)
 	}
-	if got := svc.CallbackRedirect("notion", false); got != "https://multica.ai/settings?tab=integrations&error=composio_connect_failed" {
+	if got := svc.CallbackRedirect("notion", false); got != "http://localhost:5001/settings?tab=integrations&error=composio_connect_failed" {
 		t.Errorf("failure redirect = %q", got)
 	}
 }

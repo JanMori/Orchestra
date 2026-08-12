@@ -1,6 +1,6 @@
 // Package lark contains the Multica ↔ 飞书 (Lark) Bot integration.
 //
-// MVP scope is tracked in MUL-2671. After the migration / service
+// MVP scope is tracked in ISS-2671. After the migration / service
 // boundary PRs landed, this package now covers:
 //
 //  1. DB schema + sqlc wrappers (migration 109_lark_integration.up.sql)
@@ -42,7 +42,7 @@
 //     the installer via InstallerBinder so §2.1 "scan to bind, you're
 //     done" holds end-to-end)
 //
-// Architectural boundaries (frozen from Elon's 二审, MUL-2671 §4.8):
+// Architectural boundaries (frozen from Elon's 二审, ISS-2671 §4.8):
 //
 //  1. Issue creation goes through internal/service.IssueService.Create —
 //     this package never calls qtx.CreateIssue directly.

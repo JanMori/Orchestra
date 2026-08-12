@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/multica-ai/multica/server/internal/auth"
+	"github.com/JanMori/Orchestra/server/internal/auth"
 )
 
 const capabilityTestAttachmentID = "11111111-2222-3333-4444-555555555555"
@@ -283,7 +283,7 @@ func TestGetAttachmentByID_ProxyModeReturnsRedeemableCapability(t *testing.T) {
 
 	// markdown_url is persisted into comment bodies and must outlive the
 	// session, so a 60-second capability must never reach it — that is the
-	// exact class of bug MUL-3130 fixed.
+	// exact class of bug ISS-3130 fixed.
 	if strings.Contains(resp.MarkdownURL, "signed-download") {
 		t.Fatalf("markdown_url = %q, must not embed a short-lived capability", resp.MarkdownURL)
 	}

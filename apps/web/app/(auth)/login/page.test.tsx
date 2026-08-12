@@ -130,11 +130,11 @@ describe("LoginPage", () => {
     const user = userEvent.setup();
     render(<LoginPage />, { wrapper: createWrapper() });
 
-    await user.type(screen.getByLabelText("Email"), "test@multica.ai");
+    await user.type(screen.getByLabelText("Email"), "test@orchestra.local");
     await user.click(screen.getByRole("button", { name: "Continue" }));
 
     await waitFor(() => {
-      expect(mockSendCode).toHaveBeenCalledWith("test@multica.ai");
+      expect(mockSendCode).toHaveBeenCalledWith("test@orchestra.local");
     });
   });
 
@@ -143,7 +143,7 @@ describe("LoginPage", () => {
     const user = userEvent.setup();
     render(<LoginPage />, { wrapper: createWrapper() });
 
-    await user.type(screen.getByLabelText("Email"), "test@multica.ai");
+    await user.type(screen.getByLabelText("Email"), "test@orchestra.local");
     await user.click(screen.getByRole("button", { name: "Continue" }));
 
     await waitFor(() => {
@@ -156,7 +156,7 @@ describe("LoginPage", () => {
     const user = userEvent.setup();
     render(<LoginPage />, { wrapper: createWrapper() });
 
-    await user.type(screen.getByLabelText("Email"), "test@multica.ai");
+    await user.type(screen.getByLabelText("Email"), "test@orchestra.local");
     await user.click(screen.getByRole("button", { name: "Continue" }));
 
     await waitFor(() => {
@@ -169,7 +169,7 @@ describe("LoginPage", () => {
     const user = userEvent.setup();
     render(<LoginPage />, { wrapper: createWrapper() });
 
-    await user.type(screen.getByLabelText("Email"), "test@multica.ai");
+    await user.type(screen.getByLabelText("Email"), "test@orchestra.local");
     await user.click(screen.getByRole("button", { name: "Continue" }));
 
     await waitFor(() => {
@@ -177,13 +177,13 @@ describe("LoginPage", () => {
     });
   });
 
-  // Regression: MUL-1080 — if the user is already authenticated on the web
+  // Regression: ISS-1080 — if the user is already authenticated on the web
   // and the Desktop app redirects them to /login?platform=desktop, the web
   // must exchange the cookie session for a bearer token and hand it off via
   // the multica:// deep link, not silently redirect to the workspace page.
   it("mints a token and deep-links to Desktop when already logged in with platform=desktop", async () => {
     searchParamsState.params = new URLSearchParams({ platform: "desktop" });
-    authStateRef.state.user = { id: "u1", email: "test@multica.ai" };
+    authStateRef.state.user = { id: "u1", email: "test@orchestra.local" };
     mockIssueCliToken.mockImplementation(() =>
       Promise.resolve({ token: "handoff-jwt" }),
     );
@@ -207,7 +207,7 @@ describe("LoginPage", () => {
         );
       });
       expect(
-        await screen.findByRole("button", { name: "Open Multica Desktop" }),
+        await screen.findByRole("button", { name: "Open Orchestra Desktop" }),
       ).toBeInTheDocument();
     } finally {
       Object.defineProperty(window, "location", {
@@ -226,7 +226,7 @@ describe("LoginPage", () => {
   describe("post-login redirect ownership (#5009)", () => {
     const onboardedUser = {
       id: "u1",
-      email: "test@multica.ai",
+      email: "test@orchestra.local",
       onboarded_at: "2026-01-01T00:00:00Z",
     };
 

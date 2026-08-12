@@ -11,7 +11,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/multica-ai/multica/server/internal/cli"
+	"github.com/JanMori/Orchestra/server/internal/cli"
 )
 
 // Tests for `orchestra issue metadata list` 404-degradation behavior, plus
@@ -76,7 +76,7 @@ func metadataTestServer(t *testing.T, metadataHandler http.HandlerFunc) (*httpte
 		case r.Method == http.MethodGet && r.URL.Path == "/api/issues/"+testIssueUUID:
 			_ = json.NewEncoder(w).Encode(map[string]any{
 				"id":         testIssueUUID,
-				"identifier": "MUL-1",
+				"identifier": "ISS-1",
 				"title":      "test issue",
 			})
 		case strings.HasPrefix(r.URL.Path, "/api/issues/"+testIssueUUID+"/metadata"):

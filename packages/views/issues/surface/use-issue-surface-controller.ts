@@ -77,7 +77,7 @@ export interface IssueSurfaceController {
   swimlaneIssues: Issue[];
   /** Agents currently working inside THIS surface, under the surface's active
    *  filters — the header chip's count, so clicking it leaves exactly these
-   *  agents' rows (MUL-4884, MUL-5525). `undefined` means the projection has
+   *  agents' rows (ISS-4884, ISS-5525). `undefined` means the projection has
    *  not resolved yet; the chip renders an indeterminate state rather than a
    *  number it cannot stand behind. */
   workingAgents: WorkingAgentSummary[] | undefined;
@@ -174,7 +174,7 @@ function useDebouncedTableSearch(value: string, delayMs = 250) {
  * for as long as the query has no data — which is the whole window right after
  * a workspace switch. Downstream that array is a memo dependency, so the empty
  * default alone was enough to rebuild the derived Sets, the table query spec,
- * and the branch query list once per render (MUL-5477). */
+ * and the branch query list once per render (ISS-5477). */
 const EMPTY_LIST: never[] = [];
 
 /**

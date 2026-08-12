@@ -28,7 +28,7 @@ const MEDIUM_ONLY: RuntimeModel = {
 
 const CATALOG = [FAST_HIGH, PLAIN, MEDIUM_ONLY];
 
-describe("buildModelChangeUpdate (MUL-5390)", () => {
+describe("buildModelChangeUpdate (ISS-5390)", () => {
   it("clears overrides the new model does not advertise", () => {
     expect(
       buildModelChangeUpdate({

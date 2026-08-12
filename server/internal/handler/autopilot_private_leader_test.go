@@ -124,7 +124,7 @@ func TestCreateAutopilot_CrewPrivateLeader_OwnerAllowed(t *testing.T) {
 		testPool.Exec(context.Background(), `DELETE FROM crew WHERE id = $1`, crewID)
 	})
 
-	// The AGENT OWNER creates the autopilot — allowed under MUL-3963 (workspace
+	// The AGENT OWNER creates the autopilot — allowed under ISS-3963 (workspace
 	// owner/admin no longer bypasses a private leader's invocation gate).
 	w := httptest.NewRecorder()
 	r := newRequestAs(ownerID, "POST", "/api/autopilots?workspace_id="+testWorkspaceID, map[string]any{
@@ -169,7 +169,7 @@ func TestTriggerAutopilot_CrewPrivateLeader_OwnerCanDispatch(t *testing.T) {
 		testPool.Exec(context.Background(), `DELETE FROM crew WHERE id = $1`, crewID)
 	})
 
-	// Create autopilot as the AGENT OWNER (MUL-3963: only owner/allow-listed
+	// Create autopilot as the AGENT OWNER (ISS-3963: only owner/allow-listed
 	// may invoke the private leader; workspace admin no longer bypasses).
 	w := httptest.NewRecorder()
 	r := newRequestAs(ownerID, "POST", "/api/autopilots?workspace_id="+testWorkspaceID, map[string]any{
@@ -194,7 +194,7 @@ func TestTriggerAutopilot_CrewPrivateLeader_OwnerCanDispatch(t *testing.T) {
 	})
 
 	// Trigger AS THE OWNER — manual "run now" admits on the current clicker's
-	// invoke permission (MUL-4525), so the owner (who can invoke the private
+	// invoke permission (ISS-4525), so the owner (who can invoke the private
 	// leader) must be the one clicking. A non-owner clicker is covered by
 	// TestTriggerAutopilot_CrewPrivateLeader_NonOwnerClicker_Blocked below.
 	w = httptest.NewRecorder()
@@ -214,7 +214,7 @@ func TestTriggerAutopilot_CrewPrivateLeader_OwnerCanDispatch(t *testing.T) {
 }
 
 // TestTriggerAutopilot_CrewPrivateLeader_NonOwnerClicker_Blocked pins the
-// MUL-4525 fork fix: manual "run now" admits on the CURRENT clicker, not the
+// ISS-4525 fork fix: manual "run now" admits on the CURRENT clicker, not the
 // autopilot creator. Even for an autopilot the OWNER created (so the creator
 // could invoke), a different member clicking Run now who cannot invoke the
 // private leader is blocked — surfaced as a 200 + status=skipped run carrying a

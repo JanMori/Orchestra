@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/internal/cli"
+	"github.com/JanMori/Orchestra/server/internal/cli"
 )
 
 // newSelfReloadTestDaemon returns a Daemon wired for trySelfReload: a stubbed
@@ -52,7 +52,7 @@ func stubSelfVersion(t *testing.T, version string, err error) *atomic.Int32 {
 	return &calls
 }
 
-// TestTrySelfReload_RestartsWhenOnDiskVersionDiffers is the core of MUL-3269:
+// TestTrySelfReload_RestartsWhenOnDiskVersionDiffers is the core of ISS-3269:
 // an in-place upgrade leaves the executable path valid, so nothing in the
 // existing self-heal notices it and the daemon serves the version it booted
 // with indefinitely. Comparing the compile-time version against the binary on
@@ -160,7 +160,7 @@ func TestTrySelfReload_NoopWhenVersionMatches(t *testing.T) {
 // Deferring is the whole mechanism — there is deliberately no pending-restart
 // state machine waiting on a drain signal, because that is what parked the
 // daemon in the first draft of this feature: the drain hook was anchored to
-// exitClaim, which the batch poller (MUL-4257) now calls synchronously right
+// exitClaim, which the batch poller (ISS-4257) now calls synchronously right
 // after dispatch while activeTasks is still non-zero. Retrying from scratch on
 // the next tick cannot get stuck that way.
 func TestTrySelfReload_DefersWhileBusy(t *testing.T) {
@@ -264,7 +264,7 @@ func TestTrySelfReload_ReleasesBarrierWhenHandoffFails(t *testing.T) {
 // TestAutoUpdateLoop_WatchesTheBinaryWhenAutoUpdateIsOff is the review's first
 // product decision: the on-disk check must not sit behind
 // ORCHESTRA_DAEMON_AUTO_UPDATE. Self-hosted daemons default auto-update off
-// (MUL-2381), and "don't pull from GitHub" is not "don't follow the binary I
+// (ISS-2381), and "don't pull from GitHub" is not "don't follow the binary I
 // replaced myself".
 func TestAutoUpdateLoop_WatchesTheBinaryWhenAutoUpdateIsOff(t *testing.T) {
 	d, restartCalls := newSelfReloadTestDaemon(t, "0.3.7")

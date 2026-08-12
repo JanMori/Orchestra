@@ -8,7 +8,7 @@ import (
 )
 
 // TestWriteSkillFilesIgnoresBundledSkillMd is the daemon-side regression guard
-// for #3489 / MUL-2928. A skill whose Files include the skill's own SKILL.md
+// for #3489 / ISS-2928. A skill whose Files include the skill's own SKILL.md
 // (stored as a supporting file by older builds or direct create/update API
 // calls) used to fail task prep with errPathPreExists: writeSkillFiles writes
 // the primary content to dir/SKILL.md first, then the supporting-files loop

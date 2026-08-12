@@ -1,17 +1,17 @@
 ---
 title: Install AI coding tools
-description: Install and sign in to a supported AI coding tool so Multica can execute tasks on your machine.
+description: Install and sign in to a supported AI coding tool so Orchestra can execute tasks on your machine.
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-A local runtime has two parts: the Multica daemon, and one AI coding tool it can invoke. Install only the tool you intend to use — you do not need all of them.
+A local runtime has two parts: the Orchestra daemon, and one AI coding tool it can invoke. Install only the tool you intend to use — you do not need all of them.
 
 ## 1. Choose a tool
 
 A tool that is already installed and signed in needs no extra setup. Tools differ in models, MCP, session resumption, and skill support; the details are in [AI coding tools comparison](/providers).
 
-Multica currently detects these commands:
+Orchestra currently detects these commands:
 
 | Tool | Detected command | Official install guide |
 | --- | --- | --- |
@@ -35,7 +35,7 @@ Multica currently detects these commands:
 | Qwen Code | `qwen` | [Qwen Code](https://github.com/QwenLM/qwen-code) |
 | TRAE CLI | `traecli` | [TRAE official site](https://www.trae.cn/) |
 
-"Supported" means Multica can invoke that CLI. It does not mean Multica provides the tool's account, subscription, or model quota for you.
+"Supported" means Orchestra can invoke that CLI. It does not mean Orchestra provides the tool's account, subscription, or model quota for you.
 
 ## 2. Sign in on your machine
 
@@ -43,7 +43,7 @@ After installing, launch the tool once in a terminal on its own and complete its
 
 For Reasonix, run `reasonix setup` and configure a default provider and model before starting the daemon.
 
-Those login credentials are stored locally by the tool itself. Multica never receives login tokens from Claude, Codex, Cursor, or any other CLI.
+Those login credentials are stored locally by the tool itself. Orchestra never receives login tokens from Claude, Codex, Cursor, or any other CLI.
 
 <Callout type="info">
 Claude Code requires 2.0.0 or later, Codex 0.100.0 or later, Copilot 1.0.0 or later, Grok 0.2.89 or later, and Qwen Code 0.20.0 or later. Below the minimum version, the daemon does not register the corresponding runtime.
@@ -83,9 +83,9 @@ If the daemon is already running, restart it after installing a new tool:
 orchestra daemon restart
 ```
 
-With Multica Desktop, quit and reopen the app.
+With Orchestra Desktop, quit and reopen the app.
 
-Then open Multica's **Runtimes** page. The tool appears under the target computer and shows as online. You can now select this runtime when creating or editing an agent.
+Then open Orchestra's **Runtimes** page. The tool appears under the target computer and shows as online. You can now select this runtime when creating or editing an agent.
 
 <Callout type="warning">
 The daemon must detect at least one built-in supported CLI before it will start. Custom runtime profiles sync after the daemon is up, so they cannot be the sole startup condition on a blank machine.
@@ -107,4 +107,4 @@ If the tool shows as online but runs still fail, open the issue's run record to 
 
 - [Create and configure an agent](/agents-create) — select the runtime you just connected.
 - [Daemon and runtimes](/daemon-runtimes) — online status, concurrency, and custom runtimes.
-- [AI coding tools comparison](/providers) — compare what each tool can do in Multica.
+- [AI coding tools comparison](/providers) — compare what each tool can do in Orchestra.

@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-// TestCreateIssue_AgentCreate_StampsActingTaskOrigin locks the MUL-4305 fix at
+// TestCreateIssue_AgentCreate_StampsActingTaskOrigin locks the ISS-4305 fix at
 // the HTTP boundary: when an agent creates an issue through the ordinary POST
 // /api/issues path (no explicit origin, not quick_create), the handler stamps
 // origin_type='agent_create' + origin_id=<acting task>, resolved from the
@@ -44,7 +44,7 @@ func TestCreateIssue_AgentCreate_StampsActingTaskOrigin(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	req := newRequest("POST", "/api/issues?workspace_id="+testWorkspaceID, map[string]any{
-		"title": "Agent-created via normal create (MUL-4305)",
+		"title": "Agent-created via normal create (ISS-4305)",
 	})
 	req.Header.Set("X-Agent-ID", agentID)
 	req.Header.Set("X-Task-ID", taskID)
@@ -76,7 +76,7 @@ func TestCreateIssue_AgentCreate_StampsActingTaskOrigin(t *testing.T) {
 }
 
 // TestCreateIssue_NoAgentCreateStampForMemberOrForgedAgent is the security
-// regression for MUL-4305: the agent_create stamp must only ride a genuine
+// regression for ISS-4305: the agent_create stamp must only ride a genuine
 // agent actor. A plain member create carries no origin, and a member who
 // forges X-Agent-ID without a valid X-Task-ID is demoted to "member" by
 // resolveActor — so it must NOT smuggle an agent_create origin (which would
@@ -99,7 +99,7 @@ func TestCreateIssue_NoAgentCreateStampForMemberOrForgedAgent(t *testing.T) {
 		t.Helper()
 		w := httptest.NewRecorder()
 		req := newRequest("POST", "/api/issues?workspace_id="+testWorkspaceID, map[string]any{
-			"title": "No agent_create stamp expected (MUL-4305)",
+			"title": "No agent_create stamp expected (ISS-4305)",
 		})
 		if mutate != nil {
 			mutate(req)

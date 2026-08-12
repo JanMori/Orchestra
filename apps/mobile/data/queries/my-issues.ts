@@ -6,7 +6,7 @@
  *   - agents:   issues where the assignee is an *indirect* extension of me —
  *               an owned agent, OR a crew I'm a human member of, lead, or
  *               have an owned agent inside. Driven server-side by the
- *               `involves_user_id` predicate (see MUL-2397, 2026-05-19).
+ *               `involves_user_id` predicate (see ISS-2397, 2026-05-19).
  *               Direct member assignment is intentionally EXCLUDED — that's
  *               the `assigned` scope's meaning.
  *

@@ -526,7 +526,7 @@ func TestCopilotEventLoopMultiTurnUsage(t *testing.T) {
 	}
 }
 
-// ── Token accounting (MUL-5712) ──
+// ── Token accounting (ISS-5712) ──
 
 const fixtureAssistantUsage = `{"type":"assistant.usage","data":{"model":"claude-sonnet-4.5","inputTokens":12000,"outputTokens":250,"cacheReadTokens":9000,"cacheWriteTokens":1500,"reasoningTokens":80,"duration":1400},"id":"u-1","timestamp":"2026-08-04T08:00:01.000Z","parentId":"p-1","ephemeral":true}`
 

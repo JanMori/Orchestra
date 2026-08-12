@@ -132,7 +132,7 @@ type CachedRepo struct {
 
 // Cache manages bare git clones for workspace repositories.
 type Cache struct {
-	root   string // base directory for all caches (e.g. ~/multica_workspaces/.repos)
+	root   string // base directory for all caches (e.g. ~/orchestra_workspaces/.repos)
 	logger *slog.Logger
 	// repoLocks maps bare repo path → dedicated mutex. Any mutating operation
 	// on a given bare repo (clone, fetch, worktree add, ref update) must
@@ -1231,7 +1231,7 @@ case "$COMMIT_SOURCE" in
   merge|squash) exit 0 ;;
 esac
 
-TRAILER="Co-authored-by: multica-agent <github@multica.ai>"
+TRAILER="Co-authored-by: multica-agent <github@orchestra.local>"
 
 # Don't add if already present.
 if grep -qF "$TRAILER" "$COMMIT_MSG_FILE"; then

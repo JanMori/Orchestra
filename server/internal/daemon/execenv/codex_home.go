@@ -61,33 +61,33 @@ type CodexHomeOptions struct {
 	// sessions/ still symlinks the shared ~/.codex/sessions: the single rollout
 	// for this ID is exposed so thread/resume can find it without pulling the
 	// whole shared history back in. Empty means a fresh thread (no rollout to
-	// expose). See prepareCodexSessionsDir (MUL-4424).
+	// expose). See prepareCodexSessionsDir (ISS-4424).
 	ResumeSessionID string
 	// IsLocalDirectory marks a local_directory task — one running in the user's
 	// own project directory. These tasks get a fresh codex-home per task ID (the
 	// daemon never reuses their workdir), so their sessions/ is pointed at the
 	// per-issue store (SessionStoreKey) that survives across task IDs and holds
 	// ONLY this issue's rollouts — never the machine's whole ~/.codex/sessions.
-	// See prepareCodexSessionsDir (MUL-4424).
+	// See prepareCodexSessionsDir (ISS-4424).
 	IsLocalDirectory bool
 	// SessionStoreKey is a stable, per-(agent, issue) relative path segment that
 	// identifies this task's persistent Codex sessions store. It survives across
 	// task IDs (unlike the task-scoped envRoot the GC reclaims) so a follow-up
 	// run resumes the same thread. Empty when no stable key is available (e.g. a
 	// task with no issue), in which case sessions/ stays task-local. See
-	// codexSessionStoreDir and prepareCodexSessionsDir (MUL-4424).
+	// codexSessionStoreDir and prepareCodexSessionsDir (ISS-4424).
 	SessionStoreKey string
 	// CodexCustomArgs are the effective Codex CLI args this task will launch
 	// with (daemon defaults + profile-fixed + per-agent custom_args). Only the
 	// Windows sandbox decision reads them, to honor a `-c windows.sandbox=...`
 	// override that never lands in config.toml. See resolveWindowsSandboxState
-	// and MUL-4957.
+	// and ISS-4957.
 	CodexCustomArgs []string
 }
 
 // prepareCodexHome is a thin wrapper around prepareCodexHomeWithOpts kept for
 // tests that don't care about platform-aware sandbox configuration. It pins
-// GOOS to linux, which resolves to the danger-full-access default (MUL-5578),
+// GOOS to linux, which resolves to the danger-full-access default (ISS-5578),
 // so the sandbox block it writes is stable regardless of the host running the
 // test.
 func prepareCodexHome(codexHome string, logger *slog.Logger) error {
@@ -98,7 +98,7 @@ func prepareCodexHome(codexHome string, logger *slog.Logger) error {
 // ~/.codex/config.toml copy source. It is three-valued so a stat that fails for
 // a reason other than "not found" (permission/IO) never masquerades as a
 // confident "the user has no config" — which would let the daemon loosen to
-// danger-full-access on doubt. See resolveWindowsSandboxState (MUL-4957).
+// danger-full-access on doubt. See resolveWindowsSandboxState (ISS-4957).
 type sharedConfigPresence int
 
 const (
@@ -135,7 +135,7 @@ func statSharedCodexConfig(sharedHome string) sharedConfigPresence {
 // effective custom args — failing closed (Undecidable) when it cannot tell.
 //
 // Two signals it does NOT gather itself (the caller does) keep the fail-closed
-// logic unit-testable without faulting the filesystem, and close MUL-4957's
+// logic unit-testable without faulting the filesystem, and close ISS-4957's
 // round-3 must-fix where a failed sync could be misread as "unconfigured":
 //
 //   - configSyncErr: the error (if any) from syncing the shared config.toml
@@ -201,7 +201,7 @@ func prepareCodexHomeWithOpts(codexHome string, opts CodexHomeOptions, logger *s
 
 	// Give the task its own local sessions/ directory instead of symlinking the
 	// shared ~/.codex/sessions in — a huge shared history would otherwise stall
-	// Codex's `initialize` state backfill (MUL-4424). See prepareCodexSessionsDir.
+	// Codex's `initialize` state backfill (ISS-4424). See prepareCodexSessionsDir.
 	if err := prepareCodexSessionsDir(codexHome, sharedHome, opts, logger); err != nil {
 		logger.Warn("execenv: codex-home sessions dir prepare failed", "error", err)
 	}
@@ -224,7 +224,7 @@ func prepareCodexHomeWithOpts(codexHome string, opts CodexHomeOptions, logger *s
 	// Sync isolated files from the shared source. Track the config.toml sync
 	// outcome specifically: on Windows a failed sync makes the per-task config
 	// untrustworthy, so the sandbox decision must fail closed rather than read a
-	// stale or absent copy as "unconfigured" and loosen (MUL-4957).
+	// stale or absent copy as "unconfigured" and loosen (ISS-4957).
 	var configSyncErr error
 	for _, name := range codexCopiedFiles {
 		src := filepath.Join(sharedHome, name)
@@ -287,7 +287,7 @@ func prepareCodexHomeWithOpts(codexHome string, opts CodexHomeOptions, logger *s
 		// memory while the effective config silently stays loose. Abort rather
 		// than launch Codex with an unenforced sandbox: on fresh Prepare this
 		// fails the task; on Reuse the caller leaves env.CodexHome unset, which
-		// configureCodexTaskShellEnvironment then refuses to start (MUL-4957).
+		// configureCodexTaskShellEnvironment then refuses to start (ISS-4957).
 		return fmt.Errorf("ensure codex sandbox config: %w", err)
 	}
 
@@ -379,7 +379,7 @@ func codexSessionStoreDir(sharedHome, key string) string {
 // empty (default) profile gets a reserved bare literal, and every named profile
 // is the hex of its SHA-256 — a constant 64 hex chars, filesystem-safe and
 // collision-resistant — under a "p_" prefix the bare literal can never collide
-// with (MUL-4424).
+// with (ISS-4424).
 func codexSessionStoreNamespace(profile string) string {
 	if profile == "" {
 		return "default"
@@ -436,7 +436,7 @@ func sanitizeCodexPathSegment(s string) string {
 // It scans ONLY the caller profile's namespace, so a daemon never reclaims a
 // store owned by another profile-daemon sharing the same ~/.codex — the
 // in-process reservation guard cannot span processes, and the namespace makes
-// their store trees disjoint so it does not need to (MUL-4424).
+// their store trees disjoint so it does not need to (ISS-4424).
 //
 // reserve (may be nil) atomically claims a store for deletion: it returns
 // ok=false when a live task holds the store — leaving it — and otherwise returns
@@ -534,7 +534,7 @@ func codexStoreStat(dir string) (newest time.Time, size int64) {
 // holds ONLY this task's own history, never the machine's whole
 // ~/.codex/sessions.
 //
-// Background (MUL-4424): Codex 0.143+ backfills a per-home session-state DB by
+// Background (ISS-4424): Codex 0.143+ backfills a per-home session-state DB by
 // enumerating every rollout visible under sessions/ during `initialize`. When
 // the per-task home symlinked the shared sessions dir in, a machine that had
 // accumulated thousands of rollouts (one reporter hit ~2000 files / ~22 GiB)
@@ -624,7 +624,7 @@ func prepareCodexSessionsDir(codexHome, sharedHome string, opts CodexHomeOptions
 // privilege. The store lives on the shared Codex home's volume, so linking the
 // directory (rather than copying rollout files into the task home) is what makes
 // resume exposure safe when WorkspacesRoot sits on a different disk than
-// ~/.codex (MUL-4424, Windows cross-volume).
+// ~/.codex (ISS-4424, Windows cross-volume).
 //
 // When resuming and the store does not yet hold the rollout — e.g. the first run
 // after upgrading from the old whole-shared-sessions layout, where the history
@@ -649,7 +649,7 @@ func linkCodexSessionsToStore(dst, storeDir, sharedSessions, resumeID string, lo
 	// see a >TTL-old store and could reclaim it before the resumed turn writes its
 	// first rollout — reopening a long-idle issue must not lose context. This is
 	// the activity refresh; the daemon's in-process active-store guard closes the
-	// remaining stat→remove race (MUL-4424).
+	// remaining stat→remove race (ISS-4424).
 	touchCodexSessionStore(storeDir, logger)
 	return nil
 }
@@ -669,7 +669,7 @@ func touchCodexSessionStore(storeDir string, logger *slog.Logger) {
 // (profile, agentID, issueID) on the shared home, or "" when there is no stable
 // key. The daemon marks this path in-use for the duration of a task so
 // PruneCodexSessionStores never reclaims a store mid-mount, closing the
-// stat→remove race the mtime refresh alone cannot (MUL-4424).
+// stat→remove race the mtime refresh alone cannot (ISS-4424).
 func CodexSessionStorePath(profile, agentID, issueID string) string {
 	key := codexSessionStoreKey(profile, agentID, issueID)
 	if key == "" {
@@ -767,7 +767,7 @@ func findCodexRollouts(sessionsDir, sessionID string) []string {
 // environment to avoid claiming a resume Codex would silently restart from
 // scratch — the rollout may be absent when a legacy home's migration could not
 // locate it, or when a local_directory task's shared history has been pruned
-// (MUL-4424).
+// (ISS-4424).
 func CodexResumeRolloutPresent(codexHome, sessionID string) bool {
 	if codexHome == "" || sessionID == "" {
 		return false
@@ -813,7 +813,7 @@ func exposeResumeRollout(sharedSessions, localSessions, sessionID string, logger
 // link first (zero-copy, needs no special privilege and works on Windows within
 // a volume), falling back to a symlink across filesystems. It never copies — a
 // rollout can be gigabytes and this runs on initialize's critical path, so a
-// copy would reintroduce the stall MUL-4424 fixes.
+// copy would reintroduce the stall ISS-4424 fixes.
 func linkCodexRollout(src, dst string) error {
 	if err := os.Link(src, dst); err == nil {
 		return nil
@@ -828,7 +828,7 @@ func linkCodexRollout(src, dst string) error {
 // the task home while the files they name do not. Codex resolves a relative
 // value against CODEX_HOME, which is now the task home, so an unmaterialised
 // reference makes Codex fail while loading its configuration — before the task
-// prompt is ever delivered (MUL-5623 / #6271: `failed to read model
+// prompt is ever delivered (ISS-5623 / #6271: `failed to read model
 // instructions file <task-home>/gpt-unrestricted.md`).
 //
 // Only the keys listed below are followed. Copying every path a config could
@@ -951,7 +951,7 @@ func syncCodexReferencedFile(codexHome, sharedHome, key, configValue string) err
 // Scope: this covers the config-referenced copies below. The earlier steps of
 // prepareCodexHomeWithOpts still address the task home by path, so "the whole
 // prepare is safe against a symlinked task home" is not yet true — that
-// conversion is tracked in MUL-5647.
+// conversion is tracked in ISS-5647.
 func openVerifiedCodexHomeRoot(codexHome, key string) (*os.Root, error) {
 	root, err := os.OpenRoot(codexHome)
 	if err != nil {
@@ -1322,7 +1322,7 @@ func logCodexAuthState(authPath string, logger *slog.Logger) {
 //     so the per-task stale copy must not linger)
 //   - src absent,  dst absent:  no-op
 //
-// Regression for MUL-2646: the prior "don't overwrite" guard left per-task
+// Regression for ISS-2646: the prior "don't overwrite" guard left per-task
 // config.toml / config.json / instructions.md stuck on whatever snapshot they
 // were seeded with at first Prepare. A user who edited ~/.codex/config.toml
 // between runs — switching the active [model_providers.X] base_url, pointing

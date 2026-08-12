@@ -10,7 +10,7 @@ import (
 // agent_task_queue.failure_reason and surfaced as Prometheus labels —
 // renaming any of them is a breaking change. If this test fails because
 // you intended to rename a value, also update the SQL classifier in
-// MUL-1949 and ship a backfill migration before changing the constant.
+// ISS-1949 and ship a backfill migration before changing the constant.
 func TestReasonStringWireValues(t *testing.T) {
 	t.Parallel()
 

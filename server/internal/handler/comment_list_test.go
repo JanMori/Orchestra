@@ -14,7 +14,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // cursorQuery builds a properly URL-encoded query string for the recent +
@@ -916,7 +916,7 @@ func TestListComments_FlagCombinationRules(t *testing.T) {
 }
 
 // TestListComments_RecentWithSinceFilteredEmptySuppressesCursor pins
-// Elon's nit on PR #2787 / MUL-2340: a `recent + since` page whose every
+// Elon's nit on PR #2787 / ISS-2340: a `recent + since` page whose every
 // row gets dropped by the `since` filter must NOT emit a next-page cursor.
 //
 // Pagination walks threads in strictly decreasing last_activity_at. If the
@@ -1032,7 +1032,7 @@ func nextReplyCursor(w *httptest.ResponseRecorder) (string, string) {
 }
 
 // TestListComments_ThreadTailReturnsRootPlusNewestReplies pins the core
-// MUL-2421 contract: `--thread X --tail N` returns the thread root + the N
+// ISS-2421 contract: `--thread X --tail N` returns the thread root + the N
 // most recent replies in that thread. Body stays chronological, so the
 // root sits at the head and the freshest reply at the tail (closest to
 // "now" in an agent prompt).
@@ -1144,7 +1144,7 @@ func TestListComments_ThreadTailEmitsReplyCursorWhenPageFull(t *testing.T) {
 		// to, so no cursor must be emitted. Pre-fix the server used
 		// `replyCount >= tail` and falsely sent a cursor here — the next
 		// page then returned just the root, wasting a round-trip.
-		// (MUL-2421 review fix.)
+		// (ISS-2421 review fix.)
 		v := url.Values{}
 		v.Set("thread", fx.Root1)
 		v.Set("tail", "3")
@@ -1194,7 +1194,7 @@ func TestListComments_ThreadTailCursorScrollsOlderReplies(t *testing.T) {
 	// Page 3: cursor points at r1b → server returns r1a (the last reply).
 	// r1a is the oldest reply in the thread, so the server must NOT emit a
 	// cursor — the next page would return just the root, which is a wasted
-	// round-trip. (MUL-2421 review: probe `reply_limit + 1` to detect
+	// round-trip. (ISS-2421 review: probe `reply_limit + 1` to detect
 	// has-more instead of trusting replyCount >= tail.)
 	v.Set("before", nb2)
 	v.Set("before_id", nbid2)
@@ -1241,7 +1241,7 @@ func TestListComments_ThreadTailWithSinceFiltersAfterTail(t *testing.T) {
 	})
 
 	t.Run("tail overflow with since past oldest retained reply suppresses cursor", func(t *testing.T) {
-		// Recreate Elon's MUL-2421 v2 case: long thread, tail=2 overflows
+		// Recreate Elon's ISS-2421 v2 case: long thread, tail=2 overflows
 		// (3 replies exist, only top 2 kept), the page body still retains
 		// a fresher reply (r1b1 at base+3m), but the oldest reply on the
 		// retained page (r1b at base+2m) is already <= since (base+2m30s).

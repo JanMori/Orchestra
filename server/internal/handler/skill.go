@@ -18,9 +18,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	skillpkg "github.com/multica-ai/multica/server/internal/skill"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	skillpkg "github.com/JanMori/Orchestra/server/internal/skill"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -421,7 +421,7 @@ func (h *Handler) canManageSkill(w http.ResponseWriter, r *http.Request, skill d
 // a runtime-local-skill re-import. This is intentionally NARROWER than
 // canManageSkill: only the original creator may overwrite by re-importing.
 // Workspace owners/admins who want to change a skill they did not create must
-// edit it in-app instead. See MUL-2701 / MUL-2800.
+// edit it in-app instead. See ISS-2701 / ISS-2800.
 func canOverwriteSkillByLocalImport(userID string, skill db.Skill) bool {
 	return skill.CreatedBy.Valid && uuidToString(skill.CreatedBy) == userID
 }

@@ -1,4 +1,4 @@
--- Agent invocation permission targets (MUL-3963). Rows are the allow-list for
+-- Agent invocation permission targets (ISS-3963). Rows are the allow-list for
 -- agents whose permission_mode = 'public_to'. See migration 130.
 
 -- name: ListAgentInvocationTargets :many
@@ -50,7 +50,7 @@ WHERE ait.agent_id = a.id
 -- DeleteSystemAgentsByRuntime so no orphan target rows survive the agent rows
 -- they belonged to. Mirrors the agent hard-delete predicate exactly.
 --
--- Scoped to kind = 'system' since MUL-5559: user agents are no longer deleted
+-- Scoped to kind = 'system' since ISS-5559: user agents are no longer deleted
 -- with their runtime (they are unbound and keep their configuration), so
 -- clearing THEIR invocation targets here would silently strip a surviving
 -- agent's allow-list.

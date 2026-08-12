@@ -31,7 +31,7 @@ import (
 //                              mat_ (machine running owner-scoped
 //                              code) for authorization purposes.
 //
-// The mat_ and mcn_ designs (MUL-2600 and the cloud-node PAT story
+// The mat_ and mcn_ designs (ISS-2600 and the cloud-node PAT story
 // respectively) were both deliberately built this way: every request
 // the agent / node makes is treated as the owner's, so they can
 // post comments, claim issues, register runtimes, etc., as if the

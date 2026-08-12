@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/daemon/execenv"
+	"github.com/JanMori/Orchestra/server/internal/daemon/execenv"
 )
 
 // The two tests below are composition tests, not text-presence tests. The
@@ -86,7 +86,7 @@ func TestCrewAssignedLeaderCanWrapUpOnCommentTurn(t *testing.T) {
 }
 
 // TestGuestLeaderCannotChangeStatusOnCommentTurn is the other half of the
-// scope fix (MUL-3724 path): the issue belongs to a plain agent and this crew
+// scope fix (ISS-3724 path): the issue belongs to a plain agent and this crew
 // was only @mentioned for help. The briefing still gets injected — the leader
 // needs its roster — but no combination of the two halves may authorize a
 // status change on someone else's issue.

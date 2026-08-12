@@ -112,7 +112,7 @@ func TestCreateIssue_CrewPrivateLeader_OwnerAllowed(t *testing.T) {
 		testPool.Exec(context.Background(), `DELETE FROM crew WHERE id = $1`, crewID)
 	})
 
-	// The AGENT OWNER assigns — allowed. (MUL-3963: workspace owner/admin no
+	// The AGENT OWNER assigns — allowed. (ISS-3963: workspace owner/admin no
 	// longer bypasses a private leader's invocation gate.)
 	w := httptest.NewRecorder()
 	r := newRequestAs(ownerID, "POST", "/api/issues?workspace_id="+testWorkspaceID, map[string]any{
@@ -200,7 +200,7 @@ func TestComment_CrewPrivateLeader_PlainMemberNoEnqueue(t *testing.T) {
 // TestChildDone_CrewPrivateLeader_PlainMemberWakesLeader verifies that when
 // a plain member completes a child issue whose parent is assigned to a
 // private-leader crew, the leader IS woken. Child-done no longer re-checks
-// leader invocation permission (MUL-4063 / GH #4928): the parent was already
+// leader invocation permission (ISS-4063 / GH #4928): the parent was already
 // assigned to the crew — which passed the invocation gate — so waking that
 // crew's own leader to advance the next stage is a coordination handoff, not
 // a fresh invocation. This mirrors the ungated agent-parent path
@@ -226,7 +226,7 @@ func TestChildDone_CrewPrivateLeader_PlainMemberWakesLeader(t *testing.T) {
 	})
 
 	// Create parent issue assigned to the crew (as the AGENT OWNER, who is
-	// allowed to invoke the private leader under MUL-3963).
+	// allowed to invoke the private leader under ISS-3963).
 	w := httptest.NewRecorder()
 	r := newRequestAs(ownerID, "POST", "/api/issues?workspace_id="+testWorkspaceID, map[string]any{
 		"title":         "parent with private-leader crew",
@@ -297,7 +297,7 @@ func TestChildDone_CrewPrivateLeader_PlainMemberWakesLeader(t *testing.T) {
 	}
 }
 
-// TestChildDone_CrewPrivateLeader_AgentActorWakesLeader is the core MUL-4063
+// TestChildDone_CrewPrivateLeader_AgentActorWakesLeader is the core ISS-4063
 // regression: an AGENT (a crew worker) closes a child under a private-leader
 // crew parent, and the child's completing agent has NO human originator who
 // could invoke the private leader. This is the exact process-crew pipeline
@@ -325,7 +325,7 @@ func TestChildDone_CrewPrivateLeader_AgentActorWakesLeader(t *testing.T) {
 		testPool.Exec(context.Background(), `DELETE FROM crew WHERE id = $1`, crewID)
 	})
 
-	// Parent assigned to the crew by the agent owner (allowed under MUL-3963).
+	// Parent assigned to the crew by the agent owner (allowed under ISS-3963).
 	w := httptest.NewRecorder()
 	r := newRequestAs(ownerID, "POST", "/api/issues?workspace_id="+testWorkspaceID, map[string]any{
 		"title":         "parent with private-leader crew (agent child-done)",
@@ -410,7 +410,7 @@ func TestChildDone_CrewPrivateLeader_AgentActorWakesLeader(t *testing.T) {
 		t.Fatalf("count tasks: %v", err)
 	}
 	if count == 0 {
-		t.Fatalf("private leader got 0 queued tasks from agent child-done; want >=1 (MUL-4063)")
+		t.Fatalf("private leader got 0 queued tasks from agent child-done; want >=1 (ISS-4063)")
 	}
 }
 
@@ -453,7 +453,7 @@ func TestComment_CrewPrivateLeader_AgentActorAllowed(t *testing.T) {
 	})
 
 	// Create a task for the other agent whose top-of-chain originator is the
-	// private leader's OWNER. Under MUL-3963 A2A is judged by that originator,
+	// private leader's OWNER. Under ISS-3963 A2A is judged by that originator,
 	// so the agent-actor crew mention resolves to the owner and may invoke
 	// the private leader.
 	var taskID string
@@ -483,7 +483,7 @@ func TestComment_CrewPrivateLeader_AgentActorAllowed(t *testing.T) {
 
 	// The private leader SHOULD have a queued task — the agent-actor mention's
 	// top-of-chain originator is the leader's owner, so A2A-by-originator
-	// admits it (MUL-3963).
+	// admits it (ISS-3963).
 	var count int
 	if err := testPool.QueryRow(ctx,
 		`SELECT count(*) FROM agent_task_queue WHERE issue_id = $1 AND agent_id = $2 AND status = 'queued'`,

@@ -358,6 +358,7 @@ export interface ClientUsageRequest {
 
 export interface LoginResponse {
   token: string;
+  access_token?: string;
   user: User;
 }
 
@@ -379,7 +380,7 @@ export class ApiError extends Error {
 }
 
 // dispatchReasonCode extracts the stable, machine-readable admission reason
-// (MUL-4525) from a blocked-trigger error's structured body, when present. UI
+// (ISS-4525) from a blocked-trigger error's structured body, when present. UI
 // callers localize a blocked/partial trigger from this code instead of pattern
 // matching the human-readable message. Returns undefined for non-ApiErrors or
 // bodies without a reason_code (older servers), so callers fall back to their
@@ -1004,7 +1005,7 @@ export class ApiClient {
   /** Dry-run the unified run-enqueue predicate for a prospective issue write
    *  (create / single assign / single status / batch). Returns the runs that
    *  would start; no side effect. The four entry points consult this instead
-   *  of re-implementing the rule (MUL-3375). */
+   *  of re-implementing the rule (ISS-3375). */
   async previewIssueTrigger(params: IssueTriggerPreviewParams): Promise<IssueTriggerPreview> {
     const raw = await this.fetch<unknown>("/api/issues/preview-trigger", {
       method: "POST",
@@ -1117,7 +1118,7 @@ export class ApiClient {
   /**
    * Leaves this issue and every descendant, and keeps future children of the
    * tree from re-subscribing the user — the escape hatch for an agent-built
-   * tree that keeps growing (MUL-5483).
+   * tree that keeps growing (ISS-5483).
    *
    * Deliberately its own endpoint rather than a `subtree` flag on
    * `unsubscribeFromIssue`. Web/desktop staging ships on merge while the
@@ -1293,9 +1294,9 @@ export class ApiClient {
 
   /**
    * Returns the plaintext `custom_env` map for an agent. Admits the
-   * agent's owner or a workspace owner/admin (MUL-5438); calls from
+   * agent's owner or a workspace owner/admin (ISS-5438); calls from
    * agent-actor sessions get a 403. Every successful call writes an
-   * `agent_env_revealed` activity_log row server-side. MUL-2600.
+   * `agent_env_revealed` activity_log row server-side. ISS-2600.
    */
   async getAgentEnv(id: string): Promise<AgentEnvResponse> {
     return this.fetch(`/api/agents/${id}/env`);
@@ -1306,8 +1307,8 @@ export class ApiClient {
    * `"****"` are preserved server-side (the **** guard) so a partial
    * UI edit doesn't overwrite real secrets with the masked
    * placeholder. Admits the agent's owner or a workspace owner/admin
-   * (MUL-5438); agent actors get a 403. Every successful call writes an
-   * `agent_env_updated` activity_log row. MUL-2600.
+   * (ISS-5438); agent actors get a 403. Every successful call writes an
+   * `agent_env_updated` activity_log row. ISS-2600.
    */
   async updateAgentEnv(id: string, data: UpdateAgentEnvRequest): Promise<AgentEnvResponse> {
     return this.fetch(`/api/agents/${id}/env`, {
@@ -1520,7 +1521,7 @@ export class ApiClient {
   // `active_agents`) if they don't match — caller should re-render the agent
   // list and force the user to re-confirm.
   //
-  // The agents are UNBOUND, not archived or deleted (MUL-5559): they keep their
+  // The agents are UNBOUND, not archived or deleted (ISS-5559): they keep their
   // configuration, chats and task history and need a new runtime to run again.
   // `agents_archived` is the server's deprecated mirror of `agents_unbound`,
   // kept because installed clients read it; prefer `agents_unbound`.
@@ -1547,7 +1548,7 @@ export class ApiClient {
       /**
        * Custom display name. Pass an empty string to clear it (the server
        * reverts to the default name). Omit to leave it unchanged — a JSON
-       * `null` is treated as "unchanged", not "clear". See MUL-4217.
+       * `null` is treated as "unchanged", not "clear". See ISS-4217.
        */
       custom_name?: string;
       /** Apply custom_name to every runtime on the same machine. */
@@ -1561,7 +1562,7 @@ export class ApiClient {
   }
 
   // ---------------------------------------------------------------------
-  // Custom runtime profiles (MUL-3284). All workspace-scoped: the caller
+  // Custom runtime profiles (ISS-3284). All workspace-scoped: the caller
   // passes the workspace id the same way the runtimes list resolves it.
   // ---------------------------------------------------------------------
 
@@ -1818,7 +1819,7 @@ export class ApiClient {
   // pending/running, then render or fail), so the response is validated rather
   // than cast: an unparseable body degrades to an explicit "failed" record that
   // shows the discovery error and keeps manual model entry usable, instead of a
-  // fabricated empty catalog or an endless spinner (MUL-5444).
+  // fabricated empty catalog or an endless spinner (ISS-5444).
   async initiateListModels(runtimeId: string): Promise<RuntimeModelListRequest> {
     const raw = await this.fetch<unknown>(`/api/runtimes/${runtimeId}/models`, {
       method: "POST",
@@ -2262,7 +2263,7 @@ export class ApiClient {
   async uploadFile(
     file: File,
     opts?: { issueId?: string; commentId?: string; chatSessionId?: string },
-    // Optional abort signal so a module-level upload coordinator (MUL-5181)
+    // Optional abort signal so a module-level upload coordinator (ISS-5181)
     // can cancel an in-flight upload on logout. When aborted, `fetch` rejects
     // with an AbortError, which the coordinator distinguishes from a real
     // failure via `signal.aborted` / `err.name === "AbortError"`.
@@ -2334,7 +2335,7 @@ export class ApiClient {
   // id the caller is refreshing so the server can atomically confirm it is still
   // the session's latest turn (409 otherwise) — that keeps the client's pending
   // marker aligned with the turn chat:quick_actions will resolve, with no
-  // response reconciliation needed even under a WS-before-HTTP race (MUL-5149).
+  // response reconciliation needed even under a WS-before-HTTP race (ISS-5149).
   async regenerateChatQuickActions(
     sessionId: string,
     messageId: string,
@@ -3073,7 +3074,7 @@ export class ApiClient {
   async triggerAutopilot(id: string): Promise<AutopilotRun> {
     // Manual "run now" returns 200 even when admission blocks the run (status
     // skipped/failed). The UI branches on status/reason_code to avoid a
-    // false-success toast (MUL-4525), so parse defensively rather than casting.
+    // false-success toast (ISS-4525), so parse defensively rather than casting.
     const raw = await this.fetch<unknown>(`/api/autopilots/${id}/trigger`, { method: "POST" });
     return parseWithFallback(raw, AutopilotRunSchema, FALLBACK_AUTOPILOT_RUN, {
       endpoint: "POST /api/autopilots/:id/trigger",
@@ -3332,11 +3333,11 @@ export class ApiClient {
     });
   }
 
-  // Composio integration (MUL-3720). All routes are user-scoped (a connection
+  // Composio integration (ISS-3720). All routes are user-scoped (a connection
   // belongs to a user, not a workspace), so none take a workspaceId.
 
   /** The project's connectable Composio toolkits (those with an enabled auth
-   * config). Since MUL-4009 the backend filters out non-connectable toolkits,
+   * config). Since ISS-4009 the backend filters out non-connectable toolkits,
    * so every entry has `connectable: true`. A resolver/upstream failure is a
    * 502 rather than an empty list. */
   async listComposioToolkits(): Promise<ComposioToolkit[]> {
@@ -3364,7 +3365,7 @@ export class ApiClient {
     });
   }
 
-  // Slack integration (MUL-3666)
+  // Slack integration (ISS-3666)
   async listSlackInstallations(workspaceId: string): Promise<ListSlackInstallationsResponse> {
     return this.fetch(`/api/workspaces/${workspaceId}/slack/installations`);
   }

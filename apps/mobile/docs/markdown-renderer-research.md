@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-09 (rewritten — initial research had a wrong claim about
 mention syntax, see *Decision Log* below).
-**Scope:** `apps/mobile/` — choosing a markdown renderer for Multica iOS that
+**Scope:** `apps/mobile/` — choosing a markdown renderer for Orchestra iOS that
 matches the web/desktop feature set.
 
 **Target requirements:**
@@ -88,7 +88,7 @@ Plus a preprocess (`packages/views/editor/utils/preprocess.ts`):
 | `react-native-enriched-markdown` (Software Mansion) | Reject (now) | No custom inline component support yet (mention chips would need a roadmap feature). Revisit in 6-12 months |
 | `react-native-awesome-gallery` (lightbox) | Reject | Last release 2024-07, 18+ months stale. Reanimated v3 dependency met but maintenance signal is bad |
 | **`react-native-image-viewing`** (jobtoday) | **Pick for lightbox** | Pure TS, simple API (`<ImageView visible imageIndex images=[]/>`), zero animation deps |
-| **`expo-image`** | **Pick for inline** | First-party Expo, on-disk cache, `contentFit` API, `transition` prop. Same engine the rest of the Multica stack will use for avatars later |
+| **`expo-image`** | **Pick for inline** | First-party Expo, on-disk cache, `contentFit` API, `transition` prop. Same engine the rest of the Orchestra stack will use for avatars later |
 
 ---
 
@@ -99,7 +99,7 @@ apps/mobile/
 ├── lib/markdown/
 │   ├── index.ts                  # Public API: <Markdown content="..." />
 │   ├── markdown.tsx              # Wraps react-native-marked w/ our renderer + preprocess
-│   ├── renderer.tsx              # MulticaRenderer extends Renderer — overrides link, image
+│   ├── renderer.tsx              # OrchestraRenderer extends Renderer — overrides link, image
 │   ├── preprocess.ts             # Mention-shortcode + file-card rewrite, idempotent
 │   ├── mention-chip.tsx          # member / agent / issue chip components
 │   ├── markdown-image.tsx        # expo-image + auto aspect ratio + tap-to-lightbox dispatch
@@ -117,7 +117,7 @@ The adapter boundary stays thin so swapping the engine later (e.g. once `react-n
 
 ```tsx
 // lib/markdown/renderer.tsx (sketch)
-class MulticaRenderer extends Renderer {
+class OrchestraRenderer extends Renderer {
   link(text: string, href: string) {
     if (href.startsWith("mention://")) {
       const [, , type, id] = href.split("/");
@@ -225,13 +225,13 @@ The DB has two mention serializations because of an April 2026 migration:
 - **New**: `[@Label](mention://member/id)` — emitted by current Tiptap editor
 - **Legacy**: `[@ id="abc-123" label="Naiyuan"]` — old shortcode form
 
-Mobile must convert legacy → new before parsing, otherwise old comments render the literal shortcode text. Logic is a pure regex transform — `packages/ui/markdown/index.ts` exports `preprocessMentionShortcodes` for web/desktop, but mobile **cannot** import from `@multica/ui/*` (Sharing Principles in `apps/mobile/CLAUDE.md`).
+Mobile must convert legacy → new before parsing, otherwise old comments render the literal shortcode text. Logic is a pure regex transform — `packages/ui/markdown/index.ts` exports `preprocessMentionShortcodes` for web/desktop, but mobile **cannot** import from `@orchestra/ui/*` (Sharing Principles in `apps/mobile/CLAUDE.md`).
 
 Two options:
 
 | Option | Trade-off |
 |---|---|
-| **A.** Lift the pure function to `@multica/core/markdown/` so all three apps share it | One PR adds a new core module; web/desktop migrate their import path; mobile imports same function. Single source of truth |
+| **A.** Lift the pure function to `@orchestra/core/markdown/` so all three apps share it | One PR adds a new core module; web/desktop migrate their import path; mobile imports same function. Single source of truth |
 | **B.** Mobile re-implements it (~30 lines) | No web/desktop change; risk of drift if the legacy format ever expands |
 
 **Recommend A.** This is exactly the kind of pure-function-share-zone the monorepo is for, and parity is required (same legacy comment must produce the same mention id on both clients).
@@ -359,7 +359,7 @@ visibly improves CJK wrapping at line edges. Set it on every paragraph
 
 ### Tiptap-emitted markdown serialization
 
-[Tiptap's default `clipboardTextSerializer`](https://tiptap.dev/docs/editor/extensions/nodes/hard-break) emits `\n\n` between paragraphs and `\n` only for explicit `HardBreak` nodes (Shift+Enter). Bare single `\n` inside a paragraph is rare in Multica content (everything that lands in our DB went through tiptap). So `marked.lexer({ breaks: true })`:
+[Tiptap's default `clipboardTextSerializer`](https://tiptap.dev/docs/editor/extensions/nodes/hard-break) emits `\n\n` between paragraphs and `\n` only for explicit `HardBreak` nodes (Shift+Enter). Bare single `\n` inside a paragraph is rare in Orchestra content (everything that lands in our DB went through tiptap). So `marked.lexer({ breaks: true })`:
 
 - Is **harmless** for tiptap content.
 - Is **defensive** for non-tiptap input (paste, IME, future API ingestion paths).
@@ -452,7 +452,7 @@ correctness one.
 
 - **2026-05-19 (RNR theme integration + enriched-markdown dark-default trap)** — Migrated `markdown-style.ts` from static hex constants to a `useMarkdownStyle()` hook driven by `THEME[scheme]` (from `lib/theme.ts`, mirroring `global.css` CSS variables). Non-prose layers (`CodeBlock` / `MarkdownImage`) were already className-driven and only needed dark-mode `--code-surface` (changed from light-mirror `240 4% 92%` to `240 4% 18%`). Two waves of dark-mode bugs uncovered the same root cause:
 
-  **First wave** (visible breakage in `MUL-2395` dark screenshot): list items rendered as black-on-black (invisible); inline code showed a white-ish empty outline (no fill).
+  **First wave** (visible breakage in `ISS-2395` dark screenshot): list items rendered as black-on-black (invisible); inline code showed a white-ish empty outline (no fill).
 
   **Root cause**: `react-native-enriched-markdown@0.5.0`'s `normalizeMarkdownStyle.js` defines `DEFAULT_NORMALIZED_STYLE` — a frozen table of ~30 hardcoded LIGHT-mode color defaults (`#1F2937` text, `#E01E5A` inline code, `#FDF2F4` inline code bg, `#F8D7DA` inline code border, `#4B5563` blockquote, `#FFFFFF` table even row, `#000000` checked task text, etc.). User `markdownStyle` is merged on top — **fields you don't pass keep the hardcoded light value**. There is no "inherit from parent" fallback at the native md4c layer.
 
@@ -466,7 +466,7 @@ correctness one.
 
   Inline code background alpha: `12%` on dark is invisible against `#0a0a0a`; bumped to `40%` (`#9ca3af66`) in dark mode while keeping `12%` in light. Border forced to `transparent` to kill the default pink stroke.
 
-- **2026-05-19 (lineHeight 24→20 attempted then REVERTED same day)** — Saw inline-code chip with very top-heavy padding in #MUL-2397 screenshot. Initial hypothesis: paragraph `lineHeight 24` + iOS TextKit descender-flush glyph positioning produced ~4.3:1 top:bottom space ratio. Reduced `MD_LINE.body` 24→20 to compress. **Reverted same day after research falsified the hypothesis**:
+- **2026-05-19 (lineHeight 24→20 attempted then REVERTED same day)** — Saw inline-code chip with very top-heavy padding in #ISS-2397 screenshot. Initial hypothesis: paragraph `lineHeight 24` + iOS TextKit descender-flush glyph positioning produced ~4.3:1 top:bottom space ratio. Reduced `MD_LINE.body` 24→20 to compress. **Reverted same day after research falsified the hypothesis**:
   - Discord / Slack / Telegram / Mattermost mobile all use background + monospace inline code with no visible top-heavy artifact ([Discord markdown guide](https://gist.github.com/matthewzring/9f7bbfd102003963f9be7dbcf7d40e51), [Slack docs](https://slack.com/help/articles/202288908-Format-your-messages), [Telegram entities API](https://core.telegram.org/api/entities)) — confirming the artifact is NOT a RN+iOS structural limitation
   - Upstream [`react-native-enriched-markdown#255`](https://github.com/software-mansion-labs/react-native-enriched-markdown/issues/255) — same user-reported problem, maintainer unresponsive — confirms enriched applies hardcoded inline-code padding that can't be turned off
   - Reducing `lineHeight` shrinks absolute padding but doesn't shift the asymmetry ratio (enriched's internal padding distribution is what sets the ratio). Net effect of the reduction: cost CJK leading, didn't fix the chip

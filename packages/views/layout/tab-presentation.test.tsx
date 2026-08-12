@@ -49,13 +49,13 @@ function makeClient() {
 function seed(qc: QueryClient) {
   qc.setQueryData(issueDetailOptions("ws1", "i1").queryKey, {
     id: "i1",
-    identifier: "MUL-1",
+    identifier: "ISS-1",
     title: "Fix login",
     status: "in_progress",
   } as never);
   qc.setQueryData(issueDetailOptions("ws1", "i9").queryKey, {
     id: "i9",
-    identifier: "MUL-9",
+    identifier: "ISS-9",
     title: "Crash",
     status: "todo",
   } as never);
@@ -110,7 +110,7 @@ describe("useTabPresentation — live from cache", () => {
   it("issue: live status glyph + identifier:title", () => {
     expect(presentationOf("/acme/issues/i1")).toEqual({
       visual: { kind: "issue-status", status: "in_progress" },
-      title: "MUL-1: Fix login",
+      title: "ISS-1: Fix login",
     });
   });
 
@@ -157,7 +157,7 @@ describe("useTabPresentation — live from cache", () => {
     // Selection key is issue_id ?? id — n1 links issue i9.
     expect(presentationOf("/acme/inbox?issue=i9")).toEqual({
       visual: { kind: "icon", icon: "Inbox" },
-      title: "MUL-9: Crash",
+      title: "ISS-9: Crash",
     });
   });
 
@@ -174,7 +174,7 @@ describe("useTabPresentation — live from cache", () => {
     expect(presentationOf("/acme/inbox?issue=i1").title).toBe("Inbox");
     expect(presentationOf("/acme/inbox?view=archived&issue=i1")).toEqual({
       visual: { kind: "icon", icon: "Inbox" },
-      title: "MUL-1: Fix login",
+      title: "ISS-1: Fix login",
     });
   });
 
@@ -200,9 +200,9 @@ describe("useTabPresentation — live from cache", () => {
 
 describe("useTabPresentation — pending / fallback", () => {
   it("pending issue keeps the issue-status slot and uses the persisted fallback", () => {
-    expect(presentationOf("/acme/issues/unloaded", "MUL-7: Prior")).toEqual({
+    expect(presentationOf("/acme/issues/unloaded", "ISS-7: Prior")).toEqual({
       visual: { kind: "issue-status", status: null },
-      title: "MUL-7: Prior",
+      title: "ISS-7: Prior",
     });
   });
 

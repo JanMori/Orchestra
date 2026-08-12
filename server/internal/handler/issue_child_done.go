@@ -9,15 +9,15 @@ import (
 	"strings"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // notifyParentOfChildDone posts a top-level system comment on the parent
 // issue when a child issue transitions from non-done into done. This replaces
 // the agent-prompt rule that previously made child agents post the
 // notification themselves (PR #2918 user feedback — the agent rule caused
-// self-mention loops, planner ping-pong, and accidental `MUL-` prefix
+// self-mention loops, planner ping-pong, and accidental `ISS-` prefix
 // hardcoding because the agent did not always know the workspace prefix).
 //
 // Guards on whether the comment fires at all:
@@ -32,14 +32,14 @@ import (
 //   - parent must not be "backlog" — a parent parked in backlog is being
 //     deliberately held for later; waking its assignee (which can then
 //     promote sibling backlog sub-issues into todo) is exactly the
-//     unwanted auto-activation reported in #4320 / MUL-3497. A parked
+//     unwanted auto-activation reported in #4320 / ISS-3497. A parked
 //     parent stays inert until the user explicitly moves it out of backlog.
 //   - parent assignee must not be a member (human). Humans read their
 //     issues manually; an automated system comment is pure noise for them
 //     and there is nothing to "trigger" on a human assignee. Skipping the
-//     comment entirely (Bohan's call on MUL-2538) also sidesteps the
+//     comment entirely (Bohan's call on ISS-2538) also sidesteps the
 //     mention question — no comment, no mention, no inbox row.
-//   - the completion must close a STAGE barrier (MUL-3508). Sub-issues under
+//   - the completion must close a STAGE barrier (ISS-3508). Sub-issues under
 //     a parent can be grouped into ordered stages via issue.stage; the
 //     notification + wake fire only when every sibling in the lowest
 //     unfinished stage is terminal (stageBarrierClosed). An unstaged sibling
@@ -53,7 +53,7 @@ import (
 // CreateComment HTTP handler) so it bypasses the generic on_comment trigger
 // path. When the parent has an agent or crew assignee, the comment body
 // embeds a single `mention://{agent,crew}/<id>` link that targets the
-// parent assignee — Bohan's product call on MUL-2538 ("system child-done
+// parent assignee — Bohan's product call on ISS-2538 ("system child-done
 // comment 无脑 mention parent assignee，member/crew/agent 都覆盖", later
 // narrowed to skip member assignees outright). To keep the platform in
 // control of side effects, the cmd/server notification + subscriber
@@ -93,19 +93,19 @@ func (h *Handler) notifyParentOfChildDone(ctx context.Context, prev, issue db.Is
 	// A parent parked in backlog is deliberately held for later. Posting the
 	// system comment would wake its assignee, and the woken agent can then
 	// promote sibling backlog sub-issues into todo — the surprise auto-
-	// activation reported in #4320 / MUL-3497. Skip the whole notification so
+	// activation reported in #4320 / ISS-3497. Skip the whole notification so
 	// a backlog parent stays inert until the user explicitly promotes it.
 	if parent.Status == "backlog" {
 		return
 	}
 	// Human-assigned parents read their own timeline; an automated system
 	// comment is just noise and there is no agent task to trigger. Skip the
-	// whole notification (comment + mention + inbox row) — MUL-2538.
+	// whole notification (comment + mention + inbox row) — ISS-2538.
 	if parent.AssigneeType.Valid && parent.AssigneeType.String == "member" {
 		return
 	}
 
-	// Stage barrier (MUL-3508 / discussion #4320). The notification + assignee
+	// Stage barrier (ISS-3508 / discussion #4320). The notification + assignee
 	// wake fire only when this completion *closes a stage* — i.e. every sibling
 	// in the lowest unfinished stage is now terminal. An unstaged sibling set is
 	// one implicit stage, so this collapses to "wake once when the last
@@ -144,7 +144,7 @@ func (h *Handler) notifyParentOfChildDone(ctx context.Context, prev, issue db.Is
 // fired one comment per intermediate stage: the first (stale) comment pinned the
 // parent assignee's wake to an already-superseded "advance Stage N+1"
 // instruction while the accurate final wake was swallowed by the pending-task
-// dedup, and the outcome depended on issue_ids order (MUL-4155). Aggregating
+// dedup, and the outcome depended on issue_ids order (ISS-4155). Aggregating
 // here makes the result order-independent — each affected parent gets at most
 // one comment built from the final state, plus one wake pinned to that comment.
 //
@@ -447,7 +447,7 @@ func stageProgressSummary(children []db.Issue, closedStage int32) (summary strin
 //     such a pipeline reaches nextStage == 0 exactly like a true final stage
 //     does. The old wording ("This was the final stage. Wrap up the parent")
 //     asserted a finality the server cannot know and pushed leaders to wrap up
-//     mid-workflow (MUL-4062 / #4927). The message now names both possibilities
+//     mid-workflow (ISS-4062 / #4927). The message now names both possibilities
 //     and hands the create-next-vs-wrap-up decision back to the leader.
 func stageAdvanceInstruction(nextStage int32, parentID string) string {
 	if nextStage > 0 {
@@ -574,8 +574,8 @@ func sanitizeMentionLabel(name string) string {
 //     parent into sub-issues assigned to its own crew: the stage-barrier
 //     system comment lands on the PARENT carrying the "advance the next stage /
 //     wrap up" instruction, which a child-side wake never delivers — so the
-//     parent silently stalled in in_progress (MUL-3969). The crew path now
-//     mirrors the agent path (MUL-2808): always dispatch, bounded only by
+//     parent silently stalled in in_progress (ISS-3969). The crew path now
+//     mirrors the agent path (ISS-2808): always dispatch, bounded only by
 //     idempotency.
 //   - Idempotency: HasPendingTaskForIssueAndAgent dedupes rapid-fire enqueues
 //     for the same parent (e.g. two children finishing back-to-back). It also
@@ -606,7 +606,7 @@ func (h *Handler) dispatchParentAssigneeTrigger(ctx context.Context, parent db.I
 // isAgentRunningOnIssue); only re-entering the SAME issue is a loop. A lone
 // agent that decomposes its parent into sub-issues it owns itself has no
 // other wake path, so the old "child owner == parent agent" guard silently
-// stranded those parents (MUL-2808). Runaway re-triggering is prevented by
+// stranded those parents (ISS-2808). Runaway re-triggering is prevented by
 // the HasPendingTaskForIssueAndAgent dedup below, exactly as the @mention
 // self-trigger path relies on it (see computeMentionedAgentCommentTriggers).
 func (h *Handler) triggerChildDoneAgent(ctx context.Context, parent db.Issue, triggerCommentID pgtype.UUID) {
@@ -646,7 +646,7 @@ func (h *Handler) triggerChildDoneAgent(ctx context.Context, parent db.Issue, tr
 //     the child via its own coordination cycle, but that wake lands on the
 //     CHILD and never carries the parent-level stage-barrier instruction, so it
 //     stranded the common "crew decomposes its parent into sub-issues assigned
-//     to its own crew" pattern (MUL-3969).
+//     to its own crew" pattern (ISS-3969).
 //   - NO leader-invocation gate. Waking the parent's OWN crew leader on
 //     child-done is a coordination handoff on an issue the leader already owns,
 //     not a fresh invocation — invocation permission was already enforced when
@@ -655,7 +655,7 @@ func (h *Handler) triggerChildDoneAgent(ctx context.Context, parent db.Issue, tr
 //     completer — an agent/system actor with no resolvable human originator —
 //     failed closed for the DEFAULT private leader, silently stranding every
 //     process-crew pipeline after its first stage while direct-to-leader-agent
-//     parents advanced fine (MUL-4063 / GH #4928). Removed so agent and crew
+//     parents advanced fine (ISS-4063 / GH #4928). Removed so agent and crew
 //     child-done follow one path; if invocation permission is ever reintroduced
 //     it must be added to BOTH paths together.
 //

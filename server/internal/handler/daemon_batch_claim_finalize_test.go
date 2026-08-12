@@ -17,7 +17,7 @@ type batchClaimReceiptResponse struct {
 	} `json:"tasks"`
 }
 
-// TestClaimTasksByRuntime_MaxTasksZeroClaimsNothing pins the MUL-4257 review
+// TestClaimTasksByRuntime_MaxTasksZeroClaimsNothing pins the ISS-4257 review
 // fix: max_tasks=0 is a valid "no free slots" poll that must claim nothing —
 // it must NOT be coerced to 1 (which would dispatch a task the daemon can't run
 // and strand it until stale reclaim).
@@ -63,7 +63,7 @@ func TestClaimTasksByRuntime_MaxTasksNegativeIsBadRequest(t *testing.T) {
 	}
 }
 
-// TestClaimTasksByRuntime_SkipsInvalidRuntimeID pins the MUL-4257 review fix:
+// TestClaimTasksByRuntime_SkipsInvalidRuntimeID pins the ISS-4257 review fix:
 // a malformed runtime_id must be skipped (non-panicking parse), not turned into
 // a 500 — and a valid runtime in the same request is still claimed.
 func TestClaimTasksByRuntime_SkipsInvalidRuntimeID(t *testing.T) {
@@ -127,7 +127,7 @@ func assertCommentDelivered(t *testing.T, ctx context.Context, taskID, commentID
 	}
 }
 
-// TestClaimTasksByRuntime_PersistsCommentDeliveryReceipt pins the MUL-4257
+// TestClaimTasksByRuntime_PersistsCommentDeliveryReceipt pins the ISS-4257
 // must-fix: the batch path routes through FinalizeTaskClaim, so a comment-backed
 // task claimed via batch persists the delivered_comment_ids receipt AND returns
 // it in the response.
@@ -210,7 +210,7 @@ func TestClaimTasksByRuntime_StaleReclaimRecordsDeliveryReceipt(t *testing.T) {
 	assertCommentDelivered(t, ctx, taskID, commentID)
 }
 
-// TestClaimTasksByRuntime_SkipsRuntimeOwnedByAnotherDaemon pins the MUL-4257
+// TestClaimTasksByRuntime_SkipsRuntimeOwnedByAnotherDaemon pins the ISS-4257
 // review must-fix: a daemon must not batch-claim a task routed to a runtime
 // bound to a DIFFERENT daemon, even in the same workspace. The runtime is
 // skipped and its task stays queued for the owning machine.
@@ -272,7 +272,7 @@ func TestClaimTasksByRuntime_RequiresDaemonID(t *testing.T) {
 	}
 }
 
-// TestClaimTasksByRuntime_RepairsStaleCommentPlan pins the MUL-4257 review
+// TestClaimTasksByRuntime_RepairsStaleCommentPlan pins the ISS-4257 review
 // must-fix: when a claimed task's trigger comment was deleted (only coalesced
 // survivors remain), the batch path must NOT finalize+dispatch it (which would
 // silently drop the surviving comment). Instead it cancels the stale task,

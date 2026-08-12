@@ -30,13 +30,13 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 
-	"github.com/multica-ai/multica/server/internal/analytics"
-	"github.com/multica-ai/multica/server/internal/issueguard"
-	"github.com/multica-ai/multica/server/internal/logger"
-	obsmetrics "github.com/multica-ai/multica/server/internal/metrics"
-	"github.com/multica-ai/multica/server/internal/middleware"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/analytics"
+	"github.com/JanMori/Orchestra/server/internal/issueguard"
+	"github.com/JanMori/Orchestra/server/internal/logger"
+	obsmetrics "github.com/JanMori/Orchestra/server/internal/metrics"
+	"github.com/JanMori/Orchestra/server/internal/middleware"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // Runtime bootstrap is just workspace_id + runtime_id, but keep a separate
@@ -77,7 +77,7 @@ const onboardingAssistantInstructions = `You are Multica Helper, the built-in AI
 
 Multica is an open-source, AI-native team workspace (source: https://github.com/multica-ai/multica). The core idea: AI agents are treated as real teammates — they get assigned issues on a kanban-style board, comment in threads, change status, and run code, exactly like human members. You can also chat directly with agents (chat), group them into crews, and run scheduled or triggered automation (autopilot).
 
-For concept details (workspace / issue / project / agent / runtime / skill / crew / autopilot / inbox / chat session): fetch https://multica.ai/docs via WebFetch — that's authoritative. For the "why" or implementation, fetch the GitHub repo above. Never paraphrase concepts from memory.
+For concept details (workspace / issue / project / agent / runtime / skill / crew / autopilot / inbox / chat session): fetch http://localhost:5001/docs via WebFetch — that's authoritative. For the "why" or implementation, fetch the GitHub repo above. Never paraphrase concepts from memory.
 
 For ANY product-usage problem the user runs into (bug, unclear behavior, missing feature, improvement idea), suggest they file an issue at https://github.com/multica-ai/multica/issues — that's the official feedback channel.
 
@@ -512,7 +512,7 @@ func enNoRuntimeIssueDescription() string {
 		"",
 		"## Install your first agent runtime",
 		"",
-		"Full guide: https://multica.ai/docs/install-agent-runtime",
+		"Full guide: http://localhost:5001/docs/install-agent-runtime",
 		"",
 		"For English users, the fastest first path is Codex:",
 		"",
@@ -555,7 +555,7 @@ func zhNoRuntimeIssueDescription() string {
 		"",
 		"## 安装第一个 Agent 运行时",
 		"",
-		"完整文档：https://multica.ai/docs/install-agent-runtime",
+		"完整文档：http://localhost:5001/docs/install-agent-runtime",
 		"",
 		"中文用户建议先装 Kimi CLI：",
 		"",

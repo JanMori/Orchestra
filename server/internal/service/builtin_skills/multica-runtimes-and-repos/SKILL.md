@@ -1,11 +1,11 @@
 ---
-name: multica-runtimes-and-repos
-description: "Use when a Multica runtime or daemon misbehaves: agent not running, task not claimed, runtime offline, workdir or session reuse, repository checkout."
+name: orchestra-runtimes-and-repos
+description: "Use when a Orchestra runtime or daemon misbehaves: agent not running, task not claimed, runtime offline, workdir or session reuse, repository checkout."
 user-invocable: false
-allowed-tools: Bash(multica *)
+allowed-tools: Bash(orchestra *)
 ---
 
-# Multica Runtimes and Repos
+# Orchestra Runtimes and Repos
 
 ## Quick start
 
@@ -13,7 +13,7 @@ For "agent did not run" or "repo checkout failed", read the chain before changin
 
 ```bash
 orchestra agent get <agent-id> --output json
-multica runtime list --output json
+orchestra runtime list --output json
 orchestra repo checkout <repo-url>
 ```
 
@@ -36,11 +36,11 @@ The chain is:
 ## CLI
 
 ```bash
-multica runtime list --output json
-multica runtime usage <runtime-id> --output json
-multica runtime activity <runtime-id> --output json
-multica runtime update <runtime-id> --target-version <version> --output json
-multica runtime delete <runtime-id>
+orchestra runtime list --output json
+orchestra runtime usage <runtime-id> --output json
+orchestra runtime activity <runtime-id> --output json
+orchestra runtime update <runtime-id> --target-version <version> --output json
+orchestra runtime delete <runtime-id>
 orchestra repo checkout <url>
 orchestra repo checkout <url> --ref <branch-or-sha>
 ```
@@ -56,7 +56,7 @@ Check in this order:
 1. Was a task supposed to be created? Inspect issue/comment/autopilot context.
 2. Is the assignee an agent or crew? A crew routes to its leader.
 3. Is the agent archived or bound to a runtime the actor cannot use?
-4. Is the runtime online? `multica runtime list --output json`.
+4. Is the runtime online? `orchestra runtime list --output json`.
 5. Did the daemon heartbeat recently? Runtime `last_seen_at` is the visible clue.
 6. Did the task get claimed or is it stuck pending/running/waiting for local directory?
 7. If repo checkout failed, classify it after checking whether repo context was

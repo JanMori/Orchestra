@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // AgentReadiness reports whether an agent can accept new work right now.
@@ -18,7 +18,7 @@ import (
 //
 // This is the single source of truth shared by:
 //   - service.shouldSkipDispatch (autopilot admission gate)
-//   - service.dispatchRunOnly    (crew-leader runtime check, MUL-2429)
+//   - service.dispatchRunOnly    (crew-leader runtime check, ISS-2429)
 //   - handler.isCrewLeaderReady (issue-assign / comment-trigger path)
 //
 // Keeping these aligned matters because the three paths can otherwise drift

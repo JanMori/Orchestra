@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  *
- * MUL-5108 regression coverage: an open cell editor popup must survive the
+ * ISS-5108 regression coverage: an open cell editor popup must survive the
  * data refreshes that constantly hit an active workspace (realtime refetches
  * rebuilding childProgressMap / issue arrays, window pages arriving, the
  * end-of-load hierarchy assembly). Before the fix, refreshed lookups rebuilt
@@ -123,7 +123,7 @@ function makeIssue(id: string, title: string, status: Issue["status"]): Issue {
     id,
     workspace_id: "ws-1",
     number: 1,
-    identifier: `MUL-${id}`,
+    identifier: `ISS-${id}`,
     title,
     description: null,
     status,
@@ -239,12 +239,12 @@ describe("TableView cell editors under data refresh", () => {
   // Explicit timeout: this mounts the full TableView with every picker + a
   // QueryClient and drives three realistic userEvent click gestures, each
   // re-rendering the whole table — far heavier than a unit test. `delay: null`
-  // strips the default real-timer gaps between events (MUL-5108 review R1#1).
+  // strips the default real-timer gaps between events (ISS-5108 review R1#1).
   // Even so, the frontend CI job runs the entire `turbo build typecheck lint
   // test` pipeline on a 2-core runner, so builds/lints/typechecks and 258
   // vitest files all oversubscribe both cores at once; at the worst-case
   // scheduling peak this test's wall clock blew past the earlier 20s cap
-  // (MUL-5326). It runs in ~1s in isolation, so the generous 60s ceiling
+  // (ISS-5326). It runs in ~1s in isolation, so the generous 60s ceiling
   // (matching the repo's heaviest FE tests) only absorbs CI CPU starvation —
   // it never masks a real hang.
   it("keeps the status picker open and the row order frozen across a refresh, then catches up on close", async () => {
@@ -265,12 +265,12 @@ describe("TableView cell editors under data refresh", () => {
     );
 
     const identifiers = () =>
-      screen.getAllByText(/^MUL-/).map((node) => node.textContent);
-    await screen.findByText("MUL-a");
-    expect(identifiers()).toEqual(["MUL-a", "MUL-b"]);
+      screen.getAllByText(/^ISS-/).map((node) => node.textContent);
+    await screen.findByText("ISS-a");
+    expect(identifiers()).toEqual(["ISS-a", "ISS-b"]);
 
     // Open the status picker on row A: its cell trigger shows "Todo".
-    const rowA = screen.getByText("MUL-a").closest("tr")!;
+    const rowA = screen.getByText("ISS-a").closest("tr")!;
     await user.click(within(rowA).getByRole("button", { name: /Todo/ }));
     // Base UI portals the popup; "Backlog" only exists while it is open.
     expect(screen.getByRole("button", { name: /Backlog/ })).toBeTruthy();
@@ -308,7 +308,7 @@ describe("TableView cell editors under data refresh", () => {
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /Backlog/ })).toBeTruthy();
-      expect(identifiers()).toEqual(["MUL-a", "MUL-b"]);
+      expect(identifiers()).toEqual(["ISS-a", "ISS-b"]);
       // …while the VALUES inside the frozen rows keep tracking live data.
       expect(screen.getByText("Alpha task (updated)")).toBeTruthy();
     });
@@ -316,7 +316,7 @@ describe("TableView cell editors under data refresh", () => {
     // Selecting a value closes the editor; the deferred live order applies.
     await user.click(screen.getByRole("button", { name: /Backlog/ }));
     expect(screen.queryByRole("button", { name: /Backlog/ })).toBeNull();
-    expect(identifiers()).toEqual(["MUL-b", "MUL-a"]);
+    expect(identifiers()).toEqual(["ISS-b", "ISS-a"]);
   }, 60_000);
 
   it("opens creation with the row as parent and inherits its project", async () => {
@@ -338,14 +338,14 @@ describe("TableView cell editors under data refresh", () => {
       </QueryClientProvider>,
     );
 
-    const row = (await screen.findByText("MUL-a")).closest("tr")!;
+    const row = (await screen.findByText("ISS-a")).closest("tr")!;
     await user.click(
       within(row).getByRole("button", { name: "Create sub-issue" }),
     );
 
     expect(onCreateIssue).toHaveBeenCalledWith({
       parent_issue_id: "a",
-      parent_issue_identifier: "MUL-a",
+      parent_issue_identifier: "ISS-a",
       project_id: "project-1",
     });
   });
@@ -363,11 +363,11 @@ describe("TableView cell editors under data refresh", () => {
       </QueryClientProvider>,
     );
 
-    const row = (await screen.findByText("MUL-a")).closest("tr")!;
+    const row = (await screen.findByText("ISS-a")).closest("tr")!;
     await user.click(within(row).getByRole("button", { name: "Alpha task" }));
     expect(navigationMocks.openInNewTab).toHaveBeenCalledWith(
       "/test/issues/a",
-      "MUL-a",
+      "ISS-a",
       { activate: true },
     );
     expect(navigationMocks.push).not.toHaveBeenCalled();
@@ -376,7 +376,7 @@ describe("TableView cell editors under data refresh", () => {
     await user.click(row);
     expect(navigationMocks.openInNewTab).toHaveBeenCalledWith(
       "/test/issues/a",
-      "MUL-a",
+      "ISS-a",
       { activate: true },
     );
     expect(navigationMocks.push).not.toHaveBeenCalled();
@@ -398,7 +398,7 @@ describe("TableView cell editors under data refresh", () => {
       </QueryClientProvider>,
     );
 
-    const row = (await screen.findByText("MUL-a")).closest("tr")!;
+    const row = (await screen.findByText("ISS-a")).closest("tr")!;
     await user.click(within(row).getByRole("button", { name: "Alpha task" }));
 
     expect(navigationMocks.getShareableUrl).toHaveBeenCalledWith(
@@ -416,7 +416,7 @@ describe("TableView cell editors under data refresh", () => {
 // Row virtualization unmounts a cell when its row scrolls out of the window
 // (data-table.tsx). Base UI does not fire onOpenChange(false) on unmount, so
 // the hoisted editing key — and the frozen structure it holds — needs an
-// explicit release when the owning cell leaves the DOM (MUL-5108 review R1#3).
+// explicit release when the owning cell leaves the DOM (ISS-5108 review R1#3).
 // A cell unmounting is exactly what a virtual-window change does; probing the
 // hook directly keeps the assertion deterministic (jsdom has no layout for a
 // real virtualizer to react to).

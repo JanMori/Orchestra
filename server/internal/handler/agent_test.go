@@ -907,7 +907,7 @@ func rawJSONResponse(t *testing.T, body []byte) map[string]any {
 }
 
 // TestGetAgent_ResponseHasNoCustomEnv guards the core invariant from
-// MUL-2600: the generic agent resource response NEVER carries the
+// ISS-2600: the generic agent resource response NEVER carries the
 // custom_env field, even for the agent's owner. Only the dedicated
 // env endpoint exposes secret values.
 func TestGetAgent_ResponseHasNoCustomEnv(t *testing.T) {
@@ -1109,7 +1109,7 @@ func TestAgentEnv_AgentActorRejected(t *testing.T) {
 	}
 }
 
-// TestAgentEnv_TaskTokenActorSource locks in the post-MUL-2600 attack
+// TestAgentEnv_TaskTokenActorSource locks in the post-ISS-2600 attack
 // model: an agent process that strips its identifying headers
 // (X-Agent-ID / X-Task-ID) but is still authenticated by an `mat_`
 // task token MUST be recognized as actor=agent and rejected on the
@@ -1359,13 +1359,13 @@ func TestAgentResponseShape_HasNoLegacyEnvFields(t *testing.T) {
 		tag := strings.Split(f.Tag.Get("json"), ",")[0]
 		switch tag {
 		case "custom_env", "custom_env_redacted", "custom_env_redacted_reason":
-			t.Errorf("AgentResponse must not carry %q field (MUL-2600)", tag)
+			t.Errorf("AgentResponse must not carry %q field (ISS-2600)", tag)
 		}
 	}
 }
 
 // TestUpdateAgent_RedactsMcpConfigForAgentActor closes the second leg
-// of MUL-2600 review #2: an agent process with a task token (or with
+// of ISS-2600 review #2: an agent process with a task token (or with
 // the X-Actor-Source server marker) must not be able to scrape another
 // agent's mcp_config via an unrelated mutation response. Even when the
 // host PAT would otherwise satisfy canManageAgent, the response body

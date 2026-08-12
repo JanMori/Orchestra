@@ -1,10 +1,10 @@
 # Multica installer for Windows — one command to get started.
 #
 # Install CLI (default): connects to multica.ai
-#   irm https://raw.githubusercontent.com/orchestra-ai/multica/main/scripts/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/JanMori/Orchestra/main/scripts/install.ps1 | iex
 #
 # Self-host: starts a local Multica server + installs CLI + configures
-#   $env:ORCHESTRA_MODE="local"; irm https://raw.githubusercontent.com/orchestra-ai/multica/main/scripts/install.ps1 | iex
+#   $env:ORCHESTRA_MODE="local"; irm https://raw.githubusercontent.com/JanMori/Orchestra/main/scripts/install.ps1 | iex
 #
 
 $ErrorActionPreference = "Stop"
@@ -12,8 +12,8 @@ $ErrorActionPreference = "Stop"
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-$RepoUrl       = "https://github.com/orchestra-ai/multica.git"
-$RepoWebUrl    = "https://github.com/orchestra-ai/multica"
+$RepoUrl       = "https://github.com/JanMori/Orchestra.git"
+$RepoWebUrl    = "https://github.com/JanMori/Orchestra"
 $DefaultInstallDir = Join-Path $env:USERPROFILE ".multica\server"
 $InstallDir    = if ($env:ORCHESTRA_INSTALL_DIR) { $env:ORCHESTRA_INSTALL_DIR } else { $DefaultInstallDir }
 
@@ -86,7 +86,7 @@ function Get-ComposePublishedPort {
 
 function Get-LatestVersion {
     try {
-        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/orchestra-ai/multica/releases/latest" -ErrorAction Stop
+        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/JanMori/Orchestra/releases/latest" -ErrorAction Stop
         return $release.tag_name
     } catch {
         return $null
@@ -247,7 +247,7 @@ function Install-CliBinary {
     }
 
     $version = $latest.TrimStart('v')
-    $url = "https://github.com/orchestra-ai/multica/releases/download/$latest/orchestra-cli-$version-windows-$arch.zip"
+    $url = "https://github.com/JanMori/Orchestra/releases/download/$latest/orchestra-cli-$version-windows-$arch.zip"
     $tmpDir = Join-Path ([System.IO.Path]::GetTempPath()) "multica-install"
 
     if (Test-Path $tmpDir) { Remove-Item $tmpDir -Recurse -Force }
@@ -262,7 +262,7 @@ function Install-CliBinary {
     }
 
     # Verify SHA256 checksum
-    $checksumUrl = "https://github.com/orchestra-ai/multica/releases/download/$latest/checksums.txt"
+    $checksumUrl = "https://github.com/JanMori/Orchestra/releases/download/$latest/checksums.txt"
     try {
         $checksums = Invoke-WebRequest -Uri $checksumUrl -UseBasicParsing -ErrorAction Stop
         $checksumContent = if ($checksums.Content -is [byte[]]) {
@@ -495,11 +495,10 @@ function Start-DefaultInstall {
     Write-Host ""
     Write-Host "  Next: configure your environment"
     Write-Host ""
-    Write-Host "     orchestra setup               " -NoNewline; Write-Host "# Connect to Multica Cloud (multica.ai)" -ForegroundColor DarkGray
-    Write-Host "     orchestra setup self-host      " -NoNewline; Write-Host "# Connect to a self-hosted server" -ForegroundColor DarkGray
+    Write-Host "     orchestra setup self-host --server-url http://localhost:7081 --app-url http://localhost:5001 " -NoNewline; Write-Host "# Connect to self-hosted server" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "  Self-hosting? Install the server first:"
-    Write-Host '     $env:ORCHESTRA_MODE="with-server"; irm https://raw.githubusercontent.com/orchestra-ai/multica/main/scripts/install.ps1 | iex'
+    Write-Host '     $env:ORCHESTRA_MODE="with-server"; irm https://raw.githubusercontent.com/JanMori/Orchestra/main/scripts/install.ps1 | iex'
     Write-Host ""
 }
 
@@ -533,7 +532,7 @@ function Start-LocalInstall {
     Write-Host "  or read the generated code from backend logs when Resend is unset."
     Write-Host ""
     Write-Host "  To stop all services:"
-    Write-Host '     $env:ORCHESTRA_MODE="stop"; irm https://raw.githubusercontent.com/orchestra-ai/multica/main/scripts/install.ps1 | iex'
+    Write-Host '     $env:ORCHESTRA_MODE="stop"; irm https://raw.githubusercontent.com/JanMori/Orchestra/main/scripts/install.ps1 | iex'
     Write-Host ""
 }
 

@@ -16,7 +16,7 @@ const (
 // Broadcaster is the abstraction every realtime event producer should depend
 // on instead of *Hub directly.
 //
-// Phase 1 (MUL-1138) extends the surface with BroadcastToScope so events can
+// Phase 1 (ISS-1138) extends the surface with BroadcastToScope so events can
 // be fanned out to high-frequency per-resource scopes (`task:{id}`,
 // `chat:{id}`) instead of the whole workspace. The legacy methods continue to
 // work and now route through BroadcastToScope under the hood.

@@ -7,7 +7,7 @@ import type { TaskMessagePayload } from "@orchestra/core/types";
 import type { ReactElement } from "react";
 import enChat from "../../locales/en/chat.json";
 
-// The live timeline is a real list row rather than Virtuoso chrome (MUL-4922),
+// The live timeline is a real list row rather than Virtuoso chrome (ISS-4922),
 // so it shares one identity with the persisted assistant row and keeps its
 // Mermaid/HTML blocks mounted across task completion. Real react-virtuoso
 // renders its Footer but NO data rows under jsdom's zero-height viewport, so
@@ -88,7 +88,7 @@ function pushTaskMessage(qc: QueryClient, msg: TaskMessagePayload) {
   });
 }
 
-describe("ChatMessageList live timeline (MUL-3960 regression)", () => {
+describe("ChatMessageList live timeline (ISS-3960 regression)", () => {
   // The live footer is passed to Virtuoso through `components`. If that prop
   // is rebuilt inline on render, every streamed task:message unmounts and
   // remounts the whole footer subtree — re-parsing all Markdown and rebuilding
@@ -304,8 +304,8 @@ describe("ChatMessageList quick actions skeleton", () => {
   });
 });
 
-describe("ChatMessageList failure copy (MUL-5370 regression)", () => {
-  // The backend moved to the refined taxonomy (agent_error.*) in MUL-2946 but
+describe("ChatMessageList failure copy (ISS-5370 regression)", () => {
+  // The backend moved to the refined taxonomy (agent_error.*) in ISS-2946 but
   // the copy map stayed on the six coarse values, so an exact-key lookup
   // missed every refined reason and fell through to the generic fallback.
   // A user whose skill bundle download stalled was told only "Something went

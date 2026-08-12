@@ -9,7 +9,7 @@ import { isReservedSlug } from "@orchestra/core/paths";
 // Types
 // ---------------------------------------------------------------------------
 //
-// MUL-4741 Phase 2: tabs are *sessions*, not routers. A TabSession is pure
+// ISS-4741 Phase 2: tabs are *sessions*, not routers. A TabSession is pure
 // serializable state — URL, identity, virtual history, and a memento of
 // restorable view state. The single app router is a projection of the active
 // session, driven exclusively by the tab Coordinator (src/platform/
@@ -84,7 +84,7 @@ export interface WorkspaceTabGroup {
    *
    * This is the group's MRU (most-recently-used) order, and it exists for one
    * question: where do we land when the active tab goes away? Closing a tab
-   * returns to the tab you were last looking at (MUL-5665), not to a
+   * returns to the tab you were last looking at (ISS-5665), not to a
    * positional neighbour — opening a detail tab from a list, then closing it,
    * must put you back on that list even when the tab bar appended the new tab
    * far away from it.
@@ -282,7 +282,7 @@ export function resourceKeyForUrl(url: string): string {
  *
  * Normalizes: a bare `/{slug}` (no route segment) becomes `/{slug}/issues` —
  * the workspace's default surface. This replaces the old in-router
- * `<Navigate to="issues">` index redirect (MUL-4741 invariant 1: the router
+ * `<Navigate to="issues">` index redirect (ISS-4741 invariant 1: the router
  * never self-navigates; URLs are normalized before they become sessions).
  *
  * Returns null for rejects (caller decides how to recover — usually by
@@ -880,7 +880,7 @@ export const useTabStore = create<TabStore>()(
         if (version < 3 && state && typeof state === "object") {
           state = migrateV2ToV3(state as V2Persisted);
         }
-        // v3 → v4: Tab → TabSession (MUL-4741). One-time import of legacy
+        // v3 → v4: Tab → TabSession (ISS-4741). One-time import of legacy
         // view-state: `path` becomes `url`, identity/history/memento are
         // derived. Routers are no longer part of the model.
         if (version < 4 && state && typeof state === "object") {
@@ -1114,7 +1114,7 @@ interface V4PersistedGroup {
   tabs: V4PersistedTab[];
   activeTabId: string;
   /**
-   * MRU activation order. Optional: payloads written before MUL-5665 don't
+   * MRU activation order. Optional: payloads written before ISS-5665 don't
    * have it, and an absent order simply means the first close of that group
    * falls back to the positional neighbour. Re-validated on rehydration, so
    * a stale id from a hand-edited payload can never become the active tab.

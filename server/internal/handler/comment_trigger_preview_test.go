@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/internal/util"
+	"github.com/JanMori/Orchestra/server/internal/util"
 )
 
 func createCommentTriggerPreviewIssue(t *testing.T, title string, assigneeType, assigneeID string) string {
@@ -287,7 +287,7 @@ func TestPreviewCommentTriggers_PlainReplyToMultiAgentRootRoutesFirstMentionedOw
 }
 
 // TestPreviewCommentTriggers_CrewAssigneePlainReplyKeepsRootMentionOwner is the
-// cascade replacement for the old MUL-3744 inherited-mention scenario:
+// cascade replacement for the old ISS-3744 inherited-mention scenario:
 //
 //   - Issue is assigned to a CREW (leader L).
 //   - Member root comment @mentions another agent (Kim).
@@ -304,7 +304,7 @@ func TestPreviewCommentTriggers_CrewAssigneePlainReplyKeepsRootMentionOwner(t *t
 	leaderID := createHandlerTestAgent(t, "Preview Crew Leader L", nil)
 	kimID := createHandlerTestAgent(t, "Preview Crew Mention Kim", nil)
 	crewID := createCommentTriggerPreviewCrew(t, "Preview Crew Reply Routing", leaderID)
-	issueID := createCommentTriggerPreviewIssue(t, "crew reply mention inheritance MUL-3744", "crew", crewID)
+	issueID := createCommentTriggerPreviewIssue(t, "crew reply mention inheritance ISS-3744", "crew", crewID)
 
 	// Sanity: a plain top-level "hello" by a member on this crew-assigned
 	// issue wakes the leader (no @mention is routing the work).
@@ -1050,7 +1050,7 @@ func TestPreviewCommentTriggers_AssigneeAndSuppress(t *testing.T) {
 }
 
 // TestPreviewCommentTriggers_AllPlusExplicitAgentMentionStillTriggers pins
-// MUL-5411: `@all` only suppresses the IMPLICIT assignee auto-trigger. A comment
+// ISS-5411: `@all` only suppresses the IMPLICIT assignee auto-trigger. A comment
 // that carries `@all` AND an explicit `@agent` must still enqueue that agent —
 // the old ordering short-circuited on `@all` and dropped every trigger, so a
 // "[@all] ... [@Preflight]" comment silently ran nothing.
@@ -1082,7 +1082,7 @@ func TestPreviewCommentTriggers_AllPlusExplicitAgentMentionStillTriggers(t *test
 }
 
 // TestPreviewCommentTriggers_AllPlusExplicitCrewMentionStillTriggers is the
-// crew half of MUL-5411: an `@all` broadcast must not swallow an explicit
+// crew half of ISS-5411: an `@all` broadcast must not swallow an explicit
 // `@crew` mention either — the crew leader still wakes.
 func TestPreviewCommentTriggers_AllPlusExplicitCrewMentionStillTriggers(t *testing.T) {
 	if testHandler == nil || testPool == nil {
@@ -1107,7 +1107,7 @@ func TestPreviewCommentTriggers_AllPlusExplicitCrewMentionStillTriggers(t *testi
 }
 
 // TestPreviewCommentTriggers_AllPlusMemberMentionStaysSuppressed guards the
-// other side of the MUL-5411 reorder: `@all` alongside a `@member` mention (no
+// other side of the ISS-5411 reorder: `@all` alongside a `@member` mention (no
 // agent/crew named) still triggers nothing.
 func TestPreviewCommentTriggers_AllPlusMemberMentionStaysSuppressed(t *testing.T) {
 	if testHandler == nil || testPool == nil {
@@ -1138,7 +1138,7 @@ func TestPreviewCommentTriggers_AllPlusMemberMentionStaysSuppressed(t *testing.T
 // blocked mentions, never as an error response.
 //
 // The reason is target_unavailable on BOTH the agent and the crew path
-// (MUL-5548): a string that is not a UUID cannot name an entity in any
+// (ISS-5548): a string that is not a UUID cannot name an entity in any
 // workspace, so it conceals no existence and must not be blamed on invoke
 // permission. This is deliberately NOT the well-formed-but-unresolved case,
 // which stays invocation_not_allowed so a blocked reason can never confirm a

@@ -516,7 +516,7 @@ func (c *httpAPIClient) SendBindingPromptCard(ctx context.Context, p BindingProm
 // union_id in the public schema. The WS inbound decoder needs
 // union_id to disambiguate which bot was @-mentioned in a multi-bot
 // group chat (the per-app open_id field on mentions is structurally
-// inverse across WS perspectives — see MUL-2671 triage), so we
+// inverse across WS perspectives — see ISS-2671 triage), so we
 // invest one extra HTTP round-trip at install time to capture it
 // and avoid running the wrong supervisor for every event going
 // forward.

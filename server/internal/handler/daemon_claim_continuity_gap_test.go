@@ -9,7 +9,7 @@ import (
 )
 
 // claimContinuityGapProbe decodes just the continuity-gap fields off a claim
-// response so the two MUL-5305 disclosure paths can be asserted end-to-end.
+// response so the two ISS-5305 disclosure paths can be asserted end-to-end.
 type claimContinuityGapProbe struct {
 	Task *struct {
 		ID                            string `json:"id"`
@@ -38,7 +38,7 @@ func claimOneTaskForRuntime(t *testing.T, runtimeID, daemonID string) claimConti
 }
 
 // TestClaimTaskByRuntime_ChatRolloutMissingDisclosesGap is the claim-response
-// half of MUL-5305 Must-fix 2 for chat: when the most recent terminal task on a
+// half of ISS-5305 Must-fix 2 for chat: when the most recent terminal task on a
 // chat session withheld its Codex session (rollout missing), the next chat claim
 // resumes the older pointer but MUST still set prior_session_resume_unavailable
 // so the run discloses the gap instead of silently continuing.
@@ -92,7 +92,7 @@ func TestClaimTaskByRuntime_ChatRolloutMissingDisclosesGap(t *testing.T) {
 }
 
 // TestClaimTaskByRuntime_RerunSourceRolloutMissingDisclosesGap is the
-// claim-response half of MUL-5305 Must-fix 2 for manual rerun: when the exact
+// claim-response half of ISS-5305 Must-fix 2 for manual rerun: when the exact
 // source task withheld its Codex session, the rerun has nothing resumable from
 // it and MUST disclose the gap rather than silently start fresh.
 func TestClaimTaskByRuntime_RerunSourceRolloutMissingDisclosesGap(t *testing.T) {

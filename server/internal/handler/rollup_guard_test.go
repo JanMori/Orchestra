@@ -13,7 +13,7 @@ import (
 // separate binaries and runs them in parallel against the SAME
 // DATABASE_URL. Both mutate that one singleton row and contend for the
 // function's own advisory lock 4246. Without a cross-process guard they
-// interleave and fail flakily (MUL-3980): the scheduler's
+// interleave and fail flakily (ISS-3980): the scheduler's
 // TestPgCronConcurrentNoDoubleWrite forces the watermark ~90 min back and
 // expects exactly one of six concurrent callers to advance it, while a
 // handler rollup tick concurrently advances the same watermark past the

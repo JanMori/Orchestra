@@ -9,10 +9,10 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/multica-ai/multica/server/internal/attribution"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/attribution"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // seedAttributionFixture creates the minimal user/workspace/member/runtime/agent
@@ -64,7 +64,7 @@ func seedAttributionFixture(t *testing.T, pool *pgxpool.Pool) (workspaceID, user
 }
 
 // TestEnqueueTaskForIssueStampsDirectHumanAttribution is the acceptance test for
-// the Phase 1 foundation (MUL-4302 §11): a member-assigned run must land with a
+// the Phase 1 foundation (ISS-4302 §11): a member-assigned run must land with a
 // non-empty, correct attribution — source=direct_human, the accountable human
 // equal to the issue creator, and evidence pointing back at the issue.
 func TestEnqueueTaskForIssueStampsDirectHumanAttribution(t *testing.T) {
@@ -104,7 +104,7 @@ func TestEnqueueTaskForIssueStampsDirectHumanAttribution(t *testing.T) {
 	if !originator.Valid || originator.Bytes != util.MustParseUUID(userID).Bytes {
 		t.Errorf("originator_user_id = %s, want %s", util.UUIDToString(originator), userID)
 	}
-	// MUL-4302 §11 invariant at the DB layer: a non-NULL originator implies the
+	// ISS-4302 §11 invariant at the DB layer: a non-NULL originator implies the
 	// accountable human equals it.
 	if !accountable.Valid || accountable.Bytes != originator.Bytes {
 		t.Errorf("accountable_user_id = %s, want == originator %s", util.UUIDToString(accountable), util.UUIDToString(originator))
@@ -118,7 +118,7 @@ func TestEnqueueTaskForIssueStampsDirectHumanAttribution(t *testing.T) {
 }
 
 // TestEnqueueTaskForIssueWithHandoffAttributesToActor is the acceptance test for
-// the assign/promote actor fix (MUL-4302 §4): when a member assigns an issue that
+// the assign/promote actor fix (ISS-4302 §4): when a member assigns an issue that
 // a DIFFERENT member created, the run's accountable human — and, honoring the
 // invariant, its originator — is the assigning member (the actor), not the issue
 // creator. The evidence still points at the issue.
@@ -177,7 +177,7 @@ func TestEnqueueTaskForIssueWithHandoffAttributesToActor(t *testing.T) {
 }
 
 // TestMergeCommentIntoPendingTask_KeepsAccountableEqualsOriginator guards the
-// MUL-4302 one-way invariant across the comment-coalescing merge (main #5192 ×
+// ISS-4302 one-way invariant across the comment-coalescing merge (main #5192 ×
 // attribution): when a coalescing run re-stamps originator_user_id to the newly
 // arrived comment's human, accountable_user_id must mirror it. Otherwise folding
 // member B's comment into member A's queued task leaves originator=B / accountable=A.
@@ -261,7 +261,7 @@ func TestMergeCommentIntoPendingTask_KeepsAccountableEqualsOriginator(t *testing
 // REFUSED (ErrAttributionFailClosed) so the queued task keeps its original precise
 // snapshot instead of being re-stamped to a degraded owner_fallback; on a fail-open
 // workspace the same comment degrades to owner_fallback (accountable = agent owner)
-// with no error, exactly as a fresh enqueue would (MUL-4302).
+// with no error, exactly as a fresh enqueue would (ISS-4302).
 func TestAttributionForMergedComment_HonorsFailClosedPolicy(t *testing.T) {
 	pool := newResolveOriginatorPool(t)
 	ctx := context.Background()
@@ -310,7 +310,7 @@ func TestAttributionForMergedComment_HonorsFailClosedPolicy(t *testing.T) {
 }
 
 // TestAttributionInvariantCheck_RejectsBypass verifies the DB-level cross-column
-// CHECK (MUL-4302): a write in the ENFORCED regime (originator_source non-NULL — every
+// CHECK (ISS-4302): a write in the ENFORCED regime (originator_source non-NULL — every
 // real enqueue / coalesce path stamps it) that sets originator_user_id but leaves
 // accountable_user_id NULL — or different — is rejected at the database, so a future
 // code path that bypasses finalizeAttribution fails loudly instead of silently
@@ -356,7 +356,7 @@ func TestAttributionInvariantCheck_RejectsBypass(t *testing.T) {
 }
 
 // TestAttributionInvariantCheck_RejectsUnbackfilledLegacyRows verifies the second
-// phase of the two-phase rollout (MUL-4302). Once the out-of-band backfill is complete,
+// phase of the two-phase rollout (ISS-4302). Once the out-of-band backfill is complete,
 // originator_source=NULL no longer exempts a row from the one-way invariant. A stale
 // writer or missed backfill that tries to persist originator set with accountable NULL
 // must fail loudly instead of recreating the legacy shape.
@@ -374,7 +374,7 @@ func TestAttributionInvariantCheck_RejectsUnbackfilledLegacyRows(t *testing.T) {
 }
 
 // TestTriggerOwnerAttribution_ScheduleTriggerCreator is the acceptance test for
-// trigger_owner (MUL-4302; Bohan): an autopilot schedule/webhook run is accountable
+// trigger_owner (ISS-4302; Bohan): an autopilot schedule/webhook run is accountable
 // to the member who CREATED the firing trigger, with originator NULL (no human
 // authorized the autonomous fire).
 func TestTriggerOwnerAttribution_ScheduleTriggerCreator(t *testing.T) {
@@ -485,7 +485,7 @@ func seedExtraMember(t *testing.T, pool *pgxpool.Pool, workspaceID, label string
 // both halves of the pinned model — (1) responsibility TRANSFERS from the creator to
 // whoever substantively edits the trigger, and (2) a trigger-scoped edit re-stamps
 // ONLY that trigger, never a sibling. It also proves an autopilot-level edit bumps
-// every trigger together (MUL-4302).
+// every trigger together (ISS-4302).
 func TestTriggerOwnerAttribution_TransfersToSubstantiveEditor(t *testing.T) {
 	pool := newResolveOriginatorPool(t)
 	ctx := context.Background()
@@ -574,7 +574,7 @@ func TestTriggerOwnerAttribution_TransfersToSubstantiveEditor(t *testing.T) {
 }
 
 // TestEnqueueTaskForIssueAutopilotOriginStampsRuleOwner is the acceptance test for
-// rule_owner (MUL-4302 §3.4): an autopilot-origin issue's run has NO authorizing
+// rule_owner (ISS-4302 §3.4): an autopilot-origin issue's run has NO authorizing
 // human (originator_user_id stays NULL) but IS accountable to the publisher of the
 // autopilot's active rule version, with rule_version_id recording the snapshot.
 // This is the accountable-diverges-from-originator case.
@@ -649,7 +649,7 @@ func TestEnqueueTaskForIssueAutopilotOriginStampsRuleOwner(t *testing.T) {
 // autopilot-origin issue whose autopilot has no published rule version resolves to
 // unattributed, then the default (non-fail-closed) workspace policy degrades it to
 // owner_fallback — accountable = agent owner, originator still NULL — so no run is
-// left without an accountable human (MUL-4302 §3.5).
+// left without an accountable human (ISS-4302 §3.5).
 func TestEnqueueTaskForIssueAutopilotOriginWithoutVersionOwnerFallback(t *testing.T) {
 	pool := newResolveOriginatorPool(t)
 	ctx := context.Background()
@@ -702,7 +702,7 @@ func TestEnqueueTaskForIssueAutopilotOriginWithoutVersionOwnerFallback(t *testin
 // TestEnqueueTaskFailClosedRefusesUnattributed: with the workspace opted into
 // fail-closed, an unattributable run (autopilot-origin issue, no rule version) is
 // REFUSED at enqueue (ErrAttributionFailClosed) rather than degraded to
-// owner_fallback (MUL-4302 §3.5).
+// owner_fallback (ISS-4302 §3.5).
 func TestEnqueueTaskFailClosedRefusesUnattributed(t *testing.T) {
 	pool := newResolveOriginatorPool(t)
 	ctx := context.Background()
@@ -823,7 +823,7 @@ func TestDispatchRunOnlyScheduleStampsRuleOwnerRow(t *testing.T) {
 // TestDispatchRunOnlyManualStampsDirectHuman verifies the blocking-finding fix on the
 // run_only path: a MANUAL trigger attributes direct_human to the triggering member —
 // originator == accountable == actor, no rule_version — even when the autopilot has a
-// published rule owned by someone else (MUL-4302 §4).
+// published rule owned by someone else (ISS-4302 §4).
 func TestDispatchRunOnlyManualStampsDirectHuman(t *testing.T) {
 	pool := newResolveOriginatorPool(t)
 	ctx := context.Background()
@@ -889,7 +889,7 @@ func TestDispatchRunOnlyManualStampsDirectHuman(t *testing.T) {
 // current responsible publisher after a substantive edit — the creator seeds it, then
 // a later editor's re-stamp (the same SetAutopilotTriggerPublisher the UpdateTrigger
 // handler runs) makes future runs attribute to the editor, with originator still NULL
-// (MUL-4302). The resolver-level before/after and per-trigger isolation are covered by
+// (ISS-4302). The resolver-level before/after and per-trigger isolation are covered by
 // TestTriggerOwnerAttribution_TransfersToSubstantiveEditor.
 func TestDispatchRunOnlyScheduleTransfersToEditor(t *testing.T) {
 	pool := newResolveOriginatorPool(t)
@@ -1038,7 +1038,7 @@ func TestEnqueueTaskForIssueAutopilotManualStampsDirectHuman(t *testing.T) {
 }
 
 // TestRecordAutopilotRuleVersionRepublishReattributes verifies the final Phase 1
-// item (MUL-4302 §3.4): republishing a rule (as a trigger edit / archive / system
+// item (ISS-4302 §3.4): republishing a rule (as a trigger edit / archive / system
 // pause does) appends a new version, the LATEST version is the active one, and
 // dispatch attribution follows it. So editing member A's autopilot as member B
 // re-attributes subsequent runs to B; a system pause records a 'system' publisher.
@@ -1103,7 +1103,7 @@ func TestRecordAutopilotRuleVersionRepublishReattributes(t *testing.T) {
 // TestApplyAttributionFallbackRefusesOnMissingOwner: an unattributed run in an
 // OPEN (non-fail-closed) workspace whose agent has no valid owner cannot resolve an
 // accountable human via owner_fallback, so the enqueue is refused rather than
-// creating a NULL-accountable task (MUL-4302 §3.5, Elon must-fix 1).
+// creating a NULL-accountable task (ISS-4302 §3.5, Elon must-fix 1).
 func TestApplyAttributionFallbackRefusesOnMissingOwner(t *testing.T) {
 	pool := newResolveOriginatorPool(t)
 	ctx := context.Background()
@@ -1218,7 +1218,7 @@ func TestRerunIssueAttributesToRerunningMember(t *testing.T) {
 // longer a NULL-source bypass and uses the UNIFORM evidence pair: the sender is a
 // direct_human originator+accountable, and evidence is (kind=chat,
 // ref=chat_session_id) so the attribution UI links to the conversation the same
-// way it does for autopilot_run / issue_assignment (MUL-4302 §2, Elon 2nd-round).
+// way it does for autopilot_run / issue_assignment (ISS-4302 §2, Elon 2nd-round).
 func TestEnqueueChatTaskStampsChatEvidence(t *testing.T) {
 	pool := newResolveOriginatorPool(t)
 	ctx := context.Background()

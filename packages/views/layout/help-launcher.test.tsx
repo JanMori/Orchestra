@@ -28,7 +28,7 @@ vi.mock("../i18n", () => ({
 // The mock deliberately preserves ONE real invariant: DropdownMenuLabel wraps
 // Base UI's Menu.GroupLabel, whose useMenuGroupRootContext() throws when it has
 // no Menu.Group ancestor. A plain-<div> mock silently swallowed that contract,
-// which is exactly how MUL-4819 shipped — a version row rendered outside a
+// which is exactly how ISS-4819 shipped — a version row rendered outside a
 // DropdownMenuGroup crashed the whole app (no error boundary above the sidebar)
 // the moment the Help menu opened. Mirroring the throw here keeps the guard.
 // The group context lives inside the factory so it survives vi.mock hoisting.
@@ -71,7 +71,7 @@ describe("HelpLauncher", () => {
     expect(screen.getByText("Server version 1.2.3")).toBeInTheDocument();
   });
 
-  // MUL-4819: the version row's DropdownMenuLabel must sit inside a
+  // ISS-4819: the version row's DropdownMenuLabel must sit inside a
   // DropdownMenuGroup. Rendering it bare made Base UI's Menu.GroupLabel throw
   // on open, unmounting the whole app (black screen, no error) because no error
   // boundary sits above the sidebar. Rendering here must not throw.

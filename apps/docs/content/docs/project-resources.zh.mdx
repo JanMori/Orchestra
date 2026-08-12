@@ -16,7 +16,7 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 ## 资源进入执行的方式
 
-当智能体处理项目内的 issue 时，Multica 会把项目名称、项目描述和资源列表加入执行上下文，并在工作目录中写入 `.multica/project/resources.json`。
+当智能体处理项目内的 issue 时，Orchestra 会把项目名称、项目描述和资源列表加入执行上下文，并在工作目录中写入 `.orchestra/project/resources.json`。
 
 工作区关联的仓库列表始终包含在执行上下文中。项目关联的仓库在此基础上指明这组工作使用的代码和默认 ref。
 
@@ -26,7 +26,7 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 打开项目，在 **资源** 中选择"添加资源"。可以选择已关联到工作区的仓库，也可以粘贴 Git URL。工作区仓库在 **设置 → 代码仓库** 中维护；连接 GitHub 后，可在同一页面通过 **从 GitHub 选择** 导入 App 已授权的仓库。
 
-仓库不限于 GitHub：任何运行时能访问的 Git URL 都可以作为仓库资源。自部署的 Multica 还可以在 **设置 → 集成 → Git 代码托管** 连接自托管的 Forgejo、Gitea 或 GitLab，见[自托管 Git 代码托管](/vcs-integration)。
+仓库不限于 GitHub：任何运行时能访问的 Git URL 都可以作为仓库资源。自部署的 Orchestra 还可以在 **设置 → 集成 → Git 代码托管** 连接自托管的 Forgejo、Gitea 或 GitLab，见[自托管 Git 代码托管](/vcs-integration)。
 
 创建项目时，也可以直接在 **Repos** 中选择仓库。一个项目可以关联多个 GitHub 仓库。
 
@@ -52,7 +52,7 @@ import { Callout } from "fumadocs-ui/components/callout";
 每个项目在同一台守护进程上最多关联一个本地目录。团队中的不同电脑可以分别为同一个项目关联各自的目录。
 
 <Callout type="warning">
-本地目录不是隔离环境。智能体会直接看到并修改当前分支和未提交的文件；Multica 不会自动切换分支、stash、commit、push 或创建 PR。
+本地目录不是隔离环境。智能体会直接看到并修改当前分支和未提交的文件；Orchestra 不会自动切换分支、stash、commit、push 或创建 PR。
 </Callout>
 
 ## 本地目录串行执行
@@ -65,9 +65,9 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 ## 执行期间写入的内容
 
-除了智能体产生的代码改动，运行时还可能在目录中写入当前 AI 编程工具所需的说明文件，以及 `.multica/project/resources.json`。不希望它们进入版本控制时，加入 `.gitignore` 即可。
+除了智能体产生的代码改动，运行时还可能在目录中写入当前 AI 编程工具所需的说明文件，以及 `.orchestra/project/resources.json`。不希望它们进入版本控制时，加入 `.gitignore` 即可。
 
-Multica 清理执行环境时不会删除关联的本地目录。智能体对该目录的改动，与你在终端中直接运行 AI 编程工具的改动性质相同，需要同样的审查。
+Orchestra 清理执行环境时不会删除关联的本地目录。智能体对该目录的改动，与你在终端中直接运行 AI 编程工具的改动性质相同，需要同样的审查。
 
 ## 使用 CLI 管理资源
 
@@ -75,13 +75,13 @@ Multica 清理执行环境时不会删除关联的本地目录。智能体对该
 # 创建项目时关联仓库
 orchestra project create \
   --title "Agent UX" \
-  --repo https://github.com/multica-ai/multica
+  --repo https://github.com/orchestra-ai/orchestra
 
 # 查看和添加资源
 orchestra project resource list <project-id>
 orchestra project resource add <project-id> \
   --type github_repo \
-  --url https://github.com/multica-ai/multica \
+  --url https://github.com/orchestra-ai/orchestra \
   --ref main
 
 # 关联指定守护进程上的本地目录

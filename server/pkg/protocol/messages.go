@@ -6,7 +6,7 @@ const (
 	DaemonCapabilitySkillBundlesV1      = "skill-bundles-v1"
 	DaemonCapabilityCoalescedCommentsV1 = "coalesced-comments-v1"
 	// DaemonCapabilityRPCV1 advertises that the daemon can carry
-	// request/response RPCs over the WebSocket control connection (MUL-4257).
+	// request/response RPCs over the WebSocket control connection (ISS-4257).
 	// Gated so only daemons+servers that both support it route claim over WS;
 	// everyone else keeps using the HTTP claim endpoint.
 	DaemonCapabilityRPCV1 = "rpc-v1"
@@ -40,7 +40,7 @@ type RPCRequestPayload struct {
 	// TimeoutMs is the server-side execution budget in milliseconds. The server
 	// bounds the handler's context by it so a slow RPC is cancelled (its work
 	// rolled back) rather than committing after the daemon has already timed
-	// out waiting and fallen back to HTTP (MUL-4257). 0 means no server-side
+	// out waiting and fallen back to HTTP (ISS-4257). 0 means no server-side
 	// bound (connection-lifetime only).
 	TimeoutMs int64 `json:"timeout_ms,omitempty"`
 }
@@ -105,7 +105,7 @@ const (
 // sending one immediate heartbeat for RuntimeID instead of waiting for its next
 // scheduled tick; the request itself is still claimed through the normal
 // heartbeat path, so this event carries no work and is safe to lose, duplicate,
-// or ignore (MUL-5444).
+// or ignore (ISS-5444).
 type PendingWorkPayload struct {
 	RuntimeID string `json:"runtime_id"`
 	Kind      string `json:"kind,omitempty"`
@@ -139,7 +139,7 @@ type ChatQuickActionsPayload struct {
 	// because the regeneration FAILED (the provider pass or its delivery), not
 	// because it produced new suggestions. QuickActions then carries the turn's
 	// unchanged pills; the client shows a "couldn't refresh" notice instead of
-	// treating unchanged content as a silent success (MUL-5149). Omitted (false)
+	// treating unchanged content as a silent success (ISS-5149). Omitted (false)
 	// on the normal success path and for the automatic best-effort pass.
 	Failed bool `json:"failed,omitempty"`
 }
@@ -188,7 +188,7 @@ const (
 	ChatMessageKindMessage = "message"
 	// ChatMessageKindNoResponse marks a direct-chat turn the agent completed
 	// without any text reply — a visible, deliberate terminal outcome rather
-	// than a silently-dropped turn (MUL-4351).
+	// than a silently-dropped turn (ISS-4351).
 	ChatMessageKindNoResponse = "no_response"
 )
 
@@ -198,7 +198,7 @@ const (
 // during the live-timeline → AssistantMessage handoff that previously caused
 // a visible flicker (#2123).
 //
-// MessageKind is additive (MUL-4351): older clients ignore it and fall back to
+// MessageKind is additive (ISS-4351): older clients ignore it and fall back to
 // the non-empty Content the server always sends, so a no_response turn still
 // renders a real bubble instead of an empty one. Because direct-chat completion
 // now always writes exactly one assistant row (message or no_response),

@@ -8,10 +8,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/runtimeapps"
+	"github.com/JanMori/Orchestra/server/internal/runtimeapps"
 )
 
-// Sub-issue Creation section — after MUL-2538 the platform posts the
+// Sub-issue Creation section — after ISS-2538 the platform posts the
 // child-done parent notification itself, so the brief no longer carries
 // any parent-notification rule (per Bohan's call on PR #3055: delete the
 // guidance entirely, do not replace it with a "do not post one" sentence
@@ -47,9 +47,9 @@ func TestSubIssueCreationSectionPresentForIssueRuns(t *testing.T) {
 				t.Fatalf("expected Sub-issue Creation section in %s brief", tc.name)
 			}
 			for _, want := range []string{
-				// MUL-5442 demotes the full todo/backlog/stage playbook to the
+				// ISS-5442 demotes the full todo/backlog/stage playbook to the
 				// multica-working-on-issues skill. The brief keeps a one-line
-				// map (all three flags stay discoverable, MUL-3508 follow-up)
+				// map (all three flags stay discoverable, ISS-3508 follow-up)
 				// plus the skill pointer; the skill side of the contract is
 				// asserted in internal/service
 				// (TestWorkingOnIssuesSkillCoversIssueLoopContracts).
@@ -69,7 +69,7 @@ func TestSubIssueCreationSectionPresentForIssueRuns(t *testing.T) {
 // The brief must no longer carry any parent-notification guidance. PR
 // #2918 added a "Tell the parent when you finish a child" rule that
 // turned into noise (self-mention loops, planner ack ping-pong,
-// hardcoded `MUL-` prefix). PR #3055 first downgraded it to a "do NOT
+// hardcoded `ISS-` prefix). PR #3055 first downgraded it to a "do NOT
 // post one" guardrail, but Bohan's product call was to remove the
 // guidance entirely rather than substitute a new prohibition. These
 // canaries lock that in: any wording that re-introduces the
@@ -88,8 +88,8 @@ func TestBriefHasNoParentNotificationGuidance(t *testing.T) {
 		ctx := ctx
 		out := buildMetaSkillContent("claude", ctx)
 
-		// The pre-MUL-2538 phrasing instructed the agent to compose a
-		// parent comment by hand — including a hardcoded `MUL-` prefix
+		// The pre-ISS-2538 phrasing instructed the agent to compose a
+		// parent comment by hand — including a hardcoded `ISS-` prefix
 		// and an assignee mention. The intermediate revision (PR #3055
 		// before Bohan's call) instead told the agent NOT to post one.
 		// Both framings must stay out.
@@ -99,7 +99,7 @@ func TestBriefHasNoParentNotificationGuidance(t *testing.T) {
 			"**Tell the parent when you finish a child.**",
 			"orchestra issue comment add <parent-id>",
 			"with NO `--parent`",
-			"link the child as `[MUL-",
+			"link the child as `[ISS-",
 			"`@mention` the parent's assignee",
 			"`mention://agent/<id>`",
 			"`mention://member/<id>`",
@@ -202,7 +202,7 @@ func TestCommentTriggeredCrewLeaderDefersToStatusOwnershipGrant(t *testing.T) {
 	}
 }
 
-// TestPerRunCommentContextStaysOutOfBrief pins MUL-5377: no per-run comment
+// TestPerRunCommentContextStaysOutOfBrief pins ISS-5377: no per-run comment
 // routing value may be rendered into the runtime brief. The brief lands in
 // messages[0], ahead of the whole conversation, so any change there throws away
 // the prompt cache for the entire history on resume. The helpers are unchanged
@@ -231,7 +231,7 @@ func TestPerRunCommentContextStaysOutOfBrief(t *testing.T) {
 		"DISTINCT threads",
 	} {
 		if strings.Contains(out, banned) {
-			t.Errorf("brief must not carry per-run comment value %q (MUL-5377)\n---\n%s", banned, out)
+			t.Errorf("brief must not carry per-run comment value %q (ISS-5377)\n---\n%s", banned, out)
 		}
 	}
 
@@ -249,7 +249,7 @@ func TestPerRunCommentContextStaysOutOfBrief(t *testing.T) {
 	}
 }
 
-// Cold-start thread routing moved to the per-turn prompt (MUL-5377); the
+// Cold-start thread routing moved to the per-turn prompt (ISS-5377); the
 // helper behaviour it relies on is pinned here directly.
 func TestColdCommentsHintPointsAtTriggeringThread(t *testing.T) {
 	t.Parallel()
@@ -262,11 +262,11 @@ func TestColdCommentsHintPointsAtTriggeringThread(t *testing.T) {
 		t.Errorf("cold start must point at the triggering thread read, got:\n%s", hint)
 	}
 	if strings.Contains(buildMetaSkillContent("claude", TaskContextForEnv{IssueID: issueID, TriggerCommentID: "trigger-1", TriggerThreadID: "thread-root-1"}), "thread-root-1") {
-		t.Error("brief must not carry the per-run thread id (MUL-5377)")
+		t.Error("brief must not carry the per-run thread id (ISS-5377)")
 	}
 }
 
-// Resumed/no-delta routing moved to the per-turn prompt (MUL-5377).
+// Resumed/no-delta routing moved to the per-turn prompt (ISS-5377).
 func TestResumedCommentsHintSkipsDefaultThreadRead(t *testing.T) {
 	t.Parallel()
 	const issueID = "55555555-6666-7777-8888-999999999999"
@@ -283,7 +283,7 @@ func TestResumedCommentsHintSkipsDefaultThreadRead(t *testing.T) {
 			t.Errorf("resumed/no-delta hint missing %q\n--- output ---\n%s", want, hint)
 		}
 	}
-	// The anchor-restating sentence is gone (MUL-5721 OPT-1): the read command
+	// The anchor-restating sentence is gone (ISS-5721 OPT-1): the read command
 	// carries the thread anchor and the reply cookbook carries the trigger id.
 	if strings.Contains(hint, "active thread anchor") {
 		t.Errorf("resumed/no-delta hint must not restate anchors outside the commands, got:\n%s", hint)
@@ -297,7 +297,7 @@ func TestResumedCommentsHintSkipsDefaultThreadRead(t *testing.T) {
 }
 
 // The continuity notice moved out of the brief and into the per-turn prompt
-// (MUL-5377) because it is true of one run and false of the next.
+// (ISS-5377) because it is true of one run and false of the next.
 func TestSessionContinuityNoticeLivesOutsideBrief(t *testing.T) {
 	t.Parallel()
 	for _, want := range []string{
@@ -310,7 +310,7 @@ func TestSessionContinuityNoticeLivesOutsideBrief(t *testing.T) {
 		}
 	}
 
-	// MUL-5722: the issue variant carries the same heading and the same
+	// ISS-5722: the issue variant carries the same heading and the same
 	// "do not assume continuity" job, but must NOT order an announcement. An
 	// issue's discussion lives in its comments, which the agent re-reads every
 	// turn, so telling the user it was lost describes a loss that did not
@@ -333,7 +333,7 @@ func TestSessionContinuityNoticeLivesOutsideBrief(t *testing.T) {
 		PriorSessionResumeUnavailable: true,
 	}
 	if strings.Contains(buildMetaSkillContent("codex", lost), "Session Continuity Notice") {
-		t.Error("brief must never carry the continuity notice — it is per-run state (MUL-5377)")
+		t.Error("brief must never carry the continuity notice — it is per-run state (ISS-5377)")
 	}
 }
 
@@ -350,9 +350,9 @@ func TestIssueWorkflowHonorsAgentIdentity(t *testing.T) {
 		"If a workflow step conflicts with Agent Identity, skip the conflicting action",
 		// One enumeration, in Instruction Precedence, covering every action
 		// type Agent Identity can forbid. This and workflow step 4 each used to
-		// carry their own list and the two disagreed (MUL-5442).
+		// carry their own list and the two disagreed (ISS-5442).
 		"Never treat this runtime workflow as permission to change issue status, investigate, implement, create issues, update issues, delegate, or otherwise act beyond your Agent Identity.",
-		// MUL-5442: the forbids-clause is stated once on the Ownership-mode
+		// ISS-5442: the forbids-clause is stated once on the Ownership-mode
 		// header instead of once per status bullet.
 		"skip any status call below that your Agent Identity forbids",
 		"Before step 4, run `orchestra issue status <issue-id> in_progress`.",
@@ -409,7 +409,7 @@ func TestCrewLeaderIssueWorkflowKeepsParentInProgress(t *testing.T) {
 }
 
 // Instruction Precedence belongs to the issue workflow only; the issue-less
-// kinds must not inherit it. After MUL-5377 it applies to every issue run,
+// kinds must not inherit it. After ISS-5377 it applies to every issue run,
 // comment-triggered or not, because there is a single issue workflow.
 func TestInstructionPrecedenceOnlyAppliesToIssueWorkflow(t *testing.T) {
 	t.Parallel()
@@ -474,7 +474,7 @@ func TestChatOutputDoesNotRequireIssueComment(t *testing.T) {
 
 // The Output section for issue tasks must forbid mid-run progress
 // comments and require the single final result comment. Guards the
-// MUL-3605 regression where a review agent surfaced its progress
+// ISS-3605 regression where a review agent surfaced its progress
 // narration as the result instead of posting a conclusion. (The
 // pre-existing "Final results MUST be delivered … invisible without it"
 // and "state the outcome, not the process" lines already carry the
@@ -510,7 +510,7 @@ func TestOutputForbidsMidRunProgressComments(t *testing.T) {
 		}
 	}
 
-	// The `runtime_brief_slim` flag was retired (MUL-4297); there is now a
+	// The `runtime_brief_slim` flag was retired (ISS-4297); there is now a
 	// single brief.
 	run(t, "brief")
 }
@@ -650,7 +650,7 @@ func TestWorkspaceContextHeadingSkippedWhenEmpty(t *testing.T) {
 	}
 }
 
-// Connected Apps moved to the per-turn prompt (MUL-5377): the app set is
+// Connected Apps moved to the per-turn prompt (ISS-5377): the app set is
 // resolved per run from the runtime MCP overlay.
 func TestConnectedAppsBlockLivesOutsideBrief(t *testing.T) {
 	t.Parallel()
@@ -681,7 +681,7 @@ func TestConnectedAppsBlockLivesOutsideBrief(t *testing.T) {
 		ConnectedApps:    apps,
 	})
 	if strings.Contains(out, "## Connected Apps") {
-		t.Errorf("brief must not carry Connected Apps — it is per-run state (MUL-5377)\n---\n%s", out)
+		t.Errorf("brief must not carry Connected Apps — it is per-run state (ISS-5377)\n---\n%s", out)
 	}
 }
 
@@ -728,7 +728,7 @@ func TestSubIssueCreationSectionSkippedForNonIssueModes(t *testing.T) {
 // unconditional os.WriteFile of CLAUDE.md / AGENTS.md. The two
 // states it must handle correctly are: file missing, file present without
 // markers (user-authored content already there — the regression case from
-// MUL-2753), and file present with markers (idempotent second-run replace).
+// ISS-2753), and file present with markers (idempotent second-run replace).
 
 func TestWriteRuntimeConfigFileCreatesMissingFile(t *testing.T) {
 	t.Parallel()
@@ -775,7 +775,7 @@ func TestWriteRuntimeConfigFilePreservesUserContent(t *testing.T) {
 	}
 	s := string(got)
 	// The user's original content must be untouched and appear before the
-	// injected marker block; this is the core regression case from MUL-2753.
+	// injected marker block; this is the core regression case from ISS-2753.
 	if !strings.HasPrefix(s, userContent) {
 		t.Errorf("user content must be preserved verbatim at the top of the file, got:\n%s", s)
 	}
@@ -1542,7 +1542,7 @@ func TestWriteRuntimeConfigFileAlwaysInsertsFixedManagedSeparator(t *testing.T) 
 	}
 }
 
-// Cross-thread fan-out moved to the per-turn prompt (MUL-5377).
+// Cross-thread fan-out moved to the per-turn prompt (ISS-5377).
 func TestMultiThreadReplyInstructionsFanOut(t *testing.T) {
 	t.Parallel()
 	out := BuildMultiThreadCommentReplyInstructions("55555555-6666-7777-8888-999999999999", []ThreadReplyTarget{
@@ -1558,7 +1558,7 @@ func TestMultiThreadReplyInstructionsFanOut(t *testing.T) {
 	}
 }
 
-// Single-thread reply cookbook moved to the per-turn prompt (MUL-5377).
+// Single-thread reply cookbook moved to the per-turn prompt (ISS-5377).
 func TestSingleThreadReplyInstructionsKeepSingleParent(t *testing.T) {
 	t.Parallel()
 	out := BuildCommentReplyInstructions("claude", "55555555-6666-7777-8888-999999999999", "c3")
@@ -1572,7 +1572,7 @@ func TestSingleThreadReplyInstructionsKeepSingleParent(t *testing.T) {
 }
 
 // TestInjectRuntimeConfigByteIdenticalAcrossTriggers is the regression guard
-// for MUL-5377.
+// for ISS-5377.
 //
 // Claude Code loads the runtime brief into messages[0], ahead of the entire
 // conversation. A cache breakpoint is all-or-nothing, so a single differing
@@ -1652,7 +1652,7 @@ func TestInjectRuntimeConfigByteIdenticalAcrossTriggers(t *testing.T) {
 
 	// Non-vacuity guard: the brief must still depend on its stable inputs, or
 	// this whole test would pass on a function that ignores ctx entirely.
-	// Since MUL-5442's cross-channel dedup the brief is deliberately
+	// Since ISS-5442's cross-channel dedup the brief is deliberately
 	// issue-id-independent (the per-turn message carries the ids), so the
 	// guard now varies a different stable input: the agent identity.
 	otherAgent := base
@@ -1661,7 +1661,7 @@ func TestInjectRuntimeConfigByteIdenticalAcrossTriggers(t *testing.T) {
 		t.Fatal("brief does not vary with agent identity — byte-identity assertions below would be vacuous")
 	}
 
-	// The stronger MUL-5442 invariant this PR claims as a design benefit:
+	// The stronger ISS-5442 invariant this PR claims as a design benefit:
 	// with identical stable inputs, two DIFFERENT issue ids must render the
 	// byte-identical brief — this is what makes a cross-issue shared cache
 	// prefix possible. Asserted directly, per provider, so a truncated,
@@ -1689,7 +1689,7 @@ func TestInjectRuntimeConfigByteIdenticalAcrossTriggers(t *testing.T) {
 					continue
 				}
 				if got != want {
-					t.Errorf("brief differs for variant %q — per-run state leaked into messages[0] (MUL-5377).\n%s",
+					t.Errorf("brief differs for variant %q — per-run state leaked into messages[0] (ISS-5377).\n%s",
 						v.name, firstBriefDiff(want, got))
 				}
 			}
@@ -1724,7 +1724,7 @@ func firstBriefDiff(want, got string) string {
 		"\n--- variant ---\n" + got[lo:hiG]
 }
 
-// TestBriefByteIdenticalAcrossRunsForEveryKind extends the MUL-5377 guarantee
+// TestBriefByteIdenticalAcrossRunsForEveryKind extends the ISS-5377 guarantee
 // past issue runs.
 //
 // Chat sessions resume too — handler/daemon.go:2172 hands the daemon a
@@ -1786,7 +1786,7 @@ func TestBriefByteIdenticalAcrossRunsForEveryKind(t *testing.T) {
 					continue
 				}
 				if got != want {
-					t.Errorf("%s brief differs for variant %q — per-run state leaked into the cached prefix (MUL-5377).\n%s",
+					t.Errorf("%s brief differs for variant %q — per-run state leaked into the cached prefix (ISS-5377).\n%s",
 						kindName, v.name, firstBriefDiff(want, got))
 				}
 			}
@@ -1800,7 +1800,7 @@ func TestBriefByteIdenticalAcrossRunsForEveryKind(t *testing.T) {
 // Descriptions were removed because every runtime CLI already builds its own
 // listing from the SKILL.md frontmatter the daemon writes, so the brief's copy
 // was the same routing signal paid for twice — ~3,100 tokens per brief on a
-// real task, 40% of the whole brief (MUL-5529).
+// real task, 40% of the whole brief (ISS-5529).
 //
 // The provider branch was removed because its fallback was wrong: it told
 // providers outside a hardcoded list to look in `.agent_context/skills/`, but

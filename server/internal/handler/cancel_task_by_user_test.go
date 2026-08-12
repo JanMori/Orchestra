@@ -8,13 +8,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/internal/util"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // CancelTaskByUser (POST /api/tasks/{taskId}/cancel) used to key cancellation
 // off issue_id / chat_session_id alone, which 404'd every task whose only
-// source link was autopilot_run_id or quick_create context (MUL-2827). These
+// source link was autopilot_run_id or quick_create context (ISS-2827). These
 // tests pin the new behavior: tenancy flows through the task's owning agent,
 // with chat-creator privacy and the private-agent visibility gate layered on.
 
@@ -474,7 +474,7 @@ func TestCancelTaskByUser_StartedEmptyChat_LegacyClient_StillGetsSynchronousRest
 	}
 }
 
-// TestCancelTaskByUser_RunOnlyAutopilot_Succeeds is the core MUL-2827 fix: a
+// TestCancelTaskByUser_RunOnlyAutopilot_Succeeds is the core ISS-2827 fix: a
 // run_only autopilot task (issue_id + chat_session_id NULL, only
 // autopilot_run_id set) is cancellable by a member of its agent's workspace.
 func TestCancelTaskByUser_RunOnlyAutopilot_Succeeds(t *testing.T) {

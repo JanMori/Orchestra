@@ -120,7 +120,7 @@ func TestParseSkillFrontmatter(t *testing.T) {
 			wantDesc: `{"a":1,"b":2}`,
 		},
 		{
-			// MUL-5645: padding never reaches storage, so an imported skill can
+			// ISS-5645: padding never reaches storage, so an imported skill can
 			// never differ from its own trimmed form in the editor.
 			name:     "surrounding whitespace is trimmed off both fields",
 			content:  "---\nname: \"  foo  \"\ndescription: \"  hello world\\n\"\n---\nbody",

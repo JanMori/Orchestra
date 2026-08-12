@@ -44,7 +44,7 @@ var agentVersionRefreshInterval = 10 * time.Minute
 
 // agentDiscoveryLoop keeps the registered runtime set converged on the agent
 // CLIs actually installed on this machine, so a CLI installed while the daemon
-// is running comes online without a restart (MUL-5439).
+// is running comes online without a restart (ISS-5439).
 //
 // Each tick does the cheap half unconditionally: re-probe availability and
 // publish anything new. The expensive half (version probes + registration) runs
@@ -568,7 +568,7 @@ func (d *Daemon) providersMissingRuntimes() []string {
 //
 // RecoverOrphans is deliberately NOT called: unlike the runtime_gone recovery
 // path, the surviving runtime IDs may still be executing tasks for the user,
-// and failing those as orphans would kill live work (MUL-3332).
+// and failing those as orphans would kill live work (ISS-3332).
 func (d *Daemon) convergeRuntimeRegistrations(ctx context.Context) {
 	// detectBuiltinRuntimes version-gates the availability set and publishes
 	// this round's drops for /health, so a provider that cannot register still

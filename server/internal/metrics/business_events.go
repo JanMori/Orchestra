@@ -1,7 +1,7 @@
 package metrics
 
 import (
-	"github.com/multica-ai/multica/server/internal/analytics"
+	"github.com/JanMori/Orchestra/server/internal/analytics"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -257,7 +257,7 @@ func (e *businessEventMetrics) collectors() []prometheus.Collector {
 // cannot drift. Pass `client = nil` (no PostHog) or `m = nil` (no metrics)
 // safely; both sides are best-effort and never block the request path.
 //
-// As of MUL-4127 every server-side event is flagged by analytics.IsMetricsOnly
+// As of ISS-4127 every server-side event is flagged by analytics.IsMetricsOnly
 // (all product events plus the runtime_* / autopilot_run_* lifecycle), so the
 // client.Capture below is skipped for all of them — server analytics is served
 // from the DB and Grafana, not PostHog. The Capture path is retained only so a
@@ -455,7 +455,7 @@ func (m *BusinessMetrics) RecordCloudRuntimeRequest(op, status string, durationS
 //
 // Observation only: the reply is delivered either way. The server cannot judge
 // these paths the way the CLI lint can — it has no access to the daemon's
-// filesystem to stat them — so this measures whether the MUL-4899 prompt
+// filesystem to stat them — so this measures whether the ISS-4899 prompt
 // contract is landing, and must never gate delivery on a lexical guess. The
 // label is a closed enum precisely so no fragment of the path or reply body can
 // reach Prometheus.

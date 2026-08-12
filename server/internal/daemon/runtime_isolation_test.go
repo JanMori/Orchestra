@@ -133,7 +133,7 @@ type noopWriter struct{}
 func (noopWriter) Write(p []byte) (int, error) { return len(p), nil }
 
 // TestRunBatchPollerClaimsAcrossRuntimes pins the machine-level cutover
-// (MUL-4257): a single batch poller issues one claim across ALL of the daemon's
+// (ISS-4257): a single batch poller issues one claim across ALL of the daemon's
 // runtimes (HTTP fallback here, since no WS is attached) and dispatches each
 // returned task to its runtime.
 func TestRunBatchPollerClaimsAcrossRuntimes(t *testing.T) {

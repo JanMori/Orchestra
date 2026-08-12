@@ -20,7 +20,7 @@ import (
 // falls back to a Seq Scan on `issue` plus correlated Seq Scans on
 // `comment`. On workspaces with thousands of rows the query takes long
 // enough that the frontend Loader2 spinner appears to hang forever
-// ("搜索卡死没有任何反应", MUL-4059).
+// ("搜索卡死没有任何反应", ISS-4059).
 //
 // The 3 s cap is generous compared to a properly indexed search (typically
 // <50 ms) and short enough that the frontend's implicit request timeout

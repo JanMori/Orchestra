@@ -1,6 +1,6 @@
 # Crew Source Map
 
-This file records source evidence for `multica-crews/SKILL.md`.
+This file records source evidence for `orchestra-crews/SKILL.md`.
 
 Use this when the task requires exact source paths, edge-case behavior, tests, or contract verification.
 
@@ -31,7 +31,7 @@ Key facts:
 Source:
 
 ```text
-server/cmd/multica/cmd_crew.go
+server/cmd/orchestra/cmd_crew.go
 ```
 
 Commands:
@@ -98,13 +98,13 @@ Contracts:
   (`crewParentStatusNotOwned`). Quick-create passes `false` — no issue exists
   yet. Injection is broader than authority on purpose: it is keyed off
   `is_leader_task`, which also fires for `@crew` mentions on issues owned by
-  someone else (MUL-3724);
+  someone else (ISS-3724);
 - `instructions` section appears only when non-empty (crew_briefing.go:110-112);
 - archived agent members are skipped from roster (crew_briefing.go:178-179);
 - agent member roster rows list assigned workspace skills via
   `loadCrewMemberSkillNames` (ListAgentSkillNamesByAgentIDs) and
   `agentSkillsRosterSegment` — "skills: a, b" or
-  "no skills assigned"; builtin multica-* skills are excluded and human
+  "no skills assigned"; builtin orchestra-* skills are excluded and human
   members carry no skills segment (crew_briefing.go renderMemberRow);
 - no traced behavior injects `instructions` into every crew member.
 
@@ -203,8 +203,8 @@ Contracts:
   member fan-out (triggerChildDoneCrew / dispatchParentAssigneeTrigger);
 - no self-trigger guard: a same-crew or shared-leader child still wakes the
   parent crew leader — the wake is a serial handoff onto the PARENT and is the
-  only carrier of the stage-barrier "advance / wrap up" instruction (MUL-3969,
-  mirrors the agent path from MUL-2808). Re-triggering is bounded only by
+  only carrier of the stage-barrier "advance / wrap up" instruction (ISS-3969,
+  mirrors the agent path from ISS-2808). Re-triggering is bounded only by
   `HasPendingTaskForIssueAndAgent` (idempotent per parent issue + agent).
 - no leader-invocation gate: child-done does NOT re-check whether the child's
   completer can invoke the leader. The parent was already permission-checked at
@@ -213,7 +213,7 @@ Contracts:
   closed for the DEFAULT private leader (the child's completer is an
   agent/system actor with no resolvable human originator), stranding every
   process-crew pipeline after stage 1 while direct-to-leader-agent parents
-  advanced fine (MUL-4063 / GH #4928). Agent and crew child-done now share one
+  advanced fine (ISS-4063 / GH #4928). Agent and crew child-done now share one
   ungated path; any future invocation gate must be added to BOTH together.
 - parent status is not auto-advanced by the barrier: the system comment asks the
   leader to continue or — when the overall goal is met — run
@@ -230,7 +230,7 @@ server/internal/handler/agent_access.go           # canInvokeAgent ~48-108, canE
 server/internal/handler/crew.go                   # enqueueCrewLeaderTask gate ~955-974
 ```
 
-Contracts (invocation gate, MUL-3963 — this is the *trigger* gate, distinct from
+Contracts (invocation gate, ISS-3963 — this is the *trigger* gate, distinct from
 the view gate `canAccessPrivateAgent`):
 
 - `canEnqueueCrewLeader` loads the leader and delegates to `canInvokeAgent`
@@ -249,7 +249,7 @@ the view gate `canAccessPrivateAgent`):
   assign/promote path denies the enqueue when the actor cannot invoke the leader
   (member authors are their own originator; agent-authored triggers pass `""`).
 - NOTE: the child-done wake does NOT use this gate anymore — see "Child-done
-  Parent Trigger" above (MUL-4063).
+  Parent Trigger" above (ISS-4063).
 
 ## Tests
 

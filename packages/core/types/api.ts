@@ -41,11 +41,11 @@ export interface UpdateIssueRequest {
    *  surface in `issueAttachments` and keep their preview Eye on refresh. */
   attachment_ids?: string[];
   /** Skip starting the agent run this write would trigger ("暂时不启动",
-   *  MUL-3375). The assignee/status change still applies. Control field —
+   *  ISS-3375). The assignee/status change still applies. Control field —
    *  strip from optimistic cache patches; never written onto the Issue. */
   suppress_run?: boolean;
   /** Free-text handoff instruction injected into the started run's opening
-   *  context (MUL-3375). Only consumed when a run actually starts. Control
+   *  context (ISS-3375). Only consumed when a run actually starts. Control
    *  field — strip from optimistic cache patches. */
   handoff_note?: string;
 }

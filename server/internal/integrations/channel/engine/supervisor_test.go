@@ -12,7 +12,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 
-	"github.com/multica-ai/multica/server/internal/integrations/channel"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel"
 )
 
 // fakeStore is the unit-test seam for InstallationStore. Lease state is
@@ -255,7 +255,7 @@ func TestSupervisorAcquiresLeaseAndConnects(t *testing.T) {
 	}
 }
 
-// TestSupervisorSkipsUnregisteredChannelType covers the B2 (MUL-3666) guard:
+// TestSupervisorSkipsUnregisteredChannelType covers the B2 (ISS-3666) guard:
 // an active installation whose channel_type has no registered Factory must be
 // left alone — never leased, never Built — because it is driven outside the
 // Supervisor (Slack's app-level connector owns one shared connection for all

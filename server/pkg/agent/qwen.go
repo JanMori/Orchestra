@@ -56,7 +56,7 @@ func buildQwenArgs(prompt string, opts ExecOptions, logger *slog.Logger) []strin
 	// --yolo is daemon-owned: Qwen Code's non-interactive mode filters out
 	// approval-requiring tools (run_shell_command, edit, write_file, etc.)
 	// unless bypass mode is active. All other adapters use an equivalent
-	// mechanism; this keeps Qwen headless runs consistent (MUL-5134).
+	// mechanism; this keeps Qwen headless runs consistent (ISS-5134).
 	args = append(args, "--yolo")
 	args = append(args, filterCustomArgs(opts.ExtraArgs, qwenBlockedArgs, logger)...)
 	args = append(args, filterCustomArgs(opts.CustomArgs, qwenBlockedArgs, logger)...)

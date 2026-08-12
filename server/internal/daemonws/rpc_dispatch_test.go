@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // dialRPCTestConn spins up a hub-backed WS server and returns a connected
@@ -64,7 +64,7 @@ func sendRPCRequest(t *testing.T, conn *websocket.Conn, req protocol.RPCRequestP
 }
 
 // TestRPCDispatch_RoundTrip pins the generic WS request/response contract
-// (MUL-4257): a daemon:rpc_request is routed to the registered handler with the
+// (ISS-4257): a daemon:rpc_request is routed to the registered handler with the
 // connection's identity, and the daemon:rpc_response echoes the request id and
 // carries the handler's body.
 func TestRPCDispatch_RoundTrip(t *testing.T) {
@@ -154,7 +154,7 @@ func TestRPCDispatch_DisconnectDuringHandlerNoPanic(t *testing.T) {
 	// No panic == pass.
 }
 
-// TestRPCDispatch_ServerTimeoutCancelsHandler pins the MUL-4257 review fix: the
+// TestRPCDispatch_ServerTimeoutCancelsHandler pins the ISS-4257 review fix: the
 // RPC request's TimeoutMs bounds server-side execution, so a slow handler is
 // cancelled (its work rolled back) at the deadline rather than running to
 // completion after the daemon has already timed out and fallen back to HTTP.

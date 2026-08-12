@@ -36,7 +36,7 @@ const MinQuickCreateFieldsCLIVersion = "0.4.3"
 
 // MinHandoffCLIVersion is the lowest orchestra CLI version whose daemon renders
 // the assignment handoff note into the run's opening prompt + issue_context.md
-// (MUL-3375). Unlike quick-create this is a SOFT gate: assigning an issue with
+// (ISS-3375). Unlike quick-create this is a SOFT gate: assigning an issue with
 // a note never fails on an old daemon — the assignment still takes effect, the
 // note is simply dropped. The frontend reads HandoffSupported to gray out the
 // note box and warn the user, so they aren't surprised by a silently ignored

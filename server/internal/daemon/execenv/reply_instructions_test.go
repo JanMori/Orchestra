@@ -9,7 +9,7 @@ import (
 
 // TestBuildCommentReplyInstructionsCodexLinux pins that the Linux/macOS
 // reply template now mandates `--content-file` (post-#4182). The previous
-// `--content-stdin` + HEREDOC mandate (#1795 / #1851 / MUL-2904) was kept
+// `--content-stdin` + HEREDOC mandate (#1795 / #1851 / ISS-2904) was kept
 // for years to defend against backtick / `$()` substitution in the body,
 // but the heredoc/flag boundary turned out to be fragile in its own right:
 // when a model wrapped extra flags around the heredoc on `orchestra issue
@@ -57,7 +57,7 @@ func TestBuildCommentReplyInstructionsCodexLinux(t *testing.T) {
 // TestBuildCommentReplyInstructionsNonCodexLinux pins that EVERY provider on
 // Linux/macOS — not just Codex — gets the `--content-file` template. Two
 // shell-driven failure classes motivate the uniform file path:
-//   - MUL-2904 / OKK-497: an agent inlined a backtick-wrapped table name into
+//   - ISS-2904 / OKK-497: an agent inlined a backtick-wrapped table name into
 //     `--content`; the shell ran it as a command substitution, silently deleted
 //     it, the stored comment no longer matched the model's intent, and the
 //     model retried forever.
@@ -86,7 +86,7 @@ func TestBuildCommentReplyInstructionsNonCodexLinux(t *testing.T) {
 
 				for _, want := range []string{
 					"orchestra issue comment add " + issueID + " --parent " + triggerID + " --content-file ./reply.md",
-					// MUL-5442 cross-channel dedup: shell-hazard mechanics live in
+					// ISS-5442 cross-channel dedup: shell-hazard mechanics live in
 					// the brief's Comment Formatting; the cookbook keeps the
 					// file-first order, the command, and the pointer.
 					"Write the body file first",
@@ -102,7 +102,7 @@ func TestBuildCommentReplyInstructionsNonCodexLinux(t *testing.T) {
 				}
 
 				// The two regressions: agent-authored comments must never be
-				// steered at inline `--content "..."` (MUL-2904) and never at
+				// steered at inline `--content "..."` (ISS-2904) and never at
 				// `--content-stdin` HEREDOC on multi-flag commands (#4182).
 				for _, banned := range []string{
 					"--content \"...\"",
@@ -141,7 +141,7 @@ func TestBuildCommentReplyInstructionsWindowsUsesContentFile(t *testing.T) {
 			got := BuildCommentReplyInstructions(provider, issueID, triggerID)
 			for _, want := range []string{
 				"orchestra issue comment add " + issueID + " --parent " + triggerID + " --content-file",
-				// MUL-5442 cross-channel dedup: the $OutputEncoding trap's
+				// ISS-5442 cross-channel dedup: the $OutputEncoding trap's
 				// full mechanics live once, in the brief's Windows Comment
 				// Formatting variant; the per-turn cookbook keeps the ban,
 				// the one-line consequence, and the pointer.
@@ -178,7 +178,7 @@ func TestBuildCommentReplyInstructionsEmptyWhenNoTrigger(t *testing.T) {
 }
 
 // The brief must never carry this turn's trigger comment id; it points the
-// agent at the per-turn user message instead (MUL-5377).
+// agent at the per-turn user message instead (ISS-5377).
 func TestInjectRuntimeConfigKeepsTriggerCommentOutOfBrief(t *testing.T) {
 	saved := runtimeGOOS
 	t.Cleanup(func() { runtimeGOOS = saved })
@@ -201,10 +201,10 @@ func TestInjectRuntimeConfigKeepsTriggerCommentOutOfBrief(t *testing.T) {
 	s := string(content)
 
 	if strings.Contains(s, triggerID) {
-		t.Errorf("CLAUDE.md must not carry the trigger comment id (MUL-5377)\n---\n%s", s)
+		t.Errorf("CLAUDE.md must not carry the trigger comment id (ISS-5377)\n---\n%s", s)
 	}
 	for _, want := range []string{
-		// MUL-5442 stage 1: the mode-router paragraph compressed to a
+		// ISS-5442 stage 1: the mode-router paragraph compressed to a
 		// "Turn mode." lead. Pin every routing RULE, not just the markers —
 		// a further compression that drops the one-block rule or the
 		// no-mode-line fallback must fail here (stage-1 review).
@@ -229,7 +229,7 @@ func TestInjectRuntimeConfigKeepsTriggerCommentOutOfBrief(t *testing.T) {
 }
 
 // Windows reply instructions are file-first, never stdin. The instructions
-// now ship in the per-turn prompt, so pin the helper directly (MUL-5377).
+// now ship in the per-turn prompt, so pin the helper directly (ISS-5377).
 func TestWindowsCommentReplyInstructionsHaveNoStdin(t *testing.T) {
 	saved := runtimeGOOS
 	t.Cleanup(func() { runtimeGOOS = saved })

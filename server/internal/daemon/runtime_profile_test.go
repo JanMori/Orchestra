@@ -367,7 +367,7 @@ func TestRegisterRuntimes_ProfilesFetchErrorIsBestEffort(t *testing.T) {
 }
 
 // TestRegisterRuntimes_PrefersCommandPathOverride verifies that a per-machine
-// command path override (MUL-3284) is used in preference to the PATH lookup:
+// command path override (ISS-3284) is used in preference to the PATH lookup:
 // the resolved/recorded path is the override, even when lookPath would resolve
 // command_name to a different binary.
 func TestRegisterRuntimes_PrefersCommandPathOverride(t *testing.T) {

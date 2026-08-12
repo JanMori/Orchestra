@@ -10,10 +10,10 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 
-	"github.com/multica-ai/multica/server/internal/integrations/channel"
-	"github.com/multica-ai/multica/server/internal/service"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/integrations/channel"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // Router is the channel-agnostic inbound pipeline — the generalization of the
@@ -307,7 +307,7 @@ func (r *Router) processClaimed(ctx context.Context, set ResolverSet, msg channe
 	}
 
 	// 4. Identity check: map the platform sender to a Multica user and
-	//    re-verify workspace membership (no binding->member FK; MUL-3515 §4).
+	//    re-verify workspace membership (no binding->member FK; ISS-3515 §4).
 	identity, err := set.Identity.ResolveSender(ctx, inst, msg)
 	if err != nil {
 		switch {
@@ -457,7 +457,7 @@ func (r *Router) processClaimed(ctx context.Context, set ResolverSet, msg channe
 	//    with no TaskID — the task row is created at flush. identity.UserID is
 	//    THIS message's sender (the task initiator), deliberately not the
 	//    session creator (group sessions are creator=installer). Latest sender
-	//    in a window wins (MUL-2645).
+	//    in a window wins (ISS-2645).
 	r.scheduleRun(set, inst, msg, sessionID, identity.UserID)
 	res.runScheduled = true
 	if resolveMedia {
@@ -796,7 +796,7 @@ func (r *Router) createIssue(ctx context.Context, inst ResolvedInstallation, ori
 	return r.issues.Create(ctx, params, opts)
 }
 
-// issuePrefix reads the workspace's issue key (the "MUL" in MUL-42). A read
+// issuePrefix reads the workspace's issue key (the "MUL" in ISS-42). A read
 // failure is not worth failing issue creation over, so it degrades to empty
 // and only the rendered identifier suffers.
 func (r *Router) issuePrefix(ctx context.Context, workspaceID pgtype.UUID) string {

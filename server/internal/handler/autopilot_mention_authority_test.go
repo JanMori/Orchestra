@@ -6,11 +6,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
-// autopilotDelegationFixture builds the MUL-4857 create_issue scenario: a
+// autopilotDelegationFixture builds the ISS-4857 create_issue scenario: a
 // member-created autopilot creates an issue, and its dispatched leader agent runs
 // a task ON that issue and authors an @mention delegation comment whose
 // source_task_id points back at that leader task. The authoring run is
@@ -50,7 +50,7 @@ func newAutopilotDelegationFixture(t *testing.T, targetAgentID, autopilotCreator
 	var autopilotID string
 	if err := testPool.QueryRow(ctx, `
 		INSERT INTO autopilot (workspace_id, title, assignee_id, execution_mode, created_by_type, created_by_id)
-		VALUES ($1, 'MUL-4857 delegation', $2, 'create_issue', 'member', $3) RETURNING id
+		VALUES ($1, 'ISS-4857 delegation', $2, 'create_issue', 'member', $3) RETURNING id
 	`, testWorkspaceID, targetAgentID, autopilotCreatorUserID).Scan(&autopilotID); err != nil {
 		t.Fatalf("create autopilot: %v", err)
 	}
@@ -78,7 +78,7 @@ func newAutopilotDelegationFixture(t *testing.T, targetAgentID, autopilotCreator
 	var issueID string
 	if err := testPool.QueryRow(ctx, `
 		INSERT INTO issue (workspace_id, creator_type, creator_id, title, assignee_type, assignee_id, number, origin_type, origin_id)
-		VALUES ($1, 'agent', $2, 'MUL-4857 delegation issue', 'agent', $2, $3, $4, $5)
+		VALUES ($1, 'agent', $2, 'ISS-4857 delegation issue', 'agent', $2, $3, $4, $5)
 		RETURNING id
 	`, testWorkspaceID, leaderID, number, originTypeArg, originIDArg).Scan(&issueID); err != nil {
 		t.Fatalf("create issue: %v", err)
@@ -160,7 +160,7 @@ func seedTaskOnIssue(t *testing.T, agentID, issueID, runtimeID string) string {
 	return taskID
 }
 
-// TestAutopilotDelegationAuthority_LineageBinding is the MUL-4857 fix, guarded by
+// TestAutopilotDelegationAuthority_LineageBinding is the ISS-4857 fix, guarded by
 // the review's confused-deputy finding: an unattributed autopilot run may borrow
 // its autopilot creator's invoke rights to delegate mid-chain, but ONLY when the
 // speaking task's lineage is verified against THIS issue — never from the issue's
@@ -273,7 +273,7 @@ func TestAutopilotDelegationAuthority_LineageBinding(t *testing.T) {
 	})
 }
 
-// TestCreateComment_AutopilotLeaderMentionEnqueuesPrivateWorker is the MUL-4857
+// TestCreateComment_AutopilotLeaderMentionEnqueuesPrivateWorker is the ISS-4857
 // end-to-end: the autopilot-dispatched leader posts an @mention delegation on the
 // autopilot-created issue through the real HTTP CreateComment surface (X-Agent-ID
 // + X-Task-ID), and the mentioned DEFAULT-private worker is actually enqueued —
@@ -317,7 +317,7 @@ func TestCreateComment_AutopilotLeaderMentionEnqueuesPrivateWorker(t *testing.T)
 	}
 
 	// The enqueued run must stay UNATTRIBUTED: the creator authority is used for
-	// the gate only, never written onto the delegated task's originator (MUL-4302).
+	// the gate only, never written onto the delegated task's originator (ISS-4302).
 	var workerOriginatorValid bool
 	if err := testPool.QueryRow(context.Background(), `
 		SELECT originator_user_id IS NOT NULL FROM agent_task_queue
@@ -352,7 +352,7 @@ func seedBareIssue(t *testing.T, creatorAgentID string) string {
 	var issueID string
 	if err := testPool.QueryRow(context.Background(), `
 		INSERT INTO issue (workspace_id, creator_type, creator_id, title, number)
-		VALUES ($1, 'agent', $2, 'MUL-4857 unrelated issue', $3) RETURNING id
+		VALUES ($1, 'agent', $2, 'ISS-4857 unrelated issue', $3) RETURNING id
 	`, testWorkspaceID, creatorAgentID, nextWorkspaceIssueNumber(t)).Scan(&issueID); err != nil {
 		t.Fatalf("seed bare issue: %v", err)
 	}
@@ -396,7 +396,7 @@ func seedLeaderPlainComment(t *testing.T, issueID, leaderID, sourceTaskID string
 }
 
 // TestReconcileCommentsOnCompletion_AutopilotDelegationRestoresAuthority is the
-// MUL-4857 must-fix #1 (review round 2): when the mentioned target was BUSY at
+// ISS-4857 must-fix #1 (review round 2): when the mentioned target was BUSY at
 // delegation time, the delegation is deferred to the target's completion
 // reconcile. That replay must restore the SAME autopilot-creator authority from
 // the comment's source_task_id — otherwise the unattributed autopilot chain's
@@ -454,7 +454,7 @@ func TestReconcileCommentsOnCompletion_AutopilotDelegationRestoresAuthority(t *t
 	})
 }
 
-// TestUpdateComment_AutopilotAuthorityReStampedToEditingTask is the MUL-4857
+// TestUpdateComment_AutopilotAuthorityReStampedToEditingTask is the ISS-4857
 // must-fix #2 (review round 2): an edit is a NEW action, so it must judge (and
 // persist) authority by the CURRENT editing task, not the comment's original
 // authoring task. A same-issue edit keeps the autopilot-creator authority; a
@@ -549,7 +549,7 @@ func TestCreateComment_AutopilotWorkerResultWakesCrewLeader(t *testing.T) {
 	var autopilotID string
 	if err := testPool.QueryRow(ctx, `
 		INSERT INTO autopilot (workspace_id, title, assignee_id, execution_mode, created_by_type, created_by_id)
-		VALUES ($1, 'MUL-4857 crew', $2, 'create_issue', 'member', $3) RETURNING id
+		VALUES ($1, 'ISS-4857 crew', $2, 'create_issue', 'member', $3) RETURNING id
 	`, testWorkspaceID, leaderID, ownerID).Scan(&autopilotID); err != nil {
 		t.Fatalf("create autopilot: %v", err)
 	}
@@ -558,7 +558,7 @@ func TestCreateComment_AutopilotWorkerResultWakesCrewLeader(t *testing.T) {
 	var crewID string
 	if err := testPool.QueryRow(ctx, `
 		INSERT INTO crew (workspace_id, name, description, leader_id, creator_id)
-		VALUES ($1, 'MUL-4857 Crew', '', $2, $3) RETURNING id
+		VALUES ($1, 'ISS-4857 Crew', '', $2, $3) RETURNING id
 	`, testWorkspaceID, leaderID, ownerID).Scan(&crewID); err != nil {
 		t.Fatalf("create crew: %v", err)
 	}
@@ -567,7 +567,7 @@ func TestCreateComment_AutopilotWorkerResultWakesCrewLeader(t *testing.T) {
 	var issueID string
 	if err := testPool.QueryRow(ctx, `
 		INSERT INTO issue (workspace_id, creator_type, creator_id, title, assignee_type, assignee_id, number, origin_type, origin_id)
-		VALUES ($1, 'agent', $2, 'MUL-4857 crew issue', 'crew', $3, $4, 'autopilot', $5) RETURNING id
+		VALUES ($1, 'agent', $2, 'ISS-4857 crew issue', 'crew', $3, $4, 'autopilot', $5) RETURNING id
 	`, testWorkspaceID, leaderID, crewID, nextWorkspaceIssueNumber(t), autopilotID).Scan(&issueID); err != nil {
 		t.Fatalf("create crew issue: %v", err)
 	}
@@ -605,7 +605,7 @@ func TestCreateComment_AutopilotWorkerResultWakesCrewLeader(t *testing.T) {
 	}
 }
 
-// TestUpdateComment_AdminEditOfAgentCommentClearsStaleLineage is the MUL-4857
+// TestUpdateComment_AdminEditOfAgentCommentClearsStaleLineage is the ISS-4857
 // must-fix (review round 3): a workspace admin may EDIT another author's comment,
 // but that manage right is NOT an invoke right over the author's private agents
 // (canInvokeAgent is deny-by-default for private agents — no admin bypass). When an

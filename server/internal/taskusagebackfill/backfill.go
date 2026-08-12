@@ -40,7 +40,7 @@ import (
 //
 //   - rollup_task_usage_hourly() in migration 102.
 //   - cmd/backfill_task_usage_hourly.
-//   - cmd/migrate's pre-103 hook (MUL-2957).
+//   - cmd/migrate's pre-103 hook (ISS-2957).
 //   - the in-process scheduler's rollup_task_usage_hourly handler
 //     (defense in depth — the scheduler's lease already prevents
 //     double-runs across instances; the advisory lock additionally
@@ -60,7 +60,7 @@ const MaxLagThreshold = time.Hour
 // The watermark upper bound of `now() - 5 minutes` is encoded directly
 // in the SQL UPDATE in stampWatermark / stampWatermarkOnConn so the
 // math runs in the same session that does the write — no app-side
-// time.Now() participates. (MUL-2957 review: blocker #3.)
+// time.Now() participates. (ISS-2957 review: blocker #3.)
 
 // Result describes what a single backfill run did. Exposed so callers
 // (the migrate command and tests) can log or assert on it.
@@ -339,7 +339,7 @@ func rollupStateExists(ctx context.Context, pool *pgxpool.Pool) (bool, error) {
 // `now() - 5 min` using PostgreSQL's clock, NOT the app process clock.
 // This matches the cron entry's upper bound and — critically —
 // guarantees the watermark cannot be stamped into the DB's future
-// because of container clock drift. (MUL-2957 review: see张大彪's
+// because of container clock drift. (ISS-2957 review: see张大彪's
 // blocker #3.)
 func stampWatermark(ctx context.Context, pool *pgxpool.Pool) error {
 	_, err := pool.Exec(ctx, `

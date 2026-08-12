@@ -122,7 +122,7 @@ func (b *kiroBackend) Execute(ctx context.Context, prompt string, opts ExecOptio
 	// absence of a result. A mid-command crash or internal session failure
 	// produces the very same "tool use, no result, -32603" shape, and
 	// treating that as success would mark a genuinely-unfinished task
-	// completed (see the review on #5511 / MUL-4860).
+	// completed (see the review on #5511 / ISS-4860).
 	//
 	// The only positive proof available at this layer is a terminal
 	// ToolResult with status=="completed" for a finishing tool

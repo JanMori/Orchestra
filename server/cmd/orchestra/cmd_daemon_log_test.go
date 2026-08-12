@@ -138,7 +138,7 @@ func TestNewDaemonLogRotatorEnvOverride(t *testing.T) {
 
 // TestDaemonLogRotatorRotates is the end-to-end guarantee: once the active file
 // crosses MaxSize the writer rotates instead of appending forever, so daemon.log
-// stays bounded (the core of MUL-4330). Uses the 1 MB floor lumberjack enforces.
+// stays bounded (the core of ISS-4330). Uses the 1 MB floor lumberjack enforces.
 func TestDaemonLogRotatorRotates(t *testing.T) {
 	t.Setenv("ORCHESTRA_DAEMON_LOG_MAX_SIZE_MB", "1")
 	t.Setenv("ORCHESTRA_DAEMON_LOG_MAX_BACKUPS", "3")

@@ -15,7 +15,7 @@ import (
 // retrying a half-finished real connector and looking like the wire
 // protocol is broken when it has not been implemented yet.
 //
-// The next stage of the MVP (MUL-2671) replaces this with a connector
+// The next stage of the MVP (ISS-2671) replaces this with a connector
 // that opens the actual Lark WebSocket long connection, decodes
 // events, and calls emit. At that point the NoopConnectorFactory call
 // site in router.go swaps to the real factory; the Hub itself does

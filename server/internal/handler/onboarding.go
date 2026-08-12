@@ -9,11 +9,11 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 
-	"github.com/multica-ai/multica/server/internal/analytics"
-	"github.com/multica-ai/multica/server/internal/logger"
-	obsmetrics "github.com/multica-ai/multica/server/internal/metrics"
-	"github.com/multica-ai/multica/server/internal/middleware"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/analytics"
+	"github.com/JanMori/Orchestra/server/internal/logger"
+	obsmetrics "github.com/JanMori/Orchestra/server/internal/metrics"
+	"github.com/JanMori/Orchestra/server/internal/middleware"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // Upper bound on free-text fields. `cloudWaitlistReasonMaxLen` is a
@@ -198,7 +198,7 @@ func (q questionnaireAnswers) useCaseResolved() bool {
 const questionnaireSchemaVersion = 2
 
 // complete covers the IN-FLOW questionnaire only: role + use_case.
-// Source moved out of the onboarding flow (MUL-5159) — it is collected
+// Source moved out of the onboarding flow (ISS-5159) — it is collected
 // later by the workspace backfill prompt, and its resolution is
 // tracked by the separate `onboarding_source_submitted` emission in
 // PatchOnboarding. Requiring source here would stall the funnel's

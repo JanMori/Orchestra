@@ -229,7 +229,7 @@ type GetUsersByIDsRow struct {
 
 // Batch lookup from the GLOBAL user table (not gated on membership, so departed
 // members still render). Used to enrich attribution initiator / originator refs on
-// task responses without an N+1 (MUL-4302 §9). Returns only the display fields.
+// task responses without an N+1 (ISS-4302 §9). Returns only the display fields.
 func (q *Queries) GetUsersByIDs(ctx context.Context, ids []pgtype.UUID) ([]GetUsersByIDsRow, error) {
 	rows, err := q.db.Query(ctx, getUsersByIDs, ids)
 	if err != nil {
@@ -479,3 +479,42 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 	)
 	return i, err
 }
+
+const updateUserAccessToken = `-- name: UpdateUserAccessToken :one
+UPDATE "user" SET
+    access_token = $2,
+    updated_at = now()
+WHERE id = $1
+RETURNING id, name, email, avatar_url, created_at, updated_at, onboarded_at, onboarding_questionnaire, cloud_waitlist_email, cloud_waitlist_reason, starter_content_state, language, profile_description, timezone, password_hash, username, access_token
+`
+
+type UpdateUserAccessTokenParams struct {
+	ID          pgtype.UUID `json:"id"`
+	AccessToken pgtype.Text `json:"access_token"`
+}
+
+func (q *Queries) UpdateUserAccessToken(ctx context.Context, arg UpdateUserAccessTokenParams) (User, error) {
+	row := q.db.QueryRow(ctx, updateUserAccessToken, arg.ID, arg.AccessToken)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.AvatarUrl,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.OnboardedAt,
+		&i.OnboardingQuestionnaire,
+		&i.CloudWaitlistEmail,
+		&i.CloudWaitlistReason,
+		&i.StarterContentState,
+		&i.Language,
+		&i.ProfileDescription,
+		&i.Timezone,
+		&i.PasswordHash,
+		&i.Username,
+		&i.AccessToken,
+	)
+	return i, err
+}
+

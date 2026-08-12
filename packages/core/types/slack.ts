@@ -1,4 +1,4 @@
-/** A Slack bot installation bound to a single Multica agent (MUL-3666).
+/** A Slack bot installation bound to a single Multica agent (ISS-3666).
  *
  * Wire shape mirrors `SlackInstallationResponse` in
  * `server/internal/handler/slack.go`. New fields the backend adds in the

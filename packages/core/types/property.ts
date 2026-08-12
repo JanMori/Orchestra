@@ -1,6 +1,6 @@
 /**
  * Custom issue properties — workspace-defined, typed fields on issues
- * (MUL-4463). Definitions live in a workspace catalog (managed by owner/admin
+ * (ISS-4463). Definitions live in a workspace catalog (managed by owner/admin
  * only); values live on each issue in a bag keyed by definition id, so
  * renames never touch issue rows.
  *

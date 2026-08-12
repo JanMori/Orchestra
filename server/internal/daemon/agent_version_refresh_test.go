@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/multica-ai/multica/server/pkg/agent"
+	"github.com/JanMori/Orchestra/server/pkg/agent"
 )
 
 // newVersionRefreshFixture brings up a daemon with one registered codex runtime

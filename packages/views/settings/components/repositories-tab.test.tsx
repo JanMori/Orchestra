@@ -16,7 +16,7 @@ const workspaceRef = vi.hoisted(() => ({
     id: "workspace-1",
     name: "Test Workspace",
     slug: "test-workspace",
-    repos: [{ url: "https://github.com/multica-ai/multica" }] as {
+    repos: [{ url: "https://github.com/JanMori/Orchestra" }] as {
       url: string;
       description?: string;
     }[],
@@ -149,7 +149,7 @@ describe("RepositoriesTab — automatic updates", () => {
       id: "workspace-1",
       name: "Test Workspace",
       slug: "test-workspace",
-      repos: [{ url: "https://github.com/multica-ai/multica" }],
+      repos: [{ url: "https://github.com/JanMori/Orchestra" }],
     };
     membersRef.current = [{ user_id: "user-1", role: "owner" }];
     githubRef.current = {
@@ -188,7 +188,7 @@ describe("RepositoriesTab — automatic updates", () => {
 
     const inputs = screen.getAllByRole("textbox") as HTMLInputElement[];
     expect(inputs).toHaveLength(2);
-    expect(inputs[0]!.value).toBe("https://github.com/multica-ai/multica");
+    expect(inputs[0]!.value).toBe("https://github.com/JanMori/Orchestra");
     expect(screen.queryByRole("button", { name: /^Save$/ })).toBeNull();
   });
 
@@ -239,7 +239,7 @@ describe("RepositoriesTab — automatic updates", () => {
     await waitFor(() => {
       expect(mockUpdateWorkspace).toHaveBeenCalledWith("workspace-1", {
         repos: [
-          { url: "https://github.com/multica-ai/multica" },
+          { url: "https://github.com/JanMori/Orchestra" },
           { url: "git@github.com:multica-ai/second.git" },
         ],
       });
@@ -283,7 +283,7 @@ describe("RepositoriesTab — automatic updates", () => {
   it("includes the description in the automatic update payload", async () => {
     workspaceRef.current = {
       ...workspaceRef.current,
-      repos: [{ url: "https://github.com/multica-ai/multica", description: "Main app" }],
+      repos: [{ url: "https://github.com/JanMori/Orchestra", description: "Main app" }],
     };
     const user = setupUser();
     render(<RepositoriesTab />, { wrapper: I18nWrapper });
@@ -298,7 +298,7 @@ describe("RepositoriesTab — automatic updates", () => {
       expect(mockUpdateWorkspace).toHaveBeenCalledWith("workspace-1", {
         repos: [
           {
-            url: "https://github.com/multica-ai/multica",
+            url: "https://github.com/JanMori/Orchestra",
             description: "Updated description",
           },
         ],
@@ -371,8 +371,8 @@ describe("RepositoriesTab — automatic updates", () => {
       {
         id: 1,
         full_name: "multica-ai/multica",
-        html_url: "https://github.com/multica-ai/multica",
-        clone_url: "https://github.com/multica-ai/multica.git",
+        html_url: "https://github.com/JanMori/Orchestra",
+        clone_url: "https://github.com/JanMori/Orchestra.git",
         description: "Existing repository",
         private: false,
         archived: false,

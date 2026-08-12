@@ -4,8 +4,8 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/multica-ai/multica/server/internal/handler"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/handler"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // The app advertises its capabilities on the cancel request (#5219). Browsers
@@ -28,7 +28,7 @@ func TestCORSAllowedHeaders_IncludeClientCapabilities(t *testing.T) {
 // Custom response headers are not readable from browser JS unless the server
 // exposes them, and only the CORS-safelisted headers are exposed by default — so
 // an entry missing here is not a degraded signal, it is no signal at all: the
-// header arrives on the wire and the client cannot see it (MUL-5492).
+// header arrives on the wire and the client cannot see it (ISS-5492).
 func TestCORSExposedHeaders_IncludeTruncationSignals(t *testing.T) {
 	for _, want := range []string{
 		handler.HeaderCommentsTruncated,

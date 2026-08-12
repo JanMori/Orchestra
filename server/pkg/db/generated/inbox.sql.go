@@ -202,7 +202,7 @@ type CountUnreadInboxByWorkspaceRow struct {
 // its NEWEST non-archived item is unread. Opening an issue marks just that
 // newest item read, so counting raw unread rows would keep older siblings
 // alive and light the switcher dot for a workspace whose inbox the user sees
-// as empty (MUL-3695). Items without an issue group on their own id. The
+// as empty (ISS-3695). Items without an issue group on their own id. The
 // member join keeps counts scoped to workspaces the user still belongs to,
 // so a stale item left behind in a workspace the user has since left cannot
 // light the dot.
@@ -390,7 +390,7 @@ type ListArchivedInboxItemsRow struct {
 }
 
 // Archived counterpart of ListInboxItems, backing the inbox's "Archived"
-// sub-view (MUL-3736).
+// sub-view (ISS-3736).
 //
 // An issue whose group still has an active row is excluded: archiving is
 // issue-level, so a NEW notification on an already-archived issue leaves the
@@ -630,7 +630,7 @@ RETURNING id, workspace_id, recipient_type, recipient_id, type, severity, issue_
 
 // Deliberately does not touch `read`: unarchiving restores an item to the main
 // inbox in the exact read/unread state it was archived in, so restoring an
-// unread item legitimately raises the unread badge again (MUL-3736).
+// unread item legitimately raises the unread badge again (ISS-3736).
 func (q *Queries) UnarchiveInboxItem(ctx context.Context, id pgtype.UUID) (InboxItem, error) {
 	row := q.db.QueryRow(ctx, unarchiveInboxItem, id)
 	var i InboxItem

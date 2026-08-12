@@ -15,12 +15,12 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/multica-ai/multica/server/internal/analytics"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/realtime"
-	"github.com/multica-ai/multica/server/internal/service"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	"github.com/JanMori/Orchestra/server/internal/analytics"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/realtime"
+	"github.com/JanMori/Orchestra/server/internal/service"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 var testHandler *Handler
@@ -30,7 +30,7 @@ var testWorkspaceID string
 var testRuntimeID string
 
 const (
-	handlerTestEmail         = "handler-test@multica.ai"
+	handlerTestEmail         = "handler-test@orchestra.local"
 	handlerTestName          = "Handler Test User"
 	handlerTestWorkspaceSlug = "handler-tests"
 )
@@ -142,7 +142,7 @@ func setupHandlerTestFixture(ctx context.Context, pool *pgxpool.Pool) (string, s
 	`, workspaceID, "Handler Test Agent", runtimeID, userID).Scan(&seededAgentID); err != nil {
 		return "", "", err
 	}
-	// MUL-3963: the seeded workspace-visible agent is invocable by workspace
+	// ISS-3963: the seeded workspace-visible agent is invocable by workspace
 	// members and A2A triggers, so seed its workspace invocation target.
 	if _, err := pool.Exec(ctx, `
 		INSERT INTO agent_invocation_target (agent_id, target_type, target_id)
@@ -237,7 +237,7 @@ func createHandlerTestAgent(t *testing.T, name string, mcpConfig []byte) string 
 	`, testWorkspaceID, name, handlerTestRuntimeID(t), testUserID, mcpConfig).Scan(&agentID); err != nil {
 		t.Fatalf("failed to create handler test agent: %v", err)
 	}
-	// Generic test agents are workspace-invocable (MUL-3963): seed the
+	// Generic test agents are workspace-invocable (ISS-3963): seed the
 	// matching workspace invocation target so canInvokeAgent admits workspace
 	// members and A2A triggers, mirroring the pre-permission-model behavior
 	// where a workspace-visible agent could be triggered by anyone in the
@@ -438,7 +438,7 @@ func TestIssueCRUD(t *testing.T) {
 
 // TestDeleteIssueByIdentifier guards against #1661 — DELETE /api/issues/{id}
 // must actually delete the row when the path segment is a human-readable
-// identifier ("HAN-42") rather than a UUID. Before the PR #1680 + MUL-1410
+// identifier ("HAN-42") rather than a UUID. Before the PR #1680 + ISS-1410
 // refactor, parseUUID(rawString) silently produced a zero UUID, the SQL
 // DELETE matched nothing, and the handler still returned 204.
 //
@@ -1904,11 +1904,11 @@ func TestCommentWritePathsPreserveIssueIdentifiers(t *testing.T) {
 		testPool.Exec(context.Background(), `DELETE FROM issue WHERE id = $1`, issueID)
 	})
 
-	explicitMention := fmt.Sprintf("[MUL-3310](mention://issue/%s)", issueID)
+	explicitMention := fmt.Sprintf("[ISS-3310](mention://issue/%s)", issueID)
 	createCases := []string{
-		"MUL-3310",
-		"issue/MUL-3310",
-		"feature/MUL-3310",
+		"ISS-3310",
+		"issue/ISS-3310",
+		"feature/ISS-3310",
 		explicitMention,
 	}
 
@@ -1936,7 +1936,7 @@ func TestCommentWritePathsPreserveIssueIdentifiers(t *testing.T) {
 		}
 	}
 
-	updatedContent := "updated MUL-3310 issue/MUL-3310 feature/MUL-3310 " + explicitMention
+	updatedContent := "updated ISS-3310 issue/ISS-3310 feature/ISS-3310 " + explicitMention
 	w := httptest.NewRecorder()
 	req := newRequest("PUT", "/api/comments/"+firstCommentID, map[string]any{
 		"content": updatedContent,
@@ -2618,7 +2618,7 @@ func TestCreateWorkspaceInvalidSlugReturnsBadRequest(t *testing.T) {
 
 func TestSendCode(t *testing.T) {
 	w := httptest.NewRecorder()
-	body := map[string]string{"email": "sendcode-test@multica.ai"}
+	body := map[string]string{"email": "sendcode-test@orchestra.local"}
 	var buf bytes.Buffer
 	json.NewEncoder(&buf).Encode(body)
 	req := httptest.NewRequest("POST", "/auth/send-code", &buf)
@@ -2635,7 +2635,7 @@ func TestSendCode(t *testing.T) {
 	}
 
 	t.Cleanup(func() {
-		testPool.Exec(context.Background(), `DELETE FROM verification_code WHERE email = $1`, "sendcode-test@multica.ai")
+		testPool.Exec(context.Background(), `DELETE FROM verification_code WHERE email = $1`, "sendcode-test@orchestra.local")
 	})
 }
 
@@ -2650,7 +2650,7 @@ func TestSendCodeDbError(t *testing.T) {
 	cancel()
 
 	w := httptest.NewRecorder()
-	body := map[string]string{"email": "dberror-test@multica.ai"}
+	body := map[string]string{"email": "dberror-test@orchestra.local"}
 	var buf bytes.Buffer
 	json.NewEncoder(&buf).Encode(body)
 	req := httptest.NewRequest("POST", "/auth/send-code", &buf)
@@ -2673,7 +2673,7 @@ func TestSendCodeDbError(t *testing.T) {
 }
 
 func TestSendCodeRateLimit(t *testing.T) {
-	const email = "ratelimit-test@multica.ai"
+	const email = "ratelimit-test@orchestra.local"
 	t.Cleanup(func() {
 		testPool.Exec(context.Background(), `DELETE FROM verification_code WHERE email = $1`, email)
 	})
@@ -2703,7 +2703,7 @@ func TestSendCodeRateLimit(t *testing.T) {
 }
 
 func TestVerifyCode(t *testing.T) {
-	const email = "verify-test@multica.ai"
+	const email = "verify-test@orchestra.local"
 	ctx := context.Background()
 
 	t.Cleanup(func() {
@@ -2774,7 +2774,7 @@ func TestVerifyCodeRejectsDevCodeUnlessExplicitlyConfigured(t *testing.T) {
 	t.Setenv(devVerificationCodeEnv, "")
 	t.Setenv("APP_ENV", "")
 
-	const email = "dev-code-disabled-test@multica.ai"
+	const email = "dev-code-disabled-test@orchestra.local"
 	ctx := context.Background()
 
 	t.Cleanup(func() {
@@ -2798,7 +2798,7 @@ func TestVerifyCodeAcceptsConfiguredDevCodeOutsideProduction(t *testing.T) {
 	t.Setenv(devVerificationCodeEnv, "888888")
 	t.Setenv("APP_ENV", "development")
 
-	const email = "dev-code-enabled-test@multica.ai"
+	const email = "dev-code-enabled-test@orchestra.local"
 	ctx := context.Background()
 
 	t.Cleanup(func() {
@@ -2823,7 +2823,7 @@ func TestVerifyCodeRejectsConfiguredDevCodeInProduction(t *testing.T) {
 	t.Setenv(devVerificationCodeEnv, "888888")
 	t.Setenv("APP_ENV", "production")
 
-	const email = "dev-code-production-test@multica.ai"
+	const email = "dev-code-production-test@orchestra.local"
 	ctx := context.Background()
 
 	t.Cleanup(func() {
@@ -2846,7 +2846,7 @@ func TestVerifyCodeRejectsConfiguredDevCodeInProduction(t *testing.T) {
 func TestVerifyCodeWrongCode(t *testing.T) {
 	t.Setenv(devVerificationCodeEnv, "")
 
-	const email = "wrong-code-test@multica.ai"
+	const email = "wrong-code-test@orchestra.local"
 	ctx := context.Background()
 
 	t.Cleanup(func() {
@@ -2876,7 +2876,7 @@ func TestVerifyCodeWrongCode(t *testing.T) {
 func TestVerifyCodeBruteForceProtection(t *testing.T) {
 	t.Setenv(devVerificationCodeEnv, "")
 
-	const email = "bruteforce-test@multica.ai"
+	const email = "bruteforce-test@orchestra.local"
 	ctx := context.Background()
 
 	t.Cleanup(func() {
@@ -2926,7 +2926,7 @@ func TestVerifyCodeBruteForceProtection(t *testing.T) {
 }
 
 func TestVerifyCodeNewUserHasNoWorkspace(t *testing.T) {
-	const email = "workspace-verify-test@multica.ai"
+	const email = "workspace-verify-test@orchestra.local"
 	ctx := context.Background()
 
 	t.Cleanup(func() {
@@ -3664,7 +3664,7 @@ func TestRootMentionOwnerRoutesMemberReplyButNotAgentReply(t *testing.T) {
 }
 
 // TestMemberReplyToAgentRootDoesNotInheritParentMentions is the regression
-// for MUL-1535. When an agent posts a comment that @mentions another agent
+// for ISS-1535. When an agent posts a comment that @mentions another agent
 // (e.g. J posting a PR completion that @mentions a reviewer agent), a later
 // member reply in the same thread with no explicit mentions must NOT inherit
 // the @reviewer mention. The reviewer was a one-shot delegation; subsequent

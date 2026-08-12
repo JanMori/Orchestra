@@ -8,9 +8,9 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/multica-ai/multica/server/internal/events"
-	"github.com/multica-ai/multica/server/internal/util"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/events"
+	"github.com/JanMori/Orchestra/server/internal/util"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // batchClaimFixture provisions two runtimes on one machine, each with its own
@@ -23,7 +23,7 @@ func batchClaimFixture(t *testing.T, ctx context.Context, pool *pgxpool.Pool) (r
 
 	var userID string
 	if err := pool.QueryRow(ctx, `INSERT INTO "user" (name, email) VALUES ($1,$2) RETURNING id`,
-		"Batch Claim Test", fmt.Sprintf("batch-claim-%d@multica.ai", suffix)).Scan(&userID); err != nil {
+		"Batch Claim Test", fmt.Sprintf("batch-claim-%d@orchestra.local", suffix)).Scan(&userID); err != nil {
 		t.Fatalf("create user: %v", err)
 	}
 	var workspaceID string
@@ -95,7 +95,7 @@ func batchClaimFixture(t *testing.T, ctx context.Context, pool *pgxpool.Pool) (r
 }
 
 // TestClaimTasksForRuntimes_MultiRuntimeDrain verifies the machine-level batch
-// claim (MUL-4257): a single call claims across all runtimes, one task per
+// claim (ISS-4257): a single call claims across all runtimes, one task per
 // agent per call (matching the singular path's dedup), routes each task to its
 // runtime, respects a subsequent drain, and reports empty once nothing is
 // queued.

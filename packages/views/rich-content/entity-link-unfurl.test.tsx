@@ -1,5 +1,5 @@
 /**
- * Bare in-app entity URLs render as chips (MUL-5499).
+ * Bare in-app entity URLs render as chips (ISS-5499).
  *
  * A project has no `TASK-123` shorthand — only a UUID and a free-text title — so
  * the link copied out of the app IS how people reference one. This fixture pins
@@ -129,10 +129,10 @@ describe("bare entity URLs in readonly content", () => {
   // and the issue route rewrites a UUID URL back to the identifier, so this is
   // the shape in the address bar too.
   it("renders a pasted identifier-form issue URL as an issue chip", () => {
-    resolvedIssue = { id: ISSUE_ID, identifier: "MUL-1" } as Issue;
+    resolvedIssue = { id: ISSUE_ID, identifier: "ISS-1" } as Issue;
 
     const { getByTestId } = renderContent(
-      `Blocked by ${APP_ORIGIN}/acme/issues/MUL-1 for now.`,
+      `Blocked by ${APP_ORIGIN}/acme/issues/ISS-1 for now.`,
     );
 
     expect(getByTestId("issue-chip").textContent).toBe(ISSUE_ID);
@@ -143,12 +143,12 @@ describe("bare entity URLs in readonly content", () => {
     // see. The autolink path degrades to plain text there; a URL must not —
     // the author wrote a link, and dropping it would strip the only pointer.
     const { container, queryByTestId } = renderContent(
-      `${APP_ORIGIN}/acme/issues/MUL-404`,
+      `${APP_ORIGIN}/acme/issues/ISS-404`,
     );
 
     expect(queryByTestId("issue-chip")).toBeNull();
     expect(
-      container.querySelector(`a[href="${APP_ORIGIN}/acme/issues/MUL-404"]`),
+      container.querySelector(`a[href="${APP_ORIGIN}/acme/issues/ISS-404"]`),
     ).not.toBeNull();
   });
 
@@ -186,7 +186,7 @@ describe("bare entity URLs in readonly content", () => {
 
   it("leaves an external URL as a plain link", () => {
     const { queryByTestId, container } = renderContent(
-      `https://github.com/multica-ai/multica/pull/1`,
+      `https://github.com/JanMori/Orchestra/pull/1`,
     );
     expect(queryByTestId("project-chip")).toBeNull();
     expect(queryByTestId("issue-chip")).toBeNull();

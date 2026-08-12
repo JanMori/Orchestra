@@ -28,7 +28,7 @@ func seedFakeRollout(t *testing.T, sharedSessions, y, m, d, sessionID string, si
 	return path
 }
 
-// seedLegacySessionsSymlink recreates the pre-MUL-4424 layout: codex-home's
+// seedLegacySessionsSymlink recreates the pre-ISS-4424 layout: codex-home's
 // sessions is a symlink into the shared ~/.codex/sessions. Skips on Windows
 // sessions where symlink creation is unavailable.
 func seedLegacySessionsSymlink(t *testing.T, codexHome, sharedSessions string) {
@@ -212,7 +212,7 @@ func TestExposeResumeRollout_LinksLargeFileWithoutCopying(t *testing.T) {
 		t.Fatalf("mkdir local: %v", err)
 	}
 	// A deliberately large rollout — copying it onto the critical path is
-	// exactly what MUL-4424 forbids.
+	// exactly what ISS-4424 forbids.
 	const big = 4 << 20 // 4 MiB
 	src := seedFakeRollout(t, shared, "2026", "07", "13", "big-session", big)
 
@@ -349,7 +349,7 @@ func TestPrepareCodexSessionsDir_LocalDirectoryUsesPerIssueStore(t *testing.T) {
 	sessions := filepath.Join(codexHome, "sessions")
 	assertSessionsLinkedToStore(t, sessions, codexSessionStoreDir(sharedHome, key))
 	// The store holds only this issue's history — the machine's global rollouts
-	// are invisible, so `initialize` never enumerates them (the MUL-4424 stall).
+	// are invisible, so `initialize` never enumerates them (the ISS-4424 stall).
 	entries, _ := os.ReadDir(sessions)
 	if len(entries) != 0 {
 		t.Errorf("per-issue store must start empty, has %d entries (whole-history leak?)", len(entries))
@@ -463,7 +463,7 @@ func TestPrepareCodexSessionsDir_ReusedStoreLinkIsAuthoritative(t *testing.T) {
 // PruneCodexSessionStores must reclaim per-issue stores idle past retention,
 // keep recently-touched ones (active/resumable tasks), isolate issues from one
 // another, and be disable-able — the data lifecycle Elon's review required so
-// the persistent store can't grow forever (MUL-4424).
+// the persistent store can't grow forever (ISS-4424).
 func TestPruneCodexSessionStores(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("CODEX_HOME", home)
@@ -507,7 +507,7 @@ func TestPruneCodexSessionStores(t *testing.T) {
 // TestPruneCodexSessionStores_ReopenedStoreNotReclaimed is Elon's blocker repro:
 // a store idle past the TTL that a user reopens must NOT be reclaimed by a GC
 // cycle that fires before the resumed turn writes its first rollout — mounting
-// the store refreshes its activity (MUL-4424).
+// the store refreshes its activity (ISS-4424).
 func TestPruneCodexSessionStores_ReopenedStoreNotReclaimed(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("CODEX_HOME", home)
@@ -574,7 +574,7 @@ func TestPruneCodexSessionStores_ActiveStoreNotReclaimed(t *testing.T) {
 // two profile-daemons share one ~/.codex, so one daemon's GC must never reclaim
 // another profile's store — the in-process reservation guard cannot span
 // processes, but the per-profile namespace makes their store trees disjoint so a
-// GC only ever sees, and reclaims, its own (MUL-4424).
+// GC only ever sees, and reclaims, its own (ISS-4424).
 func TestPruneCodexSessionStores_IsolatesProfiles(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("CODEX_HOME", home)
@@ -600,7 +600,7 @@ func TestPruneCodexSessionStores_IsolatesProfiles(t *testing.T) {
 // TestCodexSessionStoreNamespaceInjective guards the profile->namespace map
 // against the collisions Elon flagged: the CLI treats these profile pairs as
 // distinct daemons, so they must never share a store namespace (a lossy
-// character-dropping scheme merged them). MUL-4424.
+// character-dropping scheme merged them). ISS-4424.
 func TestCodexSessionStoreNamespaceInjective(t *testing.T) {
 	t.Parallel()
 	pairs := [][2]string{
@@ -625,7 +625,7 @@ func TestCodexSessionStoreNamespaceInjective(t *testing.T) {
 // blocker: a profile the CLI can persist as its own config-dir segment (up to
 // the ~255-byte filesystem limit) must yield a namespace that also fits one
 // segment and is creatable — a length-expanding encoding (full hex) overflowed
-// at 127 bytes. MUL-4424.
+// at 127 bytes. ISS-4424.
 func TestCodexSessionStoreNamespace_FitsDirectorySegment(t *testing.T) {
 	t.Parallel()
 	base := t.TempDir()
@@ -643,7 +643,7 @@ func TestCodexSessionStoreNamespace_FitsDirectorySegment(t *testing.T) {
 // TestPruneCodexSessionStores_NoCrossProfileCollision proves the injective
 // namespace holds end-to-end: profiles the CLI treats as distinct never reclaim
 // each other's stores, including the "" vs "default" and punctuation cases that
-// a lossy sanitizer collapsed (Elon's round-7 repro). MUL-4424.
+// a lossy sanitizer collapsed (Elon's round-7 repro). ISS-4424.
 func TestPruneCodexSessionStores_NoCrossProfileCollision(t *testing.T) {
 	for _, pair := range [][2]string{{"", "default"}, {"staging.prod", "stagingprod"}} {
 		home := t.TempDir()

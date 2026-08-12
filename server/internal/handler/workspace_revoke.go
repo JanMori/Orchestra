@@ -5,8 +5,8 @@ import (
 	"log/slog"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
-	"github.com/multica-ai/multica/server/pkg/protocol"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/pkg/protocol"
 )
 
 // revokeAndRemoveMember converges all server-side state that should follow a
@@ -55,7 +55,7 @@ func (h *Handler) revokeAndRemoveMember(ctx context.Context, workspaceID, userID
 	// a run that is mid-decomposition cannot slip a new subscriber row in
 	// between this tx's membership delete and its subscription cleanup below.
 	// First also means every holder acquires it in the same order, so these
-	// paths cannot deadlock against each other (MUL-5483 review round 7).
+	// paths cannot deadlock against each other (ISS-5483 review round 7).
 	if err := qtx.LockSubscriberWrites(ctx, db.LockSubscriberWritesParams{
 		WorkspaceID: workspaceID,
 		UserID:      userID,
@@ -126,7 +126,7 @@ func (h *Handler) revokeAndRemoveMember(ctx context.Context, workspaceID, userID
 	}
 
 	// channel_user_binding used to carry a member FK with ON DELETE CASCADE, so
-	// a removed member's IM bindings vanished automatically. MUL-3515 §4 dropped
+	// a removed member's IM bindings vanished automatically. ISS-3515 §4 dropped
 	// every channel_* foreign key, moving that integrity rule to the application
 	// layer: prune the bindings here, in the same tx as the member-row delete.
 	// The inbound path also re-checks membership (see ChannelStore.IsWorkspaceMember),
@@ -139,7 +139,7 @@ func (h *Handler) revokeAndRemoveMember(ctx context.Context, workspaceID, userID
 	}
 
 	// agent_invocation_target carries member-target grants with NO database FK
-	// (MUL-3963 keeps the new table FK-free, matching the MUL-3515 channel
+	// (ISS-3963 keeps the new table FK-free, matching the ISS-3515 channel
 	// generalization). Prune this leaving member's grants in the same tx as the
 	// member-row delete so a re-invited user does not silently reclaim old
 	// invocation permission on agents that had allow-listed them. SCOPED to
@@ -164,8 +164,8 @@ func (h *Handler) revokeAndRemoveMember(ctx context.Context, workspaceID, userID
 		return empty, err
 	}
 
-	// issue_subscriber carries no FK either (same MUL-3515 rule as the two
-	// prunes above), and MUL-5483 gave agents a path that writes member
+	// issue_subscriber carries no FK either (same ISS-3515 rule as the two
+	// prunes above), and ISS-5483 gave agents a path that writes member
 	// subscriber rows on their own initiative. Dropping them in this tx is what
 	// stops a departed member from accruing inbox rows, and stops a re-invite
 	// from silently restoring visibility of everything they used to watch.

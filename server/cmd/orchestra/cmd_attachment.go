@@ -10,7 +10,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/multica-ai/multica/server/internal/cli"
+	"github.com/JanMori/Orchestra/server/internal/cli"
 )
 
 var attachmentCmd = &cobra.Command{
@@ -26,7 +26,7 @@ var attachmentDownloadCmd = &cobra.Command{
   $ multica attachment download abc123
 
   # Download to a directory inside the working directory (keep agent
-  # downloads out of /tmp and other machine-shared paths, MUL-4252)
+  # downloads out of /tmp and other machine-shared paths, ISS-4252)
   $ multica attachment download abc123 -o ./attachments`,
 	Args: exactArgs(1),
 	RunE: runAttachmentDownload,

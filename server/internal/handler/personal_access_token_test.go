@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/auth"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/auth"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // insertTestPAT creates a PAT row for the shared test user with the given
@@ -241,7 +241,7 @@ func TestRenewPAT_ConcurrentRenewIsIdempotent(t *testing.T) {
 }
 
 // TestRenewPAT_ParallelRenewExtendsExactlyOnce locks in the SQL-level
-// idempotency that the MUL-2744 review flagged: when N callers race to
+// idempotency that the ISS-2744 review flagged: when N callers race to
 // renew the same in-window PAT, the WHERE clause must ensure only one
 // UPDATE actually bumps the row. The previous condition (`expires_at < $2`)
 // silently let every caller win — each computed a slightly larger
@@ -329,7 +329,7 @@ func TestRenewPAT_RejectsTokenBelongingToDifferentUser(t *testing.T) {
 		INSERT INTO "user" (name, email)
 		VALUES ($1, $2)
 		RETURNING id
-	`, "Other User", "other-renew@multica.ai").Scan(&otherUserID); err != nil {
+	`, "Other User", "other-renew@orchestra.local").Scan(&otherUserID); err != nil {
 		t.Fatalf("create other user: %v", err)
 	}
 	t.Cleanup(func() {

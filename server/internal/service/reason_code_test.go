@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/multica-ai/multica/server/internal/dispatch"
-	db "github.com/multica-ai/multica/server/pkg/db/generated"
+	"github.com/JanMori/Orchestra/server/internal/dispatch"
+	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
 // TestDispatchFailReasonCode is the regression for Elon must-fix 2, case 1: a
@@ -31,7 +31,7 @@ func TestDispatchFailReasonCode(t *testing.T) {
 
 // TestAgentReadinessReasonCode is the regression for Elon must-fix 2, case 2: a
 // runtime-availability failure must be classified from the agent's own state,
-// not from the reason text. Since MUL-5559 the two runtime failures are
+// not from the reason text. Since ISS-5559 the two runtime failures are
 // deliberately distinct: an agent with NO runtime needs to be bound to one
 // (agent_runtime_required), while a bound-but-offline runtime needs the machine
 // back (runtime_offline). Collapsing them sends the user looking for a computer

@@ -17,7 +17,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/websocket"
-	"github.com/multica-ai/multica/server/internal/auth"
+	"github.com/JanMori/Orchestra/server/internal/auth"
 )
 
 // MembershipChecker verifies a user belongs to a workspace.
@@ -677,7 +677,7 @@ func (h *Hub) Snapshot() map[string]any {
 
 // authenticateToken validates a JWT or PAT string and returns the user ID.
 func authenticateToken(tokenStr string, pr PATResolver, ctx context.Context) (string, string) {
-	if strings.HasPrefix(tokenStr, "mul_") {
+	if strings.HasPrefix(tokenStr, "tok_") || strings.HasPrefix(tokenStr, "mul_") {
 		if pr == nil {
 			return "", `{"error":"invalid token"}`
 		}

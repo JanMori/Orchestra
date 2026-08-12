@@ -1,5 +1,5 @@
 -- =====================
--- GitHub API snapshot (MUL-5265, Plan C)
+-- GitHub API snapshot (ISS-5265, Plan C)
 --
 -- These queries back the API-snapshot refresh pipeline. The GitHub GraphQL
 -- response is the single source of truth; each successful fetch is written as
