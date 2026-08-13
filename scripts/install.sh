@@ -110,9 +110,15 @@ install_cli_binary() {
   local script_dir
   script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+  local version commit date ldflags
+  version="$(git -C "$script_dir" describe --tags --match 'v[0-9]*' --always --dirty 2>/dev/null || echo dev)"
+  commit="$(git -C "$script_dir" rev-parse --short HEAD 2>/dev/null || echo unknown)"
+  date="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+  ldflags="-X main.version=$version -X main.commit=$commit -X main.date=$date"
+
   if [ -d "$script_dir/server/cmd/orchestra" ] && command_exists go; then
     info "Building Orchestra CLI from local Go source..."
-    (cd "$script_dir/server" && CGO_ENABLED=0 go build -o "$tmp_dir/orchestra" ./cmd/orchestra)
+    (cd "$script_dir/server" && CGO_ENABLED=0 go build -ldflags "$ldflags" -o "$tmp_dir/orchestra" ./cmd/orchestra)
   elif [ -f "$script_dir/server/bin/orchestra" ]; then
     info "Using existing local Orchestra CLI binary..."
     cp "$script_dir/server/bin/orchestra" "$tmp_dir/orchestra"
@@ -131,7 +137,7 @@ install_cli_binary() {
 
   if [ ! -f "$tmp_dir/orchestra" ]; then
     if command_exists go && [ -d "$script_dir/server" ]; then
-      (cd "$script_dir/server" && CGO_ENABLED=0 go build -o "$tmp_dir/orchestra" ./cmd/orchestra)
+      (cd "$script_dir/server" && CGO_ENABLED=0 go build -ldflags "$ldflags" -o "$tmp_dir/orchestra" ./cmd/orchestra)
     fi
   fi
 

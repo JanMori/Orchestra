@@ -47,12 +47,21 @@ const MinHandoffCLIVersion = "0.3.28"
 // to render handoff notes. Reuses the CheckMinCLIVersion parsing (including the
 // git-describe dev-build exemption) but never errors — a missing/old/unparsable
 // version simply means "not supported", which the soft gate degrades gracefully.
+func isDevBuild(version string) bool {
+	d := strings.TrimSpace(version)
+	return d == "dev" || devDescribeRe.MatchString(d)
+}
+
+// HandoffSupported reports whether a daemon reporting cliVersion is new enough
+// to render handoff notes. Reuses the CheckMinCLIVersion parsing (including the
+// git-describe dev-build exemption) but never errors — a missing/old/unparsable
+// version simply means "not supported", which the soft gate degrades gracefully.
 func HandoffSupported(cliVersion string) bool {
 	d := strings.TrimSpace(cliVersion)
 	if d == "" {
 		return false
 	}
-	if devDescribeRe.MatchString(d) {
+	if isDevBuild(d) {
 		return true
 	}
 	parsed, err := parseSemver(d)
@@ -86,7 +95,7 @@ var devDescribeRe = regexp.MustCompile(`^v?\d+\.\d+\.\d+-\d+-g[0-9a-fA-F]+`)
 // when parsable but below the minimum. The caller can check for these
 // sentinel errors with errors.Is to drive the response shape.
 //
-// Dev-built daemons (git-describe shape) always pass — the version string
+// Dev-built daemons (git-describe shape or bare "dev") always pass — the version string
 // itself is the shared signal, so the modal pre-check and this server gate
 // agree by construction without needing to compare separate env flags.
 func CheckMinCLIVersion(detected string) error {
@@ -101,7 +110,7 @@ func CheckMinCLIVersionFor(detected, minimum string) error {
 	if d == "" {
 		return ErrCLIVersionMissing
 	}
-	if devDescribeRe.MatchString(d) {
+	if isDevBuild(d) {
 		return nil
 	}
 	parsed, err := parseSemver(d)

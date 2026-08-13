@@ -25,7 +25,8 @@ describe("checkQuickCreateCliVersion", () => {
     expect(checkQuickCreateCliVersion("not-a-version").state).toBe("missing");
   });
 
-  it("treats git-describe dev builds as ok regardless of base tag", () => {
+  it("treats git-describe and bare 'dev' builds as ok regardless of base tag", () => {
+    expect(checkQuickCreateCliVersion("dev").state).toBe("ok");
     expect(checkQuickCreateCliVersion("v0.2.15-235-gdaf0e935").state).toBe("ok");
     expect(checkQuickCreateCliVersion("v0.2.15-235-gdaf0e935-dirty").state).toBe("ok");
     expect(checkQuickCreateCliVersion("0.1.0-1-gabc1234").state).toBe("ok");
@@ -37,6 +38,7 @@ describe("checkQuickCreateFieldsCliVersion", () => {
     expect(checkQuickCreateFieldsCliVersion("0.4.2").state).toBe("too_old");
     expect(checkQuickCreateFieldsCliVersion("0.4.3").state).toBe("ok");
     expect(checkQuickCreateFieldsCliVersion("v0.4.3-1-gabc1234").state).toBe("ok");
+    expect(checkQuickCreateFieldsCliVersion("dev").state).toBe("ok");
   });
 });
 
@@ -61,7 +63,8 @@ describe("handoffSupported", () => {
     expect(handoffSupported("garbage")).toBe(false);
   });
 
-  it("treats git-describe dev builds as supported regardless of base tag", () => {
+  it("treats git-describe and bare 'dev' builds as supported regardless of base tag", () => {
+    expect(handoffSupported("dev")).toBe(true);
     expect(handoffSupported("v0.3.0-5-gabc1234")).toBe(true);
     expect(handoffSupported("v0.1.0-235-gdaf0e935-dirty")).toBe(true);
   });

@@ -7,6 +7,9 @@ WORKDIR /src
 
 # Cache dependencies
 COPY server/go.mod server/go.sum ./server/
+# 增加 Go 代理配置（使用 goproxy.cn 镜像）
+ENV GOPROXY=https://goproxy.cn,direct
+
 RUN cd server && go mod download
 
 # Copy server source
