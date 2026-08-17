@@ -140,6 +140,7 @@ func (b *grokBackend) Execute(ctx context.Context, prompt string, opts ExecOptio
 	if opts.ThinkingLevel != "" {
 		grokArgs = append(grokArgs, "--effort", opts.ThinkingLevel)
 	}
+	grokArgs = append(grokArgs, filterCustomArgs(opts.ExtraArgs, grokBlockedArgs, b.cfg.Logger)...)
 	grokArgs = append(grokArgs, filterCustomArgs(opts.CustomArgs, grokBlockedArgs, b.cfg.Logger)...)
 	grokArgs = append(grokArgs, "stdio")
 

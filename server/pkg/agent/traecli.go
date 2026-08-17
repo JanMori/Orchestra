@@ -107,10 +107,9 @@ func (b *traecliBackend) Execute(ctx context.Context, prompt string, opts ExecOp
 	timeout := opts.Timeout
 	runCtx, cancel := runContext(ctx, timeout)
 
-	traecliArgs := append(
-		[]string{"acp", "serve", "--yolo"},
-		filterCustomArgs(opts.CustomArgs, traecliBlockedArgs, b.cfg.Logger)...,
-	)
+	traecliArgs := []string{"acp", "serve", "--yolo"}
+	traecliArgs = append(traecliArgs, filterCustomArgs(opts.ExtraArgs, traecliBlockedArgs, b.cfg.Logger)...)
+	traecliArgs = append(traecliArgs, filterCustomArgs(opts.CustomArgs, traecliBlockedArgs, b.cfg.Logger)...)
 	cmd := exec.CommandContext(runCtx, execPath, traecliArgs...)
 	hideAgentWindow(cmd)
 	b.cfg.Logger.Info("agent command", "exec", execPath, "args", traecliArgs)

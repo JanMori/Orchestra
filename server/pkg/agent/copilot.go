@@ -641,6 +641,7 @@ func buildCopilotArgs(prompt string, opts ExecOptions, logger *slog.Logger) []st
 	if opts.ResumeSessionID != "" {
 		args = append(args, "--resume", opts.ResumeSessionID)
 	}
+	args = append(args, filterCustomArgs(opts.ExtraArgs, copilotBlockedArgs, logger)...)
 	args = append(args, filterCustomArgs(opts.CustomArgs, copilotBlockedArgs, logger)...)
 	return args
 }

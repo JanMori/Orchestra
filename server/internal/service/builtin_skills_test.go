@@ -139,8 +139,8 @@ func TestMentioningSkillFollowsContractFrontmatter(t *testing.T) {
 	if got := strings.TrimSpace(fm["user-invocable"]); got != "false" {
 		t.Errorf("user-invocable = %q, want false (a platform-contract skill triggers from context, not a slash command)", got)
 	}
-	if got := strings.TrimSpace(fm["allowed-tools"]); got != "Bash(multica *)" {
-		t.Errorf("allowed-tools = %q, want Bash(multica *) (fence the skill to the CLI it teaches)", got)
+	if got := strings.TrimSpace(fm["allowed-tools"]); got != "Bash(orchestra *)" {
+		t.Errorf("allowed-tools = %q, want Bash(orchestra *) (fence the skill to the CLI it teaches)", got)
 	}
 }
 
@@ -218,7 +218,7 @@ func TestWorkingOnIssuesSkillCoversIssueLoopContracts(t *testing.T) {
 	if got := strings.TrimSpace(fm["user-invocable"]); got != "false" {
 		t.Errorf("user-invocable = %q, want false (issue workflow guidance triggers from context)", got)
 	}
-	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(multica *)") {
+	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(orchestra *)") {
 		t.Errorf("allowed-tools = %q, want access to the Orchestra CLI", got)
 	}
 
@@ -228,7 +228,7 @@ func TestWorkingOnIssuesSkillCoversIssueLoopContracts(t *testing.T) {
 	mustContain := []string{
 		"orchestra issue pull-requests <issue-id> --output json",
 		"Default for code-changing issue work",
-		"open or update a PR before posting the final Multica issue comment",
+		"open or update a PR before posting the final Orchestra issue comment",
 		"This is a default, not",
 		"Use a routable issue key in the PR title, body, or branch",
 		"include the PR URL when a PR exists",
@@ -303,7 +303,7 @@ func TestSkillImportingSkillCoversWorkspaceImportContracts(t *testing.T) {
 	if got := strings.TrimSpace(fm["user-invocable"]); got != "false" {
 		t.Errorf("user-invocable = %q, want false (skill import guidance triggers from context)", got)
 	}
-	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(multica *)") {
+	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(orchestra *)") {
 		t.Errorf("allowed-tools = %q, want access to the Orchestra CLI", got)
 	}
 
@@ -365,7 +365,7 @@ func TestCreatingAgentsSkillCoversAgentCreationContracts(t *testing.T) {
 	if got := strings.TrimSpace(fm["user-invocable"]); got != "false" {
 		t.Errorf("user-invocable = %q, want false (agent creation guidance triggers from context)", got)
 	}
-	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(multica *)") {
+	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(orchestra *)") {
 		t.Errorf("allowed-tools = %q, want access to the Orchestra CLI", got)
 	}
 
@@ -424,7 +424,7 @@ func TestCrewsSkillCoversLeaderRoutingContract(t *testing.T) {
 	if got := strings.TrimSpace(fm["user-invocable"]); got != "false" {
 		t.Errorf("user-invocable = %q, want false (crew guidance triggers from context)", got)
 	}
-	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(multica *)") {
+	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(orchestra *)") {
 		t.Errorf("allowed-tools = %q, want access to the Orchestra CLI", got)
 	}
 
@@ -478,7 +478,7 @@ func TestAutopilotsSkillCoversDispatchAndSideEffects(t *testing.T) {
 	if got := strings.TrimSpace(fm["user-invocable"]); got != "false" {
 		t.Errorf("user-invocable = %q, want false", got)
 	}
-	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(multica *)") {
+	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(orchestra *)") {
 		t.Errorf("allowed-tools = %q, want access to the Orchestra CLI", got)
 	}
 
@@ -486,8 +486,8 @@ func TestAutopilotsSkillCoversDispatchAndSideEffects(t *testing.T) {
 		"An autopilot is not an agent",
 		"create_issue",
 		"run_only",
-		"multica autopilot trigger-add <autopilot-id> --kind schedule",
-		"multica autopilot trigger <autopilot-id> --output json",
+		"orchestra autopilot trigger-add <autopilot-id> --kind schedule",
+		"orchestra autopilot trigger <autopilot-id> --output json",
 		"Do not run `trigger`",
 		"webhook tokens",
 		"{{date}}",
@@ -514,14 +514,14 @@ func TestRuntimesAndReposSkillCoversClaimAndCheckoutChain(t *testing.T) {
 	if got := strings.TrimSpace(fm["user-invocable"]); got != "false" {
 		t.Errorf("user-invocable = %q, want false", got)
 	}
-	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(multica *)") {
+	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(orchestra *)") {
 		t.Errorf("allowed-tools = %q, want access to the Orchestra CLI", got)
 	}
 
 	mustContain := []string{
 		"agent_task_queue",
 		"daemon polls/claims the task",
-		"multica runtime list --output json",
+		"orchestra runtime list --output json",
 		"orchestra repo checkout <url>",
 		"ORCHESTRA_DAEMON_PORT",
 		"resource_ref.ref",
@@ -550,13 +550,13 @@ func TestProjectsAndResourcesSkillCoversDurableContext(t *testing.T) {
 	if got := strings.TrimSpace(fm["user-invocable"]); got != "false" {
 		t.Errorf("user-invocable = %q, want false", got)
 	}
-	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(multica *)") {
+	if got := strings.TrimSpace(fm["allowed-tools"]); !strings.Contains(got, "Bash(orchestra *)") {
 		t.Errorf("allowed-tools = %q, want access to the Orchestra CLI", got)
 	}
 
 	mustContain := []string{
 		"Projects are durable context containers",
-		".multica/project/resources.json",
+		".orchestra/project/resources.json",
 		"orchestra project resource list <project-id> --output json",
 		"orchestra project resource add <project-id> --type github_repo --url <github-url> --output json",
 		"orchestra project resource add <project-id> --type github_repo --url <github-url> --ref <branch-or-sha> --output json",

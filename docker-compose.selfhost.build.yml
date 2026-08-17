@@ -45,8 +45,8 @@ services:
       PORT: "8080"
       METRICS_ADDR: ${METRICS_ADDR:-}
       JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
-      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:5001}
-      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:5001,http://192.168.0.138:5001}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://192.168.0.138:5001,http://localhost:5001}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-noreply@orchestra.ai}
       SMTP_HOST: ${SMTP_HOST:-}

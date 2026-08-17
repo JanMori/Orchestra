@@ -69,7 +69,7 @@ type ExecOptions struct {
 	// knows the resume is gone, and the backend covers only the case the daemon
 	// cannot see — a live resume RPC rejected mid-run.
 	ResumeContinuityNotice string
-	ExtraArgs              []string        // daemon-wide default CLI arguments appended before CustomArgs; currently read by claude and codex backends only
+	ExtraArgs              []string        // daemon-wide default CLI arguments and runtime fixed args appended before CustomArgs
 	CustomArgs             []string        // per-agent CLI arguments appended after ExtraArgs
 	QwenpawWorkspace       string          // per-task QwenPaw workspace directory (passed as --workspace to qwenpaw acp); empty when not applicable
 	McpConfig              json.RawMessage // if non-nil, MCP server config to pass via --mcp-config

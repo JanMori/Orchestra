@@ -519,6 +519,7 @@ func buildPiArgs(prompt, sessionPath string, opts ExecOptions, logger *slog.Logg
 	// Pi loads the per-task AGENTS.md the daemon writes into the workdir, so
 	// inlining the same runtime brief would duplicate it on every turn.
 	// Verified against Pi 0.67.2 (ISS-5392).
+	args = append(args, filterCustomArgs(opts.ExtraArgs, piBlockedArgs, logger)...)
 	args = append(args, filterCustomArgs(opts.CustomArgs, piBlockedArgs, logger)...)
 	args = append(args, prompt)
 	return args

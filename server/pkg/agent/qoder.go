@@ -97,10 +97,9 @@ func (b *qoderBackend) Execute(ctx context.Context, prompt string, opts ExecOpti
 	timeout := opts.Timeout
 	runCtx, cancel := runContext(ctx, timeout)
 
-	qoderArgs := append(
-		[]string{"--yolo", "--acp"},
-		filterCustomArgs(opts.CustomArgs, qoderBlockedArgs, b.cfg.Logger)...,
-	)
+	qoderArgs := []string{"--yolo", "--acp"}
+	qoderArgs = append(qoderArgs, filterCustomArgs(opts.ExtraArgs, qoderBlockedArgs, b.cfg.Logger)...)
+	qoderArgs = append(qoderArgs, filterCustomArgs(opts.CustomArgs, qoderBlockedArgs, b.cfg.Logger)...)
 	cmd := exec.CommandContext(runCtx, execPath, qoderArgs...)
 	hideAgentWindow(cmd)
 	b.cfg.Logger.Info("agent command", "exec", execPath, "args", qoderArgs)

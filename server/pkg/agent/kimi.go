@@ -60,7 +60,9 @@ func (b *kimiBackend) Execute(ctx context.Context, prompt string, opts ExecOptio
 	// daemon auto-approves in hermesClient.handleAgentRequest by selecting
 	// a safe granting option the agent offered (see
 	// selectACPApprovalOptionID) for each session/request_permission request.
-	kimiArgs := append([]string{"acp"}, filterCustomArgs(opts.CustomArgs, kimiBlockedArgs, b.cfg.Logger)...)
+	kimiArgs := []string{"acp"}
+	kimiArgs = append(kimiArgs, filterCustomArgs(opts.ExtraArgs, kimiBlockedArgs, b.cfg.Logger)...)
+	kimiArgs = append(kimiArgs, filterCustomArgs(opts.CustomArgs, kimiBlockedArgs, b.cfg.Logger)...)
 	cmd := exec.CommandContext(runCtx, execPath, kimiArgs...)
 	hideAgentWindow(cmd)
 	b.cfg.Logger.Info("agent command", "exec", execPath, "args", kimiArgs)

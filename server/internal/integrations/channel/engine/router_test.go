@@ -383,7 +383,7 @@ func newHarness(t *testing.T) *harness {
 		media:   &fakeMedia{},
 		issues:  &fakeIssues{},
 		tasks:   &fakeTasks{},
-		reader:  &fakeReader{ws: db.Workspace{IssuePrefix: "MUL"}},
+		reader:  &fakeReader{ws: db.Workspace{IssuePrefix: "ISS"}},
 	}
 	h.router = NewRouter(h.issues, h.tasks, h.reader, RouterConfig{Logger: discardLogger()})
 	h.router.Register(channel.TypeFeishu, ResolverSet{

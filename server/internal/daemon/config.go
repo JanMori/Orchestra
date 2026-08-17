@@ -434,7 +434,7 @@ func LoadConfig(overrides Overrides) (Config, error) {
 	// older server build, which a fresh CLI may no longer talk to. Keeping
 	// auto-update off by default for self-host avoids both footguns (ISS-2381).
 	// Operators on either side can flip the default with ORCHESTRA_DAEMON_AUTO_UPDATE.
-	autoUpdateEnabled := boolFromEnv("ORCHESTRA_DAEMON_AUTO_UPDATE", false)
+	autoUpdateEnabled := boolFromEnv("ORCHESTRA_DAEMON_AUTO_UPDATE", isOfficialCloudServer(serverBaseURL))
 	if overrides.DisableAutoUpdate {
 		autoUpdateEnabled = false
 	}
@@ -497,6 +497,19 @@ func LoadConfig(overrides Overrides) (Config, error) {
 	}, nil
 }
 
+
+// officialCloudHost is the hostname of Orchestra's hosted cloud.
+const officialCloudHost = "api.orchestra.ai"
+
+// isOfficialCloudServer reports whether the resolved server base URL points
+// at Orchestra's hosted cloud (or legacy Multica cloud).
+func isOfficialCloudServer(baseURL string) bool {
+	u, err := url.Parse(strings.TrimSpace(baseURL))
+	if err != nil {
+		return false
+	}
+	return strings.EqualFold(u.Hostname(), officialCloudHost) || strings.EqualFold(u.Hostname(), "api.multica.ai")
+}
 
 // NormalizeServerBaseURL converts a WebSocket or HTTP URL to a base HTTP URL.
 func NormalizeServerBaseURL(raw string) (string, error) {
@@ -685,7 +698,7 @@ func isMulticaHooksDir(dir string) bool {
 	if err != nil || home == "" {
 		return false
 	}
-	return samePathDir(dir, filepath.Join(home, ".orchestra", "hooks"))
+	return samePathDir(dir, filepath.Join(home, ".orchestra", "hooks")) || samePathDir(dir, filepath.Join(home, ".multica", "hooks"))
 }
 
 func samePathDir(a, b string) bool {
@@ -922,14 +935,18 @@ func buildLoginShellResolveScript(names []string) string {
 	b.WriteString("  [ -n \"$p\" ] || continue\n")
 	b.WriteString("  case \"$p\" in /*) ;; *) continue ;; esac\n")
 	b.WriteString("  d=$(dirname \"$p\") && f=$(basename \"$p\") && c=$(cd \"$d\" 2>/dev/null && pwd -P) || continue\n")
-	b.WriteString("  hc=\"\"\n")
-	b.WriteString("  if [ -n \"${HOME:-}\" ]; then hd=\"$HOME/.multica/hooks\"; hc=$(cd \"$hd\" 2>/dev/null && pwd -P) || hc=\"\"; fi\n")
-	b.WriteString("  if [ -n \"$hc\" ] && [ \"$c\" = \"$hc\" ]; then\n")
+	b.WriteString("  hc=\"\"; hc2=\"\"\n")
+	b.WriteString("  if [ -n \"${HOME:-}\" ]; then\n")
+	b.WriteString("    hd=\"$HOME/.orchestra/hooks\"; hc=$(cd \"$hd\" 2>/dev/null && pwd -P) || hc=\"\"\n")
+	b.WriteString("    hd2=\"$HOME/.multica/hooks\"; hc2=$(cd \"$hd2\" 2>/dev/null && pwd -P) || hc2=\"\"\n")
+	b.WriteString("  fi\n")
+	b.WriteString("  if { [ -n \"$hc\" ] && [ \"$c\" = \"$hc\" ]; } || { [ -n \"$hc2\" ] && [ \"$c\" = \"$hc2\" ]; }; then\n")
 	b.WriteString("    oldIFS=$IFS; IFS=:\n")
 	b.WriteString("    for d2 in $PATH; do\n")
 	b.WriteString("      [ -n \"$d2\" ] || d2=.\n")
 	b.WriteString("      c2=$(cd \"$d2\" 2>/dev/null && pwd -P) || continue\n")
-	b.WriteString("      [ \"$c2\" = \"$hc\" ] && continue\n")
+	b.WriteString("      { [ -n \"$hc\" ] && [ \"$c2\" = \"$hc\" ]; } && continue\n")
+	b.WriteString("      { [ -n \"$hc2\" ] && [ \"$c2\" = \"$hc2\" ]; } && continue\n")
 	b.WriteString("      if [ -f \"$c2/$n\" ] && [ -x \"$c2/$n\" ]; then c=\"$c2\"; f=\"$n\"; break; fi\n")
 	b.WriteString("    done\n")
 	b.WriteString("    IFS=$oldIFS\n")

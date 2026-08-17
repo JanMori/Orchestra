@@ -61,7 +61,9 @@ func (b *kiroBackend) Execute(ctx context.Context, prompt string, opts ExecOptio
 	timeout := opts.Timeout
 	runCtx, cancel := runContext(ctx, timeout)
 
-	kiroArgs := append([]string{"acp", "--trust-all-tools"}, filterCustomArgs(opts.CustomArgs, kiroBlockedArgs, b.cfg.Logger)...)
+	kiroArgs := []string{"acp", "--trust-all-tools"}
+	kiroArgs = append(kiroArgs, filterCustomArgs(opts.ExtraArgs, kiroBlockedArgs, b.cfg.Logger)...)
+	kiroArgs = append(kiroArgs, filterCustomArgs(opts.CustomArgs, kiroBlockedArgs, b.cfg.Logger)...)
 	cmd := exec.CommandContext(runCtx, execPath, kiroArgs...)
 	hideAgentWindow(cmd)
 	b.cfg.Logger.Info("agent command", "exec", execPath, "args", kiroArgs)
@@ -562,7 +564,8 @@ func isKiroIssueCommentAddCommand(command string) bool {
 		return false
 	}
 	executable := strings.TrimPrefix(parts[0], "./")
-	if executable != "multica" && !strings.HasSuffix(executable, "/multica") {
+	if executable != "orchestra" && executable != "multica" &&
+		!strings.HasSuffix(executable, "/orchestra") && !strings.HasSuffix(executable, "/multica") {
 		return false
 	}
 	return parts[1] == "issue" && parts[2] == "comment" && parts[3] == "add"

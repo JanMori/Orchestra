@@ -84,7 +84,9 @@ func (b *reasonixBackend) Execute(ctx context.Context, prompt string, opts ExecO
 	// user questions through session/request_permission. The adapter below
 	// narrows the generic auto-approval policy; --workspace-only independently
 	// keeps configured extra write roots out of unattended tasks.
-	reasonixArgs := append(reasonixACPLaunchArgs(), filterCustomArgs(opts.CustomArgs, reasonixBlockedArgs, b.cfg.Logger)...)
+	reasonixArgs := append([]string(nil), reasonixACPLaunchArgs()...)
+	reasonixArgs = append(reasonixArgs, filterCustomArgs(opts.ExtraArgs, reasonixBlockedArgs, b.cfg.Logger)...)
+	reasonixArgs = append(reasonixArgs, filterCustomArgs(opts.CustomArgs, reasonixBlockedArgs, b.cfg.Logger)...)
 	cmd := exec.CommandContext(runCtx, execPath, reasonixArgs...)
 	hideAgentWindow(cmd)
 	b.cfg.Logger.Info("agent command", "exec", execPath, "args", reasonixArgs)

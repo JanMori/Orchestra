@@ -3584,3 +3584,63 @@ func TestHermesBackendIgnoresRefusalOnFreshSession(t *testing.T) {
 		t.Error("ResumeRejected = true, want false on a fresh session")
 	}
 }
+
+// TestHermesBackendExtraArgsAndCustomArgsPassedToCLI verifies that ExtraArgs
+// (e.g. runtime fixedArgs "-p test_on_profile") and CustomArgs are both passed to the CLI.
+func TestHermesBackendExtraArgsAndCustomArgsPassedToCLI(t *testing.T) {
+	t.Parallel()
+
+	argsLog := filepath.Join(t.TempDir(), "args.log")
+	fakeScript := fmt.Sprintf(`#!/bin/sh
+echo "$@" > %q
+while IFS= read -r line; do
+  id=$(printf '%%s' "$line" | sed -n 's/.*"id":\([0-9]*\).*/\1/p')
+  case "$line" in
+    *'"method":"initialize"'*)
+      printf '{"jsonrpc":"2.0","id":%%s,"result":{"protocolVersion":1,"agentCapabilities":{}}}\n' "$id"
+      ;;
+    *'"method":"session/new"'*)
+      printf '{"jsonrpc":"2.0","id":%%s,"result":{"sessionId":"ses_1"}}\n' "$id"
+      ;;
+    *'"method":"session/prompt"'*)
+      printf '{"jsonrpc":"2.0","id":%%s,"result":{"stopReason":"end_turn"}}\n' "$id"
+      exit 0
+      ;;
+  esac
+done
+`, argsLog)
+
+	fakePath := filepath.Join(t.TempDir(), "hermes")
+	writeTestExecutable(t, fakePath, []byte(fakeScript))
+
+	backend, err := New("hermes", Config{ExecutablePath: fakePath, Logger: slog.Default()})
+	if err != nil {
+		t.Fatalf("new hermes backend: %v", err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	opts := ExecOptions{
+		ExtraArgs:  []string{"-p", "test_on_profile"},
+		CustomArgs: []string{"--temperature", "0.7"},
+	}
+	session, err := backend.Execute(ctx, "hello", opts)
+	if err != nil {
+		t.Fatalf("execute: %v", err)
+	}
+	for range session.Messages {
+	}
+	<-session.Result
+
+	content, err := os.ReadFile(argsLog)
+	if err != nil {
+		t.Fatalf("read args log: %v", err)
+	}
+	gotArgs := strings.Fields(strings.TrimSpace(string(content)))
+	wantArgs := []string{"acp", "-p", "test_on_profile", "--temperature", "0.7"}
+	if strings.Join(gotArgs, " ") != strings.Join(wantArgs, " ") {
+		t.Errorf("hermes CLI args = %v, want %v", gotArgs, wantArgs)
+	}
+}
+

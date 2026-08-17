@@ -293,7 +293,7 @@ func TestBuildChatPromptAttachmentIDsCanBeBoundToCreatedIssues(t *testing.T) {
 	for _, want := range []string{
 		"Attachments on this message:",
 		"id=019ec09d-6222-722b-bdfa-427b105d80be",
-		"multica attachment download <id>",
+		"orchestra attachment download <id>",
 		"--attachment-id <id>",
 	} {
 		if !strings.Contains(out, want) {
@@ -309,7 +309,7 @@ func TestBuildChatPromptChannelAwareness(t *testing.T) {
 			ChatChannelType: "slack",
 			ChatMessage:     "你刚刚和 xxx 聊了什么",
 		})
-		for _, want := range []string{"Slack", "NOT in Multica", "multica chat history", "multica chat thread", "Do NOT narrate"} {
+		for _, want := range []string{"Slack", "NOT in Multica", "orchestra chat history", "orchestra chat thread", "Do NOT narrate"} {
 			if !strings.Contains(out, want) {
 				t.Fatalf("slack-backed prompt missing %q\n--- output ---\n%s", want, out)
 			}
@@ -318,14 +318,14 @@ func TestBuildChatPromptChannelAwareness(t *testing.T) {
 
 	t.Run("top-level mention starts with history", func(t *testing.T) {
 		out := buildChatPrompt(Task{ChatSessionID: "s", ChatChannelType: "slack", ChatInThread: false, ChatMessage: "hi"})
-		if !strings.Contains(out, "top level: start with `multica chat history`") {
+		if !strings.Contains(out, "top level: start with `orchestra chat history`") {
 			t.Fatalf("expected top-level guidance, got:\n%s", out)
 		}
 	})
 
 	t.Run("in-thread mention starts with thread", func(t *testing.T) {
 		out := buildChatPrompt(Task{ChatSessionID: "s", ChatChannelType: "slack", ChatInThread: true, ChatMessage: "hi"})
-		if !strings.Contains(out, "inside a thread: start with `multica chat thread`") {
+		if !strings.Contains(out, "inside a thread: start with `orchestra chat thread`") {
 			t.Fatalf("expected in-thread guidance, got:\n%s", out)
 		}
 	})
@@ -335,7 +335,7 @@ func TestBuildChatPromptChannelAwareness(t *testing.T) {
 			ChatSessionID: "sess-1",
 			ChatMessage:   "hi",
 		})
-		if strings.Contains(out, "multica chat history") {
+		if strings.Contains(out, "orchestra chat history") {
 			t.Fatalf("web-only chat prompt should not mention channel history, got:\n%s", out)
 		}
 	})
@@ -413,8 +413,8 @@ func TestBuildChatPromptTwoLayerChannelPolicy(t *testing.T) {
 	// here. That negation is the useful copy (the agent knows the command exists
 	// from the brief's Available Commands; silence would leave it guessing), so
 	// asserting on the bare name would forbid the very sentence we want.
-	const uploadGuidance = "run `multica attachment upload <local-path>`"
-	const historyGuidance = "multica chat history"
+	const uploadGuidance = "run `orchestra attachment upload <local-path>`"
+	const historyGuidance = "orchestra chat history"
 
 	cases := []struct {
 		name        string
@@ -482,7 +482,7 @@ func TestBuildChatPromptFeishuIgnoresChatInThread(t *testing.T) {
 		ChatInThread:    true,
 		ChatMessage:     "hi",
 	})
-	for _, unwanted := range []string{"multica chat thread", "multica chat history"} {
+	for _, unwanted := range []string{"orchestra chat thread", "orchestra chat history"} {
 		if strings.Contains(out, unwanted) {
 			t.Errorf("feishu prompt must not teach %q (no Feishu history reader exists)\n--- output ---\n%s", unwanted, out)
 		}

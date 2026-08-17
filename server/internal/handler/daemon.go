@@ -2635,6 +2635,39 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 		)
 	}
 
+	// Fallback resolution for UserAccessToken: if not yet resolved from InitiatorUserID or comment author,
+	// look up from task originator, accountable user, issue creator, agent owner, or runtime owner.
+	if resp.UserAccessToken == "" {
+		var candidateUserIDs []pgtype.UUID
+		if task.OriginatorUserID.Valid {
+			candidateUserIDs = append(candidateUserIDs, task.OriginatorUserID)
+		}
+		if task.AccountableUserID.Valid {
+			candidateUserIDs = append(candidateUserIDs, task.AccountableUserID)
+		}
+		if task.IssueID.Valid {
+			if issue, err := h.Queries.GetIssue(r.Context(), task.IssueID); err == nil {
+				if issue.CreatorType == "member" && issue.CreatorID.Valid {
+					candidateUserIDs = append(candidateUserIDs, issue.CreatorID)
+				}
+			}
+		}
+		if agent, err := h.Queries.GetAgent(r.Context(), task.AgentID); err == nil && agent.OwnerID.Valid {
+			candidateUserIDs = append(candidateUserIDs, agent.OwnerID)
+		}
+		if runtime.OwnerID.Valid {
+			candidateUserIDs = append(candidateUserIDs, runtime.OwnerID)
+		}
+		for _, uid := range candidateUserIDs {
+			if uid.Valid {
+				if u, err := h.Queries.GetUser(r.Context(), uid); err == nil && u.AccessToken.Valid && strings.TrimSpace(u.AccessToken.String) != "" {
+					resp.UserAccessToken = u.AccessToken.String
+					break
+				}
+			}
+		}
+	}
+
 	return resp, deliveredCommentIDs, agentSkillCount, builtinSkillCount, nil
 }
 

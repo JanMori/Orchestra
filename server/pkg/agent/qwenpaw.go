@@ -71,7 +71,9 @@ func (b *qwenpawBackend) Execute(ctx context.Context, prompt string, opts ExecOp
 	// `qwenpaw acp` runs the ACP agent loop over stdio. The daemon
 	// auto-approves in hermesClient.handleAgentRequest by selecting
 	// a safe granting option for each session/request_permission request.
-	qwenpawArgs := append([]string{"acp"}, filterCustomArgs(opts.CustomArgs, qwenpawBlockedArgs, b.cfg.Logger)...)
+	qwenpawArgs := []string{"acp"}
+	qwenpawArgs = append(qwenpawArgs, filterCustomArgs(opts.ExtraArgs, qwenpawBlockedArgs, b.cfg.Logger)...)
+	qwenpawArgs = append(qwenpawArgs, filterCustomArgs(opts.CustomArgs, qwenpawBlockedArgs, b.cfg.Logger)...)
 
 	// Inject --workspace for per-task isolation. This is blocked in
 	// qwenpawBlockedArgs so user-defined custom_args cannot override it.

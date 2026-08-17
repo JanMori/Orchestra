@@ -1004,6 +1004,7 @@ func buildCursorArgs(opts ExecOptions, logger *slog.Logger) []string {
 	if opts.ResumeSessionID != "" {
 		args = append(args, "--resume", opts.ResumeSessionID)
 	}
+	args = append(args, filterCustomArgs(opts.ExtraArgs, cursorBlockedArgs, logger)...)
 	args = append(args, filterCustomArgs(opts.CustomArgs, cursorBlockedArgs, logger)...)
 	return args
 }

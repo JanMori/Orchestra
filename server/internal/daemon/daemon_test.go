@@ -780,7 +780,7 @@ func TestSessionContinuityNoticeMatchesSurface(t *testing.T) {
 			name:         "slack rebuilds from the channel",
 			task:         Task{ChatSessionID: "chat-1", ChatChannelType: execenv.ChannelTypeSlack},
 			tellUser:     false,
-			wantMentions: "multica chat history",
+			wantMentions: "orchestra chat history",
 		},
 		{
 			// Web chat history lived only in the provider session.
@@ -998,7 +998,7 @@ func TestBuildPromptAutopilotRunOnly(t *testing.T) {
 		"Autopilot run ID: run-1",
 		"Daily dependency check",
 		"Check dependencies and report outdated packages.",
-		"multica autopilot get autopilot-1 --output json",
+		"orchestra autopilot get autopilot-1 --output json",
 	} {
 		if !strings.Contains(prompt, want) {
 			t.Fatalf("autopilot prompt missing %q\n---\n%s", want, prompt)
@@ -4761,6 +4761,44 @@ func TestHermesLaunchArgsAndEnvByScenario(t *testing.T) {
 	layerCustomEnvAndHermesHome(overlayEnv, customEnv, "/task/hermes-home", nil)
 	if overlayEnv["HERMES_HOME"] != "/task/hermes-home" {
 		t.Errorf("overlay task must redirect HERMES_HOME to the overlay, got %q", overlayEnv["HERMES_HOME"])
+	}
+}
+
+// TestHermesCustomRuntimeProfileLaunchArgsAndOverlay covers the custom runtime
+// scenario: fixedArgs from custom runtime (e.g. "-p test_on_profile") resolve
+// the profile source directory and pass through / strip correctly depending on overlay.
+func TestHermesCustomRuntimeProfileLaunchArgsAndOverlay(t *testing.T) {
+	t.Parallel()
+
+	profileFixedArgs := []string{"-p", "test_on_profile"}
+	var agentCustomArgs []string
+	customEnv := map[string]string{}
+
+	// 1. Profile resolution with profileFixedArgs
+	combinedArgs := append(append([]string{}, profileFixedArgs...), agentCustomArgs...)
+	sel := agent.ParseHermesProfileArgs(combinedArgs)
+	if !sel.Found || sel.Name != "test_on_profile" {
+		t.Fatalf("ParseHermesProfileArgs should find test_on_profile, got name=%q found=%v", sel.Name, sel.Found)
+	}
+	res := execenv.ResolveHermesProfile(customEnv["HERMES_HOME"], sel.Name, sel.Found, sel.Inline)
+	if res.Err != nil {
+		t.Fatalf("ResolveHermesProfile failed: %v", res.Err)
+	}
+	if !strings.HasSuffix(res.SourceHome, filepath.Join("profiles", "test_on_profile")) {
+		t.Errorf("expected SourceHome to end in profiles/test_on_profile, got %q", res.SourceHome)
+	}
+
+	// 2. ExtraArgs containing profileFixedArgs with overlay inactive (skill-less)
+	extraArgs := append([]string{}, profileFixedArgs...)
+	noOverlayExtra := hermesLaunchArgs(extraArgs, false)
+	if len(noOverlayExtra) != 2 || noOverlayExtra[0] != "-p" || noOverlayExtra[1] != "test_on_profile" {
+		t.Errorf("skill-less task must retain -p test_on_profile in extraArgs, got %v", noOverlayExtra)
+	}
+
+	// 3. ExtraArgs with overlay active (with skills bound)
+	overlayExtra := hermesLaunchArgs(extraArgs, true)
+	if len(overlayExtra) != 0 {
+		t.Errorf("overlay task must strip -p test_on_profile from extraArgs, got %v", overlayExtra)
 	}
 }
 

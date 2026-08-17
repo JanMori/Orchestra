@@ -1058,7 +1058,7 @@ func renderAutopilotContext(ctx TaskContextForEnv) string {
 	b.WriteString("## Quick Start\n\n")
 	b.WriteString("This is a run-only autopilot task with no assigned issue. Do not run `orchestra issue get` unless the autopilot instructions explicitly ask you to create or update an issue.\n\n")
 	if ctx.AutopilotID != "" {
-		fmt.Fprintf(&b, "Run `multica autopilot get %s --output json` if you need the full autopilot configuration.\n\n", ctx.AutopilotID)
+		fmt.Fprintf(&b, "Run `orchestra autopilot get %s --output json` if you need the full autopilot configuration.\n\n", ctx.AutopilotID)
 	}
 	if strings.TrimSpace(ctx.AutopilotDescription) != "" {
 		b.WriteString("## Autopilot Instructions\n\n")

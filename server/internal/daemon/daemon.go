@@ -5759,7 +5759,8 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot i
 	var hermesSourceMustExist bool
 	var hermesEnv map[string]string
 	if provider == "hermes" {
-		sel := agent.ParseHermesProfileArgs(agentCustomArgs)
+		combinedHermesArgs := append(append([]string{}, profileFixedArgs...), agentCustomArgs...)
+		sel := agent.ParseHermesProfileArgs(combinedHermesArgs)
 		res := execenv.ResolveHermesProfile(agentEnvOverrides["HERMES_HOME"], sel.Name, sel.Found, sel.Inline)
 		if res.Err != nil {
 			return TaskResult{}, fmt.Errorf("resolve hermes profile: %w", res.Err)
@@ -5955,6 +5956,12 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot i
 	if task.UserAccessToken != "" {
 		agentEnv["DATA_QUERY_TOKEN"] = task.UserAccessToken
 		agentEnv["AUTH_TOKEN"] = task.UserAccessToken
+	} else if token := strings.TrimSpace(os.Getenv("DATA_QUERY_TOKEN")); token != "" {
+		agentEnv["DATA_QUERY_TOKEN"] = token
+		agentEnv["AUTH_TOKEN"] = token
+	}
+	if dataQueryURL := strings.TrimSpace(os.Getenv("EXTERNAL_DATA_QUERY_API_URL")); dataQueryURL != "" {
+		agentEnv["EXTERNAL_DATA_QUERY_API_URL"] = dataQueryURL
 	}
 	// Quick-create marker — when set, the orchestra CLI's `issue create`
 	// command stamps the new issue with origin_type=quick_create +
@@ -6070,7 +6077,9 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot i
 		mcpConfig = effectiveMcpConfig
 	}
 	if provider == "hermes" {
-		customArgs = hermesLaunchArgs(customArgs, env != nil && env.HermesHome != "")
+		overlayActive := env != nil && env.HermesHome != ""
+		extraArgs = hermesLaunchArgs(extraArgs, overlayActive)
+		customArgs = hermesLaunchArgs(customArgs, overlayActive)
 	}
 	// Two-tier model resolution: an explicit agent.model wins,
 	// then the daemon-wide ORCHESTRA_<PROVIDER>_MODEL env var. If
