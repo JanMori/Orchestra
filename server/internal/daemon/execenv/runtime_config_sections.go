@@ -98,7 +98,7 @@ func writeHeader(b *strings.Builder) {
 // a fresh review decision.
 func writeBackgroundTaskSafetySlim(b *strings.Builder) {
 	b.WriteString("## Background Task Safety\n\n")
-	b.WriteString("Multica marks the task terminal the moment your top-level turn exits — any run-owned work still active is orphaned, its result lost, and the final comment you meant to post never sends. There is no background-completion wakeup, whatever a tool response promises. Never background-and-yield: collect required results inside foreground tool calls that block to completion, run unobservable work synchronously, and never end a turn \"standing by\" for something to finish — that message becomes your final output.\n\n")
+	b.WriteString("Orchestra marks the task terminal the moment your top-level turn exits — any run-owned work still active is orphaned, its result lost, and the final comment you meant to post never sends. There is no background-completion wakeup, whatever a tool response promises. Never background-and-yield: collect required results inside foreground tool calls that block to completion, run unobservable work synchronously, and never end a turn \"standing by\" for something to finish — that message becomes your final output.\n\n")
 	b.WriteString("External systems triggered by your completed actions — CI, GitHub Actions after a successful push — are not run-owned: do not wait for them, and do not run `gh pr checks --watch`, `gh run watch`, or sleep/retry polls. A repo's merge gate (\"CI must be green before merge\") is NOT your delivery acceptance criteria. Deliver what you have — \"Local tests pass; CI running: <PR link>\" is a complete hand-off. The one exception: when the trigger comment or the issue's acceptance criteria explicitly ask for the CI result, collect it as ONE foreground blocking call (`gh pr checks <pr> --watch`) inside this same turn.\n\n")
 	b.WriteString("A user explicitly asking for a local service to stay available after the turn is a persistent service handoff, not background-and-yield — allowed only when the running service itself is the requested deliverable. Detach its lifecycle from this run first (durable logs, a recorded cleanup handle such as PID/profile), verify readiness, and reply with the URL, logs, and stop instructions. Without a supervisor, describe survival as best-effort, not guaranteed.\n\n")
 }
@@ -176,7 +176,7 @@ func BuildTaskInitiatorBlock(initiatorType, initiatorName, initiatorEmail string
 	} else {
 		fmt.Fprintf(&b, "This task was initiated by **%s**, a member of this workspace.\n\n", safeInitiator)
 	}
-	b.WriteString("The initiator — not the runtime owner — is who you are answering: apply any per-person privacy or access rules your instructions define. Your Multica credentials stay scoped to the runtime owner, and initiator attribution does not change what you may read or write; do not assume the initiator can see everything you can.\n\n")
+	b.WriteString("The initiator — not the runtime owner — is who you are answering: apply any per-person privacy or access rules your instructions define. Your Orchestra credentials stay scoped to the runtime owner, and initiator attribution does not change what you may read or write; do not assume the initiator can see everything you can.\n\n")
 	return b.String()
 }
 
@@ -455,7 +455,7 @@ func writeWorkflowChat(b *strings.Builder) {
 // writeWorkflowQuickCreate emits the quick-create workflow's hard
 // guardrails.
 func writeWorkflowQuickCreate(b *strings.Builder) {
-	b.WriteString("**This task was triggered by quick-create.** There is NO existing Multica issue. Follow the field and output rules in the user message you just received; ignore the default assignment-task workflow.\n\n")
+	b.WriteString("**This task was triggered by quick-create.** There is NO existing Orchestra issue. Follow the field and output rules in the user message you just received; ignore the default assignment-task workflow.\n\n")
 	b.WriteString("Hard guardrails (apply even if the user message is missing):\n")
 	b.WriteString("- Run exactly one `orchestra issue create` invocation, then exit.\n")
 	b.WriteString("- Do NOT call `orchestra issue get`, `orchestra issue status`, or `orchestra issue comment add` for this task — there is no issue to query, transition, or comment on. The platform writes the user's success/failure inbox notification automatically based on whether `orchestra issue create` succeeded.\n")
@@ -471,7 +471,7 @@ const AutopilotIssueCommandsGuard = "Do not run `orchestra issue get`, `orchestr
 
 // writeWorkflowAutopilot emits the autopilot run-only workflow.
 func writeWorkflowAutopilot(b *strings.Builder, ctx TaskContextForEnv) {
-	b.WriteString("**This task was triggered by an Autopilot in run-only mode.** There is no assigned Multica issue for this run.\n\n")
+	b.WriteString("**This task was triggered by an Autopilot in run-only mode.** There is no assigned Orchestra issue for this run.\n\n")
 	fmt.Fprintf(b, "- Autopilot run ID: `%s`\n", ctx.AutopilotRunID)
 	if ctx.AutopilotID != "" {
 		fmt.Fprintf(b, "- Autopilot ID: `%s`\n", ctx.AutopilotID)

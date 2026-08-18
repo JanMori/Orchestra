@@ -150,7 +150,7 @@ func (h *Handler) RegisterSlackBYO(w http.ResponseWriter, r *http.Request) {
 		case errors.Is(err, slack.ErrTeamOwnedByArchivedAgent):
 			writeError(w, http.StatusConflict, "this Slack app is connected to an archived agent in this workspace — restore that agent, or disconnect its bot, before connecting it here")
 		case errors.Is(err, slack.ErrTeamOwnedByAnotherWorkspace):
-			writeError(w, http.StatusConflict, "this Slack app is already connected to a different Multica workspace — disconnect it there before connecting it here")
+			writeError(w, http.StatusConflict, "this Slack app is already connected to a different Orchestra workspace — disconnect it there before connecting it here")
 		default:
 			// The dominant non-sentinel failure here is auth.test rejecting the
 			// pasted bot token (a user error), so guide the user to recheck the

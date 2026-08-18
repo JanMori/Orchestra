@@ -282,7 +282,7 @@ func TestBootstrapOnboardingRuntimeCreatesSingleGuideIssue(t *testing.T) {
 		t.Fatalf("assistant instructions were not seeded with the new identity: %q", instructions)
 	}
 	if avatarURL == nil || *avatarURL != onboardingAssistantAvatarURL {
-		t.Fatalf("agent avatar_url = %v, want seeded Multica Helper avatar", avatarURL)
+		t.Fatalf("agent avatar_url = %v, want seeded Orchestra Helper avatar", avatarURL)
 	}
 
 	var (

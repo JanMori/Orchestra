@@ -663,7 +663,7 @@ func (s *RegistrationService) liveOwnerConflictMessage(ctx context.Context, requ
 	}
 	switch {
 	case owner.WorkspaceID != requestingWorkspaceID:
-		return "This Feishu app is already connected to a different Multica workspace. Disconnect it there before connecting it here."
+		return "This Feishu app is already connected to a different Orchestra workspace. Disconnect it there before connecting it here."
 	case owner.AgentArchivedAt.Valid:
 		return "This Feishu app is connected to an archived agent in this workspace. Restore that agent, or disconnect its bot, before connecting it here."
 	default:

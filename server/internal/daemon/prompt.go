@@ -113,7 +113,7 @@ func buildPromptBody(task Task, provider string) string {
 		return buildQuickCreatePrompt(task)
 	}
 	var b strings.Builder
-	b.WriteString("You are running as a local coding agent for a Multica workspace.\n\n")
+	b.WriteString("You are running as a local coding agent for an Orchestra workspace.\n\n")
 	fmt.Fprintf(&b, "Your assigned issue ID is: %s\n\n", task.IssueID)
 	b.WriteString(turnModeOwnership)
 	// Assignment handoff (ISS-3375): a free-text instruction the person who
@@ -240,7 +240,7 @@ func buildQuickCreatePrompt(task Task) string {
 // previous turn's --parent UUID.
 func buildCommentPrompt(task Task, provider string) string {
 	var b strings.Builder
-	b.WriteString("You are running as a local coding agent for a Multica workspace.\n\n")
+	b.WriteString("You are running as a local coding agent for an Orchestra workspace.\n\n")
 	fmt.Fprintf(&b, "Your assigned issue ID is: %s\n\n", task.IssueID)
 	// Mode marker for the brief's router. Emitted unconditionally from the same
 	// branch that selects this code path, so the brief and the prompt can never
@@ -435,13 +435,13 @@ func buildChatPrompt(task Task) string {
 	// the creator prompting the agent (ISS-4230).
 	if task.ChatIntro {
 		var b strings.Builder
-		b.WriteString("You are running as a chat assistant for a Multica workspace.\n")
+		b.WriteString("You are running as a chat assistant for an Orchestra workspace.\n")
 		b.WriteString("You were just created, and this is the very first message in a direct chat with the person who created you. They have not written anything yet — you are opening the conversation. Send a short, warm, first-person introduction: who you are, what you're good at, and how they can work with you. Do NOT phrase it as an answer to a question or repeat any prompt back; just introduce yourself as if you reached out first.\n")
 		return b.String()
 	}
 
 	var b strings.Builder
-	b.WriteString("You are running as a chat assistant for a Multica workspace.\n")
+	b.WriteString("You are running as a chat assistant for an Orchestra workspace.\n")
 	// Audience is per-session context, so keep it out of the cached runtime
 	// brief. The compact anchors here preserve the non-inferable boundaries: a
 	// group reply is not private to its sender and people not otherwise present
@@ -476,7 +476,7 @@ func buildChatPrompt(task Task) string {
 	// silently dropped it for Feishu/Lark (GH #6006).
 	if task.ChatChannelType != "" {
 		platform := channelDisplayName(task.ChatChannelType)
-		fmt.Fprintf(&b, "You are operating inside a %s conversation — not the Multica web app. This conversation and its history live in %s, NOT in Multica; never look in Multica issues or comments for it.\n", platform, platform)
+		fmt.Fprintf(&b, "You are operating inside a %s conversation — not the Orchestra web app. This conversation and its history live in %s, NOT in Orchestra; never look in Orchestra issues or comments for it.\n", platform, platform)
 		if task.ChatChannelType == execenv.ChannelTypeSlack {
 			b.WriteString("The message below may be only what triggered you. Read the conversation with:\n")
 			b.WriteString("- `orchestra chat history --output json` — the channel overview: recent top-level messages, each thread tagged with a `thread_id` and `reply_count`. It does NOT expand thread contents.\n")
@@ -491,7 +491,7 @@ func buildChatPrompt(task Task) string {
 			// prefixed with "我先读取…"). Tell the agent to keep them out of its answer.
 			b.WriteString("Do these reads SILENTLY as an internal step — they are how you gather context, not part of your answer.\n")
 		} else {
-			fmt.Fprintf(&b, "Work from the context already provided to you below — Multica has no history reader for %s, so there is no command that can fetch more of this conversation. If you genuinely need earlier context that is not here, ask the user for it rather than guessing.\n", platform)
+			fmt.Fprintf(&b, "Work from the context already provided to you below — Orchestra has no history reader for %s, so there is no command that can fetch more of this conversation. If you genuinely need earlier context that is not here, ask the user for it rather than guessing.\n", platform)
 		}
 		// Scoped to process, not results — a completion confirmation IS the deliverable.
 		fmt.Fprintf(&b, "Reply to %s with the final outcome only. Do NOT narrate planned or in-progress steps (\"我先读取…\"); completed actions are part of the outcome.\n", platform)

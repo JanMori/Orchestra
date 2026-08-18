@@ -45,11 +45,11 @@ const issueSlashCommand = "/issue"
 // User-facing ephemeral replies. Kept terse; only the invoker sees them.
 const (
 	slashUsageText           = "Tell me what to file, e.g. `/issue the login button does nothing on Safari`."
-	slashQueuedText          = "✅ On it — I'm turning that into an issue. You'll get a Multica notification when it's ready."
-	slashNotMemberText       = "You're not a member of this Multica workspace, so I can't file an issue for you."
-	slashLinkAccountFallback = "Link your Slack account to Multica first, then try `/issue` again."
+	slashQueuedText          = "✅ On it — I'm turning that into an issue. You'll get an Orchestra notification when it's ready."
+	slashNotMemberText       = "You're not a member of this Orchestra workspace, so I can't file an issue for you."
+	slashLinkAccountFallback = "Link your Slack account to Orchestra first, then try `/issue` again."
 	slashInternalErrorText   = "⚠️ Something went wrong creating the issue. Please try again."
-	slashDisabledText        = "This Slack app isn't connected to Multica (or was disconnected). Ask a workspace admin to reconnect it."
+	slashDisabledText        = "This Slack app isn't connected to Orchestra (or was disconnected). Ask a workspace admin to reconnect it."
 )
 
 // slashQueries is the narrow slice of generated queries the slash-command
