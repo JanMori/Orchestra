@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"sort"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -401,7 +402,7 @@ func prepareHermesHome(hermesHome, sourceHome string, sourceMustExist bool, work
 	if err := writeDerivedHermesConfig(sharedHome, hermesHome, env, logger); err != nil {
 		return fmt.Errorf("derive hermes config: %w", err)
 	}
-	if err := writeDerivedHermesEnv(sharedHome, hermesHome); err != nil {
+	if err := writeDerivedHermesEnv(sharedHome, hermesHome, env); err != nil {
 		return fmt.Errorf("derive hermes .env: %w", err)
 	}
 	return writeHermesBoundSkills(hermesHome, workspaceSkills, logger)
@@ -409,15 +410,9 @@ func prepareHermesHome(hermesHome, sourceHome string, sourceMustExist bool, work
 
 // writeDerivedHermesEnv writes the task-local .env: the source home's .env
 // contents (credentials/settings preserved) with any HERMES_HOME assignment
-// removed, then a pinned HERMES_HOME pointing at the overlay appended last so it
-// wins. Hermes loads <HERMES_HOME>/.env with override=True right after profile
-// resolution, so without this an out-of-band HERMES_HOME= in the source .env
-// would relocate the home past the overlay (dropping bound skills and memory
-// isolation). We always write the file — even when the source has none — so the
-// overlay .env "loads" and Hermes' project-.env fallback (override=True only when
-// no user .env loaded) can't relocate the home either. Written 0600 via atomic
-// replace since it can hold API-key secrets; reuse also repairs prior perms.
-func writeDerivedHermesEnv(sharedHome, hermesHome string) error {
+// removed, custom/injected environment variables appended, and then a pinned
+// HERMES_HOME pointing at the overlay appended last so it wins.
+func writeDerivedHermesEnv(sharedHome, hermesHome string, env map[string]string) error {
 	dst := filepath.Join(hermesHome, ".env")
 
 	var body []byte
@@ -435,6 +430,20 @@ func writeDerivedHermesEnv(sharedHome, hermesHome string) error {
 		buf.Write(body)
 		if body[len(body)-1] != '\n' {
 			buf.WriteByte('\n')
+		}
+	}
+	if len(env) > 0 {
+		keys := make([]string, 0, len(env))
+		for k := range env {
+			if k != "HERMES_HOME" && k != "" {
+				keys = append(keys, k)
+			}
+		}
+		sort.Strings(keys)
+		for _, k := range keys {
+			val := env[k]
+			escaped := strings.ReplaceAll(val, "'", "'\"'\"'")
+			fmt.Fprintf(&buf, "%s='%s'\n", k, escaped)
 		}
 	}
 	// Pin HERMES_HOME to the overlay. Single-quote the value so python-dotenv

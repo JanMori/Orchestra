@@ -156,10 +156,8 @@ export function createAuthStore(options: AuthStoreOptions) {
     },
 
     logout: () => {
-      if (cookieAuth) {
-        // Clear server-side HttpOnly cookie.
-        api.logout().catch(() => {});
-      }
+      // Clear server-side session and database access_token
+      api.logout().catch(() => {});
       storage.removeItem("multica_token");
       storage.removeItem("data_query_token");
       api.setToken(null);

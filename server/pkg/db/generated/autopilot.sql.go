@@ -221,7 +221,7 @@ type CreateAutopilotRunParams struct {
 	Status            string             `json:"status"`
 	TriggerID         pgtype.UUID        `json:"trigger_id"`
 	TriggerPayload    []byte             `json:"trigger_payload"`
-	CrewID           pgtype.UUID        `json:"crew_id"`
+	CrewID            pgtype.UUID        `json:"crew_id"`
 	PlannedAt         pgtype.Timestamptz `json:"planned_at"`
 	WebhookDeliveryID pgtype.UUID        `json:"webhook_delivery_id"`
 }

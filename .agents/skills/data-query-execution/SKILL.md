@@ -32,6 +32,16 @@ description: Guide and enforce database data query execution via Data Query API 
 - 数据查询接口仅支持单条 `SELECT` 查询。
 - 若需进行 DDL（如建表、删表）或查看数据库结构/元数据等非数据值的操作，可使用其他标准管理工具或接口进行，但**只要涉及到具体数据内容**，必须调用上述数据查询接口。
 
+### 4. 异常与鉴权失败处理规范 (Error Handling & Auth Recovery)
+- **实时执行原则 (Live Execution First)**：
+  - 智能体收到数据查询请求时，**必须直接在当前运行时通过 curl / Python 实际调用一次数据查询接口**检验结果，**严禁**未经尝试就直接引用历史 Issue、评论或对话中的错误记录断言没有 Token。
+- **Token 缺失规则**：
+  - 若在当前运行时环境变量 `$DATA_QUERY_TOKEN` 和 `$AUTH_TOKEN` 均为空或未设置，智能体**严禁**自行猜测或发起空 Authorization 请求。
+  - 智能体应直接向用户明确反馈：“⚠️ 未检测到有效的数据查询权限凭据（DATA_QUERY_TOKEN），请确认您已通过系统账号密码登录。”
+- **Token 过期或鉴权失败（HTTP 401 / 403 或鉴权错误）**：
+  - 若数据查询接口实际返回 HTTP `401 Unauthorized`、`403 Forbidden` 或响应体中提示鉴权失败/Token 无效，智能体**严禁**反复盲目重试。
+  - 智能体应直接向用户明确反馈：“⚠️ 数据查询权限凭据已过期或失效，请在平台退出并重新登录以刷新数据权限。”
+
 ---
 
 ## 调用示例 (Usage Examples)

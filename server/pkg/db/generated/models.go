@@ -128,7 +128,7 @@ type AgentTaskQueue struct {
 	InitiatorUserID       pgtype.UUID        `json:"initiator_user_id"`
 	HandoffNote           pgtype.Text        `json:"handoff_note"`
 	PrepareLeaseExpiresAt pgtype.Timestamptz `json:"prepare_lease_expires_at"`
-	CrewID               pgtype.UUID        `json:"crew_id"`
+	CrewID                pgtype.UUID        `json:"crew_id"`
 	// Per-task MCP servers computed at dispatch time, merged on top of agent.mcp_config. Currently used by Composio integration to inject the initiator user's session URL. Cleared after task completes via trg_clear_runtime_mcp_overlay.
 	RuntimeMcpOverlay   []byte             `json:"runtime_mcp_overlay"`
 	EscalationForTaskID pgtype.UUID        `json:"escalation_for_task_id"`
@@ -238,7 +238,7 @@ type AutopilotRun struct {
 	TriggerPayload    []byte             `json:"trigger_payload"`
 	Result            []byte             `json:"result"`
 	CreatedAt         pgtype.Timestamptz `json:"created_at"`
-	CrewID           pgtype.UUID        `json:"crew_id"`
+	CrewID            pgtype.UUID        `json:"crew_id"`
 	PlannedAt         pgtype.Timestamptz `json:"planned_at"`
 	WebhookDeliveryID pgtype.UUID        `json:"webhook_delivery_id"`
 }
@@ -485,6 +485,30 @@ type ContactSalesInquiry struct {
 	SubmitterIp     *netip.Addr        `json:"submitter_ip"`
 	UserAgent       string             `json:"user_agent"`
 	CreatedAt       pgtype.Timestamptz `json:"created_at"`
+}
+
+type Crew struct {
+	ID           pgtype.UUID        `json:"id"`
+	WorkspaceID  pgtype.UUID        `json:"workspace_id"`
+	Name         string             `json:"name"`
+	Description  string             `json:"description"`
+	LeaderID     pgtype.UUID        `json:"leader_id"`
+	CreatorID    pgtype.UUID        `json:"creator_id"`
+	CreatedAt    pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt    pgtype.Timestamptz `json:"updated_at"`
+	ArchivedAt   pgtype.Timestamptz `json:"archived_at"`
+	ArchivedBy   pgtype.UUID        `json:"archived_by"`
+	AvatarUrl    pgtype.Text        `json:"avatar_url"`
+	Instructions string             `json:"instructions"`
+}
+
+type CrewMember struct {
+	ID         pgtype.UUID        `json:"id"`
+	CrewID     pgtype.UUID        `json:"crew_id"`
+	MemberType string             `json:"member_type"`
+	MemberID   pgtype.UUID        `json:"member_id"`
+	Role       string             `json:"role"`
+	CreatedAt  pgtype.Timestamptz `json:"created_at"`
 }
 
 type DaemonConnection struct {
@@ -932,30 +956,6 @@ type SkillToLabel struct {
 	SkillID   pgtype.UUID        `json:"skill_id"`
 	LabelID   pgtype.UUID        `json:"label_id"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
-}
-
-type Crew struct {
-	ID           pgtype.UUID        `json:"id"`
-	WorkspaceID  pgtype.UUID        `json:"workspace_id"`
-	Name         string             `json:"name"`
-	Description  string             `json:"description"`
-	LeaderID     pgtype.UUID        `json:"leader_id"`
-	CreatorID    pgtype.UUID        `json:"creator_id"`
-	CreatedAt    pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt    pgtype.Timestamptz `json:"updated_at"`
-	ArchivedAt   pgtype.Timestamptz `json:"archived_at"`
-	ArchivedBy   pgtype.UUID        `json:"archived_by"`
-	AvatarUrl    pgtype.Text        `json:"avatar_url"`
-	Instructions string             `json:"instructions"`
-}
-
-type CrewMember struct {
-	ID         pgtype.UUID        `json:"id"`
-	CrewID    pgtype.UUID        `json:"crew_id"`
-	MemberType string             `json:"member_type"`
-	MemberID   pgtype.UUID        `json:"member_id"`
-	Role       string             `json:"role"`
-	CreatedAt  pgtype.Timestamptz `json:"created_at"`
 }
 
 type SysCronExecution struct {

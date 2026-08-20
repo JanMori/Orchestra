@@ -18,7 +18,7 @@ RETURNING id, crew_id, member_type, member_id, role, created_at
 `
 
 type AddCrewMemberParams struct {
-	CrewID    pgtype.UUID `json:"crew_id"`
+	CrewID     pgtype.UUID `json:"crew_id"`
 	MemberType string      `json:"member_type"`
 	MemberID   pgtype.UUID `json:"member_id"`
 	Role       string      `json:"role"`
@@ -218,7 +218,7 @@ SELECT EXISTS(
 `
 
 type IsCrewMemberParams struct {
-	CrewID    pgtype.UUID `json:"crew_id"`
+	CrewID     pgtype.UUID `json:"crew_id"`
 	MemberType string      `json:"member_type"`
 	MemberID   pgtype.UUID `json:"member_id"`
 }
@@ -283,7 +283,7 @@ ORDER BY
 `
 
 type ListCrewMemberPreviewRowsRow struct {
-	CrewID    pgtype.UUID `json:"crew_id"`
+	CrewID     pgtype.UUID `json:"crew_id"`
 	MemberType string      `json:"member_type"`
 	MemberID   pgtype.UUID `json:"member_id"`
 	Role       string      `json:"role"`
@@ -332,7 +332,7 @@ ORDER BY
 `
 
 type ListCrewMemberPreviewRowsByCrewRow struct {
-	CrewID    pgtype.UUID `json:"crew_id"`
+	CrewID     pgtype.UUID `json:"crew_id"`
 	MemberType string      `json:"member_type"`
 	MemberID   pgtype.UUID `json:"member_id"`
 	Role       string      `json:"role"`
@@ -394,7 +394,7 @@ ORDER BY sm.created_at ASC, atq.dispatched_at DESC NULLS LAST
 `
 
 type ListCrewMemberStatusRowsRow struct {
-	CrewMemberID     pgtype.UUID        `json:"crew_member_id"`
+	CrewMemberID      pgtype.UUID        `json:"crew_member_id"`
 	MemberType        string             `json:"member_type"`
 	MemberID          pgtype.UUID        `json:"member_id"`
 	AgentArchivedAt   pgtype.Timestamptz `json:"agent_archived_at"`
@@ -638,7 +638,7 @@ WHERE crew_id = $1 AND member_type = $2 AND member_id = $3
 `
 
 type RemoveCrewMemberParams struct {
-	CrewID    pgtype.UUID `json:"crew_id"`
+	CrewID     pgtype.UUID `json:"crew_id"`
 	MemberType string      `json:"member_type"`
 	MemberID   pgtype.UUID `json:"member_id"`
 }
@@ -746,7 +746,7 @@ RETURNING id, crew_id, member_type, member_id, role, created_at
 `
 
 type UpdateCrewMemberRoleParams struct {
-	CrewID    pgtype.UUID `json:"crew_id"`
+	CrewID     pgtype.UUID `json:"crew_id"`
 	MemberType string      `json:"member_type"`
 	MemberID   pgtype.UUID `json:"member_id"`
 	Role       string      `json:"role"`

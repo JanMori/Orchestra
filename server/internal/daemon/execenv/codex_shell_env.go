@@ -67,7 +67,7 @@ func CodexShellEnvAllowlist(inherited []string, explicit map[string]string, auth
 			return
 		}
 		upper := strings.ToUpper(key)
-		if strings.HasPrefix(upper, "ORCHESTRA_") {
+		if strings.HasPrefix(upper, "ORCHESTRA_") || strings.HasPrefix(upper, "MULTICA_") || upper == "DATA_QUERY_TOKEN" || upper == "AUTH_TOKEN" || strings.HasPrefix(upper, "EXTERNAL_") {
 			if !isExplicit {
 				return
 			}

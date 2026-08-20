@@ -2636,7 +2636,9 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 	}
 
 	// Fallback resolution for UserAccessToken: if not yet resolved from InitiatorUserID or comment author,
-	// look up from task originator, accountable user, issue creator, agent owner, or runtime owner.
+	// look up from task originator, accountable user, issue creator, or agent owner.
+	// Note: We intentionally do NOT fall back to runtime.OwnerID to prevent non-initiator tasks
+	// from inheriting runtime administrator credentials.
 	if resp.UserAccessToken == "" {
 		var candidateUserIDs []pgtype.UUID
 		if task.OriginatorUserID.Valid {
@@ -2644,6 +2646,13 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 		}
 		if task.AccountableUserID.Valid {
 			candidateUserIDs = append(candidateUserIDs, task.AccountableUserID)
+		}
+		if task.ChatSessionID.Valid {
+			if session, err := h.Queries.GetChatSession(r.Context(), task.ChatSessionID); err == nil {
+				if session.CreatorID.Valid {
+					candidateUserIDs = append(candidateUserIDs, session.CreatorID)
+				}
+			}
 		}
 		if task.IssueID.Valid {
 			if issue, err := h.Queries.GetIssue(r.Context(), task.IssueID); err == nil {
@@ -2654,9 +2663,6 @@ func (h *Handler) buildClaimedTaskResponse(r *http.Request, task *db.AgentTaskQu
 		}
 		if agent, err := h.Queries.GetAgent(r.Context(), task.AgentID); err == nil && agent.OwnerID.Valid {
 			candidateUserIDs = append(candidateUserIDs, agent.OwnerID)
-		}
-		if runtime.OwnerID.Valid {
-			candidateUserIDs = append(candidateUserIDs, runtime.OwnerID)
 		}
 		for _, uid := range candidateUserIDs {
 			if uid.Valid {

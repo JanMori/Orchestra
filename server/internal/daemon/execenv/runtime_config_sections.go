@@ -369,7 +369,7 @@ func writeIssueMetadata(b *strings.Builder) {
 	b.WriteString("## Issue Metadata\n\n")
 	b.WriteString("`metadata` is a small per-issue KV bag — custom key-value state your workflow wants future runs on this issue to re-read. Most runs write nothing.\n\n")
 	b.WriteString("- **Read on entry.** Hints, not truth: latest comment / code wins on conflict. Empty `{}` is normal.\n")
-	b.WriteString("- **Write on exit.** Only what a future run will actually re-read — short values, never secrets or long content. Overwrite or `orchestra issue metadata delete` stale keys. Full write discipline: the `multica-working-on-issues` skill.\n\n")
+	b.WriteString("- **Write on exit.** Only what a future run will actually re-read — short values, never secrets or long content. Overwrite or `orchestra issue metadata delete` stale keys. Full write discipline: the `orchestra-working-on-issues` skill.\n\n")
 }
 
 // writeInstructionPrecedence emits the "Agent Identity wins over the issue
@@ -594,13 +594,13 @@ func writeWorkflowIssue(b *strings.Builder, ctx TaskContextForEnv) {
 // writeSubIssueCreation emits the Sub-issue Creation section.
 //
 // ISS-5442 demotes the full todo/backlog/stage playbook to the
-// multica-working-on-issues built-in skill: the semantics are only needed at
+// orchestra-working-on-issues built-in skill: the semantics are only needed at
 // the moment an agent is about to create sub-issues, and that moment is
 // exactly what triggers the skill. The brief keeps the one-line map so the
 // flags remain discoverable without the skill.
 func writeSubIssueCreation(b *strings.Builder) {
 	b.WriteString("## Sub-issue Creation\n\n")
-	b.WriteString("`--status todo` starts an agent-assigned child immediately; `--status backlog` parks it for later promotion; `--stage <N>` groups children into ordered stages. Before creating sub-issues, read the `multica-working-on-issues` skill — it covers serial chains, promotion, and stage wake semantics.\n\n")
+	b.WriteString("`--status todo` starts an agent-assigned child immediately; `--status backlog` parks it for later promotion; `--stage <N>` groups children into ordered stages. Before creating sub-issues, read the `orchestra-working-on-issues` skill — it covers serial chains, promotion, and stage wake semantics.\n\n")
 }
 
 // writeSkills emits the Skills section: an index of invocable skill names.

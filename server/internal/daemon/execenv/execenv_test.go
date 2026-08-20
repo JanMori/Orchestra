@@ -5645,7 +5645,7 @@ func TestInjectRuntimeConfigIssueMetadataSectionScope(t *testing.T) {
 			// express — the read stance, the re-read bar, and the two
 			// write-time boundaries (secrets, length). The full ban list
 			// and the key-naming conventions live in the
-			// multica-working-on-issues skill, pinned by
+			// orchestra-working-on-issues skill, pinned by
 			// TestWorkingOnIssuesSkillCoversIssueLoopContracts so this
 			// pointer cannot dangle. The recommended-keys block was
 			// removed outright: metadata is deliberately free-form custom
@@ -5653,7 +5653,7 @@ func TestInjectRuntimeConfigIssueMetadataSectionScope(t *testing.T) {
 			// platform curates in every brief.
 			"never secrets or long content",
 			"orchestra issue metadata delete",
-			"the `multica-working-on-issues` skill",
+			"the `orchestra-working-on-issues` skill",
 		},
 	}
 	withoutSection := wantSection{

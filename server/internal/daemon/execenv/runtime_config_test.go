@@ -48,7 +48,7 @@ func TestSubIssueCreationSectionPresentForIssueRuns(t *testing.T) {
 			}
 			for _, want := range []string{
 				// ISS-5442 demotes the full todo/backlog/stage playbook to the
-				// multica-working-on-issues skill. The brief keeps a one-line
+				// orchestra-working-on-issues skill. The brief keeps a one-line
 				// map (all three flags stay discoverable, ISS-3508 follow-up)
 				// plus the skill pointer; the skill side of the contract is
 				// asserted in internal/service
@@ -56,7 +56,7 @@ func TestSubIssueCreationSectionPresentForIssueRuns(t *testing.T) {
 				"`--status todo` starts an agent-assigned child immediately",
 				"`--status backlog` parks it",
 				"`--stage <N>` groups children into ordered stages",
-				"read the `multica-working-on-issues` skill",
+				"read the `orchestra-working-on-issues` skill",
 			} {
 				if !strings.Contains(out, want) {
 					t.Errorf("[%s] section missing %q", tc.name, want)

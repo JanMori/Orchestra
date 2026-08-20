@@ -45,10 +45,10 @@ func TestBuiltinSkillsConformToTemplate(t *testing.T) {
 
 	for _, skill := range skills {
 		t.Run(skill.Name, func(t *testing.T) {
-			// The multica- prefix keeps the on-disk slug from colliding with a
+			// The orchestra- prefix keeps the on-disk slug from colliding with a
 			// user-authored workspace skill.
-			if !strings.HasPrefix(skill.Name, "multica-") {
-				t.Errorf("skill name %q must carry the multica- prefix", skill.Name)
+			if !strings.HasPrefix(skill.Name, "orchestra-") {
+				t.Errorf("skill name %q must carry the orchestra- prefix", skill.Name)
 			}
 
 			fm, body, ok := splitFrontmatter(skill.Content)
@@ -130,7 +130,7 @@ func TestBuiltinSkillsFrontmatterIsStrictYAML(t *testing.T) {
 // must declare user-invocable:false and fence itself to the orchestra CLI. New
 // contract skills should copy this shape.
 func TestMentioningSkillFollowsContractFrontmatter(t *testing.T) {
-	skill, ok := findSkill(t, "multica-mentioning")
+	skill, ok := findSkill(t, "orchestra-mentioning")
 	if !ok {
 		return
 	}
@@ -209,7 +209,7 @@ func TestMentioningSkillTeachesTheParserContract(t *testing.T) {
 }
 
 func TestWorkingOnIssuesSkillCoversIssueLoopContracts(t *testing.T) {
-	skill, ok := findSkill(t, "multica-working-on-issues")
+	skill, ok := findSkill(t, "orchestra-working-on-issues")
 	if !ok {
 		return
 	}
@@ -294,7 +294,7 @@ func TestWorkingOnIssuesSkillCoversIssueLoopContracts(t *testing.T) {
 }
 
 func TestSkillImportingSkillCoversWorkspaceImportContracts(t *testing.T) {
-	skill, ok := findSkill(t, "multica-skill-importing")
+	skill, ok := findSkill(t, "orchestra-skill-importing")
 	if !ok {
 		return
 	}
@@ -356,7 +356,7 @@ func TestSkillImportingSkillCoversWorkspaceImportContracts(t *testing.T) {
 }
 
 func TestCreatingAgentsSkillCoversAgentCreationContracts(t *testing.T) {
-	skill, ok := findSkill(t, "multica-creating-agents")
+	skill, ok := findSkill(t, "orchestra-creating-agents")
 	if !ok {
 		return
 	}
@@ -415,7 +415,7 @@ func TestCreatingAgentsSkillCoversAgentCreationContracts(t *testing.T) {
 }
 
 func TestCrewsSkillCoversLeaderRoutingContract(t *testing.T) {
-	skill, ok := findSkill(t, "multica-crews")
+	skill, ok := findSkill(t, "orchestra-crews")
 	if !ok {
 		return
 	}
@@ -469,7 +469,7 @@ func TestCrewsSkillCoversLeaderRoutingContract(t *testing.T) {
 }
 
 func TestAutopilotsSkillCoversDispatchAndSideEffects(t *testing.T) {
-	skill, ok := findSkill(t, "multica-autopilots")
+	skill, ok := findSkill(t, "orchestra-autopilots")
 	if !ok {
 		return
 	}
@@ -505,7 +505,7 @@ func TestAutopilotsSkillCoversDispatchAndSideEffects(t *testing.T) {
 }
 
 func TestRuntimesAndReposSkillCoversClaimAndCheckoutChain(t *testing.T) {
-	skill, ok := findSkill(t, "multica-runtimes-and-repos")
+	skill, ok := findSkill(t, "orchestra-runtimes-and-repos")
 	if !ok {
 		return
 	}
@@ -541,7 +541,7 @@ func TestRuntimesAndReposSkillCoversClaimAndCheckoutChain(t *testing.T) {
 }
 
 func TestProjectsAndResourcesSkillCoversDurableContext(t *testing.T) {
-	skill, ok := findSkill(t, "multica-projects-and-resources")
+	skill, ok := findSkill(t, "orchestra-projects-and-resources")
 	if !ok {
 		return
 	}

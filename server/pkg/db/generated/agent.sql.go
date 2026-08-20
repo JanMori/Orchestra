@@ -731,7 +731,7 @@ type CancelDeferredEscalationsForIssueAgentRow struct {
 	InitiatorUserID           pgtype.UUID        `json:"initiator_user_id"`
 	HandoffNote               pgtype.Text        `json:"handoff_note"`
 	PrepareLeaseExpiresAt     pgtype.Timestamptz `json:"prepare_lease_expires_at"`
-	CrewID                   pgtype.UUID        `json:"crew_id"`
+	CrewID                    pgtype.UUID        `json:"crew_id"`
 	RuntimeMcpOverlay         []byte             `json:"runtime_mcp_overlay"`
 	EscalationForTaskID       pgtype.UUID        `json:"escalation_for_task_id"`
 	FireAt                    pgtype.Timestamptz `json:"fire_at"`
@@ -1760,7 +1760,7 @@ type CreateAgentTaskParams struct {
 	ForceFreshSession    pgtype.Bool   `json:"force_fresh_session"`
 	IsLeaderTask         pgtype.Bool   `json:"is_leader_task"`
 	HandoffNote          pgtype.Text   `json:"handoff_note"`
-	CrewID              pgtype.UUID   `json:"crew_id"`
+	CrewID               pgtype.UUID   `json:"crew_id"`
 	HeadSha              pgtype.Text   `json:"head_sha"`
 	OriginatorUserID     pgtype.UUID   `json:"originator_user_id"`
 	AccountableUserID    pgtype.UUID   `json:"accountable_user_id"`
@@ -1896,7 +1896,7 @@ type CreateDeferredAgentTaskParams struct {
 	TriggerCommentID     pgtype.UUID        `json:"trigger_comment_id"`
 	TriggerSummary       pgtype.Text        `json:"trigger_summary"`
 	IsLeaderTask         pgtype.Bool        `json:"is_leader_task"`
-	CrewID              pgtype.UUID        `json:"crew_id"`
+	CrewID               pgtype.UUID        `json:"crew_id"`
 	EscalationForTaskID  pgtype.UUID        `json:"escalation_for_task_id"`
 	FireAt               pgtype.Timestamptz `json:"fire_at"`
 	OriginatorUserID     pgtype.UUID        `json:"originator_user_id"`
@@ -2036,7 +2036,7 @@ type CreateDeferredChannelIssueTaskParams struct {
 	ForceFreshSession    pgtype.Bool        `json:"force_fresh_session"`
 	IsLeaderTask         pgtype.Bool        `json:"is_leader_task"`
 	HandoffNote          pgtype.Text        `json:"handoff_note"`
-	CrewID              pgtype.UUID        `json:"crew_id"`
+	CrewID               pgtype.UUID        `json:"crew_id"`
 	HeadSha              pgtype.Text        `json:"head_sha"`
 	OriginatorUserID     pgtype.UUID        `json:"originator_user_id"`
 	AccountableUserID    pgtype.UUID        `json:"accountable_user_id"`
@@ -3410,7 +3410,7 @@ type GetLatestTaskRoleForIssueAndAgentParams struct {
 
 type GetLatestTaskRoleForIssueAndAgentRow struct {
 	IsLeaderTask bool        `json:"is_leader_task"`
-	CrewID      pgtype.UUID `json:"crew_id"`
+	CrewID       pgtype.UUID `json:"crew_id"`
 }
 
 // Returns the role markers from the agent's most recent task on this issue.

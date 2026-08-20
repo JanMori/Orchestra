@@ -5644,7 +5644,7 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot i
 		AutopilotTriggerPayload:          strings.TrimSpace(string(task.AutopilotTriggerPayload)),
 		QuickCreatePrompt:                task.QuickCreatePrompt,
 		HandoffNote:                      task.HandoffNote,
-		IsCrewLeader:                    strings.Contains(instructions, "## Crew Operating Protocol"),
+		IsCrewLeader:                     strings.Contains(instructions, "## Crew Operating Protocol"),
 		RequestingUserName:               task.RequestingUserName,
 		RequestingUserProfileDescription: task.RequestingUserProfileDescription,
 		InitiatorType:                    task.InitiatorType,
@@ -5770,6 +5770,16 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot i
 		hermesEnv = sanitizeAgentEnv(agentEnvOverrides)
 		if hermesEnv == nil {
 			hermesEnv = map[string]string{}
+		}
+		if task.UserAccessToken != "" {
+			hermesEnv["DATA_QUERY_TOKEN"] = task.UserAccessToken
+			hermesEnv["AUTH_TOKEN"] = task.UserAccessToken
+		} else if token := strings.TrimSpace(os.Getenv("DATA_QUERY_TOKEN")); token != "" {
+			hermesEnv["DATA_QUERY_TOKEN"] = token
+			hermesEnv["AUTH_TOKEN"] = token
+		}
+		if dataQueryURL := strings.TrimSpace(os.Getenv("EXTERNAL_DATA_QUERY_API_URL")); dataQueryURL != "" {
+			hermesEnv["EXTERNAL_DATA_QUERY_API_URL"] = dataQueryURL
 		}
 		hermesEnv["HERMES_HOME"] = res.SourceHome
 	}
@@ -5940,9 +5950,9 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot i
 		"ORCHESTRA_AGENT_ID":     task.AgentID,
 		"ORCHESTRA_TASK_ID":      task.ID,
 		"ORCHESTRA_TASK_SLOT":    strconv.Itoa(slot),
-		"TMPDIR":               taskTempDir,
-		"TMP":                  taskTempDir,
-		"TEMP":                 taskTempDir,
+		"TMPDIR":                 taskTempDir,
+		"TMP":                    taskTempDir,
+		"TEMP":                   taskTempDir,
 	}
 	if checkoutMode := repoCheckoutModeFor(provider, runtime.GOOS); checkoutMode != "" {
 		agentEnv[repoCheckoutModeEnv] = checkoutMode

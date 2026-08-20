@@ -22,9 +22,9 @@ type CountAgentsByProfileParams struct {
 	WorkspaceID pgtype.UUID `json:"workspace_id"`
 }
 
-// Counts active (non-archived) agents bound to any runtime instance of this
+// Counts active (non-archived) user agents bound to any runtime instance of this
 // profile. The profile-delete path uses this to refuse deletion (409) while
-// agents still depend on it, mirroring the runtime-delete guard.
+// user agents still depend on it, mirroring the runtime-delete guard.
 func (q *Queries) CountAgentsByProfile(ctx context.Context, arg CountAgentsByProfileParams) (int64, error) {
 	row := q.db.QueryRow(ctx, countAgentsByProfile, arg.ProfileID, arg.WorkspaceID)
 	var count int64

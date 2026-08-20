@@ -143,6 +143,18 @@ func (q *Queries) DeleteWorkspaceConnections(ctx context.Context, workspaceID pg
 	return err
 }
 
+const deleteWorkspaceCrewsAndSkills = `-- name: DeleteWorkspaceCrewsAndSkills :exec
+WITH deleted_crews AS (
+    DELETE FROM crew WHERE crew.workspace_id = $1
+)
+DELETE FROM skill WHERE skill.workspace_id = $1
+`
+
+func (q *Queries) DeleteWorkspaceCrewsAndSkills(ctx context.Context, workspaceID pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteWorkspaceCrewsAndSkills, workspaceID)
+	return err
+}
+
 const deleteWorkspaceIssueRoots = `-- name: DeleteWorkspaceIssueRoots :exec
 WITH
 deleted_issues AS (
@@ -435,18 +447,6 @@ DELETE FROM project WHERE project.workspace_id = $1
 
 func (q *Queries) DeleteWorkspaceRuntimesAndProjects(ctx context.Context, workspaceID pgtype.UUID) error {
 	_, err := q.db.Exec(ctx, deleteWorkspaceRuntimesAndProjects, workspaceID)
-	return err
-}
-
-const deleteWorkspaceCrewsAndSkills = `-- name: DeleteWorkspaceCrewsAndSkills :exec
-WITH deleted_crews AS (
-    DELETE FROM crew WHERE crew.workspace_id = $1
-)
-DELETE FROM skill WHERE skill.workspace_id = $1
-`
-
-func (q *Queries) DeleteWorkspaceCrewsAndSkills(ctx context.Context, workspaceID pgtype.UUID) error {
-	_, err := q.db.Exec(ctx, deleteWorkspaceCrewsAndSkills, workspaceID)
 	return err
 }
 

@@ -43,14 +43,14 @@ func TestWriteMeasuredJSONByteIdenticalToWriteJSON(t *testing.T) {
 		{"numbers", map[string]any{"i": 42, "f": 3.5, "neg": -17, "big": 1234567890123}},
 		{"html_escapable", map[string]any{"s": `a<b> & "c" 'd' <script>`}},
 		{"ampersand_lt_gt", map[string]any{"raw": "1 < 2 && 3 > 2"}},
-		{"unicode_and_separators", map[string]any{"s": "héllo 世界 🚀   "}},
+		{"unicode_and_separators", map[string]any{"s": "héllo 世界 🚀 "}},
 		{"nested", map[string]any{"a": []any{1, "two", true, nil}, "b": map[string]any{"c": []int{1, 2, 3}}}},
 		{"large_claim_with_skills", map[string]any{"task": claimResp{
 			ID:   "11111111-2222-3333-4444-555555555555",
 			Name: "agent <CC> & friends",
 			Skills: []skill{
-				{Name: "multica-working-on-issues", Description: "do work <safely> & well", Files: map[string]string{"SKILL.md": "# Title\n<b>x</b> & y"}},
-				{Name: "multica-mentioning", Description: "ping people", Files: map[string]string{"SKILL.md": "line1\nline2"}},
+				{Name: "orchestra-working-on-issues", Description: "do work <safely> & well", Files: map[string]string{"SKILL.md": "# Title\n<b>x</b> & y"}},
+				{Name: "orchestra-mentioning", Description: "ping people", Files: map[string]string{"SKILL.md": "line1\nline2"}},
 			},
 			Args: []string{"--flag", "a<b", "c&d"},
 		}}},

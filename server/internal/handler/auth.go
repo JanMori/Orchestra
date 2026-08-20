@@ -24,6 +24,7 @@ import (
 	"github.com/JanMori/Orchestra/server/internal/auth"
 	"github.com/JanMori/Orchestra/server/internal/logger"
 	obsmetrics "github.com/JanMori/Orchestra/server/internal/metrics"
+	"github.com/JanMori/Orchestra/server/internal/util"
 	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
 )
 
@@ -793,6 +794,49 @@ func (h *Handler) IssueCliToken(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
+	userID := requestUserID(r)
+	if userID == "" {
+		var tokenString string
+		if authHeader := r.Header.Get("Authorization"); authHeader != "" {
+			trimmed := strings.TrimPrefix(authHeader, "Bearer ")
+			if trimmed != authHeader {
+				tokenString = trimmed
+			}
+		} else if cookie, err := r.Cookie(auth.AuthCookieName); err == nil && cookie.Value != "" {
+			tokenString = cookie.Value
+		}
+
+		if tokenString != "" {
+			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
+				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+					return nil, jwt.ErrSignatureInvalid
+				}
+				return auth.JWTSecret(), nil
+			})
+			if err == nil && token.Valid {
+				if claims, ok := token.Claims.(jwt.MapClaims); ok {
+					if sub, ok := claims["sub"].(string); ok {
+						userID = sub
+					}
+				}
+			}
+		}
+	}
+
+	if userID != "" {
+		if userUUID, err := util.ParseUUID(userID); err == nil {
+			_, err = h.Queries.UpdateUserAccessToken(r.Context(), db.UpdateUserAccessTokenParams{
+				ID:          userUUID,
+				AccessToken: pgtype.Text{Valid: false},
+			})
+			if err != nil {
+				slog.Warn("logout: failed to clear user access_token", "user_id", userID, "error", err)
+			} else {
+				slog.Info("logout: cleared user access_token in database", "user_id", userID)
+			}
+		}
+	}
+
 	auth.ClearAuthCookies(w)
 	writeJSON(w, http.StatusOK, map[string]string{"message": "logged out"})
 }
