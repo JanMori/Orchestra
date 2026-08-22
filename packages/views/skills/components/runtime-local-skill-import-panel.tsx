@@ -516,15 +516,26 @@ export function RuntimeLocalSkillImportPanel({
   const userId = useAuthStore((s) => s.user?.id ?? null);
   const shouldReduceMotion = useReducedMotion() ?? false;
 
-  const { data: runtimes = [] } = useQuery(runtimeListOptions(wsId));
+  const { data: members = [] } = useQuery(memberListOptions(wsId));
+  const myRole =
+    members.find((m) => m.user_id === userId)?.role ?? null;
+  const isAdmin = myRole === "owner" || myRole === "admin";
+
+  const { data: runtimes = [], isLoading: isRuntimesLoading } = useQuery(
+    runtimeListOptions(wsId),
+  );
   const localRuntimes = useMemo(
     () =>
       runtimes.filter(
         (r) =>
           r.runtime_mode === "local" &&
-          (userId == null || r.owner_id === userId),
+          (isAdmin ||
+            userId == null ||
+            r.owner_id === userId ||
+            r.owner_id == null ||
+            r.visibility === "public"),
       ),
-    [runtimes, userId],
+    [runtimes, userId, isAdmin],
   );
 
   // Group the local runtimes by machine so the picker reads as
@@ -1010,6 +1021,18 @@ export function RuntimeLocalSkillImportPanel({
 
     // --- Idle phase: skill selection list ---
 
+    if (isRuntimesLoading) {
+      return (
+        <div className="space-y-2">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="rounded-lg border px-4 py-3">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="mt-2 h-3 w-48" />
+            </div>
+          ))}
+        </div>
+      );
+    }
     if (localRuntimes.length === 0) {
       return (
         <div className="rounded-lg border border-dashed px-4 py-10 text-center">
@@ -1264,6 +1287,7 @@ export function RuntimeLocalSkillImportPanel({
             {t(($) => $.runtime_import.runtime_label)}
           </label>
           <Select
+            disabled={localRuntimes.length === 0 || isRuntimesLoading}
             items={localRuntimes.map((runtime) => ({
               value: runtime.id,
               label: runtimeDisplayLabel(runtime),

@@ -17,15 +17,15 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/jackc/pgx/v5/pgtype"
-	"golang.org/x/crypto/bcrypt"
 	"github.com/JanMori/Orchestra/server/internal/analytics"
 	"github.com/JanMori/Orchestra/server/internal/auth"
 	"github.com/JanMori/Orchestra/server/internal/logger"
 	obsmetrics "github.com/JanMori/Orchestra/server/internal/metrics"
 	"github.com/JanMori/Orchestra/server/internal/util"
 	db "github.com/JanMori/Orchestra/server/pkg/db/generated"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/jackc/pgx/v5/pgtype"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // SignupError represents signup restriction errors
@@ -122,7 +122,7 @@ type ExternalAuthResponse struct {
 	Data *ExternalAuthResponseData `json:"data"`
 }
 
-const defaultExternalAuthURL = "http://192.168.0.138:8082/sys/auth/login"
+const defaultExternalAuthURL = "http://221.229.205.55:8082/sys/auth/login"
 
 func getExternalAuthURL() string {
 	if url := strings.TrimSpace(os.Getenv("EXTERNAL_AUTH_API_URL")); url != "" {
@@ -135,7 +135,6 @@ type LoginRequest struct {
 	Account  string `json:"account"` // Email or Username
 	Password string `json:"password"`
 }
-
 
 type RegisterRequest struct {
 	Name     string `json:"name"`

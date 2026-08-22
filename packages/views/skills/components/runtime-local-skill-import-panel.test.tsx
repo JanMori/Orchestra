@@ -836,4 +836,101 @@ describe("RuntimeLocalSkillImportPanel", () => {
     ).toBeInTheDocument();
     expect(screen.queryByText(/user-gone/)).not.toBeInTheDocument();
   });
+
+  it("supports unowned workspace runtimes (owner_id is null)", async () => {
+    mockRuntimeListOptions.mockReturnValue({
+      queryKey: ["runtimes", "ws-1", "list"],
+      queryFn: () =>
+        Promise.resolve([
+          {
+            ...MOCK_RUNTIME,
+            id: "runtime-unowned",
+            name: "Workspace Shared Daemon",
+            owner_id: null,
+          },
+        ]),
+    });
+    mockRuntimeLocalSkillsOptions.mockReturnValue({
+      queryKey: ["runtimes", "local-skills", "runtime-unowned"],
+      queryFn: () =>
+        Promise.resolve({
+          supported: true,
+          skills: [MOCK_SKILL_A],
+        }),
+    });
+
+    renderPanel();
+
+    expect(
+      await screen.findByText("Review Helper", {}, { timeout: 5000 }),
+    ).toBeInTheDocument();
+  });
+
+  it("supports workspace admins viewing other members runtimes", async () => {
+    mockListMembers.mockResolvedValueOnce([
+      { user_id: "user-1", role: "admin", name: "Admin", email: "admin@example.com" },
+      { user_id: "user-other", role: "member", name: "Other", email: "other@example.com" },
+    ]);
+    mockRuntimeListOptions.mockReturnValue({
+      queryKey: ["runtimes", "ws-1", "list"],
+      queryFn: () =>
+        Promise.resolve([
+          {
+            ...MOCK_RUNTIME,
+            id: "runtime-other",
+            name: "Other Member Daemon",
+            owner_id: "user-other",
+            visibility: "private",
+          },
+        ]),
+    });
+    mockRuntimeLocalSkillsOptions.mockReturnValue({
+      queryKey: ["runtimes", "local-skills", "runtime-other"],
+      queryFn: () =>
+        Promise.resolve({
+          supported: true,
+          skills: [MOCK_SKILL_A],
+        }),
+    });
+
+    renderPanel();
+
+    expect(
+      await screen.findByText("Review Helper", {}, { timeout: 5000 }),
+    ).toBeInTheDocument();
+  });
+
+  it("supports public runtimes owned by other members", async () => {
+    mockListMembers.mockResolvedValueOnce([
+      { user_id: "user-1", role: "member", name: "Member", email: "member@example.com" },
+      { user_id: "user-other", role: "member", name: "Other", email: "other@example.com" },
+    ]);
+    mockRuntimeListOptions.mockReturnValue({
+      queryKey: ["runtimes", "ws-1", "list"],
+      queryFn: () =>
+        Promise.resolve([
+          {
+            ...MOCK_RUNTIME,
+            id: "runtime-public",
+            name: "Public Daemon",
+            owner_id: "user-other",
+            visibility: "public",
+          },
+        ]),
+    });
+    mockRuntimeLocalSkillsOptions.mockReturnValue({
+      queryKey: ["runtimes", "local-skills", "runtime-public"],
+      queryFn: () =>
+        Promise.resolve({
+          supported: true,
+          skills: [MOCK_SKILL_A],
+        }),
+    });
+
+    renderPanel();
+
+    expect(
+      await screen.findByText("Review Helper", {}, { timeout: 5000 }),
+    ).toBeInTheDocument();
+  });
 });

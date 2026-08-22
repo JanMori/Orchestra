@@ -574,19 +574,21 @@ func (h *Handler) requireRuntimeCapabilityReadAccess(w http.ResponseWriter, r *h
 		provider:    rt.Provider,
 		status:      rt.Status,
 		ownerID:     uuidToString(rt.OwnerID),
+		visibility:  rt.Visibility,
 	}, member, true
 }
 
 // requireRuntimeLocalSkillAccess additionally requires the caller to own the
-// runtime. Import reads full skill file contents from the owner's machine, so
-// it stays owner-only even for workspace owners/admins.
+// runtime, be a workspace owner/admin, access an unowned workspace runtime,
+// or access a public runtime. Import reads full skill file contents from the
+// machine to elevate into workspace skills.
 func (h *Handler) requireRuntimeLocalSkillAccess(w http.ResponseWriter, r *http.Request, runtimeID string) (runtimeIDAndWorkspace, bool) {
 	rt, member, ok := h.requireRuntimeCapabilityReadAccess(w, r, runtimeID)
 	if !ok {
 		return runtimeIDAndWorkspace{}, false
 	}
 
-	if rt.ownerID != "" && rt.ownerID == uuidToString(member.UserID) {
+	if rt.ownerID == "" || rt.ownerID == uuidToString(member.UserID) || roleAllowed(member.Role, "owner", "admin") || rt.visibility == "public" {
 		return rt, true
 	}
 
@@ -600,6 +602,7 @@ type runtimeIDAndWorkspace struct {
 	provider    string
 	status      string
 	ownerID     string
+	visibility  string
 }
 
 func (h *Handler) InitiateListLocalSkills(w http.ResponseWriter, r *http.Request) {

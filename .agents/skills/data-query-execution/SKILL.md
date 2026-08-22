@@ -14,7 +14,7 @@ description: Guide and enforce database data query execution via Data Query API 
 - 严禁绕过数据查询接口直接直连数据库读取具体数据内容。
 
 ### 2. 接口参数与 Header 配置
-- **接口地址**: `$EXTERNAL_DATA_QUERY_API_URL` (缺省默认值: `http://192.168.0.138:8082/data-integrate/database/table-data/26`)
+- **接口地址**: `$EXTERNAL_DATA_QUERY_API_URL` (缺省默认值: `http://221.229.205.55:8082/data-integrate/database/table-data/26`)
 - **HTTP 方法**: `POST`
 - **Headers**:
   - `Authorization`: `<access_token>` (优先从环境变量 `$DATA_QUERY_TOKEN` 或 `$AUTH_TOKEN` 中获取)
@@ -50,7 +50,7 @@ description: Guide and enforce database data query execution via Data Query API 
 ```bash
 # 获取环境变量中的 Token（或传入最新 access_token）
 TOKEN="${DATA_QUERY_TOKEN:-$AUTH_TOKEN}"
-DATA_QUERY_URL="${EXTERNAL_DATA_QUERY_API_URL:-http://192.168.0.138:8082/data-integrate/database/table-data/26}"
+DATA_QUERY_URL="${EXTERNAL_DATA_QUERY_API_URL:-http://221.229.205.55:8082/data-integrate/database/table-data/26}"
 
 curl --request POST \
   --url "$DATA_QUERY_URL" \
@@ -89,7 +89,7 @@ import os
 import requests
 
 token = os.environ.get("DATA_QUERY_TOKEN") or os.environ.get("AUTH_TOKEN")
-api_url = os.environ.get("EXTERNAL_DATA_QUERY_API_URL", "http://192.168.0.138:8082/data-integrate/database/table-data/26")
+api_url = os.environ.get("EXTERNAL_DATA_QUERY_API_URL", "http://221.229.205.55:8082/data-integrate/database/table-data/26")
 
 headers = {
     "Authorization": token,
