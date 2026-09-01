@@ -5,6 +5,8 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -58,6 +60,13 @@ var authLogoutCmd = &cobra.Command{
 	RunE:  runAuthLogout,
 }
 
+var authUserTokenCmd = &cobra.Command{
+	Use:     "user-token",
+	Aliases: []string{"data-query-token"},
+	Short:   "Print current user's data query access token from server",
+	RunE:    runAuthUserToken,
+}
+
 // callbackHostFlag lets users override the host/IP that goes into the OAuth
 // cli_callback URL. Useful when the CLI sits behind a reverse proxy or the
 // auto-detected LAN IP isn't the one the browser can reach.
@@ -66,8 +75,10 @@ const callbackHostFlag = "callback-host"
 const callbackHostFlagHelp = "Host/IP the OAuth callback URL points at when the browser can reach this CLI directly. For SSH-only machines, use the printed tunnel hint instead."
 
 func init() {
+	authUserTokenCmd.Flags().Bool("json", false, "Output in JSON format")
 	authCmd.AddCommand(authStatusCmd)
 	authCmd.AddCommand(authLogoutCmd)
+	authCmd.AddCommand(authUserTokenCmd)
 }
 
 func resolveToken(cmd *cobra.Command) string {
@@ -545,5 +556,43 @@ func runAuthLogout(cmd *cobra.Command, _ []string) error {
 	}
 
 	fmt.Fprintln(os.Stderr, "Token removed. You are now logged out.")
+	return nil
+}
+
+func runAuthUserToken(cmd *cobra.Command, _ []string) error {
+	token := resolveToken(cmd)
+	if token == "" {
+		return errors.New("no auth token available (ORCHESTRA_TOKEN is not set and CLI not logged in)")
+	}
+
+	serverURL := resolveServerURL(cmd)
+	if serverURL == "" {
+		return errors.New("no server URL configured (ORCHESTRA_SERVER_URL is not set)")
+	}
+
+	workspaceID := resolveWorkspaceID(cmd)
+	client := cli.NewAPIClient(serverURL, workspaceID, token)
+	if taskID := strings.TrimSpace(os.Getenv("ORCHESTRA_TASK_ID")); taskID != "" {
+		client.TaskID = taskID
+	}
+	if agentID := strings.TrimSpace(os.Getenv("ORCHESTRA_AGENT_ID")); agentID != "" {
+		client.AgentID = agentID
+	}
+
+	ctx, cancel := cli.APIContext(cmd.Context())
+	defer cancel()
+
+	userToken, err := client.GetUserToken(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to fetch user token: %w", err)
+	}
+
+	if jsonOutput, _ := cmd.Flags().GetBool("json"); jsonOutput {
+		return json.NewEncoder(os.Stdout).Encode(map[string]string{
+			"token": userToken,
+		})
+	}
+
+	fmt.Print(userToken)
 	return nil
 }

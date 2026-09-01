@@ -735,3 +735,14 @@ func (c *APIClient) HealthCheck(ctx context.Context) (string, error) {
 	}
 	return strings.TrimSpace(string(data)), nil
 }
+
+// GetUserToken fetches the real-time access_token for the currently authenticated user/task from the server.
+func (c *APIClient) GetUserToken(ctx context.Context) (string, error) {
+	var resp struct {
+		Token string `json:"token"`
+	}
+	if err := c.GetJSON(ctx, "/api/auth/user-token", &resp); err != nil {
+		return "", err
+	}
+	return resp.Token, nil
+}

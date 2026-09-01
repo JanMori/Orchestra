@@ -366,9 +366,16 @@ func (s *EmailService) SendVerificationCode(to, code string) error {
 // SendInvitationEmail notifies the invitee that they have been invited to a workspace.
 // invitationID is included in the URL so the email deep-links to /invite/{id}.
 func (s *EmailService) SendInvitationEmail(to, inviterName, workspaceName, invitationID string) error {
-	appURL := strings.TrimSpace(os.Getenv("FRONTEND_ORIGIN"))
+	appURL := strings.TrimRight(strings.TrimSpace(os.Getenv("ORCHESTRA_APP_URL")), "/")
 	if appURL == "" {
-		appURL = "http://localhost:5001"
+		appURL = strings.TrimRight(strings.TrimSpace(os.Getenv("FRONTEND_ORIGIN")), "/")
+	}
+	if appURL == "" {
+		port := strings.TrimSpace(os.Getenv("FRONTEND_PORT"))
+		if port == "" {
+			port = "5001"
+		}
+		appURL = fmt.Sprintf("http://localhost:%s", port)
 	}
 	inviteURL := fmt.Sprintf("%s/invite/%s", appURL, invitationID)
 

@@ -1,7 +1,10 @@
 package main
 
 import (
+	"io"
 	"net"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"strings"
 	"testing"
@@ -393,4 +396,60 @@ func TestValidateLoginTokenPrefix(t *testing.T) {
 			t.Errorf("error %q does not mention prefix %q", err.Error(), p)
 		}
 	}
+}
+
+func TestAuthUserTokenCmd(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/api/auth/user-token" {
+			authHeader := r.Header.Get("Authorization")
+			if authHeader != "Bearer test-token" {
+				http.Error(w, `{"error":"unauthorized"}`, http.StatusUnauthorized)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(`{"token":"my-dynamic-access-token"}`))
+			return
+		}
+		http.NotFound(w, r)
+	}))
+	defer srv.Close()
+
+	t.Run("successful raw token output", func(t *testing.T) {
+		t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+		t.Setenv("ORCHESTRA_TOKEN", "test-token")
+
+		cmd := testCmd()
+		cmd.Flags().Bool("json", false, "")
+
+		// Capture stdout
+		oldStdout := os.Stdout
+		r, w, _ := os.Pipe()
+		os.Stdout = w
+
+		err := runAuthUserToken(cmd, nil)
+
+		w.Close()
+		os.Stdout = oldStdout
+
+		if err != nil {
+			t.Fatalf("runAuthUserToken() error = %v", err)
+		}
+
+		out, _ := io.ReadAll(r)
+		if string(out) != "my-dynamic-access-token" {
+			t.Errorf("got stdout %q, want %q", string(out), "my-dynamic-access-token")
+		}
+	})
+
+	t.Run("missing token returns error", func(t *testing.T) {
+		t.Setenv("ORCHESTRA_SERVER_URL", srv.URL)
+		t.Setenv("ORCHESTRA_TOKEN", "")
+
+		cmd := testCmd()
+		err := runAuthUserToken(cmd, nil)
+		if err == nil {
+			t.Fatal("expected error when token is missing")
+		}
+	})
 }

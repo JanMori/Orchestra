@@ -122,13 +122,8 @@ type ExternalAuthResponse struct {
 	Data *ExternalAuthResponseData `json:"data"`
 }
 
-const defaultExternalAuthURL = "http://221.229.205.55:8082/sys/auth/login"
-
 func getExternalAuthURL() string {
-	if url := strings.TrimSpace(os.Getenv("EXTERNAL_AUTH_API_URL")); url != "" {
-		return url
-	}
-	return defaultExternalAuthURL
+	return strings.TrimSpace(os.Getenv("EXTERNAL_AUTH_API_URL"))
 }
 
 type LoginRequest struct {
@@ -331,6 +326,11 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	// 1. Call External Permission Auth API
 	authURL := getExternalAuthURL()
+	if authURL == "" {
+		slog.Error("external auth request failed: EXTERNAL_AUTH_API_URL is not configured")
+		writeError(w, http.StatusInternalServerError, "外部认证接口未配置 (EXTERNAL_AUTH_API_URL)")
+		return
+	}
 	authReqPayload, err := json.Marshal(ExternalAuthRequest{
 		Username: account,
 		Password: password,
@@ -919,4 +919,78 @@ func (h *Handler) UpdateMe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, h.userToResponse(updatedUser))
+}
+
+type UserTokenResponse struct {
+	Token string `json:"token"`
+}
+
+// GetTaskUserToken returns the real-time access_token for the currently authenticated
+// user or task initiator directly from the database.
+func (h *Handler) GetTaskUserToken(w http.ResponseWriter, r *http.Request) {
+	userID, ok := requireUserID(w, r)
+	if !ok {
+		return
+	}
+
+	userUUID, err := util.ParseUUID(userID)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid user id")
+		return
+	}
+
+	var userToken string
+	if u, err := h.Queries.GetUser(r.Context(), userUUID); err == nil && u.AccessToken.Valid {
+		userToken = strings.TrimSpace(u.AccessToken.String)
+	}
+
+	// Fallback candidate resolution if task context is present and user token was empty
+	if userToken == "" {
+		if taskIDStr := r.Header.Get("X-Task-ID"); taskIDStr != "" {
+			if taskUUID, err := util.ParseUUID(taskIDStr); err == nil {
+				if task, err := h.Queries.GetAgentTask(r.Context(), taskUUID); err == nil {
+					var candidateUserIDs []pgtype.UUID
+					if task.InitiatorUserID.Valid {
+						candidateUserIDs = append(candidateUserIDs, task.InitiatorUserID)
+					}
+					if task.OriginatorUserID.Valid {
+						candidateUserIDs = append(candidateUserIDs, task.OriginatorUserID)
+					}
+					if task.AccountableUserID.Valid {
+						candidateUserIDs = append(candidateUserIDs, task.AccountableUserID)
+					}
+					if task.ChatSessionID.Valid {
+						if session, err := h.Queries.GetChatSession(r.Context(), task.ChatSessionID); err == nil && session.CreatorID.Valid {
+							candidateUserIDs = append(candidateUserIDs, session.CreatorID)
+						}
+					}
+					if task.IssueID.Valid {
+						if issue, err := h.Queries.GetIssue(r.Context(), task.IssueID); err == nil && issue.CreatorType == "member" && issue.CreatorID.Valid {
+							candidateUserIDs = append(candidateUserIDs, issue.CreatorID)
+						}
+					}
+					if agent, err := h.Queries.GetAgent(r.Context(), task.AgentID); err == nil && agent.OwnerID.Valid {
+						candidateUserIDs = append(candidateUserIDs, agent.OwnerID)
+					}
+					for _, uid := range candidateUserIDs {
+						if uid.Valid {
+							if cu, err := h.Queries.GetUser(r.Context(), uid); err == nil && cu.AccessToken.Valid && strings.TrimSpace(cu.AccessToken.String) != "" {
+								userToken = strings.TrimSpace(cu.AccessToken.String)
+								break
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if userToken == "" {
+		writeError(w, http.StatusNotFound, "user data query access token not found")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, UserTokenResponse{
+		Token: userToken,
+	})
 }

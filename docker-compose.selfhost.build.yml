@@ -1,10 +1,16 @@
-# Self-hosting Docker Compose — builds backend and web images directly from source checkout.
+# ==============================================================================
+# Orchestra Self-hosting Docker Compose (静态显式配置模式 - 最高优先级)
+# ==============================================================================
+# 构建并运行本地全栈服务（Postgres、Go 后端、Web 前端）。
 #
-# Usage:
-#   docker-compose -f docker-compose.selfhost.build.yml up -d --build
+# 配置优先级与生效规则说明：
+# 1. 当前文件中的 IP、端口、URL 配置项均已采用【显式指定】（方式 A），拥有系统最高优先级，
+#    在执行 docker compose 时将强制覆盖 .env 文件中的对应配置。
+# 2. 若后续需要调整 IP/端口/URL，直接修改当前 YAML 文件中的具体值即可立即生效。
 #
-# Frontend: http://localhost:${FRONTEND_PORT:-5001}
-# Backend:  http://localhost:${BACKEND_PORT:-${API_PORT:-${SERVER_PORT:-${PORT:-7081}}}}
+# 常用启动命令：
+#   docker compose -f docker-compose.selfhost.build.yml up -d --build
+# ==============================================================================
 
 name: orchestra
 
@@ -12,20 +18,20 @@ services:
   postgres:
     image: pgvector/pgvector:pg17
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-orchestra}
-      POSTGRES_USER: ${POSTGRES_USER:-orchestra}
+      POSTGRES_DB: orchestra
+      POSTGRES_USER: orchestra
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-orchestra}
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-orchestra} -d ${POSTGRES_DB:-orchestra}" ]
+      test: [ "CMD-SHELL", "pg_isready -U orchestra -d orchestra" ]
       interval: 5s
       timeout: 5s
       retries: 5
 
   backend:
-    image: orchestra-backend:v0.2
+    image: orchestra-backend:v0.3
     build:
       context: .
       dockerfile: Dockerfile
@@ -37,28 +43,51 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "0.0.0.0:${BACKEND_PORT:-${API_PORT:-${SERVER_PORT:-${PORT:-7081}}}}:8080"
+      - "0.0.0.0:7081:8080"
     volumes:
       - backend_uploads:/app/data/uploads
     environment:
-      DATABASE_URL: postgres://${POSTGRES_USER:-orchestra}:${POSTGRES_PASSWORD:-orchestra}@postgres:5432/${POSTGRES_DB:-orchestra}?sslmode=disable
+      # ==================== 1. 外部业务接口配置 (显式指定，最高优先级，覆盖 .env) ====================
+      # 外部用户认证登录接口
+      EXTERNAL_AUTH_API_URL: "http://192.168.0.138:8082/sys/auth/login"
+      # 智能体执行数据查询接口 (后端自动下发给 Agent / Hermes 运行时)
+      EXTERNAL_DATA_QUERY_API_URL: "http://192.168.0.138:8082/data-development/task/execute-sql"
+
+      # ==================== 2. 服务端口、URL 与跨域配置 (显式指定，最高优先级，覆盖 .env) ====================
       PORT: "8080"
-      METRICS_ADDR: ${METRICS_ADDR:-}
+      SERVER_PORT: "7081"
+      FRONTEND_PORT: "5001"
+      FRONTEND_ORIGIN: "http://localhost:5001"
+      ORCHESTRA_PUBLIC_URL: "http://localhost:7081"
+      ORCHESTRA_APP_URL: "http://localhost:5001"
+      CORS_ALLOWED_ORIGINS: "http://localhost:5001,http://127.0.0.1:5001"
+      ORCHESTRA_SERVER_URL: "ws://localhost:7081/ws"
+      LOCAL_UPLOAD_BASE_URL: "http://localhost:7081"
+
+      # ==================== 3. 数据库与缓存 ====================
+      DATABASE_URL: "postgres://orchestra:${POSTGRES_PASSWORD:-orchestra}@postgres:5432/orchestra?sslmode=disable"
+      REDIS_URL: ${REDIS_URL:-}
+
+      # ==================== 4. 基础安全与环境 ====================
       JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
-      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:5001}
-      CORS_ALLOWED_ORIGINS: http://localhost:5001,http://127.0.0.1:5001
-      RESEND_API_KEY: ${RESEND_API_KEY:-}
-      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-noreply@orchestra.ai}
-      SMTP_HOST: ${SMTP_HOST:-}
-      SMTP_PORT: ${SMTP_PORT:-25}
-      SMTP_USERNAME: ${SMTP_USERNAME:-}
-      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
-      SMTP_TLS: ${SMTP_TLS:-}
-      SMTP_TLS_INSECURE: ${SMTP_TLS_INSECURE:-false}
-      SMTP_EHLO_NAME: ${SMTP_EHLO_NAME:-}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
-      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-http://localhost:5001/auth/callback}
+      COOKIE_DOMAIN: ${COOKIE_DOMAIN:-}
+      APP_ENV: ${APP_ENV:-production}
+      ALLOW_SIGNUP: ${ALLOW_SIGNUP:-true}
+      ALLOWED_EMAILS: ${ALLOWED_EMAILS:-}
+      ALLOWED_EMAIL_DOMAINS: ${ALLOWED_EMAIL_DOMAINS:-}
+      DISABLE_WORKSPACE_CREATION: ${DISABLE_WORKSPACE_CREATION:-}
+      ORCHESTRA_DEV_VERIFICATION_CODE: ${ORCHESTRA_DEV_VERIFICATION_CODE:-}
+      ORCHESTRA_TRUSTED_PROXIES: ${ORCHESTRA_TRUSTED_PROXIES:-}
+      ORCHESTRA_SHUTDOWN_HOLD_DURATION: ${ORCHESTRA_SHUTDOWN_HOLD_DURATION:-}
+      METRICS_ADDR: ${METRICS_ADDR:-}
+      REALTIME_METRICS_TOKEN: ${REALTIME_METRICS_TOKEN:-}
+
+      # ==================== 5. LLM 服务 ====================
+      ORCHESTRA_LLM_API_KEY: ${ORCHESTRA_LLM_API_KEY:-}
+      ORCHESTRA_LLM_BASE_URL: ${ORCHESTRA_LLM_BASE_URL:-}
+      ORCHESTRA_LLM_DEFAULT_MODEL: ${ORCHESTRA_LLM_DEFAULT_MODEL:-}
+
+      # ==================== 6. 对象存储 (S3 / CloudFront) ====================
       S3_BUCKET: ${S3_BUCKET:-}
       S3_REGION: ${S3_REGION:-us-west-2}
       AWS_ENDPOINT_URL: ${AWS_ENDPOINT_URL:-}
@@ -70,21 +99,24 @@ services:
       CLOUDFRONT_DOMAIN: ${CLOUDFRONT_DOMAIN:-}
       CLOUDFRONT_KEY_PAIR_ID: ${CLOUDFRONT_KEY_PAIR_ID:-}
       CLOUDFRONT_PRIVATE_KEY: ${CLOUDFRONT_PRIVATE_KEY:-}
-      COOKIE_DOMAIN: ${COOKIE_DOMAIN:-}
-      APP_ENV: ${APP_ENV:-production}
-      ORCHESTRA_DEV_VERIFICATION_CODE: ${ORCHESTRA_DEV_VERIFICATION_CODE:-}
-      ORCHESTRA_APP_URL: ${ORCHESTRA_APP_URL:-http://localhost:5001}
-      ORCHESTRA_SHUTDOWN_HOLD_DURATION: ${ORCHESTRA_SHUTDOWN_HOLD_DURATION:-}
-      ALLOW_SIGNUP: ${ALLOW_SIGNUP:-true}
-      ALLOWED_EMAILS: ${ALLOWED_EMAILS:-}
-      ALLOWED_EMAIL_DOMAINS: ${ALLOWED_EMAIL_DOMAINS:-}
-      DISABLE_WORKSPACE_CREATION: ${DISABLE_WORKSPACE_CREATION:-}
-      EXTERNAL_AUTH_API_URL: ${EXTERNAL_AUTH_API_URL:-http://221.229.205.55:8082/sys/auth/login}
-      EXTERNAL_DATA_QUERY_API_URL: ${EXTERNAL_DATA_QUERY_API_URL:-http://221.229.205.55:8082/data-integrate/database/table-data/26}
+
+      # ==================== 7. 邮件服务 (Resend / SMTP) ====================
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-noreply@orchestra.ai}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-25}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_TLS: ${SMTP_TLS:-}
+      SMTP_TLS_INSECURE: ${SMTP_TLS_INSECURE:-false}
+      SMTP_EHLO_NAME: ${SMTP_EHLO_NAME:-}
+
+      # ==================== 8. 第三方集成 (Google, GitHub, Lark, Slack, VCS) ====================
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_REDIRECT_URI: "http://localhost:5001/auth/callback"
       GITHUB_APP_SLUG: ${GITHUB_APP_SLUG:-}
       GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET:-}
-      ORCHESTRA_PUBLIC_URL: ${ORCHESTRA_PUBLIC_URL:-http://localhost:7081}
-      ORCHESTRA_TRUSTED_PROXIES: ${ORCHESTRA_TRUSTED_PROXIES:-}
       ORCHESTRA_LARK_SECRET_KEY: ${ORCHESTRA_LARK_SECRET_KEY:-}
       ORCHESTRA_LARK_HTTP_BASE_URL: ${ORCHESTRA_LARK_HTTP_BASE_URL:-}
       ORCHESTRA_LARK_CALLBACK_BASE_URL: ${ORCHESTRA_LARK_CALLBACK_BASE_URL:-}
@@ -94,7 +126,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: orchestra-web:v0.2
+    image: orchestra-web:v0.3
     build:
       context: .
       dockerfile: Dockerfile.web
@@ -103,11 +135,13 @@ services:
     depends_on:
       - backend
     ports:
-      - "0.0.0.0:${FRONTEND_PORT:-5001}:3000"
+      - "0.0.0.0:5001:3000"
     environment:
       HOSTNAME: "0.0.0.0"
-      REMOTE_API_URL: ${REMOTE_API_URL:-http://backend:8080}
+      # 前端内部代理后端地址（Docker 网络内）
+      REMOTE_API_URL: "http://backend:8080"
       DOCS_URL: ${DOCS_URL:-}
+      # 浏览器直连 API / WebSocket（可选，如需显式覆盖可直接填写）
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-}
       NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL:-}
     restart: unless-stopped
